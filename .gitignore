@@ -1,59 +1,52 @@
-# Node.js
+# === Node / Dependencies ===
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-yarn.lock
 
-# React Native / Metro
+# === Expo ===
 .expo/
 .expo-shared/
 dist/
-tmp/
-*.tmp
-*.temp
+web-build/
+expo-env.d.ts
+
+# === Native Builds ===
+/ios
+/android
+.kotlin/
+*.orig.*
+
+# === Sensitive Files / Keys ===
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# === Metro Bundler ===
+.metro-health-check*
+
+# === Debug / Logs ===
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 *.log
-.cache/
-.metro/
-bundles/
 
-# Android
-android/.gradle/
-android/app/build/
-android/build/
-android/local.properties
-*.keystore
-*.apk
-*.aar
-*.iml
-
-# iOS
-ios/Pods/
-ios/build/
-ios/DerivedData/
-*.xcworkspace
-*.xcuserstate
-*.xcuserdata/
-
-# macOS
+# === macOS ===
 .DS_Store
 
-# VS Code
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/launch.json
-!.vscode/tasks.json
+# === Local env files ===
+.env*.local
 
-# JetBrains / otros IDEs
-.idea/
+# === TypeScript ===
+*.tsbuildinfo
 
-# Testing
-coverage/
-jest-html-reporters-*
+# === VS Code ===
+.vscode/
 
-# Fastlane
+# === Watchman ===
+.watchmanconfig
+
+# === Fastlane (si usas para deploy nativo) ===
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
