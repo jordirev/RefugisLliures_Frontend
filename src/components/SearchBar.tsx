@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';
@@ -15,59 +14,55 @@ interface SearchBarProps {
 
 export function SearchBar({ searchQuery, onSearchChange, onOpenFilters }: SearchBarProps) {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* Container de cerca */}
-        <View style={styles.searchContainer}>
-          <View style={styles.inputWrapper}>
-            <SearchIcon 
-              width={20} 
-              height={20} 
-              color="#6B7280" 
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Cercar refugis..."
-              value={searchQuery}
-              onChangeText={onSearchChange}
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={onOpenFilters}
-          >
-            <FilterIcon width={18} height={18} color="#6B7280" />
-          </TouchableOpacity>
+    <View style={styles.container}>
+      {/* Container de cerca */}
+      <View style={styles.searchContainer}>
+        <View style={styles.inputWrapper}>
+          <SearchIcon 
+            width={20} 
+            height={20} 
+            color="#6B7280" 
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Cercar refugis..."
+            value={searchQuery}
+            onChangeText={onSearchChange}
+            placeholderTextColor="#6B7280"
+          />
         </View>
-        {/* Botó afegeix */}
         <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {/* TODO: Implementar afegir nova ubicació */}}
+          style={styles.filterButton}
+          onPress={onOpenFilters}
         >
-          <View style={styles.addIconContainer}>
-            <Text style={styles.plusText}>+</Text>
-          </View>
-          <Text style={styles.addText}>Afegeix</Text>
+          <FilterIcon width={18} height={18} color="#6B7280" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+      {/* Botó afegeix */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {/* TODO: Implementar afegir nova ubicació */}}
+      >
+        <View style={styles.addIconContainer}>
+          <Text style={styles.plusText}>+</Text>
+        </View>
+        <Text style={styles.addText}>Afegeix</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: 'transparent',
-  },
   container: {
-    padding: 16,
+    padding: 8,
     backgroundColor: 'transparent',
+    marginTop: 16,
   },
   addButton: {
     height: 32,
     backgroundColor: 'white',
     shadowColor: 'rgba(0, 0, 0, 0.10)',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 6,
     elevation: 4,
@@ -78,6 +73,8 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
     paddingHorizontal: 12,
+    marginTop: -8,
+    marginLeft: 10,
     alignSelf: 'flex-start',
   },
   addIconContainer: {
@@ -117,9 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     backgroundColor: 'white',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderRadius: 18,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -134,21 +129,20 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     fontSize: 16,
-    color: '#374151',
+    fontFamily: 'Arimo',
+    color: '#616774ff',
     marginLeft: 8,
   },
   filterButton: {
     width: 44,
     height: 44,
     backgroundColor: 'white',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'rgba(0, 0, 0, 0.05)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
+    shadowOpacity: 5,
     shadowRadius: 4,
     elevation: 2,
   },

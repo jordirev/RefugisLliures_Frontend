@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MapScreen } from './src/screens/MapScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
@@ -14,7 +14,7 @@ import { RefugeBottomSheet } from './src/components/RefugeBottomSheet';
 import { mockLocations } from './src/utils/mockData';
 import { Location, Filters } from './src/types';
 
-import MapIcon from './src/assets/icons/map.svg';
+import MapIcon from './src/assets/icons/map2.svg';
 import FavIcon from './src/assets/icons/fav.svg';
 import ReformIcon from './src/assets/icons/reform.svg';
 import UserIcon from './src/assets/icons/user.svg';
@@ -22,6 +22,17 @@ import UserIcon from './src/assets/icons/user.svg';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <AppContent />
+      </View>
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(undefined);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
@@ -96,38 +107,27 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <View style={styles.container}>
-          <Tab.Navigator
-            screenOptions={{
-              headerShown: false,
-              tabBarShowLabel: false,
-              tabBarActiveTintColor: '#4A5565',
-              tabBarInactiveTintColor: '#4A5565',
-              tabBarStyle: {
-                borderTopWidth: 1,
-                borderTopColor: '#e5e7eb',
-                backgroundColor: '#fff',
-                height: 110,
-                paddingBottom: 50,
-                paddingTop: 0,
-                paddingHorizontal: 0,
-              },
-              tabBarItemStyle: {
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-                margin: 0,
-                padding: 0,
-              },
-            }}
-          >
+    <NavigationContainer>
+      <View style={[styles.appContent, {
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+      }]}>
+        <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: '#4A5565',
+            tabBarInactiveTintColor: '#4A5565',
+            tabBarStyle: {
+              height: 60,
+              paddingBottom: 0,
+            },
+          }}
+        >
             <Tab.Screen 
               name="Mapa" 
               options={{
-                tabBarIcon: ({ color, focused }) => (
+                tabBarIcon: ({ focused }) => (
                   <View style={{
                     backgroundColor: focused ? '#f3f4f6' : 'transparent',
                     width: '100%',
@@ -146,7 +146,7 @@ export default function App() {
             >
               {() => (
                 <MapScreen
-                  locations={locationsWithFavorites}
+                  locations={mockLocations}
                   searchQuery={searchQuery}
                   onSearchChange={setSearchQuery}
                   onOpenFilters={() => Alert.alert('Filtres', 'Funcionalitat de filtres en desenvolupament')}
@@ -159,7 +159,7 @@ export default function App() {
             <Tab.Screen 
               name="Favorits"
               options={{
-                tabBarIcon: ({ color, focused }) => (
+                tabBarIcon: ({ focused }) => (
                   <View style={{
                     backgroundColor: focused ? '#f3f4f6' : 'transparent',
                     width: '100%',
@@ -188,7 +188,7 @@ export default function App() {
             <Tab.Screen 
               name="Reformes"
               options={{
-                tabBarIcon: ({ color, focused }) => (
+                tabBarIcon: ({ focused }) => (
                   <View style={{
                     backgroundColor: focused ? '#f3f4f6' : 'transparent',
                     width: '100%',
@@ -210,7 +210,7 @@ export default function App() {
             <Tab.Screen 
               name="Perfil"
               options={{
-                tabBarIcon: ({ color, focused }) => (
+                tabBarIcon: ({ focused }) => (
                   <View style={{
                     backgroundColor: focused ? '#f3f4f6' : 'transparent',
                     width: '100%',
@@ -245,12 +245,15 @@ export default function App() {
           <StatusBar style="auto" />
         </View>
       </NavigationContainer>
-    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  appContent: {
     flex: 1,
   },
   icon: {

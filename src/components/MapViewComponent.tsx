@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Location } from '../types';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
 
 import LayersIcon from '../assets/icons/layers.svg';
+import CompassIcon from '../assets/icons/compass3.png';
+import TargetIcon from '../assets/icons/target.png';
 
 interface MapViewComponentProps {
   locations: Location[];
@@ -41,7 +43,8 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
           style={styles.controlButton}
           onPress={() => {/* TODO: Implementar orientació de brúixola */}}
         >
-          <Text style={styles.controlIcon}>🧭</Text>
+          <Image source={CompassIcon} style={{ width: 72, height: 72, transform: [{ rotate: '30deg' }] }} />
+          {/*<CompassIcon width={24} height={24} color="#4A5565" strokeWidth="3" />*/}
         </TouchableOpacity>
 
         {/* Centrar ubicació */}
@@ -49,7 +52,7 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
           style={styles.controlButton}
           onPress={() => {/* TODO: Centrar en ubicació actual */}}
         >
-          <Text style={styles.controlIcon}>📍</Text>
+          <Image source={TargetIcon} style={{ width: 20, height: 20, tintColor: '#4A5565' }} />
         </TouchableOpacity>
 
         {/* Capes */}

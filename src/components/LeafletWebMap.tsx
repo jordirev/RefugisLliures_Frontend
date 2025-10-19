@@ -4,6 +4,8 @@ import { WebView } from 'react-native-webview';
 import { Location } from '../types';
 import { MapCacheService } from '../services/MapCacheService';
 
+import RefugeIcon from '../assets/icons/refuge.svg';
+
 interface LeafletWebMapProps {
   locations: Location[];
   onLocationSelect: (location: Location) => void;
@@ -138,12 +140,7 @@ export function LeafletWebMap({
         }).addTo(map);
 
         // Icona personalitzada per als refugis
-        var refugeIcon = L.divIcon({
-          html: '<div style="background: #ea580c; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"><span style="color: white; font-size: 12px;">🏠</span></div>',
-          className: 'custom-marker',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
-        });
+        var refugeIcon = ${RefugeIcon};
 
         var selectedIcon = L.divIcon({
           html: '<div style="background: #f97316; width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.4);"><span style="color: white; font-size: 14px;">🏠</span></div>',
