@@ -91,7 +91,7 @@ export function LeafletWebMap({
       
       <script>
         // Inicialitzar el mapa centrat als Pirineus
-        var map = L.map('map').setView([${center[0]}, ${center[1]}], ${zoom});
+        var map = L.map('map', { attributionControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
 
         // Cache status information
         var cacheInfo = ${JSON.stringify(cacheStatus)};
@@ -135,8 +135,6 @@ export function LeafletWebMap({
         // Afegir la capa personalitzada
         var tileLayer = new CustomTileLayer('', {
           maxZoom: 17,
-          attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' + 
-                    (hasCache ? ' | <span style="color: #10b981;">📱 Offline Ready</span>' : ' | <span style="color: #f59e0b;">🌐 Online Only</span>')
         }).addTo(map);
 
         // Icona personalitzada per als refugis
