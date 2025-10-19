@@ -2,6 +2,8 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Location } from '../types';
 
+import LayersIcon from '../assets/icons/layers.svg';
+
 interface MapViewComponentProps {
   locations: Location[];
   onLocationSelect: (location: Location) => void;
@@ -55,7 +57,7 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
           style={styles.controlButton}
           onPress={() => {/* TODO: Canviar capes del mapa */}}
         >
-          <Text style={styles.controlIcon}>🗺️</Text>
+          <LayersIcon width={16} height={16} color="#4A5565" />
         </TouchableOpacity>
       </View>
     </View>

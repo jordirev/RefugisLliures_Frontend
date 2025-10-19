@@ -24,5 +24,3 @@ export interface Filters {
   capacity: [number, number];
   condition: ("pobre" | "normal" | "bé" | "excel·lent")[];
 }
-
-export type NavigationTab = 'map' | 'favorites' | 'reforms' | 'profile';

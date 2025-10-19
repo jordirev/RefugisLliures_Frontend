@@ -14,6 +14,11 @@ import { RefugeBottomSheet } from './src/components/RefugeBottomSheet';
 import { mockLocations } from './src/utils/mockData';
 import { Location, Filters } from './src/types';
 
+import MapIcon from './src/assets/icons/map.svg';
+import FavIcon from './src/assets/icons/fav.svg';
+import ReformIcon from './src/assets/icons/reform.svg';
+import UserIcon from './src/assets/icons/user.svg';
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -97,22 +102,46 @@ export default function App() {
           <Tab.Navigator
             screenOptions={{
               headerShown: false,
-              tabBarActiveTintColor: '#f97316',
-              tabBarInactiveTintColor: '#9ca3af',
+              tabBarShowLabel: false,
+              tabBarActiveTintColor: '#4A5565',
+              tabBarInactiveTintColor: '#4A5565',
               tabBarStyle: {
                 borderTopWidth: 1,
                 borderTopColor: '#e5e7eb',
                 backgroundColor: '#fff',
-                height: 60,
-                paddingBottom: 8,
-                paddingTop: 8,
+                height: 110,
+                paddingBottom: 50,
+                paddingTop: 0,
+                paddingHorizontal: 0,
+              },
+              tabBarItemStyle: {
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                margin: 0,
+                padding: 0,
               },
             }}
           >
             <Tab.Screen 
               name="Mapa" 
               options={{
-                tabBarIcon: ({ color }) => <View style={styles.icon}><Text style={{ fontSize: 24, color }}>🗺️</Text></View>,
+                tabBarIcon: ({ color, focused }) => (
+                  <View style={{
+                    backgroundColor: focused ? '#f3f4f6' : 'transparent',
+                    width: '100%',
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    <MapIcon 
+                      width={20} 
+                      height={20} 
+                      color="#4A5565" 
+                    />
+                  </View>
+                ),
               }}
             >
               {() => (
@@ -130,7 +159,21 @@ export default function App() {
             <Tab.Screen 
               name="Favorits"
               options={{
-                tabBarIcon: ({ color }) => <View style={styles.icon}><Text style={{ fontSize: 24, color }}>❤️</Text></View>,
+                tabBarIcon: ({ color, focused }) => (
+                  <View style={{
+                    backgroundColor: focused ? '#f3f4f6' : 'transparent',
+                    width: '100%',
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    <FavIcon 
+                      width={20} 
+                      height={20} 
+                      color="#4A5565" 
+                    />
+                  </View>
+                ),
               }}
             >
               {() => (
@@ -145,7 +188,21 @@ export default function App() {
             <Tab.Screen 
               name="Reformes"
               options={{
-                tabBarIcon: ({ color }) => <View style={styles.icon}><Text style={{ fontSize: 24, color }}>🔧</Text></View>,
+                tabBarIcon: ({ color, focused }) => (
+                  <View style={{
+                    backgroundColor: focused ? '#f3f4f6' : 'transparent',
+                    width: '100%',
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    <ReformIcon 
+                      width={20} 
+                      height={20} 
+                      color="#4A5565" 
+                    />
+                  </View>
+                ),
               }}
               component={ReformsScreen}
             />
@@ -153,7 +210,21 @@ export default function App() {
             <Tab.Screen 
               name="Perfil"
               options={{
-                tabBarIcon: ({ color }) => <View style={styles.icon}><Text style={{ fontSize: 24, color }}>👤</Text></View>,
+                tabBarIcon: ({ color, focused }) => (
+                  <View style={{
+                    backgroundColor: focused ? '#f3f4f6' : 'transparent',
+                    width: '100%',
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                    <UserIcon 
+                      width={20}  
+                      height={20} 
+                      color="#4A5565" 
+                    />
+                  </View>
+                ),
               }}
               component={ProfileScreen}
             />

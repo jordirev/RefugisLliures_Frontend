@@ -31,7 +31,6 @@ export function FavoritesScreen({ favorites, onViewDetail, onViewMap }: Favorite
       
       <FlatList
         data={favorites}
-        keyExtractor={(item: Location) => item.id}
         renderItem={({ item }: { item: Location }) => (
           <RefugeCard
             refuge={item}

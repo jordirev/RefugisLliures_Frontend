@@ -24,11 +24,6 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
     >
       {/* Imatge principal */}
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
-          style={styles.image}
-          resizeMode="cover"
-        />
         
         {/* Estat en cantonada superior dreta */}
         {refuge.condition && (
@@ -47,7 +42,7 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
         <View style={styles.detailsRow}>
           <Text style={styles.detailText}>{refuge.region || 'Pirineus'}</Text>
           <Text style={styles.separator}>•</Text>
-          <Text style={styles.detailText}>👤 {refuge.capacity || 60}</Text>
+          <Text style={styles.detailText}>👤 {refuge.places || 60}</Text>
         </View>
         
         {/* Botó veure mapa */}

@@ -28,11 +28,22 @@ export function MapScreen({
         onLocationSelect={onLocationSelect}
         selectedLocation={selectedLocation}
       />
-      <SearchBar
-        searchQuery={searchQuery}
-        onSearchChange={onSearchChange}
-        onOpenFilters={onOpenFilters}
-      />
+      <View
+        style={{
+          position: 'absolute',
+          left: 4,
+          right: 4,
+          top: '0%',
+          zIndex: 10,
+          elevation: 10,
+        }}
+      >
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={onSearchChange}
+          onOpenFilters={onOpenFilters}
+        />
+      </View>
     </View>
   );
 }
