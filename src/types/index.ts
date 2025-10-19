@@ -1,26 +1,28 @@
-export interface Location {
-  id: string;
-  name: string;
-  type: 'refuge';
+export interface Coord {
+  long: number;
   lat: number;
-  lng: number;
-  elevation: number;
-  difficulty?: 'fàcil' | 'moderat' | 'difícil' | 'extrem';
+}
+
+export interface Location {
+  id?: number;
+  name: string;
+  coord: Coord;
+  altitude?: number;
+  places?: number;
   description?: string;
-  distance?: string;
-  isFavorite?: boolean;
-  rating?: number;
-  visitors?: number;
-  capacity?: number;
-  region?: string;
-  imageUrl?: string;
-  condition?: 'pobre' | 'normal' | 'bé' | 'excel·lent';
+  links?: string[];
+  type?: string; // e.g. "Fermée"
+  modified_at?: string; // ISO date string
+  region?: string | null;
+  departement?: string | null;
+  condition?: "pobre" | "normal" | "bé" | "excel·lent";
 }
 
 export interface Filters {
   types: string[];
-  elevation: [number, number];
-  difficulty: string[];
+  altitude: [number, number];
+  capacity: [number, number];
+  condition: ("pobre" | "normal" | "bé" | "excel·lent")[];
 }
 
 export type NavigationTab = 'map' | 'favorites' | 'reforms' | 'profile';

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-// import MapView, { Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import { Location } from '../types';
 
 interface MapViewComponentProps {
