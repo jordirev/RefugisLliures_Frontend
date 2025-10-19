@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Location } from '../types';
+import { LeafletWebMap } from './LeafletWebMap';
+import { OfflineMapManager } from './OfflineMapManager';
 
 import LayersIcon from '../assets/icons/layers.svg';
 
@@ -11,6 +13,8 @@ interface MapViewComponentProps {
 }
 
 export function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
+  const [showOfflineManager, setShowOfflineManager] = useState(false);
+  
   // Centre dels Pirineus
   const initialRegion = {
     latitude: 42.6,
@@ -21,18 +25,14 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
 
   return (
     <View style={styles.container}>
-      {/* Temporary placeholder for map */}
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapPlaceholderText}>🗺️ Mapa dels Refugis</Text>
-        <Text style={styles.mapPlaceholderSubtext}>
-          {locations.length} refugis disponibles
-        </Text>
-        {selectedLocation && (
-          <Text style={styles.selectedText}>
-            Seleccionat: {selectedLocation.name}
-          </Text>
-        )}
-      </View>
+      {/* Mapa d'OpenTopoMap amb Leaflet */}
+      <LeafletWebMap
+        locations={locations}
+        onLocationSelect={onLocationSelect}
+        selectedLocation={selectedLocation}
+        center={[initialRegion.latitude, initialRegion.longitude]}
+        zoom={8}
+      />
 
       {/* Botons de control */}
       <View style={styles.controls}>
@@ -55,11 +55,17 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
         {/* Capes */}
         <TouchableOpacity 
           style={styles.controlButton}
-          onPress={() => {/* TODO: Canviar capes del mapa */}}
+          onPress={() => setShowOfflineManager(true)}
         >
           <LayersIcon width={16} height={16} color="#4A5565" />
         </TouchableOpacity>
       </View>
+
+      {/* Gestor de mapes offline */}
+      <OfflineMapManager
+        visible={showOfflineManager}
+        onClose={() => setShowOfflineManager(false)}
+      />
     </View>
   );
 }
@@ -97,29 +103,7 @@ const styles = StyleSheet.create({
   markerText: {
     fontSize: 18,
   },
-  mapPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f9ff',
-    padding: 20,
-  },
-  mapPlaceholderText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e40af',
-    marginBottom: 8,
-  },
-  mapPlaceholderSubtext: {
-    fontSize: 16,
-    color: '#64748b',
-    marginBottom: 12,
-  },
-  selectedText: {
-    fontSize: 14,
-    color: '#ea580c',
-    fontWeight: '600',
-  },
+
   controls: {
     position: 'absolute',
     bottom: 24,
