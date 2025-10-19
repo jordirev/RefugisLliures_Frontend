@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import * as ExpoLocation from 'expo-location';
 import { Location } from '../types';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
@@ -16,7 +17,8 @@ interface MapViewComponentProps {
 
 export function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
   const [showOfflineManager, setShowOfflineManager] = useState(false);
-  
+  const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
+
   // Centre dels Pirineus
   const initialRegion = {
     latitude: 42.6,
@@ -34,6 +36,7 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
         selectedLocation={selectedLocation}
         center={[initialRegion.latitude, initialRegion.longitude]}
         zoom={8}
+        userLocation={userLocation}
       />
 
       {/* Botons de control */}
@@ -50,7 +53,44 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
         {/* Centrar ubicació */}
         <TouchableOpacity 
           style={styles.controlButton}
-          onPress={() => {/* TODO: Centrar en ubicació actual */}}
+          onPress={async () => {
+            // Si ja tenim la ubicació mostrada, la amaguem
+            if (userLocation) {
+              setUserLocation(null);
+              return;
+            }
+
+            Alert.alert(
+              'Permís de localització',
+              'Permetre accedir a la ubicació actual del dispositiu?',
+              [
+                { text: 'Cancel·la', style: 'cancel' },
+                { text: 'Permet', onPress: async () => {
+                    try {
+                      let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+                      if (status !== 'granted') {
+                        Alert.alert('Permís denegat', 'No es pot accedir a la ubicació.');
+                        return;
+                      }
+                      let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
+                      const latitude = location.coords.latitude;
+                      const longitude = location.coords.longitude;
+
+                      // Guardar la ubicació de l'usuari sense seleccionar-la
+                      setUserLocation({ latitude, longitude });
+
+                      if (typeof window !== 'undefined' && 'CustomEvent' in window) {
+                        const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
+                        window.dispatchEvent(ev);
+                      }
+                    } catch (err) {
+                      Alert.alert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
+                    }
+                  }
+                }
+              ]
+            );
+          }}
         >
           <Image source={TargetIcon} style={{ width: 20, height: 20, tintColor: '#4A5565' }} />
         </TouchableOpacity>

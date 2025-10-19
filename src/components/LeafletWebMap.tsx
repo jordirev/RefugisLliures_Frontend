@@ -4,14 +4,13 @@ import { WebView } from 'react-native-webview';
 import { Location } from '../types';
 import { MapCacheService } from '../services/MapCacheService';
 
-import RefugeIcon from '../assets/icons/refuge.svg';
-
 interface LeafletWebMapProps {
   locations: Location[];
   onLocationSelect: (location: Location) => void;
   selectedLocation?: Location;
   center?: [number, number];
   zoom?: number;
+  userLocation?: {latitude: number, longitude: number} | null;
 }
 
 export function LeafletWebMap({ 
@@ -19,10 +18,11 @@ export function LeafletWebMap({
   onLocationSelect, 
   selectedLocation,
   center = [42.6, 0.7], // Centre dels Pirineus
-  zoom = 8 
+  zoom = 8,
+  userLocation
 }: LeafletWebMapProps) {
-  
   const [cacheStatus, setCacheStatus] = useState<any>(null);
+  const webViewRef = React.useRef<any>(null);
 
   useEffect(() => {
     // Inicialitzar cache i obtenir estat
@@ -31,10 +31,17 @@ export function LeafletWebMap({
       const status = await MapCacheService.getCacheStatus();
       setCacheStatus(status);
     };
-    
     initCache();
   }, []);
-  
+
+  // Centrar el mapa quan userLocation canvia
+  useEffect(() => {
+    if (userLocation && webViewRef.current) {
+      const js = `window.dispatchEvent(new CustomEvent('centerMapTo', { detail: { lat: ${userLocation.latitude}, lng: ${userLocation.longitude}, zoom: 15 } }));`;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [userLocation]);
+
   // Generar HTML amb Leaflet
   const mapHTML = `
     <!DOCTYPE html>
@@ -140,13 +147,34 @@ export function LeafletWebMap({
         }).addTo(map);
 
         // Icona personalitzada per als refugis
-        var refugeIcon = ${RefugeIcon};
+        var refugeIcon = L.divIcon({
+          html: '<div style="width: 28px; height: 28px; padding-right: 0.02px; background: #FF6900; box-shadow: 0px 4px 6px -4px rgba(0, 0, 0, 0.10); border-radius: 50%; justify-content: center; align-items: center; display: flex;"><div style="width: 16px; height: 16px; position: relative; overflow: hidden;"><svg width="16" height="16" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9585 14.4595V9.12744C10.9585 8.95067 10.8883 8.78115 10.7633 8.65615C10.6383 8.53116 10.4688 8.46094 10.292 8.46094H7.62598C7.44921 8.46094 7.27968 8.53116 7.15469 8.65615C7.02969 8.78115 6.95947 8.95067 6.95947 9.12744V14.4595" stroke="white" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.96045 7.12793C2.9604 6.93402 3.00266 6.74244 3.08428 6.56654C3.16589 6.39065 3.2849 6.23468 3.433 6.10951L8.09853 2.11049C8.33913 1.90714 8.64397 1.79558 8.95898 1.79558C9.274 1.79558 9.57884 1.90714 9.81944 2.11049L14.485 6.10951C14.6331 6.23468 14.7521 6.39065 14.8337 6.56654C14.9153 6.74244 14.9576 6.93402 14.9575 7.12793V13.1265C14.9575 13.48 14.8171 13.8191 14.5671 14.069C14.3171 14.319 13.978 14.4595 13.6245 14.4595H4.29346C3.93992 14.4595 3.60087 14.319 3.35088 14.069C3.10089 13.8191 2.96045 13.48 2.96045 13.1265V7.12793Z" stroke="white" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>',
+          className: 'custom-marker',
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
+        });
 
         var selectedIcon = L.divIcon({
-          html: '<div style="background: #f97316; width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.4);"><span style="color: white; font-size: 14px;">🏠</span></div>',
+          html: '<div style="width: 32px; height: 32px; padding-right: 0.02px; background: #FF6900; box-shadow: 0px 4px 6px -4px rgba(0, 0, 0, 0.10), 0px 0px 0px 3px rgba(255, 255, 255, 0.8); border-radius: 50%; justify-content: center; align-items: center; display: flex;"><div style="width: 18px; height: 18px; position: relative; overflow: hidden;"><svg width="18" height="18" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.9585 14.4595V9.12744C10.9585 8.95067 10.8883 8.78115 10.7633 8.65615C10.6383 8.53116 10.4688 8.46094 10.292 8.46094H7.62598C7.44921 8.46094 7.27968 8.53116 7.15469 8.65615C7.02969 8.78115 6.95947 8.95067 6.95947 9.12744V14.4595" stroke="white" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.96045 7.12793C2.9604 6.93402 3.00266 6.74244 3.08428 6.56654C3.16589 6.39065 3.2849 6.23468 3.433 6.10951L8.09853 2.11049C8.33913 1.90714 8.64397 1.79558 8.95898 1.79558C9.274 1.79558 9.57884 1.90714 9.81944 2.11049L14.485 6.10951C14.6331 6.23468 14.7521 6.39065 14.8337 6.56654C14.9153 6.74244 14.9576 6.93402 14.9575 7.12793V13.1265C14.9575 13.48 14.8171 13.8191 14.5671 14.069C14.3171 14.319 13.978 14.4595 13.6245 14.4595H4.29346C3.93992 14.4595 3.60087 14.319 3.35088 14.069C3.10089 13.8191 2.96045 13.48 2.96045 13.1265V7.12793Z" stroke="white" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>',
           className: 'custom-marker-selected',
           iconSize: [32, 32],
           iconAnchor: [16, 16]
+        });
+
+        // Icona blava per la ubicació de l'usuari
+        var userLocationIcon = L.divIcon({
+          html: '<div style="width: 24px; height: 24px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
+          className: 'user-location-marker',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+
+        // Icona blava per la ubicació de l'usuari
+        var userLocationIcon = L.divIcon({
+          html: '<div style="width: 24px; height: 24px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
+          className: 'user-location-marker',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
         });
 
         // Afegir marcadors per cada refugi
@@ -197,8 +225,25 @@ export function LeafletWebMap({
           });
         });
 
-        // Si hi ha una ubicació seleccionada, centrar-la
-        if (selectedLocationId) {
+        // Dibuixa la bola blava si tenim userLocation
+        var userLocation = ${JSON.stringify(userLocation)};
+        if (userLocation && userLocation.latitude && userLocation.longitude) {
+          L.marker([userLocation.latitude, userLocation.longitude], {
+            icon: userLocationIcon
+          }).addTo(map);
+        }
+
+        // Event listener per centrar el mapa en la ubicació de l'usuari
+        window.addEventListener('centerMapTo', function(event) {
+          var detail = event.detail;
+          if (detail && detail.lat && detail.lng) {
+            map.setView([detail.lat, detail.lng], detail.zoom || 15);
+          }
+        });
+
+        // Si vols centrar el mapa a una ubicació seleccionada, fes-ho només si NO hi ha userLocation actiu
+        // Així evitem sobreescriure el centrat de la ubicació de l'usuari
+        if (selectedLocationId && !(userLocation && userLocation.latitude && userLocation.longitude)) {
           var selectedLocation = locations.find(function(loc) { return loc.id === selectedLocationId; });
           if (selectedLocation) {
             map.setView([selectedLocation.coord.lat, selectedLocation.coord.long], 14);
@@ -226,6 +271,7 @@ export function LeafletWebMap({
   return (
     <View style={styles.container}>
       <WebView
+        ref={webViewRef}
         source={{ html: mapHTML }}
         style={styles.webview}
         onMessage={handleMessage}
