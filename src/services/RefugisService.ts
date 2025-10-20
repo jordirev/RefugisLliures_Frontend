@@ -1,8 +1,11 @@
 import { Location } from '../types';
+import { mockLocations } from '../utils/mockData';
 import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
 import { mapRefugisFromDTO } from './mappers/RefugiMapper';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
+
+const DEBUG = true;
 
 export class RefugisService {
   /**
@@ -17,53 +20,61 @@ export class RefugisService {
     condition?: string;
     search?: string;
   }): Promise<Location[]> {
-    try {
-      const params = new URLSearchParams();
-      
-      if (filters?.search) {
-        params.append('name', filters.search);
-      }
-      else{
-        if (filters?.altitude_min !== undefined) {
-        params.append('altitude_min', filters.altitude_min.toString());
+    if (DEBUG){
+      // Retornem dades simulades per a desenvolupament
+      return mockLocations;
+    }
+    else {
+      try {
+        const params = new URLSearchParams();
+        
+        if (filters?.search) {
+          params.append('name', filters.search);
         }
-        if (filters?.altitude_max !== undefined) {
-            params.append('altitude_max', filters.altitude_max.toString());
+        else{
+          if (filters?.altitude_min !== undefined) {
+          params.append('altitude_min', filters.altitude_min.toString());
+          }
+          if (filters?.altitude_max !== undefined) {
+              params.append('altitude_max', filters.altitude_max.toString());
+          }
+          if (filters?.places_min !== undefined) {
+              params.append('places_min', filters.places_min.toString());
+          }
+          if (filters?.places_max !== undefined) {
+              params.append('places_max', filters.places_max.toString());
+          }
+          if (filters?.type) {
+              params.append('type', filters.type);
+          }
+          if (filters?.condition) {
+              params.append('condition', filters.condition);
+          }
         }
-        if (filters?.places_min !== undefined) {
-            params.append('places_min', filters.places_min.toString());
-        }
-        if (filters?.places_max !== undefined) {
-            params.append('places_max', filters.places_max.toString());
-        }
-        if (filters?.type) {
-            params.append('type', filters.type);
-        }
-        if (filters?.condition) {
-            params.append('condition', filters.condition);
-        }
-      }
 
-      const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+        const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
+        
+        // Validem que la resposta té l'estructura esperada
+        if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) {
+          // Retornem array buit si el backend no retorna l'estructura esperada
+          return [];
+        }
+        
+        // Convertim els DTOs al format del frontend
+        return mapRefugisFromDTO(data.results);
+      } catch (error) {
+        // En cas d'error de xarxa o servidor, rethrowem un error senzill sense
+        // fer console.error per evitar missatges a la consola. Els cridants
+        // manejaran l'error (p.ex. mostrant una alerta) i l'app continuarà.
+        throw new Error('No s\'han pogut carregar els refugis');
       }
-      
-      const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
-      
-      // Validem que la resposta té l'estructura esperada
-      if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) {
-        console.error('Resposta del backend amb format inesperat:', data);
-        return [];
-      }
-      
-      // Convertim els DTOs al format del frontend
-      return mapRefugisFromDTO(data.results);
-    } catch (error) {
-      console.error('Error fetching refugis:', error);
-      throw error;
     }
   }
 

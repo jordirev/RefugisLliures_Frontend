@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { View, StyleSheet, Alert } from 'react-native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
+import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../types';
 import { RefugisService } from '../services/RefugisService';
 
@@ -21,6 +22,7 @@ export function MapScreen({
   const [searchQuery, setSearchQuery] = useState('');
   const [locations, setLocations] = useState<Location[]>([]);
   const [allLocations, setAllLocations] = useState<Location[]>([]); // Guardar tots els refugis
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   
   const [filters, setFilters] = useState<Filters>({
@@ -95,20 +97,27 @@ export function MapScreen({
       // Validació de la resposta
       if (!Array.isArray(data)) {
         Alert.alert('Error', "No s'han pogut carregar bé els refugis");
-        console.error('Invalid refugis response:', data);
+        //console.error('Invalid refugis response:', data);
         return;
       }
       setAllLocations(data); // Guardar tots els refugis
       setLocations(data); // Mostrar tots inicialment
     } catch (error) {
       Alert.alert('Error', 'No s\'han pogut carregar els refugis');
-      console.error(error);
+      //console.error(error);
     }
   };
 
   const handleOpenFilters = useCallback(() => {
-    Alert.alert('Filtres', 'Funcionalitat de filtres en desenvolupament');
-    // TODO: Implementar pantalla de filtres que actualitzi l'estat 'filters'
+    setIsFilterOpen(true);
+  }, []);
+
+  const handleCloseFilters = useCallback(() => {
+    setIsFilterOpen(false);
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Filters) => {
+    setFilters(newFilters);
   }, []);
 
   const handleSearchChange = useCallback((query: string) => {
@@ -142,14 +151,24 @@ export function MapScreen({
           elevation: 10,
         }}
       >
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            onOpenFilters={handleOpenFilters}
-            suggestions={suggestions}
-            onSuggestionSelect={handleSuggestionSelect}
-          />
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          onOpenFilters={handleOpenFilters}
+          suggestions={suggestions}
+          onSuggestionSelect={handleSuggestionSelect}
+        />
       </View>
+
+      {/* Panel de filtres */}
+      <FilterPanel
+        isOpen={isFilterOpen}
+        onClose={handleCloseFilters}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        maxAltitude={MAX_ALTITUDE}
+        maxCapacity={MAX_CAPACITY}
+      />
     </View>
   );
 }

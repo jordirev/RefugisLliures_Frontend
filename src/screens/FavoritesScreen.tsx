@@ -35,7 +35,6 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
       setFavoriteIds(ids);
     } catch (error) {
       Alert.alert('Error', 'No s\'han pogut carregar els favorits');
-      console.error(error);
     } finally {
       setLoading(false);
     }
