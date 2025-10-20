@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 // Importar les icones SVG
@@ -10,9 +10,12 @@ interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenFilters: () => void;
+  suggestions?: string[];
+  onSuggestionSelect?: (name: string) => void;
 }
 
-export function SearchBar({ searchQuery, onSearchChange, onOpenFilters }: SearchBarProps) {
+// Memoritzem el component per evitar re-renders innecessaris
+export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect }: SearchBarProps) {
   return (
     <View style={styles.container}>
       {/* Container de cerca */}
@@ -29,6 +32,8 @@ export function SearchBar({ searchQuery, onSearchChange, onOpenFilters }: Search
             value={searchQuery}
             onChangeText={onSearchChange}
             placeholderTextColor="#6B7280"
+            autoCorrect={false}
+            autoCapitalize="none"
           />
         </View>
         <TouchableOpacity
@@ -38,6 +43,20 @@ export function SearchBar({ searchQuery, onSearchChange, onOpenFilters }: Search
           <FilterIcon width={18} height={18} color="#6B7280" />
         </TouchableOpacity>
       </View>
+      {/* Llista de suggeriments d'autocomplete */}
+      {suggestions.length > 0 && (
+        <View style={styles.suggestionsContainer}>
+          {suggestions.slice(0, 6).map((name) => (
+            <TouchableOpacity
+              key={name}
+              style={styles.suggestionItem}
+              onPress={() => onSuggestionSelect && onSuggestionSelect(name)}
+            >
+              <Text style={styles.suggestionText}>{name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
       {/* Botó afegeix */}
       <TouchableOpacity
         style={styles.addButton}
@@ -50,7 +69,7 @@ export function SearchBar({ searchQuery, onSearchChange, onOpenFilters }: Search
       </TouchableOpacity>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -146,4 +165,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+    suggestionsContainer: {
+      backgroundColor: 'white',
+      borderRadius: 12,
+      marginTop: -8,
+      marginBottom: 8,
+      shadowColor: 'rgba(0,0,0,0.08)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 1,
+      shadowRadius: 4,
+      elevation: 2,
+      paddingVertical: 4,
+    },
+    suggestionItem: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: '#F0F0F0',
+    },
+    suggestionText: {
+      fontSize: 15,
+      color: '#616774',
+    },
 });

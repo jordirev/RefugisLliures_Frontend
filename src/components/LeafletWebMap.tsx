@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Location } from '../types';
@@ -13,7 +13,8 @@ interface LeafletWebMapProps {
   userLocation?: {latitude: number, longitude: number} | null;
 }
 
-export function LeafletWebMap({ 
+// Memoritzem el component per evitar re-renders innecessaris
+export const LeafletWebMap = memo(function LeafletWebMap({ 
   locations, 
   onLocationSelect, 
   selectedLocation,
@@ -22,7 +23,9 @@ export function LeafletWebMap({
   userLocation
 }: LeafletWebMapProps) {
   const [cacheStatus, setCacheStatus] = useState<any>(null);
-  const webViewRef = React.useRef<any>(null);
+  const webViewRef = useRef<any>(null);
+  const [mapInitialized, setMapInitialized] = useState(false);
+  const previousLocationsRef = useRef<Location[]>([]);
 
   useEffect(() => {
     // Inicialitzar cache i obtenir estat
@@ -34,6 +37,35 @@ export function LeafletWebMap({
     initCache();
   }, []);
 
+  // Actualitzar markers dinàmicament quan locations canvia (després de la inicialització)
+  useEffect(() => {
+    if (mapInitialized && webViewRef.current && locations.length > 0) {
+      // Només actualitzar si les locations han canviat realment
+      const locationsChanged = JSON.stringify(previousLocationsRef.current) !== JSON.stringify(locations);
+      if (locationsChanged) {
+        const js = `
+          if (typeof updateMarkers === 'function') {
+            updateMarkers(${JSON.stringify(locations)}, ${selectedLocation?.id || null});
+          }
+        `;
+        webViewRef.current.injectJavaScript(js);
+        previousLocationsRef.current = locations;
+      }
+    }
+  }, [locations, mapInitialized, selectedLocation]);
+
+  // Actualitzar el marker seleccionat
+  useEffect(() => {
+    if (mapInitialized && webViewRef.current) {
+      const js = `
+        if (typeof updateSelectedMarker === 'function') {
+          updateSelectedMarker(${selectedLocation?.id || null});
+        }
+      `;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [selectedLocation, mapInitialized]);
+
   // Centrar el mapa quan userLocation canvia
   useEffect(() => {
     if (userLocation && webViewRef.current) {
@@ -42,8 +74,8 @@ export function LeafletWebMap({
     }
   }, [userLocation]);
 
-  // Generar HTML amb Leaflet
-  const mapHTML = `
+  // Generar HTML amb Leaflet - Memoritzar per evitar regeneració
+  const mapHTML = useMemo(() => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -177,16 +209,12 @@ export function LeafletWebMap({
           iconAnchor: [12, 12]
         });
 
-        // Afegir marcadors per cada refugi
-        var locations = ${JSON.stringify(locations)};
-        var selectedLocationId = ${selectedLocation?.id || null};
-        
-        locations.forEach(function(location) {
-          var isSelected = location.id === selectedLocationId;
-          var marker = L.marker([location.coord.lat, location.coord.long], {
-            icon: isSelected ? selectedIcon : refugeIcon
-          }).addTo(map);
+        // Gestió de marcadors - guardem referència global
+        var markers = [];
+        var userMarker = null;
 
+        // Funció per crear el contingut del popup
+        function createPopupContent(location) {
           var popupContent = '<div>' +
             '<div class="popup-title">' + location.name + '</div>';
           
@@ -213,17 +241,68 @@ export function LeafletWebMap({
           }
           
           popupContent += '</div></div>';
-          
-          marker.bindPopup(popupContent);
-          
-          marker.on('click', function() {
-            // Enviar missatge a React Native quan es fa clic en un marcador
-            window.ReactNativeWebView?.postMessage(JSON.stringify({
-              type: 'locationSelect',
-              location: location
-            }));
+          return popupContent;
+        }
+
+        // Funció per afegir marcadors
+        function addMarkers(locations, selectedId) {
+          // Eliminar marcadors existents
+          markers.forEach(function(m) {
+            map.removeLayer(m);
           });
-        });
+          markers = [];
+
+          // Afegir nous marcadors
+          locations.forEach(function(location) {
+            var isSelected = location.id === selectedId;
+            var marker = L.marker([location.coord.lat, location.coord.long], {
+              icon: isSelected ? selectedIcon : refugeIcon
+            }).addTo(map);
+
+            marker.locationData = location;
+            marker.bindPopup(createPopupContent(location));
+            
+            marker.on('click', function() {
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'locationSelect',
+                location: location
+              }));
+            });
+
+            markers.push(marker);
+          });
+        }
+
+        // Funció per actualitzar markers (crida des de React Native)
+        window.updateMarkers = function(newLocations, selectedId) {
+          addMarkers(newLocations, selectedId);
+        };
+
+        // Funció per actualitzar només el marker seleccionat (més eficient)
+        window.updateSelectedMarker = function(selectedId) {
+          markers.forEach(function(marker) {
+            var isSelected = marker.locationData && marker.locationData.id === selectedId;
+            marker.setIcon(isSelected ? selectedIcon : refugeIcon);
+          });
+          
+          // Centrar mapa al refugi seleccionat
+          if (selectedId) {
+            var selectedMarker = markers.find(function(m) { 
+              return m.locationData && m.locationData.id === selectedId; 
+            });
+            if (selectedMarker) {
+              map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14, {
+                animate: true,
+                duration: 0.5
+              });
+            }
+          }
+        };
+
+        // Inicialitzar marcadors
+        var initialLocations = ${JSON.stringify(locations)};
+        var selectedLocationId = ${selectedLocation?.id || null};
+        addMarkers(initialLocations, selectedLocationId);
 
         // Dibuixa la bola blava si tenim userLocation
         var userLocation = ${JSON.stringify(userLocation)};
@@ -244,24 +323,33 @@ export function LeafletWebMap({
         // Si vols centrar el mapa a una ubicació seleccionada, fes-ho només si NO hi ha userLocation actiu
         // Així evitem sobreescriure el centrat de la ubicació de l'usuari
         if (selectedLocationId && !(userLocation && userLocation.latitude && userLocation.longitude)) {
-          var selectedLocation = locations.find(function(loc) { return loc.id === selectedLocationId; });
-          if (selectedLocation) {
-            map.setView([selectedLocation.coord.lat, selectedLocation.coord.long], 14);
+          var selectedMarker = markers.find(function(m) { 
+            return m.locationData && m.locationData.id === selectedLocationId; 
+          });
+          if (selectedMarker) {
+            map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14);
           }
         }
 
         // Desactivar els controls de zoom per defecte (podem afegir els nostres propis botons)
         map.zoomControl.remove();
+
+        // Notificar que el mapa està inicialitzat
+        window.ReactNativeWebView?.postMessage(JSON.stringify({
+          type: 'mapInitialized'
+        }));
       </script>
     </body>
     </html>
-  `;
+  `, [cacheStatus]); // Només regenerar HTML si canvia el cache
 
   const handleMessage = (event: any) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'locationSelect' && data.location) {
         onLocationSelect(data.location);
+      } else if (data.type === 'mapInitialized') {
+        setMapInitialized(true);
       }
     } catch (error) {
       console.error('Error parsing message from WebView:', error);
@@ -286,7 +374,7 @@ export function LeafletWebMap({
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

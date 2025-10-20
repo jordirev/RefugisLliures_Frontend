@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
@@ -20,6 +20,8 @@ export function MapScreen({
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
   const [locations, setLocations] = useState<Location[]>([]);
+  const [allLocations, setAllLocations] = useState<Location[]>([]); // Guardar tots els refugis
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   
   const [filters, setFilters] = useState<Filters>({
     types: [],
@@ -28,10 +30,34 @@ export function MapScreen({
     condition: []
   });
 
-  // Carregar refugis del backend
+  // Filtrar refugis localment basant-se en searchQuery
+  const filteredLocations = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) {
+      return allLocations;
+    }
+    const lower = searchQuery.toLowerCase();
+    return allLocations.filter(loc => 
+      loc.name && loc.name.toLowerCase().includes(lower)
+    );
+  }, [searchQuery, allLocations]);
+
+  // Suggestions d'autocomplete local (només noms únics dels refugis filtrats)
+  const suggestions = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return [];
+    return Array.from(new Set(
+      filteredLocations.map(loc => loc.name).filter(Boolean)
+    ));
+  }, [searchQuery, filteredLocations]);
+
+  // Actualitzar locations mostrats al mapa
+  useEffect(() => {
+    setLocations(filteredLocations);
+  }, [filteredLocations]);
+
+  // Carregar refugis del backend només quan canvien els filtres (no searchQuery!)
   useEffect(() => {
     loadRefugis();
-  }, [filters, searchQuery]);
+  }, [filters]);
 
   const loadRefugis = async () => {
     try {
@@ -58,11 +84,9 @@ export function MapScreen({
           filterParams.condition = filters.condition.join(',');
         }
       }
-      // Cerca per nom
-      if (searchQuery && searchQuery.trim() !== "") {
-        filterParams.search = searchQuery.trim();
-      }
-      // Si no hi ha cap filtre ni cerca, crida sense paràmetres
+      // NO enviem searchQuery a l'API - filtrem localment!
+      
+      // Si no hi ha cap filtre, crida sense paràmetres
       if (Object.keys(filterParams).length === 0) {
         data = await RefugisService.getRefugis();
       } else {
@@ -74,21 +98,32 @@ export function MapScreen({
         console.error('Invalid refugis response:', data);
         return;
       }
-      setLocations(data);
+      setAllLocations(data); // Guardar tots els refugis
+      setLocations(data); // Mostrar tots inicialment
     } catch (error) {
       Alert.alert('Error', 'No s\'han pogut carregar els refugis');
       console.error(error);
     }
   };
 
-  const handleOpenFilters = () => {
+  const handleOpenFilters = useCallback(() => {
     Alert.alert('Filtres', 'Funcionalitat de filtres en desenvolupament');
     // TODO: Implementar pantalla de filtres que actualitzi l'estat 'filters'
-  };
+  }, []);
 
-  const handleSearchChange = (query: string) => {
+  const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
+
+  // Quan l'usuari selecciona un suggeriment
+  const handleSuggestionSelect = useCallback((name: string) => {
+    setSearchQuery(name);
+    // Trobar el refugi seleccionat i centrar el mapa
+    const selectedRefuge = allLocations.find(loc => loc.name === name);
+    if (selectedRefuge) {
+      onLocationSelect(selectedRefuge);
+    }
+  }, [allLocations, onLocationSelect]);
 
   return (
     <View style={styles.container}>
@@ -107,11 +142,13 @@ export function MapScreen({
           elevation: 10,
         }}
       >
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          onOpenFilters={handleOpenFilters}
-        />
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onOpenFilters={handleOpenFilters}
+            suggestions={suggestions}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
       </View>
     </View>
   );

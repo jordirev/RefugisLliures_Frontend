@@ -20,26 +20,28 @@ export class RefugisService {
     try {
       const params = new URLSearchParams();
       
-      if (filters?.altitude_min !== undefined) {
-        params.append('altitude_min', filters.altitude_min.toString());
-      }
-      if (filters?.altitude_max !== undefined) {
-        params.append('altitude_max', filters.altitude_max.toString());
-      }
-      if (filters?.places_min !== undefined) {
-        params.append('places_min', filters.places_min.toString());
-      }
-      if (filters?.places_max !== undefined) {
-        params.append('places_max', filters.places_max.toString());
-      }
-      if (filters?.type) {
-        params.append('type', filters.type);
-      }
-      if (filters?.condition) {
-        params.append('condition', filters.condition);
-      }
       if (filters?.search) {
-        params.append('search', filters.search);
+        params.append('name', filters.search);
+      }
+      else{
+        if (filters?.altitude_min !== undefined) {
+        params.append('altitude_min', filters.altitude_min.toString());
+        }
+        if (filters?.altitude_max !== undefined) {
+            params.append('altitude_max', filters.altitude_max.toString());
+        }
+        if (filters?.places_min !== undefined) {
+            params.append('places_min', filters.places_min.toString());
+        }
+        if (filters?.places_max !== undefined) {
+            params.append('places_max', filters.places_max.toString());
+        }
+        if (filters?.type) {
+            params.append('type', filters.type);
+        }
+        if (filters?.condition) {
+            params.append('condition', filters.condition);
+        }
       }
 
       const url = `${API_BASE_URL}/refugis/?${params.toString()}`;

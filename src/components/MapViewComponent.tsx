@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ExpoLocation from 'expo-location';
 import { Location } from '../types';
@@ -15,7 +15,8 @@ interface MapViewComponentProps {
   selectedLocation?: Location;
 }
 
-export function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
+// Memoritzem el component per evitar re-renders quan les props no canvien
+export const MapViewComponent = memo(function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
   const [showOfflineManager, setShowOfflineManager] = useState(false);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
 
@@ -111,7 +112,7 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
