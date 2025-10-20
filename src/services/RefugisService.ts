@@ -1,4 +1,6 @@
 import { Location } from '../types';
+import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
+import { mapRefugisFromDTO } from './mappers/RefugiMapper';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -47,8 +49,16 @@ export class RefugisService {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
-      return data;
+      const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
+      
+      // Validem que la resposta té l'estructura esperada
+      if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) {
+        console.error('Resposta del backend amb format inesperat:', data);
+        return [];
+      }
+      
+      // Convertim els DTOs al format del frontend
+      return mapRefugisFromDTO(data.results);
     } catch (error) {
       console.error('Error fetching refugis:', error);
       throw error;

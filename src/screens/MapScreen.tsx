@@ -68,6 +68,12 @@ export function MapScreen({
       } else {
         data = await RefugisService.getRefugis(filterParams);
       }
+      // Validació de la resposta
+      if (!Array.isArray(data)) {
+        Alert.alert('Error', "No s'han pogut carregar bé els refugis");
+        console.error('Invalid refugis response:', data);
+        return;
+      }
       setLocations(data);
     } catch (error) {
       Alert.alert('Error', 'No s\'han pogut carregar els refugis');
