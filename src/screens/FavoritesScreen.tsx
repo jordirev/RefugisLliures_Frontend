@@ -1,16 +1,54 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../types';
+import { RefugisService } from '../services/RefugisService';
 
 interface FavoritesScreenProps {
-  favorites: Location[];
   onViewDetail: (refuge: Location) => void;
   onViewMap: (refuge: Location) => void;
 }
 
-export function FavoritesScreen({ favorites, onViewDetail, onViewMap }: FavoritesScreenProps) {
-  if (favorites.length === 0) {
+export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProps) {
+  // Estats locals de FavoritesScreen
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Carregar favorits al muntar el component
+  useEffect(() => {
+    loadFavorites();
+  }, []);
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      // TODO: Quan el backend tingui l'endpoint de favorits, usar-lo
+      const favorites = await RefugisService.getFavorites();
+      
+      // Mentre tant, podem carregar tots els refugis i filtrar els favorits localment
+      const allLocations = await RefugisService.getRefugis();
+      setLocations(allLocations);
+      
+      // Extreure IDs de favorits (això vindria del backend)
+      const ids = new Set(favorites.map(f => f.id).filter((id): id is number => id !== undefined));
+      setFavoriteIds(ids);
+    } catch (error) {
+      Alert.alert('Error', 'No s\'han pogut carregar els favorits');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Obtenir favorits amb la propietat isFavorite
+  const favoriteLocations = useMemo(() => {
+    return locations
+      .filter(location => location.id && favoriteIds.has(location.id))
+      .map(location => ({ ...location, isFavorite: true }));
+  }, [locations, favoriteIds]);
+
+  if (favoriteLocations.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>❤️</Text>
@@ -26,11 +64,11 @@ export function FavoritesScreen({ favorites, onViewDetail, onViewMap }: Favorite
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Els meus favorits</Text>
-        <Text style={styles.count}>{favorites.length} refugi{favorites.length !== 1 ? 's' : ''}</Text>
+        <Text style={styles.count}>{favoriteLocations.length} refugi{favoriteLocations.length !== 1 ? 's' : ''}</Text>
       </View>
       
       <FlatList
-        data={favorites}
+        data={favoriteLocations}
         renderItem={({ item }: { item: Location }) => (
           <RefugeCard
             refuge={item}

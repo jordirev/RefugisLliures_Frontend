@@ -6,7 +6,7 @@ interface RefugeBottomSheetProps {
   refuge: Location;
   isVisible: boolean;
   onClose: () => void;
-  onToggleFavorite: (id: string) => void;
+  onToggleFavorite: (id: number | undefined) => void;
   onNavigate: (refuge: Location) => void;
   onViewDetails: (refuge: Location) => void;
 }
@@ -42,7 +42,7 @@ export function RefugeBottomSheet({
 
           {/* Nom i elevació */}
           <Text style={styles.name}>{refuge.name}</Text>
-          <Text style={styles.elevation}>📏 {refuge.elevation}m</Text>
+          <Text style={styles.elevation}>📏 {refuge.altitude || refuge.elevation || 0}m</Text>
 
           {/* Descripció */}
           {refuge.description && (
@@ -51,10 +51,10 @@ export function RefugeBottomSheet({
 
           {/* Detalls */}
           <View style={styles.details}>
-            {refuge.difficulty && (
+            {refuge.condition && (
               <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Dificultat:</Text>
-                <Text style={styles.detailValue}>{refuge.difficulty}</Text>
+                <Text style={styles.detailLabel}>Estat:</Text>
+                <Text style={styles.detailValue}>{refuge.condition}</Text>
               </View>
             )}
             {refuge.distance && (
@@ -63,10 +63,10 @@ export function RefugeBottomSheet({
                 <Text style={styles.detailValue}>{refuge.distance}</Text>
               </View>
             )}
-            {refuge.capacity && (
+            {(refuge.places || refuge.capacity) && (
               <View style={styles.detailItem}>
                 <Text style={styles.detailLabel}>Capacitat:</Text>
-                <Text style={styles.detailValue}>{refuge.capacity} places</Text>
+                <Text style={styles.detailValue}>{refuge.places || refuge.capacity} places</Text>
               </View>
             )}
           </View>
