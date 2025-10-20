@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   Modal,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   ScrollView,
   StyleSheet,
   Dimensions,
@@ -32,51 +33,6 @@ export function FilterPanel({
   maxAltitude = 3250,
   maxCapacity = 30,
 }: FilterPanelProps) {
-  // Refs to track previous values and which marker is active during dragging
-  const altitudePrevRef = useRef<number[]>(filters.altitude);
-  const altitudeActiveRef = useRef<number | null>(null);
-
-  const capacityPrevRef = useRef<number[]>(filters.capacity);
-  const capacityActiveRef = useRef<number | null>(null);
-
-  const handleAltitudeValuesChange = (values: number[]) => {
-    const prev = altitudePrevRef.current;
-    // determine active marker if not set
-    if (altitudeActiveRef.current === null) {
-      const diffs = values.map((v, i) => Math.abs(v - prev[i]));
-      const idx = diffs[0] >= diffs[1] ? 0 : 1;
-      altitudeActiveRef.current = idx;
-    }
-    const idx = altitudeActiveRef.current as number;
-    const newAltitude = [...prev];
-    newAltitude[idx] = values[idx];
-    altitudePrevRef.current = newAltitude;
-    onFiltersChange({ ...filters, altitude: [newAltitude[0], newAltitude[1]] });
-  };
-
-  const handleAltitudeValuesFinish = (values: number[]) => {
-    altitudeActiveRef.current = null;
-    altitudePrevRef.current = values;
-  };
-
-  const handleCapacityValuesChange = (values: number[]) => {
-    const prev = capacityPrevRef.current;
-    if (capacityActiveRef.current === null) {
-      const diffs = values.map((v, i) => Math.abs(v - prev[i]));
-      const idx = diffs[0] >= diffs[1] ? 0 : 1;
-      capacityActiveRef.current = idx;
-    }
-    const idx = capacityActiveRef.current as number;
-    const newCapacity = [...prev];
-    newCapacity[idx] = values[idx];
-    capacityPrevRef.current = newCapacity;
-    onFiltersChange({ ...filters, capacity: [newCapacity[0], newCapacity[1]] });
-  };
-
-  const handleCapacityValuesFinish = (values: number[]) => {
-    capacityActiveRef.current = null;
-    capacityPrevRef.current = values;
-  };
   const locationTypes = [
     { id: 'Cabanne aberta', label: 'No guardat' },
     { id: 'Orri', label: 'Orri' },
@@ -122,6 +78,12 @@ export function FilterPanel({
     (filters.altitude[0] > 0 || filters.altitude[1] < maxAltitude ? 1 : 0) +
     (filters.capacity[0] > 0 || filters.capacity[1] < maxCapacity ? 1 : 0);
 
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleScrollBegin = () => setIsDragging(true);
+  const handleScrollEnd = () => setIsDragging(false);
+  const handleTouchStart = () => setIsDragging(true);
+
   return (
     <Modal
       visible={isOpen}
@@ -132,39 +94,52 @@ export function FilterPanel({
       <TouchableOpacity
         style={styles.overlay}
         activeOpacity={1}
-        onPress={onClose}
+        onPress={() => {
+          if (!isDragging) onClose();
+        }}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.panel}
-          onPress={(e) => e.stopPropagation()}
-        >
+        <TouchableWithoutFeedback onPress={() => { /* prevent overlay press */ }}>
+          <View
+            style={styles.panel}
+            // Using View instead of TouchableOpacity to avoid swallowing gestures
+          >
+          {/* Header - fixed above scroll content */}
+          <View style={styles.headerFixed}>
+            <View style={styles.headerLeft}>
+              <FilterIcon width={20} height={20} color="#1E1E1E" />
+              <Text style={styles.title}>Filtres</Text>
+              {activeFiltersCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{activeFiltersCount}</Text>
+                </View>
+              )}
+            </View>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={onClose}
+            >
+              <XIcon width={16} height={16} color="#0A0A0A" />
+            </TouchableOpacity>
+          </View>
+
           <ScrollView
             style={styles.scrollView}
-            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
+            showsVerticalScrollIndicator={true}
+            keyboardShouldPersistTaps="handled"
+            nestedScrollEnabled={true}
+            decelerationRate="normal"
+            scrollEventThrottle={16}
+            onScrollBeginDrag={handleScrollBegin}
+            onScrollEndDrag={handleScrollEnd}
+            onMomentumScrollBegin={handleScrollBegin}
+            onMomentumScrollEnd={handleScrollEnd}
+            onTouchStart={handleTouchStart}
           >
-            {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.headerLeft}>
-                <FilterIcon width={20} height={20} color="#1E1E1E" />
-                <Text style={styles.title}>Filtres</Text>
-                {activeFiltersCount > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{activeFiltersCount}</Text>
-                  </View>
-                )}
-              </View>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={onClose}
-              >
-                <XIcon width={16} height={16} color="#0A0A0A" />
-              </TouchableOpacity>
-            </View>
 
             {/* Tipus d'ubicació */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Tipus d'ubicació</Text>
+              <Text style={styles.sectionTitle}>Tipus de refugi</Text>
               <View style={styles.optionsGrid}>
                 {locationTypes.map((type) => (
                   <TouchableOpacity
@@ -181,7 +156,7 @@ export function FilterPanel({
                       {filters.types.includes(type.id) && (
                         <View style={styles.checkboxInner} />
                       )}
-                    </View>
+                      </View>
                     <Text style={styles.checkboxLabel}>{type.label}</Text>
                   </TouchableOpacity>
                 ))}
@@ -200,13 +175,17 @@ export function FilterPanel({
                   min={0}
                   max={maxAltitude}
                   step={50}
-                  onValuesChange={handleAltitudeValuesChange}
-                  onValuesChangeFinish={handleAltitudeValuesFinish}
+                  onValuesChange={(values) => {
+                    onFiltersChange({ ...filters, altitude: [values[0], values[1]] });
+                  }}
                   selectedStyle={styles.selectedTrack}
                   unselectedStyle={{ backgroundColor: 'transparent' }}
                   markerStyle={styles.marker}
                   pressedMarkerStyle={styles.marker}
                   sliderLength={screenWidth - 70} // Adjust dynamically based on screen width
+                  allowOverlap={false}
+                  snapped={true}
+                  minMarkerOverlapDistance={10}
                 />
               </View>
             </View>
@@ -223,20 +202,23 @@ export function FilterPanel({
                   min={0}
                   max={maxCapacity}
                   step={1}
-                  onValuesChange={handleCapacityValuesChange}
-                  onValuesChangeFinish={handleCapacityValuesFinish}
+                  onValuesChange={(values) => {
+                    onFiltersChange({ ...filters, capacity: [values[0], values[1]] });
+                  }}
                   selectedStyle={styles.selectedTrack}
                   unselectedStyle={{ backgroundColor: 'transparent' }}
                   markerStyle={styles.marker}
                   pressedMarkerStyle={styles.marker}
                   sliderLength={screenWidth - 70} // Adjust dynamically based on screen width
+                  allowOverlap={true}
+                  snapped={true}
                 />
               </View>
             </View>
 
             {/* Estat/Condició */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Estat del refugi</Text>
+              <Text style={styles.sectionTitle}>Estat</Text>
               <View style={styles.conditionsGrid}>
                 {conditions.map((condition) => (
                   <TouchableOpacity
@@ -282,7 +264,8 @@ export function FilterPanel({
               <Text style={styles.applyButtonText}>Aplicar filtres</Text>
             </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+  </View>
+        </TouchableWithoutFeedback>
       </TouchableOpacity>
     </Modal>
   );
@@ -307,13 +290,18 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     paddingHorizontal: 24,
-    paddingTop: 25,
   },
-  header: {
+  headerFixed: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    zIndex: 20,
   },
   headerLeft: {
     flexDirection: 'row',
