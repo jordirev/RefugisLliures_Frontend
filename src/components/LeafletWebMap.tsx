@@ -100,31 +100,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           height: 100vh; 
           width: 100vw; 
         }
-        .leaflet-popup-content-wrapper {
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .leaflet-popup-content {
-          margin: 12px;
-          line-height: 1.4;
-        }
-        .popup-title {
-          font-weight: bold;
-          color: #1f2937;
-          margin-bottom: 8px;
-        }
-        .popup-description {
-          color: #6b7280;
-          font-size: 14px;
-          margin-bottom: 8px;
-        }
-        .popup-details {
-          font-size: 12px;
-          color: #9ca3af;
-        }
-        .popup-detail {
-          margin-bottom: 4px;
-        }
+        /* Popups disabled - removed popup styles to prevent popup rendering */
       </style>
     </head>
     <body>
@@ -213,36 +189,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         var markers = [];
         var userMarker = null;
 
-        // Funció per crear el contingut del popup
-        function createPopupContent(location) {
-          var popupContent = '<div>' +
-            '<div class="popup-title">' + location.name + '</div>';
-          
-          if (location.description) {
-            var shortDescription = location.description.length > 150 
-              ? location.description.substring(0, 150) + '...' 
-              : location.description;
-            popupContent += '<div class="popup-description">' + shortDescription.replace(/\\[b\\]/g, '').replace(/\\[\\/b\\]/g, '') + '</div>';
-          }
-          
-          popupContent += '<div class="popup-details">' +
-            '<div class="popup-detail">📍 ' + location.coord.lat.toFixed(4) + ', ' + location.coord.long.toFixed(4) + '</div>';
-          
-          if (location.altitude) {
-            popupContent += '<div class="popup-detail">⛰️ ' + location.altitude + 'm</div>';
-          }
-          
-          if (location.condition) {
-            popupContent += '<div class="popup-detail">🏔️ Estat: ' + location.condition + '</div>';
-          }
-          
-          if (location.places !== undefined) {
-            popupContent += '<div class="popup-detail">🛏️ Places: ' + location.places + '</div>';
-          }
-          
-          popupContent += '</div></div>';
-          return popupContent;
-        }
+        // Popups removed; no popup content function
 
         // Funció per afegir marcadors
         function addMarkers(locations, selectedId) {
@@ -260,8 +207,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             }).addTo(map);
 
             marker.locationData = location;
-            marker.bindPopup(createPopupContent(location));
-            
+            // No popup bound to marker; only notify React Native on click
             marker.on('click', function() {
               window.ReactNativeWebView?.postMessage(JSON.stringify({
                 type: 'locationSelect',
