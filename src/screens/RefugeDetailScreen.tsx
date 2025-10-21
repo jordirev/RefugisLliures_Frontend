@@ -7,7 +7,7 @@ import {
   Alert,
   ScrollView,
   Image,
-  
+  Linking,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../types';
@@ -101,6 +101,25 @@ export function RefugeDetailScreen({
     
     // Aquí se implementaría la descarga del archivo
     Alert.alert('Descargar KML', 'Funcionalidad de descarga KML se implementará próximamente');
+  };
+
+  const handleOpenLink = async (url: string) => {
+    try {
+      let finalUrl = url;
+      // If the url doesn't include a scheme, assume https
+      if (!/^https?:\/\//i.test(finalUrl)) {
+        finalUrl = `https://${finalUrl}`;
+      }
+      const supported = await Linking.canOpenURL(finalUrl);
+      if (supported) {
+        await Linking.openURL(finalUrl);
+      } else {
+        Alert.alert('No es pot obrir l\'enllaç', finalUrl);
+      }
+    } catch (e) {
+      console.warn('Error opening link', e);
+      Alert.alert('Error', 'No s\'ha pogut obrir l\'enllaç');
+    }
   };
 
   return (
@@ -222,11 +241,16 @@ export function RefugeDetailScreen({
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Enllaços</Text>
             {refuge.links.map((link, index) => (
-              <View key={index} style={styles.infoCard}>
+              <TouchableOpacity
+                key={index}
+                style={styles.infoCard}
+                activeOpacity={0.7}
+                onPress={() => handleOpenLink(link)}
+              >
                 <Text style={styles.linkText} numberOfLines={1}>
                   {link}
                 </Text>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -417,7 +441,7 @@ const styles = StyleSheet.create({
   infoCard: {
     backgroundColor: '#f9fafb',
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
     marginBottom: 8,
   },
   infoText: {
@@ -427,9 +451,10 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 12,
     color: '#2563eb',
+    textDecorationLine: 'underline',
   },
   readMoreButton: {
-    marginTop: 8,
+    marginTop: 2,
     paddingVertical: 4,
   },
   readMoreText: {
