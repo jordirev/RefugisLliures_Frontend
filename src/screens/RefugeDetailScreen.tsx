@@ -9,6 +9,7 @@ import {
   Image,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import * as FileSystem from 'expo-file-system/legacy';
@@ -37,6 +38,7 @@ import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
+import NavigationIcon from '../assets/icons/navigation.svg';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -57,6 +59,9 @@ export function RefugeDetailScreen({
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
+  const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
+  const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
   
 
   // Helper to format coordinates: lat 4 decimals, long 5 decimals -> (lat, long)
@@ -276,7 +281,26 @@ export function RefugeDetailScreen({
     const lon = refuge.coord.long;
     // Build URL: https://www.windy.com/lat/long/mblue?lat,long,13,p:cities
     const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
-    handleOpenLink(url);
+    const message = `Se't redirigirà cap a \nhttps://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.`;
+    confirmAndOpen(url, message);
+  };
+
+  // Open Wikiloc search for routes near the refuge name
+  const handleOpenWikiloc = () => {
+    const name = refuge.name || '';
+    const encoded = encodeURIComponent(name);
+    // Example: https://ca.wikiloc.com/wikiloc/map.do?q=Refuge%20de%20la%20Gola&fitMapToTrails=1&page=1
+    const url = `https://ca.wikiloc.com/wikiloc/map.do?q=${encoded}&fitMapToTrails=1&page=1`;
+    const message = `Se't redirigirà cap a \nhttps://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegure\'t que la ruta passa pel refugi. ⚠️`;
+    confirmAndOpen(url, message);
+  };
+
+  // Show a confirmation dialog before opening an external link.
+  // On native platforms use Alert.alert with buttons; on web use window.confirm as a fallback.
+  const confirmAndOpen = (url: string, message: string) => {
+    setConfirmModalMessage(message);
+    setConfirmModalUrl(url);
+    setConfirmModalVisible(true);
   };
 
   return (
@@ -403,10 +427,10 @@ export function RefugeDetailScreen({
               <Text style={styles.statLabel2}>Meteo</Text>
             </TouchableOpacity>
             
-            <View style={styles.statCard}>
+            <TouchableOpacity style={styles.statCard} onPress={handleOpenWikiloc} activeOpacity={0.7}>
               <Image source={RoutesIcon} style={{ width: 48, height: 48 }} />
               <Text style={styles.statLabel2}>Rutes a prop</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -455,6 +479,35 @@ export function RefugeDetailScreen({
       <View style={{ paddingBottom: insets.bottom }}>
       </View>
 
+      {/* Confirmation modal with justified text */}
+      <Modal
+        visible={confirmModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setConfirmModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <ScrollView contentContainerStyle={{ padding: 16 }}>
+              <Text style={styles.modalTitle}>Se't redirigirà</Text>
+              <Text style={styles.modalMessage}>{confirmModalMessage}</Text>
+            </ScrollView>
+            <View style={styles.modalButtonsRow}>
+              <TouchableOpacity style={[styles.modalButtonRow, styles.modalCancel, { marginRight: 8 }]} onPress={() => setConfirmModalVisible(false)}>
+                <View style={styles.modalButtonContent}>
+                  <Text style={styles.modalButtonText}>Cancel·lar</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.modalButtonRow, styles.modalPrimary]} onPress={() => { setConfirmModalVisible(false); handleOpenLink(confirmModalUrl); }}>
+                <View style={styles.modalButtonContent}>
+                  <Text style={[styles.modalButtonText, styles.modalPrimaryText]}>Navegar</Text>
+                  <NavigationIcon width={16} height={16} color="#ffffff" style={styles.modalIcon} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
       
     </View>
   );
@@ -705,5 +758,88 @@ const styles = StyleSheet.create({
   copyToastText: {
     color: 'white',
     fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalBox: {
+    width: '100%',
+    maxWidth: 520,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: '#111827',
+    lineHeight: 20,
+    textAlign: 'justify',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 12,
+    gap: 8,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  modalPrimary: {
+    backgroundColor: '#FF6900',
+  },
+  modalButtonText: {
+    fontSize: 14,
+    color: '#111827',
+    fontWeight: '600',
+  },
+  modalPrimaryText: {
+    color: '#ffffff',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 10,
+    color: '#111827',
+  },
+  modalButtonsColumn: {
+    flexDirection: 'column',
+    padding: 12,
+    gap: 8,
+  },
+  modalButtonFull: {
+    width: '100%',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalCancel: {
+    backgroundColor: '#f3f4f6',
+  },
+  modalButtonsRow: {
+    flexDirection: 'row',
+    padding: 12,
+    justifyContent: 'center',
+  },
+  modalButtonRow: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalIcon: {
+    marginLeft: 8,
+    // nudge the icon down a couple pixels so it visually aligns with the text baseline
+    transform: [{ translateY: 2 }],
   },
 });
