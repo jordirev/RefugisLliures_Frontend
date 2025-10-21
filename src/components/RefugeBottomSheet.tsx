@@ -74,11 +74,9 @@ export function RefugeBottomSheet({
               {/* Detalls */}
               <View style={styles.details}>
                 {/* Type */}
-                {refuge.type && (
-                  <View style={styles.detailItem}>
-                    <BadgeType type={refuge.type} />
-                  </View>
-                )}
+                <View style={styles.detailItem}>
+                  <BadgeType type={refuge.type || 'no guardat'} />
+                </View>
                 {/* Estat */}
                 {refuge.condition && (
                   <View style={styles.detailItem}>
