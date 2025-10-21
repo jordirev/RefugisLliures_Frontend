@@ -8,7 +8,20 @@ import {
   ScrollView,
   Image,
   Linking,
+  Platform,
 } from 'react-native';
+// Use the legacy API to avoid deprecation warnings for writeAsStringAsync
+import * as FileSystem from 'expo-file-system/legacy';
+// Use a runtime require for expo-sharing so the code still typechecks if the
+// package hasn't been installed yet. At runtime, if it's missing, we'll
+// gracefully fall back to notifying the user.
+let Sharing: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  Sharing = require('expo-sharing');
+} catch (e) {
+  Sharing = null;
+}
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../types';
 
@@ -22,6 +35,8 @@ import EditIcon from '../assets/icons/edit.svg';
 import DownloadIcon from '../assets/icons/download.svg';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
+import RoutesIcon from '../assets/icons/routes.png';
+import WeatherIcon from '../assets/icons/weather2.png';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -51,9 +66,6 @@ export function RefugeDetailScreen({
     return `(${latStr}, ${longStr})`;
   };
 
-  
-
-  
 
   // Static header image - will scroll together with the content
 
@@ -70,37 +82,173 @@ export function RefugeDetailScreen({
   };
 
   const handleDownloadGPX = () => {
-    // Crear contenido GPX con las coordenadas del refugio
-    const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">
-  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">
-    <name>${refuge.name}</name>
-    <desc>${refuge.description || ''}</desc>
-    <ele>${refuge.altitude || 0}</ele>
-  </wpt>
-</gpx>`;
-    
-    // Aquí se implementaría la descarga del archivo
-    Alert.alert('Descargar GPX', 'Funcionalidad de descarga GPX se implementará próximamente');
+    // Directe: només Descarregar (el SO mostrarà el selector quan calgui)
+    Alert.alert(
+      'Descarregar GPX',
+      `Vols descarregar el fitxer GPX per a "${refuge.name}"?`,
+      [
+        { text: 'Cancel·lar', style: 'cancel' },
+        { text: 'Descarregar', onPress: async () => {
+          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude || 0}</ele>\n  </wpt>\n</gpx>`;
+          const fileName = sanitizeFileName(`${refuge.name}.gpx`);
+          await saveFile(gpxContent, fileName, 'application/gpx+xml');
+        } }
+      ]
+    );
   };
 
   const handleDownloadKML = () => {
-    // Crear contenido KML con las coordenadas del refugio
-    const kmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-  <Document>
-    <Placemark>
-      <name>${refuge.name}</name>
-      <description>${refuge.description || ''}</description>
-      <Point>
-        <coordinates>${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}</coordinates>
-      </Point>
-    </Placemark>
-  </Document>
-</kml>`;
-    
-    // Aquí se implementaría la descarga del archivo
-    Alert.alert('Descargar KML', 'Funcionalidad de descarga KML se implementará próximamente');
+    Alert.alert(
+      'Descarregar KML',
+      `Vols descarregar el fitxer KML per a "${refuge.name}"?`,
+      [
+        { text: 'Cancel·lar', style: 'cancel' },
+        { text: 'Descarregar', onPress: async () => {
+          const kmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n  <Document>\n    <Placemark>\n      <name><![CDATA[${refuge.name}]]></name>\n      <description><![CDATA[${refuge.description || ''}]]></description>\n      <Point>\n        <coordinates>${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}</coordinates>\n      </Point>\n    </Placemark>\n  </Document>\n</kml>`;
+          const fileName = sanitizeFileName(`${refuge.name}.kml`);
+          await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');
+        } }
+      ]
+    );
+  };
+
+  // Intenta desar el fitxer al dispositiu (Android: StorageAccessFramework si està disponible)
+  const saveFile = async (content: string, fileName: string, mimeType = 'text/plain') => {
+    try {
+      if (Platform.OS === 'web') {
+        const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      const fsAny: any = FileSystem as any;
+
+      // Android: intentar StorageAccessFramework per desar directament a Downloads o carpeta triada
+      if (Platform.OS === 'android' && fsAny.StorageAccessFramework) {
+        try {
+          const SAF = fsAny.StorageAccessFramework;
+          // Obre el selector de directori
+          // requestDirectoryPermissionsAsync retorna { granted: boolean, directoryUri }
+          // Si l'usuari selecciona una carpeta, guardem allà el fitxer
+          // @ts-ignore
+          const permission = await SAF.requestDirectoryPermissionsAsync();
+          if (!permission || !permission.granted) {
+            Alert.alert('Permís necessari', 'No s\'ha atorgat permís per desar a l\'emmagatzematge.');
+            return;
+          }
+          const directoryUri = permission.directoryUri;
+          // @ts-ignore
+          const newFileUri = await SAF.createFileAsync(directoryUri, fileName, mimeType);
+          // Escriure el contingut al nou URI
+          if (SAF.writeAsStringAsync) {
+            // @ts-ignore
+            await SAF.writeAsStringAsync(newFileUri, content);
+          } else {
+            // fallback: intentar escriure amb FileSystem
+            await fsAny.writeAsStringAsync(newFileUri, content);
+          }
+          Alert.alert('Fitxer desat', 'S\'ha desat el fitxer a la ubicació seleccionada.');
+          return;
+        } catch (e) {
+          console.warn('SAF save failed, falling back to sharing', e);
+          // si falla, fem fallback a compartir
+        }
+      }
+
+      // Fallback general: guardar a documentDirectory
+      const baseDir = fsAny.documentDirectory || fsAny.cacheDirectory || '';
+      const fileUri = baseDir + fileName;
+      await fsAny.writeAsStringAsync(fileUri, content);
+
+      // iOS: presentar directament el diàleg de "Save to Files" mitjançant Sharing
+      if (Platform.OS === 'ios' && Sharing && (await Sharing.isAvailableAsync())) {
+        try {
+          await Sharing.shareAsync(fileUri);
+          return;
+        } catch (e) {
+          console.warn('iOS share-as-save failed, falling back to alert', e);
+        }
+      }
+
+      // Altrament, notifiquem la ubicació on s'ha desat
+      Alert.alert('Fitxer desat', `S'ha desat el fitxer a: ${fileUri}`);
+
+    } catch (e) {
+      console.warn('saveFile error', e);
+      Alert.alert('Error', 'No s\'ha pogut desar el fitxer. S\'intentarà compartir-lo en canvi.');
+      // si tot falla, oferir compartir
+      try {
+        const tempName = fileName;
+        await writeAndShareFile(content, tempName, mimeType);
+      } catch (_e) {
+        console.warn('share fallback failed', _e);
+      }
+    }
+  };
+
+  // Sanititza un nom de fitxer per evitar caràcters problemàtics
+  const sanitizeFileName = (name: string) => {
+    return name.replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_').slice(0, 120);
+  };
+
+  // Escriu el fitxer al sistema i obre el dialeg de compartir/guardar (nadiu) o dispara la descàrrega (web)
+  const writeAndShareFile = async (content: string, fileName: string, mimeType = 'text/plain') => {
+    try {
+      if (Platform.OS === 'web') {
+        // Web fallback: crear blob i forçar descàrrega
+        const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      const fsAny: any = FileSystem as any;
+      const baseDir = fsAny.documentDirectory || fsAny.cacheDirectory || '';
+      const fileUri = baseDir + fileName;
+      await fsAny.writeAsStringAsync(fileUri, content);
+
+      // Preferir l'API d'sharing nativa si està disponible
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        // En Android cal a vegades convertir a contentUri
+        if (Platform.OS === 'android') {
+          try {
+            const fsAny2: any = FileSystem as any;
+            // @ts-ignore
+            const contentUriObj: any = await fsAny2.getContentUriAsync(fileUri);
+            const shareUri = typeof contentUriObj === 'string' ? contentUriObj : (contentUriObj?.uri ?? fileUri);
+            await Sharing.shareAsync(shareUri);
+            return;
+          } catch (_e) {
+            // Fallback a compartir el fileUri directe
+            await Sharing.shareAsync(fileUri);
+            return;
+          }
+        }
+
+        await Sharing.shareAsync(fileUri);
+        return;
+      }
+
+      // Si Sharing no està disponible, informar l'usuari de la ubicació del fitxer
+      Alert.alert('Fitxer desat', `S'ha desat el fitxer a: ${fileUri}`);
+    } catch (e) {
+      console.warn('Error writing/sharing file', e);
+      Alert.alert('Error', 'No s\'ha pogut crear o desar el fitxer.');
+    }
   };
 
   const handleOpenLink = async (url: string) => {
@@ -122,6 +270,15 @@ export function RefugeDetailScreen({
     }
   };
 
+  // Open Windy with the refuge coordinates
+  const handleOpenWindy = () => {
+    const lat = refuge.coord.lat;
+    const lon = refuge.coord.long;
+    // Build URL: https://www.windy.com/lat/long/mblue?lat,long,13,p:cities
+    const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
+    handleOpenLink(url);
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
       {/* Back button on top of everything */}
@@ -141,8 +298,6 @@ export function RefugeDetailScreen({
             style={styles.headerImage}
             resizeMode="cover"
           />
-          <View style={styles.gradientOverlay} />
-            {/* actionButtons removed from header; now rendered as overlay */}
         </View>
         {/* Títol i informació bàsica */}
         <View style={styles.section}>
@@ -233,13 +388,32 @@ export function RefugeDetailScreen({
             </View>
           </View>
         </View>
-        
-        {/* Departament: moved inline under title */}
+
+        {/* Informació extra */}
+        {/* Informació de localització */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Prepara la teva sortida</Text>
+          {/* Stats en grid */}
+          <View style={styles.statsGrid}>
+            <TouchableOpacity style={styles.statCard} onPress={handleOpenWindy} activeOpacity={0.7}>
+              <Image
+                source={WeatherIcon}
+                style={{ width: 48, height: 48, transform: [{ scaleX: -1 }] }}
+              />
+              <Text style={styles.statLabel2}>Meteo</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.statCard}>
+              <Image source={RoutesIcon} style={{ width: 48, height: 48 }} />
+              <Text style={styles.statLabel2}>Rutes a prop</Text>
+            </View>
+          </View>
+        </View>
 
         {/* Enllaços si existeixen */}
         {refuge.links && refuge.links.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Enllaços</Text>
+            <Text style={styles.sectionTitle}>Per a més informació:</Text>
             {refuge.links.map((link, index) => (
               <TouchableOpacity
                 key={index}
@@ -301,6 +475,7 @@ const styles = StyleSheet.create({
     height: '100%',
     // full-bleed image
     alignSelf: 'stretch',
+    borderRadius: 12,
   },
   gradientOverlay: {
     position: 'absolute',
@@ -402,6 +577,13 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginTop: 8,
   },
+  statLabel2: {
+    fontSize: 12,
+    color: '#000000ff',
+    marginTop: 8,
+    fontWeight: '400',
+    fontFamily: 'Arimo',
+  },     
   statValue: {
     fontSize: 14,
     fontWeight: '600',
@@ -416,7 +598,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: '#374151',
+    color: '#51555eff',
     lineHeight: 22,
     textAlign: 'justify',
   },
