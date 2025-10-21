@@ -68,11 +68,34 @@ export const LeafletWebMap = memo(function LeafletWebMap({
 
   // Centrar el mapa quan userLocation canvia
   useEffect(() => {
-    if (userLocation && webViewRef.current) {
-      const js = `window.dispatchEvent(new CustomEvent('centerMapTo', { detail: { lat: ${userLocation.latitude}, lng: ${userLocation.longitude}, zoom: 15 } }));`;
+    // Only attempt to modify the WebView map after it has initialized
+    if (mapInitialized && webViewRef.current) {
+      const js = `
+        (function() {
+          try {
+            // Remove previous user marker if present
+            if (window.userMarker) {
+              try { map.removeLayer(window.userMarker); } catch(e) {}
+              window.userMarker = null;
+            }
+
+            var ul = ${JSON.stringify(userLocation)};
+            if (ul && ul.latitude && ul.longitude) {
+              // Add a round blue marker with white border and shadow
+              window.userMarker = L.marker([ul.latitude, ul.longitude], { icon: userLocationIcon }).addTo(map);
+              // Center map to the user location
+              map.setView([ul.latitude, ul.longitude], 15);
+            }
+          } catch(err) {
+            // swallow errors coming from injected code
+            console && console.error && console.error('inject userLocation error', err);
+          }
+        })();
+        true;
+      `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [userLocation]);
+  }, [userLocation, mapInitialized]);
 
   // Generar HTML amb Leaflet - Memoritzar per evitar regeneració
   const mapHTML = useMemo(() => `
@@ -169,25 +192,20 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           iconAnchor: [16, 16]
         });
 
-        // Icona blava per la ubicació de l'usuari
+        // Icona blava per la ubicació de l'usuari (escala 2/3)
+        // Reduïm el diàmetre i l'ample del border per fer-la aproximadament 2/3 de la mida original
         var userLocationIcon = L.divIcon({
-          html: '<div style="width: 24px; height: 24px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
+          html: '<div style="width: 16px; height: 16px; background: #2563eb; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
           className: 'user-location-marker',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
         });
 
-        // Icona blava per la ubicació de l'usuari
-        var userLocationIcon = L.divIcon({
-          html: '<div style="width: 24px; height: 24px; background: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
-          className: 'user-location-marker',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
-        });
-
-        // Gestió de marcadors - guardem referència global
-        var markers = [];
-        var userMarker = null;
+  // Gestió de marcadors - guardem referència global
+  var markers = [];
+  var userMarker = null;
+  // Expose userMarker on window so injected updates can reference/remove it
+  window.userMarker = null;
 
         // Popups removed; no popup content function
 
@@ -250,10 +268,17 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         var selectedLocationId = ${selectedLocation?.id || null};
         addMarkers(initialLocations, selectedLocationId);
 
-        // Dibuixa la bola blava si tenim userLocation
+        // Dibuixa la bola blava si tenim userLocation (assignada a window.userMarker per evitar duplicats)
         var userLocation = ${JSON.stringify(userLocation)};
         if (userLocation && userLocation.latitude && userLocation.longitude) {
-          L.marker([userLocation.latitude, userLocation.longitude], {
+          try {
+            if (window.userMarker) {
+              try { map.removeLayer(window.userMarker); } catch(e) {}
+              window.userMarker = null;
+            }
+          } catch(e) {}
+
+          window.userMarker = L.marker([userLocation.latitude, userLocation.longitude], {
             icon: userLocationIcon
           }).addTo(map);
         }
