@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, BackHandler, Platform } from 'react-native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
@@ -133,6 +133,23 @@ export function MapScreen({
       onLocationSelect(selectedRefuge);
     }
   }, [allLocations, onLocationSelect]);
+
+  // Si l'usuari prem el botó 'back' d'Android mentre hi ha text a la cerca,
+  // esborrar la cerca i consumir l'esdeveniment (no fer el back navegacional).
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      if (searchQuery && searchQuery.trim().length > 0) {
+        setSearchQuery('');
+        return true; // event handled
+      }
+      return false; // let default behaviour run (navigate back)
+    };
+
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [searchQuery]);
 
   return (
     <View style={styles.container}>

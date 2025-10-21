@@ -38,6 +38,19 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
             onSubmitEditing={() => Keyboard.dismiss()}
             blurOnSubmit={true}
           />
+          {/* Clear (cross) button shown when there is a query */}
+          {searchQuery && searchQuery.trim().length > 0 && (
+            <TouchableOpacity
+              accessibilityLabel="Netejar cerca"
+              onPress={() => {
+                Keyboard.dismiss();
+                onSearchChange('');
+              }}
+              style={styles.clearButton}
+            >
+              <Text style={styles.clearText}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <TouchableOpacity
           style={styles.filterButton}
@@ -66,19 +79,21 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           ))}
         </View>
       )}
-      {/* Botó afegeix */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          Keyboard.dismiss();
-          /* TODO: Implementar afegir nova ubicació */
-        }}
-      >
-        <View style={styles.addIconContainer}>
-          <Text style={styles.plusText}>+</Text>
-        </View>
-        <Text style={styles.addText}>Afegeix</Text>
-      </TouchableOpacity>
+      {/* Botó afegeix: només mostrar si la cerca està buida */}
+      {(!searchQuery || searchQuery.trim().length === 0) && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            Keyboard.dismiss();
+            /* TODO: Implementar afegir nova ubicació */
+          }}
+        >
+          <View style={styles.addIconContainer}>
+            <Text style={styles.plusText}>+</Text>
+          </View>
+          <Text style={styles.addText}>Afegeix</Text>
+        </TouchableOpacity>
+      )}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -164,6 +179,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Arimo',
     color: '#616774ff',
     marginLeft: 8,
+  },
+  clearButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+    backgroundColor: 'transparent',
+  },
+  clearText: {
+    color: '#6B7280',
+    fontSize: 16,
+    lineHeight: 16,
   },
   filterButton: {
     width: 44,

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Alert, BackHandler, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -66,6 +66,27 @@ export function AppNavigator() {
     setShowDetailScreen(false);
     setTimeout(() => setSelectedLocation(undefined), 300);
   };
+
+  // Handle Android hardware back button: if a bottom sheet or detail screen is open,
+  // close it and consume the event. Otherwise let the default behaviour run.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      if (showDetailScreen) {
+        handleCloseDetailScreen();
+        return true;
+      }
+      if (showBottomSheet) {
+        handleCloseBottomSheet();
+        return true;
+      }
+      return false; // allow default behavior
+    };
+
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [showBottomSheet, showDetailScreen]);
 
   return (
     <View style={[styles.container, {
