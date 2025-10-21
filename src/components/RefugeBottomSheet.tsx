@@ -50,74 +50,72 @@ export function RefugeBottomSheet({
       <View style={[styles.sheet, { paddingBottom: insets.bottom }]}> 
         {/* Handle */}
         <View style={styles.handle} />
-        <ScrollView style={styles.content}>
-            {/* Imatge del refugi */}
-            <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            </View>
-            <View style={styles.sheetInfo}>
-              <View style={styles.namefavorite}>
-                {/* Nom */}
-                <Text style={styles.name}>{refuge.name}</Text>
-                {/* Favorit */}
-                <TouchableOpacity onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
-                  <FavouriteIcon width={24} height={24} />
-                </TouchableOpacity>
-              </View>
-
-              {/*Informació del refugi */}
-              <View style={styles.info}>
-
-                {/* Detalls */}
-                <View style={styles.details}>
-                  {/* Type */}
-                  {refuge.type && (
-                    <View style={styles.detailItem}>
-                      <BadgeType type={refuge.type} />
-                    </View>
-                  )}
-                  {/* Estat */}
-                  {refuge.condition && (
-                    <View style={styles.detailItem}>
-                      <BadgeCondition condition={refuge.condition} />
-                    </View>
-                  )}
-                </View>
-                <View style={[styles.details, styles.detailsDetails]}>
-                  {/* Altitud */}
-                  {refuge.altitude && (
-                      <View style={styles.detailItem}>
-                      <AltitudeIcon width={16} height={16} color={'#4A5565'} />
-                      <Text style={styles.detailValue}>{refuge.altitude} m</Text>
-                      </View>
-                  )}
-                  {/* Places */}
-                  <View style={styles.detailItem}>
-                    <CapacityIcon color={'#4A5565'} />
-                    <Text style={styles.detailValue}>{refuge.places} </Text>
-                  </View>
-                  {/* Regió */}
-                  <View style={styles.detailItem}>
-                    <RegionIcon width={16} height={16} color={'#4A5565'} />
-                    <Text style={styles.detailValue}>{refuge.region ? refuge.region : 'Unknown'}</Text>
-                  </View>
-                </View>
-            </View>
-          {/* Accions */}
+          {/* Imatge del refugi */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+              style={styles.image}
+              resizeMode="cover"
+            />
           </View>
-          <TouchableOpacity 
-            style={[styles.button, styles.detailsButton]}
-            onPress={() => onViewDetails(refuge)}
-          >
-            <Text style={[styles.buttonText, styles.detailsButtonText]}>
-              Veure detalls
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+          <View style={styles.sheetInfo}>
+            <View style={styles.namefavorite}>
+              {/* Nom */}
+              <Text style={styles.name}>{refuge.name}</Text>
+              {/* Favorit */}
+              <TouchableOpacity onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
+                <FavouriteIcon width={24} height={24} />
+              </TouchableOpacity>
+            </View>
+
+            {/*Informació del refugi */}
+            <View style={styles.info}>
+
+              {/* Detalls */}
+              <View style={styles.details}>
+                {/* Type */}
+                {refuge.type && (
+                  <View style={styles.detailItem}>
+                    <BadgeType type={refuge.type} />
+                  </View>
+                )}
+                {/* Estat */}
+                {refuge.condition && (
+                  <View style={styles.detailItem}>
+                    <BadgeCondition condition={refuge.condition} />
+                  </View>
+                )}
+              </View>
+              <View style={[styles.details, styles.detailsDetails]}>
+                {/* Altitud */}
+                {refuge.altitude && (
+                    <View style={styles.detailItem}>
+                    <AltitudeIcon width={16} height={16} color={'#6b7280'} />
+                    <Text style={styles.detailValue}>{refuge.altitude} m</Text>
+                    </View>
+                )}
+                {/* Places */}
+                <View style={styles.detailItem}>
+                  <CapacityIcon color={'#4A5565'} />
+                  <Text style={styles.detailValue}>{refuge.places} </Text>
+                </View>
+                {/* Regió */}
+                <View style={styles.detailItem}>
+                  <RegionIcon width={16} height={16} color={'#6b7280'} />
+                  <Text style={styles.detailValue}> {refuge.region ? refuge.region : 'Unknown'}</Text>
+                </View>
+              </View>
+          </View>
+        {/* Accions */}
+        </View>
+        <TouchableOpacity 
+          style={[styles.button, styles.detailsButton]}
+          onPress={() => onViewDetails(refuge)}
+        >
+          <Text style={[styles.buttonText, styles.detailsButtonText]}>
+            Veure detalls
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -150,6 +148,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 10,
+    paddingHorizontal: 20,
   },
   handle: {
     width: 40,
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     alignSelf: 'center',
     marginTop: 12,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   content: {
     padding: 24,
@@ -175,8 +174,11 @@ const styles = StyleSheet.create({
   },
   namefavorite: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    position: 'relative',
+    paddingRight: 48, // leave space for the favorite button
+    marginBottom: -8,
   },
   name: {
     color: '#0A0A0A', 
@@ -185,6 +187,9 @@ const styles = StyleSheet.create({
     fontWeight: '600', 
     lineHeight: 24, 
     flexWrap: 'wrap',
+    flex: 1,
+    flexShrink: 1,
+    paddingRight: 8,
   },
   elevation: {
     fontSize: 16,
@@ -219,7 +224,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 12,
-    color: '#4A5565',
+    color: '#6b7280',
     fontFamily: 'Arimo',
     fontWeight: '400',
   },
@@ -237,7 +242,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   favoriteButton: {
-    //fill: '#ffffffff',
+    position: 'absolute',
+    right: 0,
+    top: -6,
+    height: 36,
+    width: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   navigateButton: {
     backgroundColor: '#dbeafe',
