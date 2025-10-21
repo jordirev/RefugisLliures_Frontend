@@ -102,7 +102,9 @@ export function RefugeBottomSheet({
                 {/* Regió */}
                 <View style={styles.detailItem}>
                   <RegionIcon width={16} height={16} color={'#6b7280'} />
-                  <Text style={styles.detailValue}> {refuge.region ? refuge.region : 'Unknown'}</Text>
+                  <View style={styles.detailTextRegion}>
+                    <Text style={styles.detailValue}> {refuge.region ? refuge.region : 'Unknown'}</Text>
+                  </View>
                 </View>
               </View>
           </View>
@@ -217,6 +219,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  detailTextRegion: {
+    maxWidth: SCREEN_WIDTH - 200, // Adjust based on expected layout
+  },  
   detailLabel: {
     fontSize: 14,
     color: '#6b7280',
