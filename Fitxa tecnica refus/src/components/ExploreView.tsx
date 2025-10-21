@@ -25,7 +25,6 @@ interface ExploreViewProps {
   recommendedLocations: Location[];
   onToggleFavorite: (locationId: string) => void;
   onNavigate: (location: Location) => void;
-  onShare: (location: Location) => void;
 }
 
 export function ExploreView({ 
@@ -34,7 +33,6 @@ export function ExploreView({
   recommendedLocations,
   onToggleFavorite,
   onNavigate,
-  onShare
 }: ExploreViewProps) {
   const StatCard = ({ icon: Icon, title, value, subtitle }: {
     icon: React.ElementType;
@@ -92,12 +90,11 @@ export function ExploreView({
           </div>
           <div className="space-y-3">
             {trendingLocations.slice(0, 3).map((location) => (
-              <LocationCard
+                <LocationCard
                 key={location.id}
                 location={location}
                 onToggleFavorite={onToggleFavorite}
                 onNavigate={onNavigate}
-                onShare={onShare}
               />
             ))}
           </div>
@@ -111,12 +108,11 @@ export function ExploreView({
           </div>
           <div className="space-y-3">
             {nearbyLocations.slice(0, 3).map((location) => (
-              <LocationCard
+                <LocationCard
                 key={location.id}
                 location={location}
                 onToggleFavorite={onToggleFavorite}
                 onNavigate={onNavigate}
-                onShare={onShare}
               />
             ))}
           </div>
@@ -130,12 +126,11 @@ export function ExploreView({
           </div>
           <div className="space-y-3">
             {recommendedLocations.slice(0, 3).map((location) => (
-              <LocationCard
+                <LocationCard
                 key={location.id}
                 location={location}
                 onToggleFavorite={onToggleFavorite}
                 onNavigate={onNavigate}
-                onShare={onShare}
               />
             ))}
           </div>

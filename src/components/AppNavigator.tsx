@@ -8,6 +8,7 @@ import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { ReformsScreen } from '../screens/ReformsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
+import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../types';
@@ -25,6 +26,7 @@ export function AppNavigator() {
   // Només estats globals (compartits entre pantalles)
   const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [showDetailScreen, setShowDetailScreen] = useState(false);
 
   // Handlers globals per al BottomSheet
   const handleToggleFavorite = async (locationId: number | undefined) => {
@@ -43,6 +45,7 @@ export function AppNavigator() {
     Alert.alert('Navegació', `Navegant a ${location.name}`);
   };
 
+
   const handleShowRefugeBottomSheet = (location: Location) => {
     setSelectedLocation(location);
     setShowBottomSheet(true);
@@ -51,11 +54,16 @@ export function AppNavigator() {
   const handleViewDetail = (location: Location) => {
     setSelectedLocation(location);
     setShowBottomSheet(false);
-    Alert.alert(location.name, location.description || 'Sense descripció');
+    setShowDetailScreen(true);
   };
 
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(false);
+    setTimeout(() => setSelectedLocation(undefined), 300);
+  };
+
+  const handleCloseDetailScreen = () => {
+    setShowDetailScreen(false);
     setTimeout(() => setSelectedLocation(undefined), 300);
   };
 
@@ -148,6 +156,18 @@ export function AppNavigator() {
           onViewDetails={handleViewDetail}
         />
       )}
+
+      {/* Pantalla de detall del refugi - Per sobre de tot */}
+      {selectedLocation && showDetailScreen && (
+        <View style={styles.detailScreenOverlay}>
+          <RefugeDetailScreen
+            refuge={selectedLocation}
+            onBack={handleCloseDetailScreen}
+            onToggleFavorite={handleToggleFavorite}
+            onNavigate={handleNavigate}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -165,5 +185,14 @@ const styles = StyleSheet.create({
   },
   tabIconActive: {
     backgroundColor: '#f3f4f6',
+  },
+  detailScreenOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    zIndex: 1000,
   },
 });

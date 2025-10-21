@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mountain, Trees, Waves, MapPin, Heart, Share2, Navigation } from 'lucide-react';
+import { Mountain, Trees, Waves, MapPin, Heart, Navigation } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -21,10 +21,9 @@ interface LocationCardProps {
   location: Location;
   onToggleFavorite: (locationId: string) => void;
   onNavigate: (location: Location) => void;
-  onShare: (location: Location) => void;
 }
 
-export function LocationCard({ location, onToggleFavorite, onNavigate, onShare }: LocationCardProps) {
+export function LocationCard({ location, onToggleFavorite, onNavigate }: LocationCardProps) {
   const getLocationIcon = (type: string) => {
     switch (type) {
       case 'mountain':
@@ -142,13 +141,7 @@ export function LocationCard({ location, onToggleFavorite, onNavigate, onShare }
             <Navigation className="w-4 h-4" />
             Navegar
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onShare(location)}
-          >
-            <Share2 className="w-4 h-4" />
-          </Button>
+          {/* Share removed */}
         </div>
       </CardContent>
     </Card>

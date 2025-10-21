@@ -38,7 +38,6 @@ export function RefugeDetailView({
   onBack, 
   onToggleFavorite, 
   onNavigate, 
-  onShare 
 }: RefugeDetailViewProps) {
   return (
     <div className="h-full bg-white overflow-y-auto">
@@ -73,14 +72,7 @@ export function RefugeDetailView({
           >
             <Heart className={`w-5 h-5 ${refuge.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onShare(refuge)}
-            className="bg-white/90 backdrop-blur-sm border-white/20 hover:bg-white shadow-lg"
-          >
-            <Share2 className="w-5 h-5" />
-          </Button>
+          {/* Share removed */}
         </div>
       </div>
       
