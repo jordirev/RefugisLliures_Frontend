@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';
@@ -17,7 +17,8 @@ interface SearchBarProps {
 // Memoritzem el component per evitar re-renders innecessaris
 export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect }: SearchBarProps) {
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
+      <View style={styles.container}>
       {/* Container de cerca */}
       <View style={styles.searchContainer}>
         <View style={styles.inputWrapper}>
@@ -34,11 +35,16 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
             placeholderTextColor="#6B7280"
             autoCorrect={false}
             autoCapitalize="none"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            blurOnSubmit={true}
           />
         </View>
         <TouchableOpacity
           style={styles.filterButton}
-          onPress={onOpenFilters}
+          onPress={() => {
+            Keyboard.dismiss();
+            onOpenFilters();
+          }}
         >
           <FilterIcon width={18} height={18} color="#6B7280" />
         </TouchableOpacity>
@@ -50,7 +56,10 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
             <TouchableOpacity
               key={name}
               style={styles.suggestionItem}
-              onPress={() => onSuggestionSelect && onSuggestionSelect(name)}
+              onPress={() => {
+                Keyboard.dismiss();
+                onSuggestionSelect && onSuggestionSelect(name);
+              }}
             >
               <Text style={styles.suggestionText}>{name}</Text>
             </TouchableOpacity>
@@ -60,14 +69,18 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
       {/* Botó afegeix */}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => {/* TODO: Implementar afegir nova ubicació */}}
+        onPress={() => {
+          Keyboard.dismiss();
+          /* TODO: Implementar afegir nova ubicació */
+        }}
       >
         <View style={styles.addIconContainer}>
           <Text style={styles.plusText}>+</Text>
         </View>
         <Text style={styles.addText}>Afegeix</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 });
 
