@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   Image,
+  
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../types';
@@ -40,8 +41,19 @@ export function RefugeDetailScreen({
   onEdit,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
-
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
+  
+
+  // Helper to format coordinates: lat 4 decimals, long 5 decimals -> (lat, long)
+  const formatCoord = (lat: number, long: number) => {
+    const latStr = lat.toFixed(4);
+    const longStr = long.toFixed(5);
+    return `(${latStr}, ${longStr})`;
+  };
+
+  
+
+  
 
   // Static header image - will scroll together with the content
 
@@ -117,6 +129,9 @@ export function RefugeDetailScreen({
         <View style={styles.section}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{refuge.name}</Text>
+            {refuge.departement ? (
+              <Text style={styles.departmentText}>{refuge.departement}</Text>
+            ) : null}
             <View style={styles.badgesContainer}>
               {refuge.type && (
                 <BadgeType type={refuge.type} style={{ marginRight: 8 }} />
@@ -184,7 +199,7 @@ export function RefugeDetailScreen({
             <View style={styles.locationInfo}>
               <MapPinIcon width={16} height={16} color="#FF6900" />
               <Text style={styles.locationText}>
-                Lat: {refuge.coord.lat.toFixed(4)} • Lng: {refuge.coord.long.toFixed(4)}
+                {formatCoord(refuge.coord.lat, refuge.coord.long)}
               </Text>
             </View>
             <View style={styles.downloadButtons}>
@@ -200,15 +215,7 @@ export function RefugeDetailScreen({
           </View>
         </View>
         
-        {/* Departament si existeix */}
-        {refuge.departement && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Departament</Text>
-            <View style={styles.infoCard}>
-              <Text style={styles.infoText}>{refuge.departement}</Text>
-            </View>
-          </View>
-        )}
+        {/* Departament: moved inline under title */}
 
         {/* Enllaços si existeixen */}
         {refuge.links && refuge.links.length > 0 && (
@@ -249,6 +256,8 @@ export function RefugeDetailScreen({
       {/* Safe area */}
       <View style={{ paddingBottom: insets.bottom }}>
       </View>
+
+      
     </View>
   );
 }
@@ -338,7 +347,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
-    marginBottom: 8,
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -387,6 +395,11 @@ const styles = StyleSheet.create({
     color: '#374151',
     lineHeight: 22,
     textAlign: 'justify',
+  },
+  departmentText: {
+    fontSize: 14,
+    color: '#717883',
+    marginBottom: 12,
   },
   locationCard: {
     backgroundColor: '#f9fafb',
@@ -457,7 +470,6 @@ const styles = StyleSheet.create({
   },
   downloadButtons: {
     flexDirection: 'row',
-    gap: 8,
   },
   downloadButton: {
     flexDirection: 'row',
@@ -472,5 +484,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#4A5565',
     fontWeight: '500',
+  },
+  copyToast: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 80,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    zIndex: 3000,
+  },
+  copyToastText: {
+    color: 'white',
+    fontSize: 14,
   },
 });
