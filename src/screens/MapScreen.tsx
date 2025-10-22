@@ -12,7 +12,7 @@ interface MapScreenProps {
 }
 
 const MAX_ALTITUDE = 3250;
-const MAX_CAPACITY = 30;
+const MAX_PLACES = 30;
 
 export function MapScreen({ 
   onLocationSelect,
@@ -28,7 +28,7 @@ export function MapScreen({
   const [filters, setFilters] = useState<Filters>({
     types: [],
     altitude: [0, MAX_ALTITUDE],
-    capacity: [0, MAX_CAPACITY],
+    places: [0, MAX_PLACES],
     condition: []
   });
 
@@ -72,10 +72,10 @@ export function MapScreen({
           filterParams.altitude_min = filters.altitude[0];
           filterParams.altitude_max = filters.altitude[1];
         }
-        // Capacity
-        if (filters.capacity && (filters.capacity[0] > 0 || filters.capacity[1] < MAX_CAPACITY)) {
-          filterParams.places_min = filters.capacity[0];
-          filterParams.places_max = filters.capacity[1];
+        // places
+        if (filters.places && (filters.places[0] > 0 || filters.places[1] < MAX_PLACES)) {
+          filterParams.places_min = filters.places[0];
+          filterParams.places_max = filters.places[1];
         }
         // Types
         if (filters.types && filters.types.length > 0) {
@@ -184,7 +184,7 @@ export function MapScreen({
         filters={filters}
         onFiltersChange={handleFiltersChange}
         maxAltitude={MAX_ALTITUDE}
-        maxCapacity={MAX_CAPACITY}
+        maxPlaces={MAX_PLACES}
       />
     </View>
   );

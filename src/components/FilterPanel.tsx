@@ -24,7 +24,7 @@ interface FilterPanelProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   maxAltitude?: number;
-  maxCapacity?: number;
+  maxPlaces?: number;
 }
 
 export function FilterPanel({
@@ -33,7 +33,7 @@ export function FilterPanel({
   filters,
   onFiltersChange,
   maxAltitude = 3250,
-  maxCapacity = 30,
+  maxPlaces = 30,
 }: FilterPanelProps) {
   const locationTypes = [
     { id: 'No guardat', label: 'No guardat' },
@@ -69,7 +69,7 @@ export function FilterPanel({
     onFiltersChange({
       types: [],
       altitude: [0, maxAltitude],
-      capacity: [0, maxCapacity],
+      places: [0, maxPlaces],
       condition: [],
     });
   };
@@ -78,7 +78,7 @@ export function FilterPanel({
     filters.types.length +
     filters.condition.length +
     (filters.altitude[0] > 0 || filters.altitude[1] < maxAltitude ? 1 : 0) +
-    (filters.capacity[0] > 0 || filters.capacity[1] < maxCapacity ? 1 : 0);
+    (filters.places[0] > 0 || filters.places[1] < maxPlaces ? 1 : 0);
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -195,17 +195,17 @@ export function FilterPanel({
             {/* Capacitat */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>
-                Capacitat: {filters.capacity[0]} - {filters.capacity[1]} places
+                Capacitat: {filters.places[0]} - {filters.places[1]} places
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
                 <MultiSlider
-                  values={[filters.capacity[0], filters.capacity[1]]}
+                  values={[filters.places[0], filters.places[1]]}
                   min={0}
-                  max={maxCapacity}
+                  max={maxPlaces}
                   step={1}
                   onValuesChange={(values) => {
-                    onFiltersChange({ ...filters, capacity: [values[0], values[1]] });
+                    onFiltersChange({ ...filters, places: [values[0], values[1]] });
                   }}
                   selectedStyle={styles.selectedTrack}
                   unselectedStyle={{ backgroundColor: 'transparent' }}

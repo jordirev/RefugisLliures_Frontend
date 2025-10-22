@@ -34,18 +34,19 @@ export interface CoordDTO {
 export interface RefugiDTO {
   id: string;
   name: string;
+  surname?: string | null;
   coord: CoordDTO;
-  geohash?: string;
-  altitude?: number;
-  places?: number;
-  remarque?: string;
+  altitude?: number | null;
+  places?: number | null;
   info_comp?: InfoCompDTO;
   description?: string;
   links?: string[];
   type?: string;
-  modified_at?: string;
+  modified_at?: string | null;
   region?: string | null;
   departement?: string | null;
+  condition?: string | null;
+  images_urls?: string[];
 }
 
 /**
@@ -62,6 +63,7 @@ export interface RefugisResponseDTO {
 export interface RefugiSimpleDTO {
   id: string;
   name: string;
+  surname?: string | null;
   coord: CoordDTO;
   geohash: string;
 }

@@ -345,13 +345,13 @@ export function RefugeDetailScreen({
             <View style={styles.statCard}>
               <AltitudeIcon width={24} height={24} color="#FF6900" />
               <Text style={styles.statLabel}>Altitud</Text>
-              <Text style={styles.statValue}>{refuge.altitude || refuge.elevation || 'N/A'}m</Text>
+              <Text style={styles.statValue}>{refuge.altitude ? `${refuge.altitude}m` : 'N/A'}</Text>
             </View>
             
             <View style={styles.statCard}>
               <UsersIcon width={24} height={24} color="#FF6900" />
               <Text style={styles.statLabel}>Places</Text>
-              <Text style={styles.statValue}>{refuge.places || refuge.capacity || 'N/A'}</Text>
+              <Text style={styles.statValue}>{refuge.places !== undefined ? refuge.places : 'N/A'}</Text>
             </View>
             
             <View style={styles.statCard}>
@@ -460,7 +460,7 @@ export function RefugeDetailScreen({
       {/* Action buttons overlay (fixed) */}
       <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
         <TouchableOpacity style={styles.actionButton} onPress={handleToggleFavorite}>
-          <HeartIcon width={20} height={20} color={refuge.isFavorite ? '#ef4444' : '#4A5565'} fill={refuge.isFavorite ? '#ef4444' : 'none'} />
+          <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.actionButton, { marginLeft: 8 }]} onPress={handleEdit}>
           <EditIcon width={18} height={18} color="#4A5565" />

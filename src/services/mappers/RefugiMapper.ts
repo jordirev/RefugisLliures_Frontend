@@ -58,10 +58,11 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
   return {
     id: parseInt(refugiDTO.id, 10),
     name: refugiDTO.name,
+    surname: refugiDTO.surname || undefined,
     coord: mapCoordFromDTO(refugiDTO.coord),
     altitude: refugiDTO.altitude,
     places: refugiDTO.places,
-    description: refugiDTO.description || refugiDTO.remarque,
+    description: refugiDTO.description,
     links: refugiDTO.links,
     type: refugiDTO.type,
     modified_at: refugiDTO.modified_at,
@@ -70,13 +71,8 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     condition: determineCondition(refugiDTO),
     
     // Propietats addicionals del frontend
-    isFavorite: false, // S'establirà després si cal
     imageUrl: undefined, // No ve del backend
-    distance: undefined, // Es calcularà al frontend
-    
-    // Compatibilitat amb camps antics
-    elevation: refugiDTO.altitude,
-    capacity: refugiDTO.places,
+
   };
 }
 
