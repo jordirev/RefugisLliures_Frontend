@@ -127,10 +127,18 @@ export function MapScreen({
   // Quan l'usuari selecciona un suggeriment
   const handleSuggestionSelect = useCallback((name: string) => {
     setSearchQuery(name);
-    // Trobar el refugi seleccionat i centrar el mapa
+    // Trobar el refugi seleccionat i obtenir detall (des de la cache si s'hi troba)
     const selectedRefuge = allLocations.find(loc => loc.name === name);
-    if (selectedRefuge) {
-      onLocationSelect(selectedRefuge);
+    const fetchAndSelect = async (id: number) => {
+      try {
+        const detailed = await RefugisService.getRefugiById(id);
+        if (detailed) onLocationSelect(detailed);
+      } catch (err) {
+        // ignore
+      }
+    };
+    if (selectedRefuge && selectedRefuge.id) {
+      fetchAndSelect(selectedRefuge.id);
     }
   }, [allLocations, onLocationSelect]);
 
@@ -155,7 +163,19 @@ export function MapScreen({
     <View style={styles.container}>
       <MapViewComponent
         locations={locations}
-        onLocationSelect={onLocationSelect}
+        onLocationSelect={async (payload: any) => {
+          try {
+            if (typeof payload === 'number') {
+              const detailed = await RefugisService.getRefugiById(payload);
+              if (detailed) onLocationSelect(detailed);
+            } else if (payload && payload.id) {
+              const detailed = await RefugisService.getRefugiById(payload.id);
+              if (detailed) onLocationSelect(detailed);
+            }
+          } catch (err) {
+            // ignore
+          }
+        }}
         selectedLocation={selectedLocation}
       />
       <View

@@ -9,6 +9,70 @@ const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 const DEBUG = false;
 
 export class RefugisService {
+  // Simple in-memory cache of the last full refugis result (mapped to Location[])
+  private static cachedRefugis: Location[] | null = null;
+
+  /**
+   * Returns the cached refugis if any
+   */
+  static getCachedRefugis(): Location[] | null {
+    return this.cachedRefugis;
+  }
+
+  /**
+   * Get a single refugi by id. First tries the in-memory cache populated by getRefugis().
+   * If not found, falls back to calling the detail endpoint `/refugis/<id>/`.
+   */
+  static async getRefugiById(id: number): Promise<Location | null> {
+    // Intentionally not logging here: API logs are emitted via fetchWithLog/logApi
+    if (this.cachedRefugis) {
+      const found = this.cachedRefugis.find(r => r.id === id);
+      if (found) {
+        // We know the id from cache; still fetch the detail endpoint to get
+        // the most complete/latest data. If the network call fails, return
+        // the cached version as a graceful fallback.
+        logApi('CACHE', `getRefugiById ${id} - hit (will fetch detail)`);
+        try {
+          const url = `${API_BASE_URL}/refugis/${id}/`;
+          logApi('GET', url);
+          const response = await fetchWithLog(url);
+          if (response.ok) {
+            const data = await response.json();
+            const mapped = mapRefugisFromDTO([data]);
+            return mapped.length > 0 ? mapped[0] : found;
+          } else {
+            // Non-ok response, fallback to cached
+            logApi('ERROR', `detail fetch status=${response.status}`);
+            return found;
+          }
+        } catch (err) {
+          logApi('ERROR', `getRefugiById ${id} detail fetch failed, returning cached`);
+          return found;
+        }
+      }
+      logApi('CACHE', `getRefugiById ${id} - miss`);
+    }
+
+    if (DEBUG) {
+      // In debug mode, try to find in mock data
+      const mock = mockLocations.find(m => m.id === id);
+      return mock || null;
+    }
+
+    try {
+      const url = `${API_BASE_URL}/refugis/${id}/`;
+      logApi('GET', url);
+      const response = await fetchWithLog(url);
+      if (!response.ok) return null;
+      const data = await response.json();
+      // data should be a RefugiDTO
+      const mapped = mapRefugisFromDTO([data]);
+      return mapped.length > 0 ? mapped[0] : null;
+    } catch (err) {
+      logApi('ERROR', `getRefugiById ${id} failed`);
+      return null;
+    }
+  }
   /**
    * Obté tots els refugis amb filtres opcionals
    */
@@ -61,7 +125,7 @@ export class RefugisService {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
-        const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
+  const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
         
         // Validem que la resposta té l'estructura esperada
         if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) {
@@ -69,8 +133,11 @@ export class RefugisService {
           return [];
         }
         
-        // Convertim els DTOs al format del frontend
-        return mapRefugisFromDTO(data.results);
+  // Convertim els DTOs al format del frontend
+  const mapped = mapRefugisFromDTO(data.results);
+  // Store in simple in-memory cache so other parts can lookup by id without refetching all
+  this.cachedRefugis = mapped;
+  return mapped;
       } catch (error) {
         // En cas d'error de xarxa o servidor, rethrowem un error senzill sense
         // fer console.error per evitar missatges a la consola. Els cridants

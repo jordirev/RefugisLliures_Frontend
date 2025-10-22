@@ -229,7 +229,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             marker.on('click', function() {
               window.ReactNativeWebView?.postMessage(JSON.stringify({
                 type: 'locationSelect',
-                location: location
+                id: location.id
               }));
             });
 
@@ -317,8 +317,13 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   const handleMessage = (event: any) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
-      if (data.type === 'locationSelect' && data.location) {
-        onLocationSelect(data.location);
+      if (data.type === 'locationSelect') {
+        // payload can be { id } coming from the webview
+        if (data.id !== undefined) {
+          onLocationSelect(data.id);
+        } else if (data.location) {
+          onLocationSelect(data.location);
+        }
       } else if (data.type === 'mapInitialized') {
         setMapInitialized(true);
       }
