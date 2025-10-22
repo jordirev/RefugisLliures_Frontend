@@ -281,7 +281,7 @@ export function RefugeDetailScreen({
     const lon = refuge.coord.long;
     // Build URL: https://www.windy.com/lat/long/mblue?lat,long,13,p:cities
     const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
-    const message = `Se't redirigirà cap a \nhttps://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.`;
+    const message = `https://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.`;
     confirmAndOpen(url, message);
   };
 
@@ -291,7 +291,7 @@ export function RefugeDetailScreen({
     const encoded = encodeURIComponent(name);
     // Example: https://ca.wikiloc.com/wikiloc/map.do?q=Refuge%20de%20la%20Gola&fitMapToTrails=1&page=1
     const url = `https://ca.wikiloc.com/wikiloc/map.do?q=${encoded}&fitMapToTrails=1&page=1`;
-    const message = `Se't redirigirà cap a \nhttps://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegure\'t que la ruta passa pel refugi. ⚠️`;
+    const message = `https://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegure\'t que la ruta passa pel refugi. ⚠️`;
     confirmAndOpen(url, message);
   };
 
@@ -489,7 +489,7 @@ export function RefugeDetailScreen({
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
-              <Text style={styles.modalTitle}>Se't redirigirà</Text>
+              <Text style={styles.modalTitle}>Se't redirigirà cap a:</Text>
               <Text style={styles.modalMessage}>{confirmModalMessage}</Text>
             </ScrollView>
             <View style={styles.modalButtonsRow}>
