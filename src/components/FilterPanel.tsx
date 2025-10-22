@@ -12,6 +12,8 @@ import {
 import { Filters } from '../types';
 import XIcon from '../assets/icons/x.svg';
 import FilterIcon from '../assets/icons/filters.svg';
+import { BadgeType } from './BadgeType';
+import { BadgeCondition } from './BadgeCondition';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 const screenWidth = Dimensions.get('window').width;
@@ -34,17 +36,17 @@ export function FilterPanel({
   maxCapacity = 30,
 }: FilterPanelProps) {
   const locationTypes = [
-    { id: 'Cabanne aberta', label: 'No guardat' },
+    { id: 'No guardat', label: 'No guardat' },
     { id: 'Orri', label: 'Orri' },
-    { id: 'Fermée', label: 'Tancat' },
-    { id: 'Berger', label: 'Ocupat estiu per pastor' },
-    { id: 'Emergencia', label: 'D\'emergencia' },
+    { id: 'D\'emergencia', label: "D'emergencia" },
+    { id: 'Ocupat estiu per pastor', label: 'Ocupat estiu per pastor' },
+    { id: 'Tancat', label: 'Tancat' },
   ];
 
   const conditions = [
-    { id: 'pobre', label: 'Pobre', color: '#EF4444' },
-    { id: 'normal', label: 'Normal', color: '#3B82F6' },
-    { id: 'bé', label: 'Bé', color: '#10B981' },
+    { id: 'pobre', label: 'Pobre' },
+    { id: 'normal', label: 'Normal' },
+    { id: 'bé', label: 'Bé' },
   ];
 
   const handleTypeChange = (typeId: string) => {
@@ -55,7 +57,7 @@ export function FilterPanel({
     onFiltersChange({ ...filters, types: newTypes });
   };
 
-  const handleConditionChange = (conditionId: 'pobre' | 'normal' | 'bé' | 'excel·lent') => {
+  const handleConditionChange = (conditionId: 'pobre' | 'normal' | 'bé') => {
     const newConditions = filters.condition.includes(conditionId)
       ? filters.condition.filter((c) => c !== conditionId)
       : [...filters.condition, conditionId];
@@ -141,25 +143,25 @@ export function FilterPanel({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Tipus de refugi</Text>
               <View style={styles.optionsGrid}>
-                {locationTypes.map((type) => (
-                  <TouchableOpacity
-                    key={type.id}
-                    style={styles.checkboxRow}
-                    onPress={() => handleTypeChange(type.id)}
-                  >
-                    <View
-                      style={[
-                        styles.checkbox,
-                        filters.types.includes(type.id) && styles.checkboxChecked,
-                      ]}
-                    >
-                      {filters.types.includes(type.id) && (
-                        <View style={styles.checkboxInner} />
-                      )}
-                      </View>
-                    <Text style={styles.checkboxLabel}>{type.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                <View style={styles.badgesRow}>
+                  {locationTypes.map((type) => {
+                    const selected = filters.types.includes(type.id);
+                    return (
+                      <TouchableOpacity
+                        key={type.id}
+                        style={[styles.badgeWrapper, selected ? styles.badgeSelectedWrapper : styles.badgeUnselectedWrapper]}
+                        onPress={() => handleTypeChange(type.id)}
+                        activeOpacity={0.8}
+                      >
+                        {/* When unselected, render BadgeType but force grey/transparent look via containerStyle */}
+                        <BadgeType
+                          type={type.label}
+                          style={selected ? undefined : styles.badgeUnselected}
+                        />
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             </View>
 
@@ -220,31 +222,24 @@ export function FilterPanel({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Estat</Text>
               <View style={styles.conditionsGrid}>
-                {conditions.map((condition) => (
-                  <TouchableOpacity
-                    key={condition.id}
-                    style={styles.checkboxRow}
-                    onPress={() => handleConditionChange(condition.id as any)}
-                  >
-                    <View
-                      style={[
-                        styles.checkbox,
-                        filters.condition.includes(condition.id as any) &&
-                          styles.checkboxChecked,
-                      ]}
-                    >
-                      {filters.condition.includes(condition.id as any) && (
-                        <View
-                          style={[
-                            styles.checkboxInner,
-                            { backgroundColor: condition.color },
-                          ]}
+                <View style={styles.badgesRow}>
+                  {conditions.map((condition) => {
+                    const selected = filters.condition.includes(condition.id as any);
+                    return (
+                      <TouchableOpacity
+                        key={condition.id}
+                        style={[styles.badgeWrapper, selected ? styles.badgeSelectedWrapper : styles.badgeUnselectedWrapper]}
+                        onPress={() => handleConditionChange(condition.id as any)}
+                        activeOpacity={0.8}
+                      >
+                        <BadgeCondition
+                          condition={condition.label}
+                          style={selected ? undefined : styles.badgeUnselected}
                         />
-                      )}
-                    </View>
-                    <Text style={styles.checkboxLabel}>{condition.label}</Text>
-                  </TouchableOpacity>
-                ))}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             </View>
           </ScrollView>
@@ -470,5 +465,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: 'white',
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    alignItems: 'center',
+  },
+  badgeWrapper: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  badgeSelectedWrapper: {
+    // keep default
+  },
+  badgeUnselectedWrapper: {
+    // keep default
+  },
+  badgeUnselected: {
+    backgroundColor: '#F3F4F6',
+    borderColor: '#D1D5DB',
+    opacity: 0.7,
   },
 });

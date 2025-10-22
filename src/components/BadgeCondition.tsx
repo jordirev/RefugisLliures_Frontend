@@ -5,9 +5,10 @@ import { Badge } from './Badge';
 interface Props {
   condition?: string;
   style?: ViewStyle;
+  neutral?: boolean;
 }
 
-export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', style }) => {
+export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', style, neutral = false }) => {
   const c = (condition || '').toLowerCase();
 
   const colors = ((): { background: string; color: string; borderColor: string } => {
@@ -26,6 +27,14 @@ export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', styl
     }
     return { background: '#E5E7EB', color: '#374151', borderColor: '#9CA3AF' };
   })();
+
+  if (neutral) {
+    const neutralBg = '#F3F4F6';
+    const neutralColor = '#6B7280';
+    const neutralBorder = '#D1D5DB';
+    const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
+    return <Badge text={condition} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+  }
 
   return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} />;
 };
