@@ -2,10 +2,11 @@ import { Location } from '../types';
 import { mockLocations } from '../utils/mockData';
 import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
 import { mapRefugisFromDTO } from './mappers/RefugiMapper';
+import { fetchWithLog, logApi } from './fetchWithLog';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export class RefugisService {
   /**
@@ -22,6 +23,7 @@ export class RefugisService {
   }): Promise<Location[]> {
     if (DEBUG){
       // Retornem dades simulades per a desenvolupament
+      logApi('GET', `${API_BASE_URL}/refugis/ (mock)`, { filters });
       return mockLocations;
     }
     else {
@@ -53,7 +55,7 @@ export class RefugisService {
         }
 
         const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
-        const response = await fetch(url);
+        const response = await fetchWithLog(url);
         
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);

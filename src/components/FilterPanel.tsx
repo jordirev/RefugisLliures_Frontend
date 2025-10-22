@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -49,36 +49,77 @@ export function FilterPanel({
     { id: 'bé', label: 'Bé' },
   ];
 
-  const handleTypeChange = (typeId: string) => {
-    const newTypes = filters.types.includes(typeId)
-      ? filters.types.filter((t) => t !== typeId)
-      : [...filters.types, typeId];
+  // Use a local copy of filters so changes are only emitted when the user
+  // explicitly applies them.
+  const [localFilters, setLocalFilters] = useState<Filters>(filters);
 
-    onFiltersChange({ ...filters, types: newTypes });
+  // When the panel opens, reset local filters to the current props.filters
+  useEffect(() => {
+    if (isOpen) setLocalFilters(filters);
+  }, [isOpen, filters]);
+
+  const handleTypeChange = (typeId: string) => {
+    const newTypes = localFilters.types.includes(typeId)
+      ? localFilters.types.filter((t) => t !== typeId)
+      : [...localFilters.types, typeId];
+
+    setLocalFilters({ ...localFilters, types: newTypes });
   };
 
   const handleConditionChange = (conditionId: 'pobre' | 'normal' | 'bé') => {
-    const newConditions = filters.condition.includes(conditionId)
-      ? filters.condition.filter((c) => c !== conditionId)
-      : [...filters.condition, conditionId];
+    const newConditions = localFilters.condition.includes(conditionId)
+      ? localFilters.condition.filter((c) => c !== conditionId)
+      : [...localFilters.condition, conditionId];
 
-    onFiltersChange({ ...filters, condition: newConditions });
+    setLocalFilters({ ...localFilters, condition: newConditions });
   };
 
   const clearFilters = () => {
-    onFiltersChange({
+    const cleared: Filters = {
       types: [],
       altitude: [0, maxAltitude],
       places: [0, maxPlaces],
       condition: [],
-    });
+    };
+
+    // Helper: shallow compare arrays
+    const arrEq = (a: any[], b: any[]) => {
+      if (a === b) return true;
+      if (!a || !b) return false;
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+      return true;
+    };
+
+    // Helper to check equality between Filters
+    const filtersEq = (a: Filters, b: Filters) =>
+      arrEq(a.types, b.types) &&
+      arrEq(a.condition, b.condition) &&
+      arrEq(a.altitude, b.altitude) &&
+      arrEq(a.places, b.places);
+
+    // If there are unsaved changes (localFilters != applied props.filters),
+    // revert local UI to the applied filters and do NOT call the API.
+    if (!filtersEq(localFilters, filters)) {
+      setLocalFilters(filters);
+      return;
+    }
+
+    // At this point localFilters equals applied filters. If applied filters are already cleared, do nothing.
+    const alreadyCleared = filtersEq(filters, cleared);
+    if (alreadyCleared) return;
+
+    // Otherwise, clear and emit cleared filters so parent can fetch without filters.
+    setLocalFilters(cleared);
+    onFiltersChange(cleared);
+    // Keep the panel open (do not call onClose) so the user can continue adjusting filters
   };
 
   const activeFiltersCount =
-    filters.types.length +
-    filters.condition.length +
-    (filters.altitude[0] > 0 || filters.altitude[1] < maxAltitude ? 1 : 0) +
-    (filters.places[0] > 0 || filters.places[1] < maxPlaces ? 1 : 0);
+    localFilters.types.length +
+    localFilters.condition.length +
+    (localFilters.altitude[0] > 0 || localFilters.altitude[1] < maxAltitude ? 1 : 0) +
+    (localFilters.places[0] > 0 || localFilters.places[1] < maxPlaces ? 1 : 0);
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -145,7 +186,7 @@ export function FilterPanel({
               <View style={styles.optionsGrid}>
                 <View style={styles.badgesRow}>
                   {locationTypes.map((type) => {
-                    const selected = filters.types.includes(type.id);
+                    const selected = localFilters.types.includes(type.id);
                     return (
                       <TouchableOpacity
                         key={type.id}
@@ -168,18 +209,18 @@ export function FilterPanel({
 
             {/* Altitud */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                Altitud: {filters.altitude[0]}m - {filters.altitude[1]}m
+                <Text style={styles.sectionTitle}>
+                Altitud: {localFilters.altitude[0]}m - {localFilters.altitude[1]}m
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
                 <MultiSlider
-                  values={[filters.altitude[0], filters.altitude[1]]}
+                  values={[localFilters.altitude[0], localFilters.altitude[1]]}
                   min={0}
                   max={maxAltitude}
                   step={50}
                   onValuesChange={(values) => {
-                    onFiltersChange({ ...filters, altitude: [values[0], values[1]] });
+                    setLocalFilters({ ...localFilters, altitude: [values[0], values[1]] });
                   }}
                   selectedStyle={styles.selectedTrack}
                   unselectedStyle={{ backgroundColor: 'transparent' }}
@@ -195,18 +236,18 @@ export function FilterPanel({
 
             {/* Capacitat */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                Capacitat: {filters.places[0]} - {filters.places[1]} places
+                <Text style={styles.sectionTitle}>
+                Capacitat: {localFilters.places[0]} - {localFilters.places[1]} places
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
                 <MultiSlider
-                  values={[filters.places[0], filters.places[1]]}
+                  values={[localFilters.places[0], localFilters.places[1]]}
                   min={0}
                   max={maxPlaces}
                   step={1}
                   onValuesChange={(values) => {
-                    onFiltersChange({ ...filters, places: [values[0], values[1]] });
+                    setLocalFilters({ ...localFilters, places: [values[0], values[1]] });
                   }}
                   selectedStyle={styles.selectedTrack}
                   unselectedStyle={{ backgroundColor: 'transparent' }}
@@ -225,7 +266,7 @@ export function FilterPanel({
               <View style={styles.conditionsGrid}>
                 <View style={styles.badgesRow}>
                   {conditions.map((condition) => {
-                    const selected = filters.condition.includes(condition.id as any);
+                    const selected = localFilters.condition.includes(condition.id as any);
                     return (
                       <TouchableOpacity
                         key={condition.id}
@@ -256,7 +297,11 @@ export function FilterPanel({
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.applyButton}
-              onPress={onClose}
+              onPress={() => {
+                // Emit the selected filters to parent and then close
+                onFiltersChange(localFilters);
+                onClose();
+              }}
             >
               <Text style={styles.applyButtonText}>Aplicar filtres</Text>
             </TouchableOpacity>
