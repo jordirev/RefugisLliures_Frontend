@@ -98,7 +98,7 @@ export function FavoritesView({ favorites, onToggleFavorite, onNavigate, onViewD
               condition={refuge.condition}
               imageUrl={refuge.imageUrl}
               region={refuge.region}
-              onViewMap={() => console.log(`Veure ${refuge.name} en el mapa`)}
+              onViewMap={() => {/* view on map handler - removed debug log */}}
               onViewDetail={() => onViewDetail && onViewDetail({
                 id: refuge.id,
                 name: refuge.name,

@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logApi } from './fetchWithLog';
 
 interface TileBounds {
   north: number;
@@ -48,7 +49,7 @@ export class MapCacheService {
         await FileSystem.makeDirectoryAsync(this.CACHE_DIR, { intermediates: true });
       }
     } catch (error) {
-      console.error('Error initializing cache directory:', error);
+      logApi('ERROR', `Error initializing cache directory: ${error}`);
       throw error;
     }
   }
@@ -106,7 +107,7 @@ export class MapCacheService {
       const downloadedInfo = await FileSystem.getInfoAsync(tilePath);
       return downloadedInfo.exists && downloadedInfo.size! > 0;
     } catch (error) {
-      console.error(`Error downloading tile ${tile.z}/${tile.x}/${tile.y}:`, error);
+      logApi('ERROR', `Error downloading tile ${tile.z}/${tile.x}/${tile.y}: ${error}`);
       return false;
     }
   }
@@ -129,7 +130,7 @@ export class MapCacheService {
       let downloadedTiles = 0;
       let successfulDownloads = 0;
 
-      console.log(`Starting download of ${totalTiles} tiles for zoom levels ${minZoom}-${maxZoom}`);
+  logApi('CACHE', `Starting download of ${totalTiles} tiles for zoom levels ${minZoom}-${maxZoom}`);
 
       // Crear metadata inicial
       const metadata: CacheMetadata = {
@@ -176,12 +177,12 @@ export class MapCacheService {
       metadata.isComplete = successfulDownloads === totalTiles;
       await this.saveMetadata(metadata);
 
-      console.log(`Download complete: ${successfulDownloads}/${totalTiles} tiles downloaded`);
+  logApi('CACHE', `Download complete: ${successfulDownloads}/${totalTiles} tiles downloaded`);
       onComplete?.(metadata.isComplete);
       
       return metadata.isComplete;
     } catch (error) {
-      console.error('Error downloading tiles:', error);
+      logApi('ERROR', `Error downloading tiles: ${error}`);
       onComplete?.(false);
       return false;
     }
@@ -221,7 +222,7 @@ export class MapCacheService {
     try {
       await AsyncStorage.setItem(this.METADATA_KEY, JSON.stringify(metadata));
     } catch (error) {
-      console.error('Error saving cache metadata:', error);
+      logApi('ERROR', `Error saving cache metadata: ${error}`);
     }
   }
 
@@ -233,7 +234,7 @@ export class MapCacheService {
       const data = await AsyncStorage.getItem(this.METADATA_KEY);
       return data ? JSON.parse(data) : null;
     } catch (error) {
-      console.error('Error getting cache metadata:', error);
+      logApi('ERROR', `Error getting cache metadata: ${error}`);
       return null;
     }
   }
@@ -248,9 +249,9 @@ export class MapCacheService {
         await FileSystem.deleteAsync(this.CACHE_DIR);
       }
       await AsyncStorage.removeItem(this.METADATA_KEY);
-      console.log('Cache cleared successfully');
+  logApi('CACHE', 'Cache cleared successfully');
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      logApi('ERROR', `Error clearing cache: ${error}`);
     }
   }
 
@@ -279,7 +280,7 @@ export class MapCacheService {
           }
           sizeInMB = sizeInMB / (1024 * 1024);
         } catch (error) {
-          console.warn('Error calculating cache size:', error);
+          logApi('ERROR', `Error calculating cache size: ${error}`);
         }
       }
 
@@ -289,7 +290,7 @@ export class MapCacheService {
         sizeInMB
       };
     } catch (error) {
-      console.error('Error getting cache status:', error);
+      logApi('ERROR', `Error getting cache status: ${error}`);
       return {
         isInitialized: false,
         metadata: null,
