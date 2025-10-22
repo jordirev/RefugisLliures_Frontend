@@ -6,9 +6,11 @@ interface Props {
   condition?: string;
   style?: ViewStyle;
   neutral?: boolean;
+  // when true, render text in muted (grey) color while keeping background/border
+  muted?: boolean;
 }
 
-export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', style, neutral = false }) => {
+export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', style, neutral = false, muted = false }) => {
   const c = (condition || '').toLowerCase();
 
   const colors = ((): { background: string; color: string; borderColor: string } => {
@@ -34,6 +36,10 @@ export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', styl
     const neutralBorder = '#D1D5DB';
     const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
     return <Badge text={condition} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+  }
+
+  if (muted) {
+    return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} textColor={'#6B7280'} />;
   }
 
   return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} />;

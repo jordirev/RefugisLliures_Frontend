@@ -157,6 +157,7 @@ export function FilterPanel({
                         <BadgeType
                           type={type.label}
                           style={selected ? undefined : styles.badgeUnselected}
+                          muted={!selected}
                         />
                       </TouchableOpacity>
                     );
@@ -235,6 +236,7 @@ export function FilterPanel({
                         <BadgeCondition
                           condition={condition.label}
                           style={selected ? undefined : styles.badgeUnselected}
+                          muted={!selected}
                         />
                       </TouchableOpacity>
                     );

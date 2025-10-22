@@ -8,6 +8,8 @@ interface BadgeProps {
   borderColor?: string;
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
+  // explicit text color override (useful for muted/unselected state)
+  textColor?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -17,6 +19,7 @@ export const Badge: React.FC<BadgeProps> = ({
   borderColor = '#30D270',
   containerStyle,
   textStyle,
+  textColor,
 }) => {
   return (
     <View
@@ -26,7 +29,7 @@ export const Badge: React.FC<BadgeProps> = ({
         containerStyle,
       ]}
     >
-      <Text style={[styles.text, { color }, textStyle]}>{text}</Text>
+      <Text style={[styles.text, { color: textColor ?? color }, textStyle]}>{text}</Text>
     </View>
   );
 };

@@ -6,9 +6,11 @@ interface Props {
   type?: string;
   style?: ViewStyle;
   neutral?: boolean;
+  // when true, render text in muted (grey) color while keeping background/border
+  muted?: boolean;
 }
 
-export const BadgeType: React.FC<Props> = ({ type = 'Desconegut', style, neutral = false }) => {
+export const BadgeType: React.FC<Props> = ({ type = 'Desconegut', style, neutral = false, muted = false }) => {
   const t = (type || '').toLowerCase();
 
   const colors = ((): { background: string; color: string; borderColor: string } => {
@@ -39,8 +41,13 @@ export const BadgeType: React.FC<Props> = ({ type = 'Desconegut', style, neutral
     const neutralColor = '#6B7280';
     const neutralBorder = '#D1D5DB';
     // merge provided style with opacity
-  const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
-  return <Badge text={type} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+    const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
+    return <Badge text={type} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+  }
+
+  // If caller requested muted text (e.g., unselected in FilterPanel), pass a grey textColor
+  if (muted) {
+    return <Badge text={type} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} textColor={'#6B7280'} />;
   }
 
   return <Badge text={type} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} />;
