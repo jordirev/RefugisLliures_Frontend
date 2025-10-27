@@ -52,6 +52,43 @@ function determineCondition(refugiDTO: RefugiDTO): "pobre" | "normal" | "bé" | 
 }
 
 /**
+ * Maps backend type string to frontend type number
+ */
+function mapTypeFromBackend(backendType: string | undefined): number {
+  if (!backendType) return 5; // unknown
+  
+  const typeNormalized = backendType.toLowerCase().trim();
+  
+  // "cabane ouverte" -> 0 -> noGuarded
+  if (typeNormalized.includes('cabane ouverte') && !typeNormalized.includes('berger')) {
+    return 0;
+  }
+  
+  // "cabane ouverte mais ocupee par le berger l ete" -> 1 -> occupiedInSummer
+  if (typeNormalized.includes('berger')) {
+    return 1;
+  }
+  
+  // "Fermée" or "cabane fermee" -> 2 -> closed
+  if (typeNormalized.includes('fermée') || typeNormalized.includes('fermee')) {
+    return 2;
+  }
+  
+  // "orri toue abri en pierre" -> 3 -> shelter
+  if (typeNormalized.includes('orri') || typeNormalized.includes('abri en pierre')) {
+    return 3;
+  }
+  
+  // "emergence" -> 4 -> emergency
+  if (typeNormalized.includes('emergence')) {
+    return 4;
+  }
+  
+  // null or unknown -> 5 -> unknown
+  return 5;
+}
+
+/**
  * Converteix un RefugiDTO al format Location del frontend
  */
 export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
@@ -64,7 +101,7 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     places: refugiDTO.places,
     description: refugiDTO.description,
     links: refugiDTO.links,
-    type: refugiDTO.type,
+    type: mapTypeFromBackend(refugiDTO.type),
     modified_at: refugiDTO.modified_at,
     region: refugiDTO.region,
     departement: refugiDTO.departement,

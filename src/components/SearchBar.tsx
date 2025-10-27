@@ -94,7 +94,9 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           <View style={styles.addIconContainer}>
             <Text style={styles.plusText}>+</Text>
           </View>
-          <Text style={styles.addText}>Afegeix</Text>
+          <Text style={styles.addText}>
+            {t('refuge.actions.add')}
+          </Text>
         </TouchableOpacity>
       )}
       </View>

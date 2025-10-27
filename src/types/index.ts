@@ -12,7 +12,7 @@ export interface Location {
   places?: number | null;
   description?: string;
   links?: string[];
-  type?: string; 
+  type?: number; // 0: noGuarded, 1: occupiedInSummer, 2: closed, 3: shelter, 4: emergency, 5: unknown
   modified_at?: string; // ISO date string
   region?: string | null;
   departement?: string | null;
@@ -21,7 +21,7 @@ export interface Location {
 }
 
 export interface Filters {
-  types: string[];
+  types: number[]; // Array of type numbers: 0-5
   altitude: [number, number];
   places: [number, number];
   condition: ("pobre" | "normal" | "bé")[];

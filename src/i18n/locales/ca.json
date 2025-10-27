@@ -11,12 +11,17 @@
     "loading": "Carregant...",
     "error": "Error",
     "success": "Èxit",
-    "noResults": "No s'han trobat resultats"
+    "noResults": "No s'han trobat resultats",
+    "readMore": "Llegir més...",
+    "showLess": "Mostrar menys",
+    "places": "places",
+    "download": "Descarregar",
+    "edit": "Editar"
   },
   "navigation": {
     "map": "Mapa",
     "favorites": "Favorits",
-    "reforms": "Reformes",
+    "renovations": "Reformes",
     "profile": "Perfil"
   },
   "map": {
@@ -37,7 +42,7 @@
     "removed": "Refugi eliminat dels favorits",
     "error": "No s'han pogut carregar els favorits"
   },
-  "reforms": {
+  "renovations": {
     "title": "Reformes i Millores",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformes",
@@ -87,44 +92,39 @@
   },
   "refuge": {
     "type": {
-      "refuge": "Refugi",
-      "guardedRefuge": "Refugi guardat",
-      "freeRefuge": "Refugi lliure",
-      "bivouac": "Vivac",
-      "hut": "Cabana",
       "shelter": "Orri",
-      "unknown": "Desconegut",
       "noGuarded": "No guardat",
-      "closed": "Tancat"
+      "closed": "Tancat",
+      "emergency": "D'emergència",
+      "occupiedInSummer": "Ocupat estiu per pastor",
+      "unknown": "Desconegut"
     },
     "condition": {
+      "label": "Estat:",
       "excellent": "Excel·lent",
       "good": "Bé",
-      "fair": "Normal",
+      "fair": "Correcte",
       "poor": "Pobre",
       "unknown": "Desconegut"
     },
-    "difficulty": {
-      "easy": "Fàcil",
-      "moderate": "Moderat",
-      "difficult": "Difícil"
-    },
     "details": {
-      "elevation": "Altitud",
+      "altitude": "Altitud",
       "capacity": "Places",
-      "distance": "Distància",
       "region": "Regió",
       "description": "Descripció",
+      "localisation": "Localització",
       "services": "Serveis",
-      "contact": "Contacte"
+      "prepareRoute": "Prepara la teva sortida",
+      "moreInformation": "Per a més informació:",
+      "weather": "Meteo",
+      "nearbyRoutes": "Rutes a prop"
     },
     "actions": {
       "navigate": "Navegar",
       "viewDetails": "Veure detalls",
       "favorite": "Favorit",
-      "share": "Compartir",
       "viewOnMap": "Veure al mapa",
-      "report": "Reportar problema"
+      "add": "Afegeix"
     }
   },
   "filters": {
@@ -134,35 +134,22 @@
     "activeFilters": "{{count}} filtre actiu",
     "activeFilters_plural": "{{count}} filtres actius",
     "types": {
-      "title": "Tipus d'ubicació",
-      "refuge": "Refugi",
-      "guardedRefuge": "Refugi guardat",
-      "bivouac": "Vivac",
-      "hut": "Cabana",
-      "shelter": "Orri"
+      "title": "Tipus de refugi",
+      "shelter": "Orri",
+      "noGuarded": "No guardat",
+      "closed": "Tancat",
+      "emergency": "D'emergència",
+      "occupiedInSummer": "Ocupat estiu per pastor",
+      "unknown": "Desconegut"
     },
-    "altitude": {
-      "title": "Altitud",
-      "min": "Mín",
-      "max": "Màx"
-    },
-    "capacity": {
-      "title": "Capacitat (places)",
-      "min": "Mín",
-      "max": "Màx"
-    },
+    "altitude": "Altitud",
+    "capacity": "Capacitat",
     "condition": {
-      "title": "Estat",
+      "title": "Estat del refugi",
       "excellent": "Excel·lent",
       "good": "Bé",
-      "fair": "Normal",
+      "fair": "Correcte",
       "poor": "Pobre"
-    },
-    "difficulty": {
-      "title": "Dificultat",
-      "easy": "Fàcil",
-      "moderate": "Moderat",
-      "difficult": "Difícil"
     }
   },
   "alerts": {
@@ -172,6 +159,36 @@
     "confirmDelete": "Estàs segur que vols eliminar aquest refugi dels favorits?",
     "deleteSuccess": "Refugi eliminat dels favorits",
     "shareError": "No s'ha pogut compartir",
-    "linkCopied": "Enllaç copiat al portapapers"
+    "linkCopied": "Enllaç copiat al portapapers",
+    "downloadGPX": {
+      "title": "Descarregar GPX",
+      "message": "Vols descarregar el fitxer GPX per a \"{{name}}\"?"
+    },
+    "downloadKML": {
+      "title": "Descarregar KML",
+      "message": "Vols descarregar el fitxer KML per a \"{{name}}\"?"
+    },
+    "fileSaved": "Fitxer desat",
+    "fileSavedAt": "S'ha desat el fitxer a: {{path}}",
+    "fileSavedLocation": "S'ha desat el fitxer a la ubicació seleccionada.",
+    "permissionRequired": "Permís necessari",
+    "permissionDenied": "No s'ha atorgat permís per desar a l'emmagatzematge.",
+    "fileError": "No s'ha pogut desar el fitxer. S'intentarà compartir-lo en canvi.",
+    "cannotOpenLink": "No es pot obrir l'enllaç",
+    "linkError": "No s'ha pogut obrir l'enllaç",
+    "redirectTo": "Se't redirigirà cap a:",
+    "windyMessage": "https://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegura't que la ruta passa pel refugi. ⚠️",
+    "editRefuge": "Editar {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Permís d'ubicació",
+      "message": "Permetre accedir a la ubicació actual del dispositiu?"
+    },
+    "notifications": {
+      "title": "Permís de notificacions",
+      "message": "Permetre enviar notificacions?"
+    }
   }
 }

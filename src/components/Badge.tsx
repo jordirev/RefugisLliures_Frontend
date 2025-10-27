@@ -21,6 +21,9 @@ export const Badge: React.FC<BadgeProps> = ({
   textStyle,
   textColor,
 }) => {
+  // Ensure text is always a valid string
+  const safeText = text != null ? String(text) : '';
+  
   return (
     <View
       style={[
@@ -29,7 +32,7 @@ export const Badge: React.FC<BadgeProps> = ({
         containerStyle,
       ]}
     >
-      <Text style={[styles.text, { color: textColor ?? color }, textStyle]}>{text}</Text>
+      <Text style={[styles.text, { color: textColor ?? color }, textStyle]}>{safeText}</Text>
     </View>
   );
 };

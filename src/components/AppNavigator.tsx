@@ -98,7 +98,7 @@ export function AppNavigator() {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
           tabBarActiveTintColor: '#4A5565',
           tabBarInactiveTintColor: '#4A5565',
           tabBarStyle: {
@@ -153,7 +153,7 @@ export function AppNavigator() {
                 <ReformIcon width={20} height={20} color="#4A5565" />
               </View>
             ),
-            tabBarAccessibilityLabel: t('navigation.reforms'),
+            tabBarAccessibilityLabel: t('navigation.renovations'),
           }}
           component={ReformsScreen}
         />

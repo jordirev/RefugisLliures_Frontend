@@ -11,12 +11,17 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "readMore": "Read more...",
+    "showLess": "Show less",
+    "places": "places",
+    "download": "Download",
+    "edit": "Edit"
   },
   "navigation": {
     "map": "Map",
     "favorites": "Favorites",
-    "reforms": "Improvements",
+    "renovations": "Renovations",
     "profile": "Profile"
   },
   "map": {
@@ -37,7 +42,7 @@
     "removed": "Shelter removed from favorites",
     "error": "Could not load favorites"
   },
-  "reforms": {
+  "renovations": {
     "title": "Improvements & Repairs",
     "count": "{{count}} improvement",
     "count_plural": "{{count}} improvements",
@@ -87,44 +92,39 @@
   },
   "refuge": {
     "type": {
-      "refuge": "Shelter",
-      "guardedRefuge": "Staffed shelter",
-      "freeRefuge": "Free shelter",
-      "bivouac": "Bivouac",
-      "hut": "Hut",
-      "shelter": "Shepherd's hut",
-      "unknown": "Unknown",
+      "shelter": "Shelter",
       "noGuarded": "Not staffed",
-      "closed": "Closed"
+      "closed": "Closed",
+      "emergency": "Emergency",
+      "occupiedInSummer": "Occupied summer by shepherd",
+      "unknown": "Unknown"
     },
     "condition": {
+      "label": "State:",
       "excellent": "Excellent",
       "good": "Good",
       "fair": "Fair",
       "poor": "Poor",
       "unknown": "Unknown"
     },
-    "difficulty": {
-      "easy": "Easy",
-      "moderate": "Moderate",
-      "difficult": "Difficult"
-    },
     "details": {
-      "elevation": "Elevation",
+      "altitude": "Altitude",
       "capacity": "Capacity",
-      "distance": "Distance",
       "region": "Region",
       "description": "Description",
+      "localisation": "Localisation",
       "services": "Services",
-      "contact": "Contact"
+      "prepareRoute": "Prepare your route",
+      "moreInformation": "For more information:",
+      "weather": "Weather",
+      "nearbyRoutes": "Nearby routes"
     },
     "actions": {
       "navigate": "Navigate",
       "viewDetails": "View details",
       "favorite": "Favorite",
-      "share": "Share",
       "viewOnMap": "View on map",
-      "report": "Report issue"
+      "add": "Add"
     }
   },
   "filters": {
@@ -134,35 +134,22 @@
     "activeFilters": "{{count}} active filter",
     "activeFilters_plural": "{{count}} active filters",
     "types": {
-      "title": "Location type",
-      "refuge": "Shelter",
-      "guardedRefuge": "Staffed shelter",
-      "bivouac": "Bivouac",
-      "hut": "Hut",
-      "shelter": "Shepherd's hut"
+      "title": "Type of shelter",
+      "shelter": "Shelter",
+      "noGuarded": "Not staffed",
+      "closed": "Closed",
+      "emergency": "Emergency",
+      "occupiedInSummer": "Occupied summer by shepherd",
+      "unknown": "Unknown"
     },
-    "altitude": {
-      "title": "Altitude",
-      "min": "Min",
-      "max": "Max"
-    },
-    "capacity": {
-      "title": "Capacity (places)",
-      "min": "Min",
-      "max": "Max"
-    },
+    "altitude": "Altitude",
+    "capacity": "Capacity",
     "condition": {
-      "title": "Condition",
+      "title": "Shelter condition",
       "excellent": "Excellent",
       "good": "Good",
       "fair": "Fair",
       "poor": "Poor"
-    },
-    "difficulty": {
-      "title": "Difficulty",
-      "easy": "Easy",
-      "moderate": "Moderate",
-      "difficult": "Difficult"
     }
   },
   "alerts": {
@@ -172,6 +159,36 @@
     "confirmDelete": "Are you sure you want to remove this shelter from your favorites?",
     "deleteSuccess": "Shelter removed from favorites",
     "shareError": "Could not share",
-    "linkCopied": "Link copied to clipboard"
+    "linkCopied": "Link copied to clipboard",
+    "downloadGPX": {
+      "title": "Download GPX",
+      "message": "Do you want to download the GPX file for \"{{name}}\"?"
+    },
+    "downloadKML": {
+      "title": "Download KML",
+      "message": "Do you want to download the KML file for \"{{name}}\"?"
+    },
+    "fileSaved": "File saved",
+    "fileSavedAt": "File saved at: {{path}}",
+    "fileSavedLocation": "File saved to selected location.",
+    "permissionRequired": "Permission required",
+    "permissionDenied": "Storage permission not granted.",
+    "fileError": "Could not save file. Will try to share it instead.",
+    "cannotOpenLink": "Cannot open link",
+    "linkError": "Could not open link",
+    "redirectTo": "You will be redirected to:",
+    "windyMessage": "https://www.windy.com.\n\nThis is a weather website that offers various forecasts. The most recommended ones are Meteoblue (MBLUE) and Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ There may not be routes passing through the shelter. Make sure the route goes through the shelter. ⚠️",
+    "editRefuge": "Edit {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Location permission",
+      "message": "Allow access to the device's current location?"
+    },
+    "notifications": {
+      "title": "Notification permission",
+      "message": "Allow sending notifications?"
+    }
   }
 }

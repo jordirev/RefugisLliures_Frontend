@@ -8,13 +8,13 @@ export function ReformsScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('reforms.title')}</Text>
+        <Text style={styles.title}>{t('renovations.title')}</Text>
       </View>
       
       <View style={styles.content}>
-        <Text style={styles.sectionTitle}>🚧 {t('reforms.empty.title')}</Text>
+        <Text style={styles.sectionTitle}>🚧 {t('renovations.empty.title')}</Text>
         <Text style={styles.description}>
-          {t('reforms.empty.message')}
+          {t('renovations.empty.message')}
         </Text>
         
         <View style={styles.card}>

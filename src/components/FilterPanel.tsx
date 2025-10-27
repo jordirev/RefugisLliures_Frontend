@@ -39,11 +39,11 @@ export function FilterPanel({
   const { t } = useTranslation();
   
   const locationTypes = [
-    { id: 'No guardat', label: t('refuge.type.noGuarded') },
-    { id: 'Orri', label: t('refuge.type.shelter') },
-    { id: 'D\'emergencia', label: t('filters.types.bivouac') },
-    { id: 'Ocupat estiu per pastor', label: 'Ocupat estiu per pastor' },
-    { id: 'Tancat', label: t('refuge.type.closed') },
+    { id: 0, label: t('refuge.type.noGuarded') },
+    { id: 3, label: t('refuge.type.shelter') },
+    { id: 4, label: t('refuge.type.emergency') },
+    { id: 1, label: t('refuge.type.occupiedInSummer') },
+    { id: 2, label: t('refuge.type.closed') },
   ];
 
   const conditions = [
@@ -61,7 +61,7 @@ export function FilterPanel({
     if (isOpen) setLocalFilters(filters);
   }, [isOpen, filters]);
 
-  const handleTypeChange = (typeId: string) => {
+  const handleTypeChange = (typeId: number) => {
     const newTypes = localFilters.types.includes(typeId)
       ? localFilters.types.filter((t) => t !== typeId)
       : [...localFilters.types, typeId];
@@ -185,7 +185,9 @@ export function FilterPanel({
 
             {/* Tipus d'ubicació */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('filters.types.title')}</Text>
+              <Text style={styles.sectionTitle}>
+                {t('filters.types.title')}
+              </Text>
               <View style={styles.optionsGrid}>
                 <View style={styles.badgesRow}>
                   {locationTypes.map((type) => {
@@ -199,7 +201,7 @@ export function FilterPanel({
                       >
                         {/* When unselected, render BadgeType but force grey/transparent look via containerStyle */}
                         <BadgeType
-                          type={type.label}
+                          type={type.id}
                           style={selected ? undefined : styles.badgeUnselected}
                           muted={!selected}
                         />
@@ -213,7 +215,7 @@ export function FilterPanel({
             {/* Altitud */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                {t('filters.altitude.title')}: {localFilters.altitude[0]}m - {localFilters.altitude[1]}m
+                {t('filters.altitude')}: {localFilters.altitude[0]}m - {localFilters.altitude[1]}m
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
@@ -240,7 +242,7 @@ export function FilterPanel({
             {/* Capacitat */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                {t('filters.capacity.title')}: {localFilters.places[0]} - {localFilters.places[1]} places
+                {t('filters.capacity')}: {localFilters.places[0]} - {localFilters.places[1]} {t('common.places')}
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
@@ -265,7 +267,9 @@ export function FilterPanel({
 
             {/* Estat/Condició */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t('filters.condition.title')}</Text>
+              <Text style={styles.sectionTitle}>
+                {t('filters.condition.title')}
+              </Text>
               <View style={styles.conditionsGrid}>
                 <View style={styles.badgesRow}>
                   {conditions.map((condition) => {

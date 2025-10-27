@@ -11,12 +11,17 @@
     "loading": "Chargement...",
     "error": "Erreur",
     "success": "Succès",
-    "noResults": "Aucun résultat trouvé"
+    "noResults": "Aucun résultat trouvé",
+    "readMore": "Lire plus...",
+    "showLess": "Afficher moins",
+    "places": "places",
+    "download": "Télécharger",
+    "edit": "Modifier"
   },
   "navigation": {
     "map": "Carte",
     "favorites": "Favoris",
-    "reforms": "Améliorations",
+    "renovations": "Rénovations",
     "profile": "Profil"
   },
   "map": {
@@ -37,7 +42,7 @@
     "removed": "Refuge supprimé des favoris",
     "error": "Impossible de charger les favoris"
   },
-  "reforms": {
+  "renovations": {
     "title": "Améliorations et Rénovations",
     "count": "{{count}} amélioration",
     "count_plural": "{{count}} améliorations",
@@ -87,44 +92,39 @@
   },
   "refuge": {
     "type": {
-      "refuge": "Refuge",
-      "guardedRefuge": "Refuge gardé",
-      "freeRefuge": "Refuge non gardé",
-      "bivouac": "Bivouac",
-      "hut": "Cabane",
       "shelter": "Orri",
-      "unknown": "Inconnu",
       "noGuarded": "Non gardé",
-      "closed": "Fermé"
+      "closed": "Fermé",
+      "emergency": "D'urgence",
+      "occupiedInSummer": "Occupé été par berger",
+      "unknown": "Inconnu"
     },
     "condition": {
+      "label": "État:",
       "excellent": "Excellent",
       "good": "Bon",
       "fair": "Correct",
       "poor": "Pauvre",
       "unknown": "Inconnu"
     },
-    "difficulty": {
-      "easy": "Facile",
-      "moderate": "Modéré",
-      "difficult": "Difficile"
-    },
     "details": {
-      "elevation": "Altitude",
+      "altitude": "Altitude",
       "capacity": "Capacité",
-      "distance": "Distance",
       "region": "Région",
       "description": "Description",
+      "localisation": "Localisation",
       "services": "Services",
-      "contact": "Contact"
+      "prepareRoute": "Préparez votre sortie",
+      "moreInformation": "Pour plus d'informations:",
+      "weather": "Météo",
+      "nearbyRoutes": "Itinéraires à proximité"
     },
     "actions": {
       "navigate": "Naviguer",
       "viewDetails": "Voir détails",
       "favorite": "Favori",
-      "share": "Partager",
       "viewOnMap": "Voir sur la carte",
-      "report": "Signaler un problème"
+      "add": "Ajouter"
     }
   },
   "filters": {
@@ -134,35 +134,22 @@
     "activeFilters": "{{count}} filtre actif",
     "activeFilters_plural": "{{count}} filtres actifs",
     "types": {
-      "title": "Type d'emplacement",
-      "refuge": "Refuge",
-      "guardedRefuge": "Refuge gardé",
-      "bivouac": "Bivouac",
-      "hut": "Cabane",
-      "shelter": "Orri"
+      "title": "Type de refuge",
+      "shelter": "Orri",
+      "noGuarded": "Non gardé",
+      "closed": "Fermé",
+      "emergency": "D'urgence",
+      "occupiedInSummer": "Occupé été par berger",
+      "unknown": "Inconnu"
     },
-    "altitude": {
-      "title": "Altitude",
-      "min": "Min",
-      "max": "Max"
-    },
-    "capacity": {
-      "title": "Capacité (places)",
-      "min": "Min",
-      "max": "Max"
-    },
+    "altitude": "Altitude",
+    "capacity": "Capacité",
     "condition": {
-      "title": "État",
+      "title": "État du refuge",
       "excellent": "Excellent",
       "good": "Bon",
       "fair": "Correct",
       "poor": "Pauvre"
-    },
-    "difficulty": {
-      "title": "Difficulté",
-      "easy": "Facile",
-      "moderate": "Modéré",
-      "difficult": "Difficile"
     }
   },
   "alerts": {
@@ -172,6 +159,36 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce refuge de vos favoris?",
     "deleteSuccess": "Refuge supprimé des favoris",
     "shareError": "Impossible de partager",
-    "linkCopied": "Lien copié dans le presse-papiers"
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "downloadGPX": {
+      "title": "Télécharger GPX",
+      "message": "Voulez-vous télécharger le fichier GPX pour \"{{name}}\" ?"
+    },
+    "downloadKML": {
+      "title": "Télécharger KML",
+      "message": "Voulez-vous télécharger le fichier KML pour \"{{name}}\" ?"
+    },
+    "fileSaved": "Fichier enregistré",
+    "fileSavedAt": "Le fichier a été enregistré à : {{path}}",
+    "fileSavedLocation": "Le fichier a été enregistré à l'emplacement sélectionné.",
+    "permissionRequired": "Permission requise",
+    "permissionDenied": "L'autorisation d'enregistrer dans le stockage n'a pas été accordée.",
+    "fileError": "Impossible d'enregistrer le fichier. Essai de partage à la place.",
+    "cannotOpenLink": "Impossible d'ouvrir le lien",
+    "linkError": "Impossible d'ouvrir le lien",
+    "redirectTo": "Vous serez redirigé vers :",
+    "windyMessage": "https://www.windy.com.\n\nCe site web de météorologie offre diverses prévisions. Les plus recommandées sont Meteoblue (MBLUE) et Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Il se peut qu'il n'y ait pas d'itinéraires passant par le refuge. Assurez-vous que l'itinéraire passe par le refuge. ⚠️",
+    "editRefuge": "Modifier {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Permission de localisation",
+      "message": "Autoriser l'accès à la localisation actuelle de l'appareil ?"
+    },
+    "notifications": {
+      "title": "Permission de notifications",
+      "message": "Autoriser l'envoi de notifications ?"
+    }
   }
 }
