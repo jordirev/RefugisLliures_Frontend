@@ -1,0 +1,177 @@
+{
+  "common": {
+    "search": "Rechercher refuges...",
+    "filters": "Filtres",
+    "clear": "Effacer",
+    "apply": "Appliquer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "back": "Retour",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "noResults": "Aucun résultat trouvé"
+  },
+  "navigation": {
+    "map": "Carte",
+    "favorites": "Favoris",
+    "reforms": "Améliorations",
+    "profile": "Profil"
+  },
+  "map": {
+    "title": "Carte des Refuges",
+    "searchPlaceholder": "Rechercher refuges...",
+    "noLocationsFound": "Impossible de charger les refuges",
+    "errorLoading": "Impossible de charger les refuges"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "count": "{{count}} refuge",
+    "count_plural": "{{count}} refuges",
+    "empty": {
+      "title": "Vous n'avez pas encore de favoris",
+      "message": "Ajoutez des refuges à vos favoris pour les voir ici"
+    },
+    "added": "Refuge ajouté aux favoris",
+    "removed": "Refuge supprimé des favoris",
+    "error": "Impossible de charger les favoris"
+  },
+  "reforms": {
+    "title": "Améliorations et Rénovations",
+    "count": "{{count}} amélioration",
+    "count_plural": "{{count}} améliorations",
+    "priority": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "status": {
+      "pending": "En attente",
+      "inProgress": "En cours",
+      "completed": "Terminée"
+    },
+    "contributeButton": "Contribuer",
+    "moreInfo": "Plus d'infos",
+    "empty": {
+      "title": "Aucune amélioration en attente",
+      "message": "Toutes les améliorations sont terminées"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "stats": {
+      "visited": "Refuges visités",
+      "favorites": "Favoris",
+      "contributions": "Contributions"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "preferences": "Préférences",
+      "notifications": "Notifications",
+      "language": "Langue",
+      "help": "Aide et support",
+      "about": "À propos de l'app",
+      "privacy": "Confidentialité",
+      "terms": "Conditions générales"
+    },
+    "languageSelector": {
+      "title": "Sélectionnez la langue",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      }
+    }
+  },
+  "refuge": {
+    "type": {
+      "refuge": "Refuge",
+      "guardedRefuge": "Refuge gardé",
+      "freeRefuge": "Refuge non gardé",
+      "bivouac": "Bivouac",
+      "hut": "Cabane",
+      "shelter": "Orri",
+      "unknown": "Inconnu",
+      "noGuarded": "Non gardé",
+      "closed": "Fermé"
+    },
+    "condition": {
+      "excellent": "Excellent",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Pauvre",
+      "unknown": "Inconnu"
+    },
+    "difficulty": {
+      "easy": "Facile",
+      "moderate": "Modéré",
+      "difficult": "Difficile"
+    },
+    "details": {
+      "elevation": "Altitude",
+      "capacity": "Capacité",
+      "distance": "Distance",
+      "region": "Région",
+      "description": "Description",
+      "services": "Services",
+      "contact": "Contact"
+    },
+    "actions": {
+      "navigate": "Naviguer",
+      "viewDetails": "Voir détails",
+      "favorite": "Favori",
+      "share": "Partager",
+      "viewOnMap": "Voir sur la carte",
+      "report": "Signaler un problème"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "clearAll": "Tout effacer",
+    "applyFilters": "Appliquer les filtres",
+    "activeFilters": "{{count}} filtre actif",
+    "activeFilters_plural": "{{count}} filtres actifs",
+    "types": {
+      "title": "Type d'emplacement",
+      "refuge": "Refuge",
+      "guardedRefuge": "Refuge gardé",
+      "bivouac": "Bivouac",
+      "hut": "Cabane",
+      "shelter": "Orri"
+    },
+    "altitude": {
+      "title": "Altitude",
+      "min": "Min",
+      "max": "Max"
+    },
+    "capacity": {
+      "title": "Capacité (places)",
+      "min": "Min",
+      "max": "Max"
+    },
+    "condition": {
+      "title": "État",
+      "excellent": "Excellent",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Pauvre"
+    },
+    "difficulty": {
+      "title": "Difficulté",
+      "easy": "Facile",
+      "moderate": "Modéré",
+      "difficult": "Difficile"
+    }
+  },
+  "alerts": {
+    "navigation": "Navigation vers {{name}}",
+    "favoriteUpdated": "Favori mis à jour",
+    "favoriteError": "Impossible de mettre à jour les favoris",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce refuge de vos favoris?",
+    "deleteSuccess": "Refuge supprimé des favoris",
+    "shareError": "Impossible de partager",
+    "linkCopied": "Lien copié dans le presse-papiers"
+  }
+}

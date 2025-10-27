@@ -1,17 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useTranslation } from '../utils/useTranslation';
 
 export function ReformsScreen() {
+  const { t } = useTranslation();
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Reformes i Millores</Text>
+        <Text style={styles.title}>{t('reforms.title')}</Text>
       </View>
       
       <View style={styles.content}>
-        <Text style={styles.sectionTitle}>🚧 En construcció</Text>
+        <Text style={styles.sectionTitle}>🚧 {t('reforms.empty.title')}</Text>
         <Text style={styles.description}>
-          Aquesta secció contindrà informació sobre reformes i millores dels refugis.
+          {t('reforms.empty.message')}
         </Text>
         
         <View style={styles.card}>

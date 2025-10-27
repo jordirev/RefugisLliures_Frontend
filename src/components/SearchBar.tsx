@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useTranslation } from '../utils/useTranslation';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';
@@ -16,6 +17,8 @@ interface SearchBarProps {
 
 // Memoritzem el component per evitar re-renders innecessaris
 export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect }: SearchBarProps) {
+  const { t } = useTranslation();
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
       <View style={styles.container}>
@@ -29,7 +32,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           />
           <TextInput
             style={styles.input}
-            placeholder="Cercar refugis..."
+            placeholder={t('map.searchPlaceholder')}
             value={searchQuery}
             onChangeText={onSearchChange}
             placeholderTextColor="#6B7280"
@@ -41,7 +44,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           {/* Clear (cross) button shown when there is a query */}
           {searchQuery && searchQuery.trim().length > 0 && (
             <TouchableOpacity
-              accessibilityLabel="Netejar cerca"
+              accessibilityLabel={t('common.clear')}
               onPress={() => {
                 Keyboard.dismiss();
                 onSearchChange('');

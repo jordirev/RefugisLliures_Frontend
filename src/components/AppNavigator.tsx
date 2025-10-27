@@ -12,6 +12,7 @@ import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../types';
+import { useTranslation } from '../utils/useTranslation';
 
 import MapIcon from '../assets/icons/map2.svg';
 import FavIcon from '../assets/icons/fav.svg';
@@ -21,6 +22,7 @@ import UserIcon from '../assets/icons/user.svg';
 const Tab = createBottomTabNavigator();
 
 export function AppNavigator() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   
   // Només estats globals (compartits entre pantalles)
@@ -35,14 +37,14 @@ export function AppNavigator() {
     try {
       // TODO: Implementar toggle favorits quan el backend estigui llest
       await RefugisService.addFavorite(locationId);
-      Alert.alert('', 'Favorit actualitzat');
+      Alert.alert('', t('alerts.favoriteUpdated'));
     } catch (error) {
-      Alert.alert('Error', 'No s\'ha pogut actualitzar els favorits');
+      Alert.alert(t('common.error'), t('alerts.favoriteError'));
     }
   };
 
   const handleNavigate = (location: Location) => {
-    Alert.alert('Navegació', `Navegant a ${location.name}`);
+    Alert.alert(t('navigation.map'), t('alerts.navigation', { name: location.name }));
   };
 
 
@@ -113,6 +115,7 @@ export function AppNavigator() {
                 <MapIcon width={20} height={20} color="#4A5565" />
               </View>
             ),
+            tabBarAccessibilityLabel: t('navigation.map'),
           }}
         >
           {() => (
@@ -131,6 +134,7 @@ export function AppNavigator() {
                 <FavIcon width={20} height={20} color="#4A5565" />
               </View>
             ),
+            tabBarAccessibilityLabel: t('navigation.favorites'),
           }}
         >
           {() => (
@@ -149,6 +153,7 @@ export function AppNavigator() {
                 <ReformIcon width={20} height={20} color="#4A5565" />
               </View>
             ),
+            tabBarAccessibilityLabel: t('navigation.reforms'),
           }}
           component={ReformsScreen}
         />
@@ -161,6 +166,7 @@ export function AppNavigator() {
                 <UserIcon width={20} height={20} color="#4A5565" />
               </View>
             ),
+            tabBarAccessibilityLabel: t('navigation.profile'),
           }}
           component={ProfileScreen}
         />

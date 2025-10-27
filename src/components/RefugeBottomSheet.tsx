@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../types';
 import { BadgeType } from './BadgeType';
+import { useTranslation } from '../utils/useTranslation';
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
@@ -37,6 +38,7 @@ export function RefugeBottomSheet({
   onNavigate,
   onViewDetails 
 }: RefugeBottomSheetProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   if (!isVisible) return null;
 
@@ -113,7 +115,7 @@ export function RefugeBottomSheet({
           onPress={() => onViewDetails(refuge)}
         >
           <Text style={[styles.buttonText, styles.detailsButtonText]}>
-            Veure detalls
+            {t('refuge.actions.viewDetails')}
           </Text>
         </TouchableOpacity>
       </View>

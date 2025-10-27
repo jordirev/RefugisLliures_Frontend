@@ -15,6 +15,7 @@ import FilterIcon from '../assets/icons/filters.svg';
 import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { useTranslation } from '../utils/useTranslation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -35,18 +36,20 @@ export function FilterPanel({
   maxAltitude = 3250,
   maxPlaces = 30,
 }: FilterPanelProps) {
+  const { t } = useTranslation();
+  
   const locationTypes = [
-    { id: 'No guardat', label: 'No guardat' },
-    { id: 'Orri', label: 'Orri' },
-    { id: 'D\'emergencia', label: "D'emergencia" },
+    { id: 'No guardat', label: t('refuge.type.noGuarded') },
+    { id: 'Orri', label: t('refuge.type.shelter') },
+    { id: 'D\'emergencia', label: t('filters.types.bivouac') },
     { id: 'Ocupat estiu per pastor', label: 'Ocupat estiu per pastor' },
-    { id: 'Tancat', label: 'Tancat' },
+    { id: 'Tancat', label: t('refuge.type.closed') },
   ];
 
   const conditions = [
-    { id: 'pobre', label: 'Pobre' },
-    { id: 'normal', label: 'Normal' },
-    { id: 'bé', label: 'Bé' },
+    { id: 'pobre', label: t('refuge.condition.poor') },
+    { id: 'normal', label: t('refuge.condition.fair') },
+    { id: 'bé', label: t('refuge.condition.good') },
   ];
 
   // Use a local copy of filters so changes are only emitted when the user
@@ -150,7 +153,7 @@ export function FilterPanel({
           <View style={styles.headerFixed}>
             <View style={styles.headerLeft}>
               <FilterIcon width={20} height={20} color="#1E1E1E" />
-              <Text style={styles.title}>Filtres</Text>
+              <Text style={styles.title}>{t('filters.title')}</Text>
               {activeFiltersCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{activeFiltersCount}</Text>
@@ -182,7 +185,7 @@ export function FilterPanel({
 
             {/* Tipus d'ubicació */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Tipus de refugi</Text>
+              <Text style={styles.sectionTitle}>{t('filters.types.title')}</Text>
               <View style={styles.optionsGrid}>
                 <View style={styles.badgesRow}>
                   {locationTypes.map((type) => {
@@ -210,7 +213,7 @@ export function FilterPanel({
             {/* Altitud */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                Altitud: {localFilters.altitude[0]}m - {localFilters.altitude[1]}m
+                {t('filters.altitude.title')}: {localFilters.altitude[0]}m - {localFilters.altitude[1]}m
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
@@ -237,7 +240,7 @@ export function FilterPanel({
             {/* Capacitat */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                Capacitat: {localFilters.places[0]} - {localFilters.places[1]} places
+                {t('filters.capacity.title')}: {localFilters.places[0]} - {localFilters.places[1]} places
               </Text>
               <View style={styles.multiSliderContainer}>
                 <View style={styles.staticUnselectedTrack} />
@@ -262,7 +265,7 @@ export function FilterPanel({
 
             {/* Estat/Condició */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Estat</Text>
+              <Text style={styles.sectionTitle}>{t('filters.condition.title')}</Text>
               <View style={styles.conditionsGrid}>
                 <View style={styles.badgesRow}>
                   {conditions.map((condition) => {
@@ -293,7 +296,7 @@ export function FilterPanel({
               style={styles.clearButton}
               onPress={clearFilters}
             >
-              <Text style={styles.clearButtonText}>Netejar tot</Text>
+              <Text style={styles.clearButtonText}>{t('filters.clearAll')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.applyButton}
@@ -303,7 +306,7 @@ export function FilterPanel({
                 onClose();
               }}
             >
-              <Text style={styles.applyButtonText}>Aplicar filtres</Text>
+              <Text style={styles.applyButtonText}>{t('filters.applyFilters')}</Text>
             </TouchableOpacity>
           </View>
   </View>

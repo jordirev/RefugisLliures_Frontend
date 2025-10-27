@@ -1,0 +1,177 @@
+{
+  "common": {
+    "search": "Search shelters...",
+    "filters": "Filters",
+    "clear": "Clear",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "noResults": "No results found"
+  },
+  "navigation": {
+    "map": "Map",
+    "favorites": "Favorites",
+    "reforms": "Improvements",
+    "profile": "Profile"
+  },
+  "map": {
+    "title": "Shelter Map",
+    "searchPlaceholder": "Search shelters...",
+    "noLocationsFound": "Could not load shelters",
+    "errorLoading": "Could not load shelters"
+  },
+  "favorites": {
+    "title": "My favorites",
+    "count": "{{count}} shelter",
+    "count_plural": "{{count}} shelters",
+    "empty": {
+      "title": "You don't have favorites yet",
+      "message": "Add shelters to your favorites to see them here"
+    },
+    "added": "Shelter added to favorites",
+    "removed": "Shelter removed from favorites",
+    "error": "Could not load favorites"
+  },
+  "reforms": {
+    "title": "Improvements & Repairs",
+    "count": "{{count}} improvement",
+    "count_plural": "{{count}} improvements",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In progress",
+      "completed": "Completed"
+    },
+    "contributeButton": "Contribute",
+    "moreInfo": "More info",
+    "empty": {
+      "title": "No pending improvements",
+      "message": "All improvements are completed"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "stats": {
+      "visited": "Shelters visited",
+      "favorites": "Favorites",
+      "contributions": "Contributions"
+    },
+    "settings": {
+      "title": "Settings",
+      "preferences": "Preferences",
+      "notifications": "Notifications",
+      "language": "Language",
+      "help": "Help & support",
+      "about": "About the app",
+      "privacy": "Privacy",
+      "terms": "Terms & conditions"
+    },
+    "languageSelector": {
+      "title": "Select language",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      }
+    }
+  },
+  "refuge": {
+    "type": {
+      "refuge": "Shelter",
+      "guardedRefuge": "Staffed shelter",
+      "freeRefuge": "Free shelter",
+      "bivouac": "Bivouac",
+      "hut": "Hut",
+      "shelter": "Shepherd's hut",
+      "unknown": "Unknown",
+      "noGuarded": "Not staffed",
+      "closed": "Closed"
+    },
+    "condition": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "unknown": "Unknown"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "moderate": "Moderate",
+      "difficult": "Difficult"
+    },
+    "details": {
+      "elevation": "Elevation",
+      "capacity": "Capacity",
+      "distance": "Distance",
+      "region": "Region",
+      "description": "Description",
+      "services": "Services",
+      "contact": "Contact"
+    },
+    "actions": {
+      "navigate": "Navigate",
+      "viewDetails": "View details",
+      "favorite": "Favorite",
+      "share": "Share",
+      "viewOnMap": "View on map",
+      "report": "Report issue"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all",
+    "applyFilters": "Apply filters",
+    "activeFilters": "{{count}} active filter",
+    "activeFilters_plural": "{{count}} active filters",
+    "types": {
+      "title": "Location type",
+      "refuge": "Shelter",
+      "guardedRefuge": "Staffed shelter",
+      "bivouac": "Bivouac",
+      "hut": "Hut",
+      "shelter": "Shepherd's hut"
+    },
+    "altitude": {
+      "title": "Altitude",
+      "min": "Min",
+      "max": "Max"
+    },
+    "capacity": {
+      "title": "Capacity (places)",
+      "min": "Min",
+      "max": "Max"
+    },
+    "condition": {
+      "title": "Condition",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "difficulty": {
+      "title": "Difficulty",
+      "easy": "Easy",
+      "moderate": "Moderate",
+      "difficult": "Difficult"
+    }
+  },
+  "alerts": {
+    "navigation": "Navigating to {{name}}",
+    "favoriteUpdated": "Favorite updated",
+    "favoriteError": "Could not update favorites",
+    "confirmDelete": "Are you sure you want to remove this shelter from your favorites?",
+    "deleteSuccess": "Shelter removed from favorites",
+    "shareError": "Could not share",
+    "linkCopied": "Link copied to clipboard"
+  }
+}

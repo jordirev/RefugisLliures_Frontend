@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AppNavigator } from './src/components/AppNavigator';
+import './src/i18n'; // Initialize i18n
 
 export default function App() {
   return (

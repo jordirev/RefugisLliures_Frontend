@@ -5,6 +5,7 @@ import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../types';
 import { RefugisService } from '../services/RefugisService';
+import { useTranslation } from '../utils/useTranslation';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -18,6 +19,8 @@ export function MapScreen({
   onLocationSelect,
   selectedLocation 
 }: MapScreenProps) {
+  const { t } = useTranslation();
+  
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
   const [locations, setLocations] = useState<Location[]>([]);
@@ -96,14 +99,14 @@ export function MapScreen({
       }
       // Validació de la resposta
       if (!Array.isArray(data)) {
-        Alert.alert('Error', "No s'han pogut carregar bé els refugis");
+        Alert.alert(t('common.error'), t('map.errorLoading'));
         //console.error('Invalid refugis response:', data);
         return;
       }
       setAllLocations(data); // Guardar tots els refugis
       setLocations(data); // Mostrar tots inicialment
     } catch (error) {
-      Alert.alert('Error', 'No s\'han pogut carregar els refugis');
+      Alert.alert(t('common.error'), t('map.errorLoading'));
       //console.error(error);
     }
   };

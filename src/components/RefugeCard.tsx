@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Location } from '../types';
+import { useTranslation } from '../utils/useTranslation';
 
 interface RefugeCardProps {
   refuge: Location;
@@ -16,6 +17,8 @@ const conditionColors = {
 };
 
 export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <TouchableOpacity 
       style={styles.card} 
@@ -52,7 +55,7 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
             onViewMap?.();
           }}
         >
-          <Text style={styles.mapButtonText}>🗺️</Text>
+          <Text style={styles.mapButtonText}>🗺️ {t('refuge.actions.viewOnMap')}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

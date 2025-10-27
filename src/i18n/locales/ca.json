@@ -1,0 +1,177 @@
+{
+  "common": {
+    "search": "Cercar refugis...",
+    "filters": "Filtres",
+    "clear": "Netejar",
+    "apply": "Aplicar",
+    "cancel": "Cancel·lar",
+    "save": "Desar",
+    "back": "Enrere",
+    "close": "Tancar",
+    "loading": "Carregant...",
+    "error": "Error",
+    "success": "Èxit",
+    "noResults": "No s'han trobat resultats"
+  },
+  "navigation": {
+    "map": "Mapa",
+    "favorites": "Favorits",
+    "reforms": "Reformes",
+    "profile": "Perfil"
+  },
+  "map": {
+    "title": "Mapa de Refugis",
+    "searchPlaceholder": "Cercar refugis...",
+    "noLocationsFound": "No s'han pogut carregar els refugis",
+    "errorLoading": "No s'han pogut carregar els refugis"
+  },
+  "favorites": {
+    "title": "Els meus favorits",
+    "count": "{{count}} refugi",
+    "count_plural": "{{count}} refugis",
+    "empty": {
+      "title": "Encara no tens favorits",
+      "message": "Afegeix refugis als teus favorits per veure'ls aquí"
+    },
+    "added": "Refugi afegit als favorits",
+    "removed": "Refugi eliminat dels favorits",
+    "error": "No s'han pogut carregar els favorits"
+  },
+  "reforms": {
+    "title": "Reformes i Millores",
+    "count": "{{count}} reforma",
+    "count_plural": "{{count}} reformes",
+    "priority": {
+      "high": "Alta",
+      "medium": "Mitjana",
+      "low": "Baixa"
+    },
+    "status": {
+      "pending": "Pendent",
+      "inProgress": "En curs",
+      "completed": "Completada"
+    },
+    "contributeButton": "Contribuir",
+    "moreInfo": "Més informació",
+    "empty": {
+      "title": "No hi ha reformes pendents",
+      "message": "Totes les reformes estan completades"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "stats": {
+      "visited": "Refugis visitats",
+      "favorites": "Favorits",
+      "contributions": "Contribucions"
+    },
+    "settings": {
+      "title": "Configuració",
+      "preferences": "Preferències",
+      "notifications": "Notificacions",
+      "language": "Idioma",
+      "help": "Ajuda i suport",
+      "about": "Sobre l'app",
+      "privacy": "Privacitat",
+      "terms": "Termes i condicions"
+    },
+    "languageSelector": {
+      "title": "Selecciona l'idioma",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      }
+    }
+  },
+  "refuge": {
+    "type": {
+      "refuge": "Refugi",
+      "guardedRefuge": "Refugi guardat",
+      "freeRefuge": "Refugi lliure",
+      "bivouac": "Vivac",
+      "hut": "Cabana",
+      "shelter": "Orri",
+      "unknown": "Desconegut",
+      "noGuarded": "No guardat",
+      "closed": "Tancat"
+    },
+    "condition": {
+      "excellent": "Excel·lent",
+      "good": "Bé",
+      "fair": "Normal",
+      "poor": "Pobre",
+      "unknown": "Desconegut"
+    },
+    "difficulty": {
+      "easy": "Fàcil",
+      "moderate": "Moderat",
+      "difficult": "Difícil"
+    },
+    "details": {
+      "elevation": "Altitud",
+      "capacity": "Places",
+      "distance": "Distància",
+      "region": "Regió",
+      "description": "Descripció",
+      "services": "Serveis",
+      "contact": "Contacte"
+    },
+    "actions": {
+      "navigate": "Navegar",
+      "viewDetails": "Veure detalls",
+      "favorite": "Favorit",
+      "share": "Compartir",
+      "viewOnMap": "Veure al mapa",
+      "report": "Reportar problema"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "clearAll": "Netejar tot",
+    "applyFilters": "Aplicar filtres",
+    "activeFilters": "{{count}} filtre actiu",
+    "activeFilters_plural": "{{count}} filtres actius",
+    "types": {
+      "title": "Tipus d'ubicació",
+      "refuge": "Refugi",
+      "guardedRefuge": "Refugi guardat",
+      "bivouac": "Vivac",
+      "hut": "Cabana",
+      "shelter": "Orri"
+    },
+    "altitude": {
+      "title": "Altitud",
+      "min": "Mín",
+      "max": "Màx"
+    },
+    "capacity": {
+      "title": "Capacitat (places)",
+      "min": "Mín",
+      "max": "Màx"
+    },
+    "condition": {
+      "title": "Estat",
+      "excellent": "Excel·lent",
+      "good": "Bé",
+      "fair": "Normal",
+      "poor": "Pobre"
+    },
+    "difficulty": {
+      "title": "Dificultat",
+      "easy": "Fàcil",
+      "moderate": "Moderat",
+      "difficult": "Difícil"
+    }
+  },
+  "alerts": {
+    "navigation": "Navegant a {{name}}",
+    "favoriteUpdated": "Favorit actualitzat",
+    "favoriteError": "No s'ha pogut actualitzar els favorits",
+    "confirmDelete": "Estàs segur que vols eliminar aquest refugi dels favorits?",
+    "deleteSuccess": "Refugi eliminat dels favorits",
+    "shareError": "No s'ha pogut compartir",
+    "linkCopied": "Enllaç copiat al portapapers"
+  }
+}

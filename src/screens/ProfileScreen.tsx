@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useTranslation } from '../utils/useTranslation';
+import { LanguageSelector } from '../components/LanguageSelector';
+import { getCurrentLanguage, LANGUAGES } from '../i18n';
 
 export function ProfileScreen() {
+  const { t } = useTranslation();
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const currentLanguage = getCurrentLanguage();
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -14,53 +21,66 @@ export function ProfileScreen() {
       
       <View style={styles.content}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Estadístiques</Text>
+          <Text style={styles.sectionTitle}>{t('profile.stats.visited')}</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>12</Text>
-              <Text style={styles.statLabel}>Refugis visitats</Text>
+              <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>5</Text>
-              <Text style={styles.statLabel}>Favorits</Text>
+              <Text style={styles.statLabel}>{t('profile.stats.favorites')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Configuració</Text>
+          <Text style={styles.sectionTitle}>{t('profile.settings.title')}</Text>
           
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuIcon}>⚙️</Text>
-            <Text style={styles.menuText}>Preferències</Text>
+            <Text style={styles.menuText}>{t('profile.settings.preferences')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuIcon}>🔔</Text>
-            <Text style={styles.menuText}>Notificacions</Text>
+            <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => setShowLanguageSelector(true)}
+          >
             <Text style={styles.menuIcon}>🌍</Text>
-            <Text style={styles.menuText}>Idioma</Text>
+            <View style={styles.menuTextContainer}>
+              <Text style={styles.menuText}>{t('profile.settings.language')}</Text>
+              <Text style={styles.menuSubtext}>
+                {LANGUAGES[currentLanguage]?.nativeName || 'Català'}
+              </Text>
+            </View>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuIcon}>❓</Text>
-            <Text style={styles.menuText}>Ajuda</Text>
+            <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuIcon}>ℹ️</Text>
-            <Text style={styles.menuText}>Sobre l'aplicació</Text>
+            <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      <LanguageSelector
+        visible={showLanguageSelector}
+        onClose={() => setShowLanguageSelector(false)}
+      />
     </ScrollView>
   );
 }
@@ -155,10 +175,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginRight: 12,
   },
+  menuTextContainer: {
+    flex: 1,
+  },
   menuText: {
     flex: 1,
     fontSize: 16,
     color: '#111827',
+  },
+  menuSubtext: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginTop: 2,
   },
   menuArrow: {
     fontSize: 24,
