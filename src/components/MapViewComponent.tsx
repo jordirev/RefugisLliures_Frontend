@@ -4,6 +4,7 @@ import * as ExpoLocation from 'expo-location';
 import { Location } from '../types';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
+import { useTranslation } from '../utils/useTranslation';
 
 import LayersIcon from '../assets/icons/layers.svg';
 import CompassIcon from '../assets/icons/compass3.png';
@@ -17,6 +18,7 @@ interface MapViewComponentProps {
 
 // Memoritzem el component per evitar re-renders quan les props no canvien
 export const MapViewComponent = memo(function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
+  const { t } = useTranslation();
   const [showOfflineManager, setShowOfflineManager] = useState(false);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
 
@@ -62,10 +64,10 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
             }
 
             Alert.alert(
-              'Permís de localització',
-              'Permetre accedir a la ubicació actual del dispositiu?',
+              t('permissions.location.title'),
+              t('permissions.location.message'),
               [
-                { text: 'Cancel·la', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 { text: 'Permet', onPress: async () => {
                     try {
                       let { status } = await ExpoLocation.requestForegroundPermissionsAsync();

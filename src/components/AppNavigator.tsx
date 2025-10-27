@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert, BackHandler, Platform } from 'react-native';
+import { StyleSheet, View, Alert, BackHandler, Platform, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -91,31 +91,32 @@ export function AppNavigator() {
   }, [showBottomSheet, showDetailScreen]);
 
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-    }]}>
+    <View style={styles.container}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarShowLabel: true,
-          tabBarActiveTintColor: '#4A5565',
-          tabBarInactiveTintColor: '#4A5565',
+          tabBarShowLabel: false,
           tabBarStyle: {
-            height: 60,
-            paddingBottom: 0,
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom,
+            backgroundColor: '#ffffff',
+            borderTopWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
           },
         }}
       >
         <Tab.Screen 
-          name="Mapa" 
+          name={t('navigation.map')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <MapIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.map')}
+                </Text>
               </View>
             ),
-            tabBarAccessibilityLabel: t('navigation.map'),
           }}
         >
           {() => (
@@ -127,14 +128,16 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name="Favorits"
+          name={t('navigation.favorites')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <FavIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.favorites')}
+                </Text>
               </View>
             ),
-            tabBarAccessibilityLabel: t('navigation.favorites'),
           }}
         >
           {() => (
@@ -146,27 +149,31 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name="Reformes"
+          name={t('navigation.renovations')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <ReformIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.renovations')}
+                </Text>
               </View>
             ),
-            tabBarAccessibilityLabel: t('navigation.renovations'),
           }}
           component={ReformsScreen}
         />
 
         <Tab.Screen 
-          name="Perfil"
+          name={t('navigation.profile')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <UserIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.profile')}
+                </Text>
               </View>
             ),
-            tabBarAccessibilityLabel: t('navigation.profile'),
           }}
           component={ProfileScreen}
         />
@@ -212,6 +219,14 @@ const styles = StyleSheet.create({
   },
   tabIconActive: {
     backgroundColor: '#f3f4f6',
+  },
+  tabLabel: {
+    fontSize: 10,
+    color: '#4A5565',
+    marginTop: 4,
+  },
+  tabLabelActive: {
+    color: '#9CA3AF',
   },
   detailScreenOverlay: {
     position: 'absolute',

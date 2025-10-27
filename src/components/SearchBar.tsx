@@ -13,15 +13,16 @@ interface SearchBarProps {
   onOpenFilters: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
+  topInset?: number;
 }
 
 // Memoritzem el component per evitar re-renders innecessaris
-export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect }: SearchBarProps) {
+export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect, topInset = 0 }: SearchBarProps) {
   const { t } = useTranslation();
   
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: topInset + 8 }]}>
       {/* Container de cerca */}
       <View style={styles.searchContainer}>
         <View style={styles.inputWrapper}>
@@ -108,7 +109,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 8,
     backgroundColor: 'transparent',
-    marginTop: 16,
   },
   addButton: {
     height: 32,

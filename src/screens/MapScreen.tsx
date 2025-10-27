@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, Alert, BackHandler, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
@@ -20,6 +21,7 @@ export function MapScreen({
   selectedLocation 
 }: MapScreenProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
@@ -186,7 +188,7 @@ export function MapScreen({
           position: 'absolute',
           left: 4,
           right: 4,
-          top: '0%',
+          top: 0,
           zIndex: 10,
           elevation: 10,
         }}
@@ -197,6 +199,7 @@ export function MapScreen({
           onOpenFilters={handleOpenFilters}
           suggestions={suggestions}
           onSuggestionSelect={handleSuggestionSelect}
+          topInset={insets.top}
         />
       </View>
 
