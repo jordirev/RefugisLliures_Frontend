@@ -66,9 +66,12 @@
   "profile": {
     "title": "Profile",
     "stats": {
+      "title": "My statistics",
       "visited": "Shelters visited",
-      "favorites": "Favorites",
-      "contributions": "Contributions"
+      "renovations": "Shelters renovated",
+      "contributions": "Shared experiences",
+      "photos": "Uploaded photos",
+      "memberSince": "Member since {{date}}"
     },
     "settings": {
       "title": "Settings",

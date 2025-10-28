@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Alert, BackHandler, Platform, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MapScreen } from '../screens/MapScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { ReformsScreen } from '../screens/ReformsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
@@ -83,7 +85,7 @@ export function AppNavigator() {
         handleCloseBottomSheet();
         return true;
       }
-      return false; // allow default behavior
+      return false; // allow default behavior (including navigation back from Settings)
     };
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -176,6 +178,16 @@ export function AppNavigator() {
             ),
           }}
           component={ProfileScreen}
+        />
+      
+        {/* Hidden Settings screen: accessible by navigation.navigate('Settings') but not shown in the tab bar */}
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
         />
       </Tab.Navigator>
 

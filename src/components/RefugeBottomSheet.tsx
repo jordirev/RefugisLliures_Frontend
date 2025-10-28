@@ -77,7 +77,8 @@ export function RefugeBottomSheet({
               <View style={styles.details}>
                 {/* Type */}
                 <View style={styles.detailItem}>
-                  <BadgeType type={refuge.type || 'no guardat'} />
+                  {/* pass numeric type (or undefined) to match BadgeType props */}
+                  <BadgeType type={refuge.type} />
                 </View>
                 {/* Estat */}
                 {refuge.condition && (

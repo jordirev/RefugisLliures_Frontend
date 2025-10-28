@@ -66,9 +66,13 @@
   "profile": {
     "title": "Perfil",
     "stats": {
+      "title": "Les meves estadístiques",
       "visited": "Refugis visitats",
-      "favorites": "Favorits",
-      "contributions": "Contribucions"
+      "renovations": "Refugis reformats",
+      "contributions": "Experiències compartides",
+      "photos": "Fotos pujades",
+      "memberSince": "Membre des de {{date}}",
+      "memberSinceBis": "Membre des d'{{date}}"
     },
     "settings": {
       "title": "Configuració",
