@@ -193,5 +193,20 @@
       "title": "Notification permission",
       "message": "Allow sending notifications?"
     }
+  },
+  "login": {
+    "title": "Welcome",
+    "subtitle": "Sign in to continue",
+    "emailPlaceholder": "Username or email address",
+    "passwordPlaceholder": "Password",
+    "forgotPassword": "Forgot your password?",
+    "loginButton": "Sign in",
+    "orContinueWith": "Or continue with",
+    "googleButton": "Continue with Google",
+    "errors": {
+      "emptyEmail": "Please enter your email address",
+      "emptyPassword": "Please enter your password",
+      "invalidCredentials": "Invalid credentials"
+    }
   }
 }

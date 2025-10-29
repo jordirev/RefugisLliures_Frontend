@@ -193,5 +193,20 @@
       "title": "Permission de notifications",
       "message": "Autoriser l'envoi de notifications ?"
     }
+  },
+  "login": {
+    "title": "Bienvenue",
+    "subtitle": "Connectez-vous pour continuer",
+    "emailPlaceholder": "Nom d'utilisateur ou adresse e-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginButton": "Se connecter",
+    "orContinueWith": "Ou continuer avec",
+    "googleButton": "Continuer avec Google",
+    "errors": {
+      "emptyEmail": "Veuillez entrer votre adresse e-mail",
+      "emptyPassword": "Veuillez entrer votre mot de passe",
+      "invalidCredentials": "Identifiants invalides"
+    }
   }
 }

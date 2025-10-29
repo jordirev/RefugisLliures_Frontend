@@ -194,5 +194,20 @@
       "title": "Permís de notificacions",
       "message": "Permetre enviar notificacions?"
     }
+  },
+  "login": {
+    "title": "Benvingut/da",
+    "subtitle": "Inicia sessió per continuar",
+    "emailPlaceholder": "Nom d'usuari o correu electrònic",
+    "passwordPlaceholder": "Contrasenya",
+    "forgotPassword": "Has oblidat la contrasenya?",
+    "loginButton": "Iniciar sessió",
+    "orContinueWith": "O continua amb",
+    "googleButton": "Continuar amb Google",
+    "errors": {
+      "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
+      "emptyPassword": "Si us plau, introdueix la teva contrasenya",
+      "invalidCredentials": "Credencials incorrectes"
+    }
   }
 }

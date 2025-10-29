@@ -26,3 +26,17 @@ export interface Filters {
   places: [number, number];
   condition: ("pobre" | "normal" | "bé")[];
 }
+
+export interface User {
+  uid: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  idioma: string;
+  refugis_favorits: number[];
+  refugis_visitats: number[];
+  reformes: string[];
+  num_fotos_pujades: number | null;
+  num_experiencies_compartides: number | null;
+  num_refugis_reformats: number | null;
+}

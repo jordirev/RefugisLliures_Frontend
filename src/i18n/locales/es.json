@@ -193,5 +193,20 @@
       "title": "Permiso de notificaciones",
       "message": "¿Permitir enviar notificaciones?"
     }
+  },
+  "login": {
+    "title": "Bienvenido/a",
+    "subtitle": "Inicia sesión para continuar",
+    "emailPlaceholder": "Nombre de usuario o correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "forgotPassword": "¿Has olvidado la contraseña?",
+    "loginButton": "Iniciar sesión",
+    "orContinueWith": "O continúa con",
+    "googleButton": "Continuar con Google",
+    "errors": {
+      "emptyEmail": "Por favor, introduce tu correo electrónico",
+      "emptyPassword": "Por favor, introduce tu contraseña",
+      "invalidCredentials": "Credenciales incorrectas"
+    }
   }
 }
