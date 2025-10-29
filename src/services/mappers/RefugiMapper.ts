@@ -2,7 +2,7 @@
  * Mappers per convertir DTOs del backend al format del frontend
  */
 
-import { Location, Coord } from '../../types';
+import { Location, Coord } from '../../models';
 import { RefugiDTO, CoordDTO } from '../dto/RefugiDTO';
 
 /**

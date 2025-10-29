@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
 import { RefugeCard } from '../components/RefugeCard';
-import { Location } from '../types';
+import { Location } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../utils/useTranslation';
 

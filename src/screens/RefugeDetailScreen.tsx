@@ -24,7 +24,7 @@ try {
   Sharing = null;
 }
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Location } from '../types';
+import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
 
 // Icons (assumint que tenim aquestes icones SVG)

@@ -1,4 +1,4 @@
-import { Location } from '../types';
+import { Location } from '../models';
 import { mockLocations } from '../utils/mockData';
 import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
 import { mapRefugisFromDTO } from './mappers/RefugiMapper';

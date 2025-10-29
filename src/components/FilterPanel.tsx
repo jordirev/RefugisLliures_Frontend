@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Filters } from '../types';
+import { Filters } from '../models';
 import XIcon from '../assets/icons/x.svg';
 import FilterIcon from '../assets/icons/filters.svg';
 import { BadgeType } from './BadgeType';

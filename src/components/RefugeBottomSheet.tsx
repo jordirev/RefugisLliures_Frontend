@@ -2,7 +2,7 @@ import React from 'react';
 import { BadgeCondition } from './BadgeCondition';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Location } from '../types';
+import { Location } from '../models';
 import { BadgeType } from './BadgeType';
 import { useTranslation } from '../utils/useTranslation';
 

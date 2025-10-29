@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Location } from '../types';
+import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
 
 interface RefugeCardProps {

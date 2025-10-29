@@ -13,7 +13,7 @@ import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
-import { Location } from '../types';
+import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
 
 import MapIcon from '../assets/icons/map2.svg';

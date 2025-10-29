@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
-import { Location, Filters } from '../types';
+import { Location, Filters } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../utils/useTranslation';
 

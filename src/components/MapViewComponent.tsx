@@ -1,7 +1,7 @@
 import React, { useState, useCallback, memo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import * as ExpoLocation from 'expo-location';
-import { Location } from '../types';
+import { Location } from '../models';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
 import { useTranslation } from '../utils/useTranslation';

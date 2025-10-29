@@ -2,7 +2,7 @@
  * Mappers per convertir DTOs del backend al format del frontend
  */
 
-import { User } from '../../types'
+import { User } from '../../models'
 import { UserDTO } from '../dto/UserDTO';
 
 /**
