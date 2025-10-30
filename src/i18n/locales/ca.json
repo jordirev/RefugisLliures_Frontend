@@ -115,6 +115,8 @@
       "altitude": "Altitud",
       "capacity": "Places",
       "region": "Regió",
+      "occupation": "Ocupació",
+      "seeOccupation": "Veure ocupació",
       "description": "Descripció",
       "localisation": "Localització",
       "services": "Serveis",
@@ -204,10 +206,35 @@
     "loginButton": "Iniciar sessió",
     "orContinueWith": "O continua amb",
     "googleButton": "Continuar amb Google",
+    "noAccount": "No tens compte?",
+    "signUpLink": "Registra't",
     "errors": {
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "emptyPassword": "Si us plau, introdueix la teva contrasenya",
       "invalidCredentials": "Credencials incorrectes"
+    }
+  },
+  "signup": {
+    "title": "Crear compte",
+    "subtitle": "Registra't per començar",
+    "selectLanguage": "Selecciona el teu idioma",
+    "usernamePlaceholder": "Nom d'usuari",
+    "emailPlaceholder": "Correu electrònic",
+    "passwordPlaceholder": "Contrasenya",
+    "confirmPasswordPlaceholder": "Confirmar contrasenya",
+    "signUpButton": "Registrar-se",
+    "alreadyHaveAccount": "Ja tens un compte?",
+    "loginLink": "Inicia sessió",
+    "backToLogin": "Tornar a l'inici de sessió",
+    "successMessage": "Compte creat correctament! Ja pots iniciar sessió.",
+    "errors": {
+      "emptyUsername": "Si us plau, introdueix un nom d'usuari",
+      "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
+      "invalidEmail": "El correu electrònic no és vàlid",
+      "emptyPassword": "Si us plau, introdueix una contrasenya",
+      "shortPassword": "La contrasenya ha de tenir almenys 6 caràcters",
+      "passwordMismatch": "Les contrasenyes no coincideixen",
+      "registrationFailed": "No s'ha pogut crear el compte. Si us plau, torna-ho a intentar."
     }
   }
 }

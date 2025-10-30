@@ -114,6 +114,8 @@
       "altitude": "Altitude",
       "capacity": "Capacité",
       "region": "Région",
+      "occupation": "Occupation",
+      "seeOccupation": "Voir occupation",
       "description": "Description",
       "localisation": "Localisation",
       "services": "Services",
@@ -203,10 +205,35 @@
     "loginButton": "Se connecter",
     "orContinueWith": "Ou continuer avec",
     "googleButton": "Continuer avec Google",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUpLink": "S'inscrire",
     "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "emptyPassword": "Veuillez entrer votre mot de passe",
       "invalidCredentials": "Identifiants invalides"
+    }
+  },
+  "signup": {
+    "title": "Créer un compte",
+    "subtitle": "Inscrivez-vous pour commencer",
+    "selectLanguage": "Sélectionnez votre langue",
+    "usernamePlaceholder": "Nom d'utilisateur",
+    "emailPlaceholder": "Adresse e-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le mot de passe",
+    "signUpButton": "S'inscrire",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Se connecter",
+    "backToLogin": "Retour à la connexion",
+    "successMessage": "Compte créé avec succès ! Vous pouvez maintenant vous connecter.",
+    "errors": {
+      "emptyUsername": "Veuillez entrer un nom d'utilisateur",
+      "emptyEmail": "Veuillez entrer votre adresse e-mail",
+      "invalidEmail": "L'adresse e-mail n'est pas valide",
+      "emptyPassword": "Veuillez entrer un mot de passe",
+      "shortPassword": "Le mot de passe doit contenir au moins 6 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "registrationFailed": "Impossible de créer le compte. Veuillez réessayer."
     }
   }
 }

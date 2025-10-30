@@ -114,6 +114,8 @@
       "altitude": "Altitude",
       "capacity": "Capacity",
       "region": "Region",
+      "occupation": "Occupation",
+      "seeOccupation": "See occupation",
       "description": "Description",
       "localisation": "Localisation",
       "services": "Services",
@@ -203,10 +205,35 @@
     "loginButton": "Sign in",
     "orContinueWith": "Or continue with",
     "googleButton": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up",
     "errors": {
       "emptyEmail": "Please enter your email address",
       "emptyPassword": "Please enter your password",
       "invalidCredentials": "Invalid credentials"
+    }
+  },
+  "signup": {
+    "title": "Create account",
+    "subtitle": "Sign up to get started",
+    "selectLanguage": "Select your language",
+    "usernamePlaceholder": "Username",
+    "emailPlaceholder": "Email address",
+    "passwordPlaceholder": "Password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "signUpButton": "Sign up",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "backToLogin": "Back to sign in",
+    "successMessage": "Account created successfully! You can now sign in.",
+    "errors": {
+      "emptyUsername": "Please enter a username",
+      "emptyEmail": "Please enter your email address",
+      "invalidEmail": "The email address is not valid",
+      "emptyPassword": "Please enter a password",
+      "shortPassword": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "registrationFailed": "Could not create account. Please try again."
     }
   }
 }

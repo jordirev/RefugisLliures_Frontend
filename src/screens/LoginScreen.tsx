@@ -21,9 +21,10 @@ const AppLogo = require('../assets/images/profileDefaultBackground.png');
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
+  onNavigateToSignUp?: () => void;
 }
 
-export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -150,6 +151,21 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               </LinearGradient>
             </TouchableOpacity>
 
+            {/* Enllaç per crear compte */}
+            {onNavigateToSignUp && (
+              <TouchableOpacity 
+                style={styles.signUpContainer}
+                onPress={onNavigateToSignUp}
+              >
+                <Text style={styles.noAccountText}>
+                  {t('login.noAccount')}
+                </Text>
+                <Text style={styles.signUpLinkText}>
+                  {t('login.signUpLink')}
+                </Text>
+              </TouchableOpacity>
+            )}
+
             {/* Separador */}
             <View style={styles.separatorContainer}>
               <View style={styles.separatorLine} />
@@ -189,7 +205,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    paddingTop: 40,
+    paddingTop: 10,
     paddingBottom: 50,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -296,5 +312,22 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     fontSize: 16,
     fontWeight: '600',
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 24,
+  },
+  noAccountText: {
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  signUpLinkText: {
+    color: '#FF8904',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 4,
   },
 });

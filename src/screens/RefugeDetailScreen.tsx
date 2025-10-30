@@ -40,6 +40,7 @@ import { BadgeCondition } from '../components/BadgeCondition';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
+import CalendarIcon from '../assets/icons/calendar.svg';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -330,7 +331,7 @@ export function RefugeDetailScreen({
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{refuge.name}</Text>
             {refuge.departement ? (
-              <Text style={styles.departmentText}>{refuge.departement}</Text>
+              <Text style={styles.departmentText}>{refuge.departement}, {refuge.region}</Text>
             ) : null}
             <View style={styles.badgesContainer}>
               {refuge.type !== undefined && (
@@ -357,9 +358,9 @@ export function RefugeDetailScreen({
             </View>
             
             <View style={styles.statCard}>
-              <MapPinIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>{t('refuge.details.region')}</Text>
-              <Text style={styles.statValue}>{refuge.region || 'N/A'}</Text>
+              <CalendarIcon width={24} height={24} color="#FF6900" />
+              <Text style={styles.statLabel}>{t('refuge.details.occupation')}</Text>
+              <Text style={styles.statValue}>{t('refuge.details.seeOccupation')}</Text>
             </View>
           </View>
         </View>
@@ -644,6 +645,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
     marginTop: 4,
+    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 16,
