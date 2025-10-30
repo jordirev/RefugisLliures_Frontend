@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { 
-  getAuth, 
+  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -44,6 +44,9 @@ if (!firebaseConfig.projectId || !firebaseConfig.apiKey || !firebaseConfig.appId
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Auth
+// Note: For React Native, AsyncStorage persistence will be configured after initialization
 const auth = getAuth(app);
 
 export { 
