@@ -225,7 +225,8 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginLink": "Sign in",
     "backToLogin": "Back to sign in",
-    "successMessage": "Account created successfully! You can now sign in.",
+    "successMessage": "Account created successfully! Check your email to verify your account.",
+    "verificationEmailSent": "A verification email has been sent to {{email}}",
     "errors": {
       "emptyUsername": "Please enter a username",
       "emptyEmail": "Please enter your email address",
@@ -234,6 +235,27 @@
       "shortPassword": "Password must be at least 6 characters",
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Could not create account. Please try again."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "Your email address is not verified",
+    "checkEmailVerification": "Please verify your email before signing in",
+    "resendVerificationEmail": "Resend verification email",
+    "verificationEmailResent": "Verification email resent",
+    "passwordResetEmailSent": "A password reset email has been sent",
+    "passwordResetTitle": "Reset password",
+    "passwordResetMessage": "Enter your email address to receive instructions",
+    "sendResetEmail": "Send email",
+    "errors": {
+      "emailInUse": "This email address is already in use",
+      "invalidEmail": "The email address is not valid",
+      "operationNotAllowed": "Operation not allowed",
+      "weakPassword": "The password is too weak",
+      "userDisabled": "This account has been disabled",
+      "invalidCredentials": "Invalid credentials",
+      "tooManyRequests": "Too many attempts. Please try again later",
+      "networkError": "Connection error. Check your internet connection",
+      "generic": "An error occurred. Please try again"
     }
   }
 }

@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
 import i18n from '../i18n';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
+import { AuthService } from '../services/AuthService';
 
 // Logo provisional
 const AppLogo = require('../assets/images/profileDefaultBackground.png');
@@ -104,11 +105,21 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       return;
     }
 
+    if (!selectedLanguage) {
+      Alert.alert(t('common.error'), 'Si us plau, selecciona un idioma');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // TODO: Implementar registre real amb el backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Registre amb Firebase Auth i creació al backend
+      await AuthService.signUp({
+        email: email.trim(),
+        password: password,
+        username: username.trim(),
+        language: selectedLanguage
+      });
       
       Alert.alert(
         t('common.success'), 
@@ -120,8 +131,15 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
           }
         ]
       );
-    } catch (error) {
-      Alert.alert(t('common.error'), t('signup.errors.registrationFailed'));
+    } catch (error: any) {
+      console.error('Error durant el registre:', error);
+      
+      // Obtenir missatge d'error traduït
+      const errorCode = error?.code || 'unknown';
+      const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+      const errorMessage = t(errorMessageKey) || t('signup.errors.registrationFailed');
+      
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -225,7 +225,8 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "loginLink": "Inicia sesión",
     "backToLogin": "Volver al inicio de sesión",
-    "successMessage": "¡Cuenta creada correctamente! Ya puedes iniciar sesión.",
+    "successMessage": "¡Cuenta creada correctamente! Comprueba tu correo para verificar la cuenta.",
+    "verificationEmailSent": "Se ha enviado un correo de verificación a {{email}}",
     "errors": {
       "emptyUsername": "Por favor, introduce un nombre de usuario",
       "emptyEmail": "Por favor, introduce tu correo electrónico",
@@ -234,6 +235,27 @@
       "shortPassword": "La contraseña debe tener al menos 6 caracteres",
       "passwordMismatch": "Las contraseñas no coinciden",
       "registrationFailed": "No se pudo crear la cuenta. Por favor, inténtalo de nuevo."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "Tu correo electrónico no está verificado",
+    "checkEmailVerification": "Por favor, verifica tu correo antes de iniciar sesión",
+    "resendVerificationEmail": "Reenviar correo de verificación",
+    "verificationEmailResent": "Correo de verificación reenviado",
+    "passwordResetEmailSent": "Se ha enviado un correo para restablecer la contraseña",
+    "passwordResetTitle": "Recuperar contraseña",
+    "passwordResetMessage": "Introduce tu correo electrónico para recibir instrucciones",
+    "sendResetEmail": "Enviar correo",
+    "errors": {
+      "emailInUse": "Este correo electrónico ya está en uso",
+      "invalidEmail": "El correo electrónico no es válido",
+      "operationNotAllowed": "Operación no permitida",
+      "weakPassword": "La contraseña es demasiado débil",
+      "userDisabled": "Esta cuenta ha sido desactivada",
+      "invalidCredentials": "Credenciales incorrectas",
+      "tooManyRequests": "Demasiados intentos. Por favor, inténtalo más tarde",
+      "networkError": "Error de conexión. Comprueba tu conexión a internet",
+      "generic": "Se ha producido un error. Por favor, inténtalo de nuevo"
     }
   }
 }

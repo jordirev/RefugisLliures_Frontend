@@ -226,7 +226,8 @@
     "alreadyHaveAccount": "Ja tens un compte?",
     "loginLink": "Inicia sessió",
     "backToLogin": "Tornar a l'inici de sessió",
-    "successMessage": "Compte creat correctament! Ja pots iniciar sessió.",
+    "successMessage": "Compte creat correctament! Comprova el teu correu per verificar el compte.",
+    "verificationEmailSent": "S'ha enviat un correu de verificació a {{email}}",
     "errors": {
       "emptyUsername": "Si us plau, introdueix un nom d'usuari",
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
@@ -235,6 +236,27 @@
       "shortPassword": "La contrasenya ha de tenir almenys 6 caràcters",
       "passwordMismatch": "Les contrasenyes no coincideixen",
       "registrationFailed": "No s'ha pogut crear el compte. Si us plau, torna-ho a intentar."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "El teu correu electrònic no està verificat",
+    "checkEmailVerification": "Si us plau, verifica el teu correu abans d'iniciar sessió",
+    "resendVerificationEmail": "Reenviar correu de verificació",
+    "verificationEmailResent": "Correu de verificació reenviat",
+    "passwordResetEmailSent": "S'ha enviat un correu per restablir la contrasenya",
+    "passwordResetTitle": "Recuperar contrasenya",
+    "passwordResetMessage": "Introdueix el teu correu electrònic per rebre instruccions",
+    "sendResetEmail": "Enviar correu",
+    "errors": {
+      "emailInUse": "Aquest correu electrònic ja està en ús",
+      "invalidEmail": "El correu electrònic no és vàlid",
+      "operationNotAllowed": "Operació no permesa",
+      "weakPassword": "La contrasenya és massa feble",
+      "userDisabled": "Aquest compte ha estat desactivat",
+      "invalidCredentials": "Credencials incorrectes",
+      "tooManyRequests": "Massa intents. Si us plau, intenta-ho més tard",
+      "networkError": "Error de connexió. Comprova la teva connexió a internet",
+      "generic": "S'ha produït un error. Si us plau, torna-ho a intentar"
     }
   }
 }

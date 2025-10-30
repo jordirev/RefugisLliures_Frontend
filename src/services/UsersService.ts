@@ -1,123 +1,194 @@
-import { Location } from '../models';
-import { mockLocations } from '../utils/mockData';
-import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
-import { mapRefugisFromDTO } from './mappers/RefugiMapper';
+import { User } from '../models';
+import { UserDTO } from './dto';
+import { mapUserFromDTO } from './mappers';
 import { fetchWithLog } from './fetchWithLog';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
-const DEBUG = false;
+/**
+ * Interfície per a les dades de creació d'un usuari
+ */
+export interface UserCreateData {
+  username: string;
+  email: string;
+  idioma: string;
+  avatar?: string;
+}
 
-export class RefugisService {
+/**
+ * Interfície per a les dades d'actualització d'un usuari
+ */
+export interface UserUpdateData {
+  username?: string;
+  email?: string;
+  avatar?: string;
+  idioma?: string;
+  refugis_favorits?: number[];
+  refugis_visitats?: number[];
+  reformes?: string[];
+}
+
+/**
+ * Servei per gestionar les crides relacionades amb usuaris
+ */
+export class UsersService {
   /**
-   * Get a single refugi by id.
+   * Crea un nou usuari
+   * POST /users/
+   * 
+   * @param userData - Dades de l'usuari a crear
+   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @returns L'usuari creat o null si hi ha error
    */
-  static async getRefugiById(id: number): Promise<Location | null> {
-    if (DEBUG) {
-      const mock = mockLocations.find(m => m.id === id);
-      return mock || null;
-    }
-
+  static async createUser(userData: UserCreateData, authToken?: string): Promise<User | null> {
     try {
-      const url = `${API_BASE_URL}/refugis/${id}/`;
-      const response = await fetchWithLog(url);
+      const url = `${API_BASE_URL}/users/`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Afegir token d'autenticació si està disponible
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const response = await fetchWithLog(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(userData),
+      });
       
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error creating user:', errorData);
         return null;
       }
       
-      const data = await response.json();
-      const mapped = mapRefugisFromDTO([data]);
-      return mapped.length > 0 ? mapped[0] : null;
+      const data: UserDTO = await response.json();
+      return mapUserFromDTO(data);
     } catch (err) {
-      console.error(`Error fetching refugi ${id}:`, err);
+      console.error('Error creating user:', err);
       return null;
     }
   }
+
   /**
-   * Obté tots els refugis amb filtres opcionals
+   * Obté un usuari per UID
+   * GET /users/{uid}/
+   * 
+   * @param uid - UID de l'usuari
+   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @returns L'usuari o null si no es troba
    */
-  static async getRefugis(filters?: {
-    altitude_min?: number;
-    altitude_max?: number;
-    places_min?: number;
-    places_max?: number;
-    type?: string;
-    condition?: string;
-    search?: string;
-  }): Promise<Location[]> {
-    if (DEBUG) {
-      return mockLocations;
-    }
-
+  static async getUserByUid(uid: string, authToken?: string): Promise<User | null> {
     try {
-      const params = new URLSearchParams();
-      if (filters?.search) {
-        params.append('name', filters.search);
-      } else {
-        if (filters?.altitude_min !== undefined) {
-          params.append('altitude_min', filters.altitude_min.toString());
-        }
-        if (filters?.altitude_max !== undefined) {
-          params.append('altitude_max', filters.altitude_max.toString());
-        }
-        if (filters?.places_min !== undefined) {
-          params.append('places_min', filters.places_min.toString());
-        }
-        if (filters?.places_max !== undefined) {
-          params.append('places_max', filters.places_max.toString());
-        }
-        if (filters?.type) {
-          params.append('type', filters.type);
-        }
-        if (filters?.condition) {
-          params.append('condition', filters.condition);
-        }
+      const url = `${API_BASE_URL}/users/${uid}/`;
+      const headers: Record<string, string> = {};
+      
+      // Afegir token d'autenticació si està disponible
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
       }
-
-      const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
-      const response = await fetchWithLog(url);
+      
+      const response = await fetchWithLog(url, {
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
+      });
       
       if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+        if (response.status === 404) {
+          console.log(`User with uid ${uid} not found`);
+        } else {
+          console.error(`Error fetching user ${uid}:`, response.statusText);
+        }
+        return null;
       }
       
-      const data: RefugisResponseDTO | RefugisSimpleResponseDTO = await response.json();
-      if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) {
-        return [];
-      }
-      
-      return mapRefugisFromDTO(data.results);
-    } catch (error) {
-      console.error('Error loading refugis:', error);
-      throw new Error('No s\'han pogut carregar els refugis');
+      const data: UserDTO = await response.json();
+      return mapUserFromDTO(data);
+    } catch (err) {
+      console.error(`Error fetching user ${uid}:`, err);
+      return null;
     }
   }
 
   /**
-   * Obté els favorits de l'usuari
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
+   * Actualitza les dades d'un usuari
+   * PUT /users/{uid}/
+   * 
+   * @param uid - UID de l'usuari
+   * @param updateData - Dades a actualitzar
+   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @returns L'usuari actualitzat o null si hi ha error
    */
-  static async getFavorites(): Promise<Location[]> {
-    // Placeholder - retornar array buit fins que el backend estigui llest
-    return [];
+  static async updateUser(uid: string, updateData: UserUpdateData, authToken?: string): Promise<User | null> {
+    try {
+      const url = `${API_BASE_URL}/users/${uid}/`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Afegir token d'autenticació si està disponible
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const response = await fetchWithLog(url, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updateData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(`Error updating user ${uid}:`, errorData);
+        return null;
+      }
+      
+      const data: UserDTO = await response.json();
+      return mapUserFromDTO(data);
+    } catch (err) {
+      console.error(`Error updating user ${uid}:`, err);
+      return null;
+    }
   }
 
   /**
-   * Afegeix un refugi als favorits
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
+   * Elimina un usuari
+   * DELETE /users/{uid}/
+   * 
+   * @param uid - UID de l'usuari
+   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @returns true si s'ha eliminat correctament, false altrament
    */
-  static async addFavorite(refugiId: number): Promise<void> {
-    // Placeholder
-    // TODO: implement adding favorite on backend
-  }
-
-  /**
-   * Elimina un refugi dels favorits
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
-   */
-  static async removeFavorite(refugiId: number): Promise<void> {
-    // Placeholder
-    // TODO: implement removing favorite on backend
+  static async deleteUser(uid: string, authToken?: string): Promise<boolean> {
+    try {
+      const url = `${API_BASE_URL}/users/${uid}/`;
+      const headers: Record<string, string> = {};
+      
+      // Afegir token d'autenticació si està disponible
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const response = await fetchWithLog(url, {
+        method: 'DELETE',
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.error(`User with uid ${uid} not found`);
+        } else {
+          const errorData = await response.json();
+          console.error(`Error deleting user ${uid}:`, errorData);
+        }
+        return false;
+      }
+      
+      return true;
+    } catch (err) {
+      console.error(`Error deleting user ${uid}:`, err);
+      return false;
+    }
   }
 }

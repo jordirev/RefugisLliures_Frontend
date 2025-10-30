@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
+import { AuthService } from '../services/AuthService';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -44,15 +45,53 @@ export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenP
 
     setIsLoading(true);
     
-    // Simulació de login - AQUÍ s'implementarà la crida real al backend
     try {
-      // TODO: Implementar autenticació real amb el backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Login amb Firebase Auth
+      const user = await AuthService.login({
+        email: email.trim(),
+        password: password
+      });
       
-      // Per ara, qualsevol credencial és vàlida (mode desenvolupament)
+      // Comprovar si l'email està verificat
+      if (!user.emailVerified) {
+        Alert.alert(
+          t('auth.emailNotVerified'),
+          t('auth.checkEmailVerification'),
+          [
+            {
+              text: t('auth.resendVerificationEmail'),
+              onPress: async () => {
+                try {
+                  await AuthService.resendVerificationEmail();
+                  Alert.alert(t('common.success'), t('auth.verificationEmailResent'));
+                } catch (error) {
+                  console.error('Error reenviant email:', error);
+                  Alert.alert(t('common.error'), t('auth.errors.generic'));
+                }
+              }
+            },
+            {
+              text: t('common.close'),
+              style: 'cancel'
+            }
+          ]
+        );
+        // Tancar sessió si l'email no està verificat
+        await AuthService.logout();
+        return;
+      }
+      
+      // Si tot és correcte, cridar onLoginSuccess
       onLoginSuccess();
-    } catch (error) {
-      Alert.alert(t('common.error'), t('login.errors.invalidCredentials'));
+    } catch (error: any) {
+      console.error('Error durant el login:', error);
+      
+      // Obtenir missatge d'error traduït
+      const errorCode = error?.code || 'unknown';
+      const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+      const errorMessage = t(errorMessageKey) || t('login.errors.invalidCredentials');
+      
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +103,38 @@ export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenP
   };
 
   const handleForgotPassword = () => {
-    // TODO: Implementar recuperació de contrasenya
-    Alert.alert(
-      t('login.forgotPassword'),
-      'Funcionalitat en desenvolupament'
+    // Recuperació de contrasenya
+    Alert.prompt(
+      t('auth.passwordResetTitle'),
+      t('auth.passwordResetMessage'),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel'
+        },
+        {
+          text: t('auth.sendResetEmail'),
+          onPress: async (resetEmail) => {
+            if (!resetEmail || !resetEmail.trim()) {
+              Alert.alert(t('common.error'), t('login.errors.emptyEmail'));
+              return;
+            }
+            
+            try {
+              await AuthService.resetPassword(resetEmail.trim());
+              Alert.alert(t('common.success'), t('auth.passwordResetEmailSent'));
+            } catch (error: any) {
+              console.error('Error enviant email de recuperació:', error);
+              const errorCode = error?.code || 'unknown';
+              const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+              const errorMessage = t(errorMessageKey) || t('auth.errors.generic');
+              Alert.alert(t('common.error'), errorMessage);
+            }
+          }
+        }
+      ],
+      'plain-text',
+      email
     );
   };
 

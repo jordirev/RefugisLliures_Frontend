@@ -1,4 +1,5 @@
 /**
- * Exporta tots els mappers relacionats amb els refugis
+ * Exporta tots els mappers
  */
 export * from './RefugiMapper';
+export * from './UserMapper';

@@ -225,7 +225,8 @@
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "loginLink": "Se connecter",
     "backToLogin": "Retour à la connexion",
-    "successMessage": "Compte créé avec succès ! Vous pouvez maintenant vous connecter.",
+    "successMessage": "Compte créé avec succès ! Vérifiez votre e-mail pour confirmer votre compte.",
+    "verificationEmailSent": "Un e-mail de vérification a été envoyé à {{email}}",
     "errors": {
       "emptyUsername": "Veuillez entrer un nom d'utilisateur",
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
@@ -234,6 +235,27 @@
       "shortPassword": "Le mot de passe doit contenir au moins 6 caractères",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "registrationFailed": "Impossible de créer le compte. Veuillez réessayer."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "Votre adresse e-mail n'est pas vérifiée",
+    "checkEmailVerification": "Veuillez vérifier votre e-mail avant de vous connecter",
+    "resendVerificationEmail": "Renvoyer l'e-mail de vérification",
+    "verificationEmailResent": "E-mail de vérification renvoyé",
+    "passwordResetEmailSent": "Un e-mail de réinitialisation du mot de passe a été envoyé",
+    "passwordResetTitle": "Réinitialiser le mot de passe",
+    "passwordResetMessage": "Entrez votre adresse e-mail pour recevoir les instructions",
+    "sendResetEmail": "Envoyer l'e-mail",
+    "errors": {
+      "emailInUse": "Cette adresse e-mail est déjà utilisée",
+      "invalidEmail": "L'adresse e-mail n'est pas valide",
+      "operationNotAllowed": "Opération non autorisée",
+      "weakPassword": "Le mot de passe est trop faible",
+      "userDisabled": "Ce compte a été désactivé",
+      "invalidCredentials": "Identifiants invalides",
+      "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
+      "networkError": "Erreur de connexion. Vérifiez votre connexion Internet",
+      "generic": "Une erreur s'est produite. Veuillez réessayer"
     }
   }
 }
