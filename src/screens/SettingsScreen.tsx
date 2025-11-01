@@ -5,10 +5,15 @@ import { useTranslation } from '../utils/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../contexts/AuthContext';
+
+// Icon imports
+import LogoutIcon from '../assets/icons/logout.svg';
 
 export function SettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { logout, deleteAccount } = useAuth();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const currentLanguage = getCurrentLanguage();
   
@@ -81,6 +86,36 @@ export function SettingsScreen() {
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuIcon}>ℹ️</Text>
             <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={async () => {
+              try {
+                await logout();
+              } catch (error) {
+                console.error('Error durant el logout:', error);
+              }
+            }}
+          >
+            <LogoutIcon />
+            <Text style={styles.menuText}>{t('profile.settings.logout')}</Text>
+            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={async () => {
+              try {
+                await deleteAccount();
+              } catch (error) {
+                console.error('Error durant la eliminació del compte:', error);
+              }
+            }}
+          >
+            <Text style={styles.menuIcon}>🗑️</Text>
+            <Text style={styles.menuText}>{t('profile.settings.deleteAccount')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>

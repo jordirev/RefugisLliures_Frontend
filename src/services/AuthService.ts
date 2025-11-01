@@ -225,6 +225,37 @@ export class AuthService {
   }
 
   /**
+   * Elimina el compte de l'usuari actual
+   * Elimina l'usuari tant del backend com de Firebase Auth
+   */
+  static async deleteAccount(): Promise<void> {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('No hi ha cap usuari autenticat');
+      }
+
+      // 1. Obtenir el token d'autenticació
+      const token = await user.getIdToken();
+
+      // 2. Eliminar l'usuari del backend primer
+      const backendDeleted = await UsersService.deleteUser(user.uid, token);
+      if (!backendDeleted) {
+        console.warn('No s\'ha pogut eliminar l\'usuari del backend, continuant amb Firebase...');
+      }
+
+      // 3. Eliminar l'usuari de Firebase Auth
+      // Firebase automàticament envia un email de confirmació de tancament de compte
+      await user.delete();
+      
+      console.log('Compte eliminat correctament de Firebase i del backend');
+    } catch (error: any) {
+      console.error('Error eliminant compte:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Obté missatges d'error traduïts segons el codi d'error de Firebase
    * 
    * @param errorCode - Codi d'error de Firebase

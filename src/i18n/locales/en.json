@@ -81,7 +81,9 @@
       "help": "Help & support",
       "about": "About the app",
       "privacy": "Privacy",
-      "terms": "Terms & conditions"
+      "terms": "Terms & conditions",
+      "logout": "Log out",
+      "deleteAccount": "Delete account"
     },
     "languageSelector": {
       "title": "Select language",

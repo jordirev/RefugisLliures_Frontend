@@ -81,7 +81,9 @@
       "help": "Aide et support",
       "about": "À propos de l'app",
       "privacy": "Confidentialité",
-      "terms": "Conditions générales"
+      "terms": "Conditions générales",
+      "logout": "Se déconnecter",
+      "deleteAccount": "Supprimer le compte"
     },
     "languageSelector": {
       "title": "Sélectionnez la langue",

@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, username: string, language: string) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
   reloadUser: () => Promise<void>;
 }
@@ -73,6 +74,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
+  const deleteAccount = async () => {
+    await AuthService.deleteAccount();
+    // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
+  };
+
   const refreshToken = async (): Promise<string | null> => {
     const token = await AuthService.getAuthToken(true);
     setAuthToken(token);
@@ -98,6 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     signup,
     logout,
+    deleteAccount,
     refreshToken,
     reloadUser
   };

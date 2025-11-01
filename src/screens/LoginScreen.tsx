@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
+import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
@@ -21,12 +22,12 @@ import { AuthService } from '../services/AuthService';
 const AppLogo = require('../assets/images/profileDefaultBackground.png');
 
 interface LoginScreenProps {
-  onLoginSuccess: () => void;
   onNavigateToSignUp?: () => void;
 }
 
-export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenProps) {
+export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -46,14 +47,12 @@ export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenP
     setIsLoading(true);
     
     try {
-      // Login amb Firebase Auth
-      const user = await AuthService.login({
-        email: email.trim(),
-        password: password
-      });
+      // Login amb el context (que utilitza AuthService internament)
+      await login(email.trim(), password);
       
       // Comprovar si l'email està verificat
-      if (!user.emailVerified) {
+      const currentUser = AuthService.getCurrentUser();
+      if (currentUser && !currentUser.emailVerified) {
         Alert.alert(
           t('auth.emailNotVerified'),
           t('auth.checkEmailVerification'),
@@ -81,8 +80,7 @@ export function LoginScreen({ onLoginSuccess, onNavigateToSignUp }: LoginScreenP
         return;
       }
       
-      // Si tot és correcte, cridar onLoginSuccess
-      onLoginSuccess();
+      // L'AuthProvider gestionarà automàticament la navegació
     } catch (error: any) {
       console.error('Error durant el login:', error);
       

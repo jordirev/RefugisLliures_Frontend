@@ -16,6 +16,7 @@ import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
+import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
 import { AuthService } from '../services/AuthService';
@@ -39,6 +40,7 @@ interface SignUpScreenProps {
 type Language = 'ca' | 'es' | 'en' | 'fr';
 
 export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenProps) {
+  const { signup } = useAuth();
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const [step, setStep] = useState<'language' | 'form'>('language');
@@ -113,13 +115,13 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     setIsLoading(true);
     
     try {
-      // Registre amb Firebase Auth i creació al backend
-      await AuthService.signUp({
-        email: email.trim(),
-        password: password,
-        username: username.trim(),
-        language: selectedLanguage
-      });
+      // Registre amb el context (que utilitza AuthService internament)
+      await signup(
+        email.trim(),
+        password,
+        username.trim(),
+        selectedLanguage
+      );
       
       Alert.alert(
         t('common.success'), 

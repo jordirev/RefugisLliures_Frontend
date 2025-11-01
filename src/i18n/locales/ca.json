@@ -82,7 +82,9 @@
       "help": "Ajuda i suport",
       "about": "Sobre l'app",
       "privacy": "Privacitat",
-      "terms": "Termes i condicions"
+      "terms": "Termes i condicions",
+      "logout": "Tancar sessió",
+      "deleteAccount": "Eliminar compte"
     },
     "languageSelector": {
       "title": "Selecciona l'idioma",

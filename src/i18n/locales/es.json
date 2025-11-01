@@ -81,7 +81,9 @@
       "help": "Ayuda y soporte",
       "about": "Sobre la app",
       "privacy": "Privacidad",
-      "terms": "Términos y condiciones"
+      "terms": "Términos y condiciones",
+      "logout": "Cerrar sesión",
+      "deleteAccount": "Eliminar cuenta"
     },
     "languageSelector": {
       "title": "Selecciona el idioma",
