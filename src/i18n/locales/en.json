@@ -236,6 +236,7 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginLink": "Sign in",
     "backToLogin": "Back to sign in",
+    "backToLanguage": "Back to language",
     "successMessage": "Account created successfully! Check your email to verify your account.",
     "verificationEmailSent": "A verification email has been sent to {{email}}",
     "errors": {

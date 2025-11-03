@@ -18,6 +18,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
+import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -279,7 +280,11 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               disabled={isLoading}
             >
               <View style={styles.googleButtonContent}>
-                <Text style={styles.googleIcon}>G</Text>
+                <Image 
+                  source={GoogleLogoIcon} 
+                  style={styles.googleIcon} 
+                  resizeMode="contain"
+                />
                 <Text style={styles.googleButtonText}>
                   {t('login.googleButton')}
                 </Text>
@@ -417,6 +422,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   googleIcon: {
+    height: 22,
+    width: 22,
     fontSize: 20,
     fontWeight: 'bold',
     marginRight: 12,

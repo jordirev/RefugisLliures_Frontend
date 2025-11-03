@@ -237,6 +237,7 @@
     "alreadyHaveAccount": "Ja tens un compte?",
     "loginLink": "Inicia sessió",
     "backToLogin": "Tornar a l'inici de sessió",
+    "backToLanguage": "Tornar a l'idioma",
     "successMessage": "Compte creat correctament! Comprova el teu correu per verificar el compte.",
     "verificationEmailSent": "S'ha enviat un correu de verificació a {{email}}",
     "errors": {

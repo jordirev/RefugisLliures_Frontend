@@ -46,6 +46,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const [step, setStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('language');
+  const [previousStep, setPreviousStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('username');
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -60,7 +61,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const handleSelectLanguage = (lang: Language) => {
     setSelectedLanguage(lang);
     i18n.changeLanguage(lang);
-    setStep('username');
+    setStep(previousStep); // previousStep == username by default
   };
 
   // Calculate flag sizes so they occupy the same space while respecting
@@ -84,7 +85,10 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     setUsername(text);
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el email
     if (text && text.trim().length > 0) {
-      if(step === "username") setStep('email');
+      if(step === "username"){
+        setStep('email')
+        setPreviousStep('username');
+      }
     }
   };
   
@@ -95,7 +99,10 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     if (text && text.trim().length > 0) {
       // initialize password errors so empty password shows all rules immediately
       setPasswordErrors(verifyPasswordStrength(password));
-      if(step === "email") setStep('password');
+      if(step === "email"){
+        setStep('password');
+        setPreviousStep('email');
+      }
     }
   };
 
@@ -117,6 +124,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
         // the new password.
         setConfirmPassword('');
         setStep('confirmPassword');
+        setPreviousStep('password');
       }
     }
   };
@@ -129,13 +137,16 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       if (text === password) {
         setConfirmPasswordError(null);
         setStep('register');
+        setPreviousStep('register');
       } else {
         setConfirmPasswordError(t('signup.errors.passwordMismatch'));
         setStep('confirmPassword');
+        setPreviousStep('confirmPassword');
       }
     } else {
       setConfirmPasswordError(null);
       setStep('confirmPassword');
+      setPreviousStep('confirmPassword');
     }
   };
 
@@ -354,21 +365,23 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
             <Text style={styles.subtitle}>{t('signup.subtitle')}</Text>
           </LinearGradient>
 
-          {/* Botó per tornar a seleccionar idioma */}
-          <TouchableOpacity
-            style={styles.headerBackButton}
-            onPress={() => {
-              setStep('language');
-              setSelectedLanguage(null);
-            }}
-          >
-            <ArrowLeftIcon width={24} height={24} color="#FFFFFF" />
-          </TouchableOpacity>
-
           {/* Formulari de registre */}
           <View style={styles.formContainer}>
             {(step === "username" || step === "email" || step === "password" || step === "confirmPassword" || step === "register") && (
               <>
+                {/* Botó per tornar a la selecció d'idioma */}
+                <TouchableOpacity
+                  style={styles.inlineBackButton}
+                  onPress={() => {
+                  setStep('language');
+                  setSelectedLanguage(null);
+                  }}
+                  accessibilityLabel={t('signup.backToLanguage') || 'Back to language'}
+                >
+                  <ArrowLeftIcon width={20} height={20} color="#FF8904" />
+                  <Text style={styles.backToLoginText}>{t('signup.backToLanguage')}</Text>
+                </TouchableOpacity>
+
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
@@ -583,6 +596,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 2000,
   },
+  inlineBackButton: {
+    alignSelf: 'flex-start',
+    width: '100%',
+    height: 40,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginBottom: 12,
+    flexDirection: 'row',
+    gap: 4,
+  },
   logo: {
     width: 120,
     height: 120,
@@ -602,7 +625,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   inputContainer: {
     marginBottom: 16,
@@ -641,6 +664,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 12,
   },
   backToLoginButton: {
     position: 'absolute',
@@ -649,7 +673,7 @@ const styles = StyleSheet.create({
   },
   backToLoginText: {
     color: '#FF8904',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   alreadyAccountText: {
