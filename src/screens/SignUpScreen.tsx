@@ -84,7 +84,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     setUsername(text);
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el email
     if (text && text.trim().length > 0) {
-      setStep('email');
+      if(step === "username") setStep('email');
     }
   };
   
@@ -95,7 +95,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     if (text && text.trim().length > 0) {
       // initialize password errors so empty password shows all rules immediately
       setPasswordErrors(verifyPasswordStrength(password));
-      setStep('password');
+      if(step === "email") setStep('password');
     }
   };
 
@@ -112,6 +112,10 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       if (passwordErrors.length > 0) {
         setStep('password');
       } else {
+        // We're about to move to the confirm-password step — clear any previous
+        // value in the confirmPassword field so the user must re-enter it for
+        // the new password.
+        setConfirmPassword('');
         setStep('confirmPassword');
       }
     }
@@ -253,13 +257,6 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     return () => sub.remove();
   }, [step, onBackToLogin]);
 
-  // When the keyboard appears for password-related steps, offset the
-  // KeyboardAvoidingView so the password input sits a bit higher than the
-  // default (giving room to see inline error messages under the field).
-  const keyboardVerticalOffset = (step === 'password' || step === 'confirmPassword' || step === 'register')
-    ? 100
-    : 0;
-
   // Pantalla de selecció d'idioma
   if (step === 'language') {
     return (
@@ -330,7 +327,6 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={keyboardVerticalOffset}
         style={styles.keyboardView}
       >
         <ScrollView 

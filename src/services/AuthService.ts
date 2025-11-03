@@ -80,6 +80,10 @@ export class AuthService {
         displayName: firebaseUser.displayName
       });
 
+      // 6. Tancar la sessió perquè l'usuari hagi de fer login després de verificar el correu
+      await signOut(auth);
+      console.log('Sessió tancada després del registre. L\'usuari haurà de fer login després de verificar el correu.');
+
       return firebaseUser;
     } catch (error: any) {
       console.error('Error durant el registre:', error);
@@ -145,21 +149,23 @@ export class AuthService {
   }
 
   /**
-   * Reenvia l'email de verificació a l'usuari actual
+   * Reenvia l'email de verificació a l'usuari
+   * 
+   * @param user - Usuari de Firebase opcional. Si no es proporciona, s'utilitzarà auth.currentUser
    */
-  static async resendVerificationEmail(): Promise<void> {
+  static async resendVerificationEmail(user?: FirebaseUser): Promise<void> {
     try {
-      const user = auth.currentUser;
-      if (!user) {
+      const targetUser = user || auth.currentUser;
+      if (!targetUser) {
         throw new Error('No hi ha cap usuari autenticat');
       }
 
-      if (user.emailVerified) {
+      if (targetUser.emailVerified) {
         throw new Error('L\'email ja està verificat');
       }
 
-      await sendEmailVerification(user);
-      console.log('Email de verificació reenviat a:', user.email);
+      await sendEmailVerification(targetUser);
+      console.log('Email de verificació reenviat a:', targetUser.email);
     } catch (error: any) {
       console.error('Error reenviant email de verificació:', error);
       throw error;

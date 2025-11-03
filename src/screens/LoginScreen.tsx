@@ -82,16 +82,20 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                   console.error('Error reenviant email:', error);
                   Alert.alert(t('common.error'), t('auth.errors.generic'));
                 }
+                // Tancar sessió després de reenviar el correu
+                await AuthService.logout();
               }
             },
             {
               text: t('common.close'),
-              style: 'cancel'
+              style: 'cancel',
+              onPress: async () => {
+                // Tancar sessió si l'usuari tanca l'alert
+                await AuthService.logout();
+              }
             }
           ]
         );
-        // Tancar sessió si l'email no està verificat
-        await AuthService.logout();
         return;
       }
       
@@ -115,11 +119,20 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     Alert.alert('Google Login', 'Funcionalitat en desenvolupament');
   };
 
-  const handleForgotPassword = () => {
-    // Recuperació de contrasenya
-    Alert.prompt(
+  const handleForgotPassword = async () => {
+    // Validar que hi ha un email introduït
+    if (!email.trim()) {
+      Alert.alert(
+        t('common.error'), 
+        t('login.errors.emptyEmail')
+      );
+      return;
+    }
+
+    // Confirmar abans d'enviar
+    Alert.alert(
       t('auth.passwordResetTitle'),
-      t('auth.passwordResetMessage'),
+      `${t('auth.passwordResetMessage')}\n\n${email}`,
       [
         {
           text: t('common.cancel'),
@@ -127,15 +140,19 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
         },
         {
           text: t('auth.sendResetEmail'),
-          onPress: async (resetEmail) => {
-            if (!resetEmail || !resetEmail.trim()) {
-              Alert.alert(t('common.error'), t('login.errors.emptyEmail'));
-              return;
-            }
-            
+          onPress: async () => {
             try {
-              await AuthService.resetPassword(resetEmail.trim());
-              Alert.alert(t('common.success'), t('auth.passwordResetEmailSent'));
+              await AuthService.resetPassword(email.trim());
+              Alert.alert(
+                t('common.success'), 
+                t('auth.passwordResetEmailSent'),
+                [
+                  {
+                    text: t('common.ok'),
+                    onPress: () => console.log('Email de recuperació enviat correctament')
+                  }
+                ]
+              );
             } catch (error: any) {
               console.error('Error enviant email de recuperació:', error);
               const errorCode = error?.code || 'unknown';
@@ -145,9 +162,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
             }
           }
         }
-      ],
-      'plain-text',
-      email
+      ]
     );
   };
 
