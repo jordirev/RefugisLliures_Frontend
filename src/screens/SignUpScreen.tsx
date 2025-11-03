@@ -20,6 +20,8 @@ import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
 import { AuthService } from '../services/AuthService';
+import VisibleIcon from '../assets/icons/visible.svg';
+import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 
 // Logo provisional
 const AppLogo = require('../assets/images/profileDefaultBackground.png');
@@ -43,18 +45,22 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const { signup } = useAuth();
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
-  const [step, setStep] = useState<'language' | 'form'>('language');
+  const [step, setStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('language');
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordErrorsState, setPasswordErrors] = useState<string[]>([]);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSelectLanguage = (lang: Language) => {
     setSelectedLanguage(lang);
     i18n.changeLanguage(lang);
-    setStep('form');
+    setStep('username');
   };
 
   // Calculate flag sizes so they occupy the same space while respecting
@@ -72,6 +78,82 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   // Slightly reduce the scaling factor because the previous value was too large
   const scaledFlagWidth = Math.min(Math.floor(computedFlagWidth * 1.12), Math.floor(windowWidth * 0.9));
   const scaledFlagHeight = Math.max(1, Math.round(scaledFlagWidth / phi));
+
+  // Gestiona el text de l'username i mostra/oculta el camp de email
+  const handleSetUsername = (text: string) => {
+    setUsername(text);
+    // Si l'usuari escriu algun caràcter (no només espais) mostrem el email
+    if (text && text.trim().length > 0) {
+      setStep('email');
+    }
+  };
+  
+  // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
+  const handleSetEmail = (text: string) => {
+    setEmail(text);
+    // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
+    if (text && text.trim().length > 0) {
+      // initialize password errors so empty password shows all rules immediately
+      setPasswordErrors(verifyPasswordStrength(password));
+      setStep('password');
+    }
+  };
+
+  // Gestiona el text de la contrasenya i mostra/oculta el camp de confirmació
+  const handleSetPassword = (text: string) => {
+    setPassword(text);
+    // Recalculate inline password errors and clear any confirm-password error
+    const passwordErrors = verifyPasswordStrength(text);
+    setPasswordErrors(passwordErrors);
+    setConfirmPasswordError(null);
+
+    // Si l'usuari escriu algun caràcter (no només espais) mostrem el confirmPassword
+    if (text && text.trim().length > 0) {
+      if (passwordErrors.length > 0) {
+        setStep('password');
+      } else {
+        setStep('confirmPassword');
+      }
+    }
+  };
+
+  // Gestiona el text de la confirmació de la contrasenya
+  const handleSetConfirmPassword = (text: string) => {
+    setConfirmPassword(text);
+    // Si l'usuari escriu algun caràcter (no només espais) mostrem el boto de registre
+    if (text && text.trim().length > 0) {
+      if (text === password) {
+        setConfirmPasswordError(null);
+        setStep('register');
+      } else {
+        setConfirmPasswordError(t('signup.errors.passwordMismatch'));
+        setStep('confirmPassword');
+      }
+    } else {
+      setConfirmPasswordError(null);
+      setStep('confirmPassword');
+    }
+  };
+
+  const verifyPasswordStrength = (password: string) => {
+    const errors: string[] = [];
+    if (password.length < 8) {
+      errors.push(t('signup.errors.shortPassword'));
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push(t('signup.errors.minusPassword'));
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push(t('signup.errors.upperPassword'));
+    }
+    if (!/[0-9]/.test(password)) {
+      errors.push(t('signup.errors.numberPassword'));
+    }
+    if (!/[!@#$%^&*]/.test(password)) {
+      errors.push(t('signup.errors.specialCharPassword'));
+    }
+    return errors;
+  };
 
   const handleSignUp = async () => {
     // Validació bàsica
@@ -94,16 +176,6 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
     if (!password.trim()) {
       Alert.alert(t('common.error'), t('signup.errors.emptyPassword'));
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert(t('common.error'), t('signup.errors.shortPassword'));
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert(t('common.error'), t('signup.errors.passwordMismatch'));
       return;
     }
 
@@ -152,7 +224,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   // - Web: browser back (popstate)
   useEffect(() => {
     const onBackPress = () => {
-      if (step === 'form') {
+      if (step === 'username') {
         // Si estem al formulari, tornem a la selecció d'idioma
         setStep('language');
         setSelectedLanguage(null);
@@ -180,6 +252,13 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
   }, [step, onBackToLogin]);
+
+  // When the keyboard appears for password-related steps, offset the
+  // KeyboardAvoidingView so the password input sits a bit higher than the
+  // default (giving room to see inline error messages under the field).
+  const keyboardVerticalOffset = (step === 'password' || step === 'confirmPassword' || step === 'register')
+    ? 100
+    : 0;
 
   // Pantalla de selecció d'idioma
   if (step === 'language') {
@@ -251,10 +330,16 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={keyboardVerticalOffset}
         style={styles.keyboardView}
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            // Add bottom padding when on password steps so inline errors
+            // aren't occluded by the keyboard and there's some breathing room.
+            (step === 'password' || step === 'confirmPassword' || step === 'register') ? { paddingBottom: 140 } : {}
+          ]}
           keyboardShouldPersistTaps="handled"
         >
           {/* Header amb gradient */}
@@ -286,72 +371,130 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
           {/* Formulari de registre */}
           <View style={styles.formContainer}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={t('signup.usernamePlaceholder')}
-                placeholderTextColor="#999"
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-                editable={!isLoading}
-              />
-            </View>
+            {(step === "username" || step === "email" || step === "password" || step === "confirmPassword" || step === "register") && (
+              <>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={t('signup.usernamePlaceholder')}
+                    placeholderTextColor="#999"
+                    value={username}
+                    onChangeText={handleSetUsername}
+                    autoCapitalize="none"
+                    editable={!isLoading}
+                  />
+                </View>
+              </>
+            )}
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={t('signup.emailPlaceholder')}
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                editable={!isLoading}
-              />
-            </View>
+            {(step === "email" || step === "password" || step === "confirmPassword" || step === "register") && (
+              <>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={t('signup.emailPlaceholder')}
+                    placeholderTextColor="#999"
+                    value={email}
+                    onChangeText={handleSetEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    editable={!isLoading}
+                  />
+                </View>
+              </>
+            )}
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={t('signup.passwordPlaceholder')}
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-            </View>
+            {(step === "password" || step === "confirmPassword" || step === "register") && (
+              <>
+                <View style={styles.inputContainer}>
+                  <View style={styles.inputWithIcon}>
+                    <TextInput
+                      style={[styles.input, styles.inputWithIconPadding]}
+                      placeholder={t('signup.passwordPlaceholder')}
+                      placeholderTextColor="#999"
+                      value={password}
+                      onChangeText={handleSetPassword}
+                      secureTextEntry={!showPassword}
+                      editable={!isLoading}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowPassword(prev => !prev)}
+                      style={styles.iconButton}
+                      accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? (
+                        <VisibleOffIcon width={22} height={22} />
+                      ) : (
+                        <VisibleIcon width={22} height={22} />                    
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                  {/* Inline password errors (grey) */}
+                  {passwordErrorsState.length > 0 && (
+                    <View style={{ marginTop: 8 }}>
+                      <Text style={styles.errorText}>{t('signup.errors.passwordMustHave')}</Text>
+                      {passwordErrorsState.map((err, idx) => (
+                        <Text key={idx} style={styles.errorText}>{err}</Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              </>
+            )}
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={t('signup.confirmPasswordPlaceholder')}
-                placeholderTextColor="#999"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-            </View>
+            {(step === "confirmPassword" || step === "register") && (
+              <>
+                <View style={styles.inputContainer}>
+                  <View style={styles.inputWithIcon}>
+                    <TextInput
+                      style={[styles.input, styles.inputWithIconPadding]}
+                      placeholder={t('signup.confirmPasswordPlaceholder')}
+                      placeholderTextColor="#999"
+                      value={confirmPassword}
+                      onChangeText={handleSetConfirmPassword}
+                      secureTextEntry={!showConfirmPassword}
+                      editable={!isLoading}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowConfirmPassword(prev => !prev)}
+                      style={styles.iconButton}
+                      accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                    >
+                      {showConfirmPassword ? (
+                        <VisibleOffIcon width={22} height={22} />
+                      ) : (
+                        <VisibleIcon width={22} height={22} />                    
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                  {confirmPasswordError ? (
+                    <Text style={[styles.errorText, { marginTop: 8 }]}>{confirmPasswordError}</Text>
+                  ) : null}
+                </View>
+              </>
+            )}
 
-            {/* Botó de registre */}
-            <TouchableOpacity
-              style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]}
-              onPress={handleSignUp}
-              disabled={isLoading}
-            >
-              <LinearGradient
-                colors={["#FF8904", "#F54900"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.signUpButtonGradient}
-              >
-                <Text style={styles.signUpButtonText}>
-                  {isLoading ? t('common.loading') : t('signup.signUpButton')}
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
+            {step === "register" && (
+              <>
+                {/* Botó de registre */}
+                <TouchableOpacity
+                  style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]}
+                  onPress={handleSignUp}
+                  disabled={isLoading}
+                >
+                  <LinearGradient
+                    colors={["#FF8904", "#F54900"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.signUpButtonGradient}
+                  >
+                    <Text style={styles.signUpButtonText}>
+                      {isLoading ? t('common.loading') : t('signup.signUpButton')}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </>
+            )}
 
             {/* Enllaç per tornar al login */}
             <TouchableOpacity 
@@ -522,5 +665,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  inputWithIcon: {
+    position: 'relative',
+    width: '100%',
+  },
+  inputWithIconPadding: {
+    paddingRight: 48,
+  },
+  iconButton: {
+    position: 'absolute',
+    right: 12,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
+  },
+  errorText: {
+    color: '#6b7280',
+    fontSize: 13,
+    lineHeight: 18,
   },
 });

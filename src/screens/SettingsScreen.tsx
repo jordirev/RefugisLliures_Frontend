@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from '../utils/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
@@ -91,31 +91,53 @@ export function SettingsScreen() {
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={async () => {
-              try {
-                await logout();
-              } catch (error) {
-                console.error('Error durant el logout:', error);
-              }
+            onPress={() => {
+              Alert.alert(
+                t('profile.settings.logout.confirmTitle'),
+                t('profile.settings.logout.confirmMessage'),
+                [
+                  { text: t('common.cancel'), style: 'cancel' },
+                  { text: t('profile.settings.logout.title'), onPress: async () => {
+                      try {
+                        await logout();
+                      } catch (error) {
+                        console.error('Error durant el logout:', error);
+                        Alert.alert(t('common.error'), t('auth.errors.generic'));
+                      }
+                    }
+                  }
+                ]
+              );
             }}
           >
             <LogoutIcon />
-            <Text style={styles.menuText}>{t('profile.settings.logout')}</Text>
+            <Text style={styles.menuText}>{t('profile.settings.logout.title')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={async () => {
-              try {
-                await deleteAccount();
-              } catch (error) {
-                console.error('Error durant la eliminació del compte:', error);
-              }
+            onPress={() => {
+              Alert.alert(
+                t('profile.settings.deleteAccount.confirmTitle'),
+                t('profile.settings.deleteAccount.confirmMessage'),
+                [
+                  { text: t('common.cancel'), style: 'cancel' },
+                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: async () => {
+                      try {
+                        await deleteAccount();
+                      } catch (error) {
+                        console.error('Error durant la eliminació del compte:', error);
+                        Alert.alert(t('common.error'), t('auth.errors.generic'));
+                      }
+                    }
+                  }
+                ]
+              );
             }}
           >
             <Text style={styles.menuIcon}>🗑️</Text>
-            <Text style={styles.menuText}>{t('profile.settings.deleteAccount')}</Text>
+            <Text style={styles.menuText}>{t('profile.settings.deleteAccount.title')}</Text>
             <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>

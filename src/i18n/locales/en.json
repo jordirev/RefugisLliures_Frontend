@@ -82,8 +82,16 @@
       "about": "About the app",
       "privacy": "Privacy",
       "terms": "Terms & conditions",
-      "logout": "Log out",
-      "deleteAccount": "Delete account"
+      "logout": {
+        "title": "Log out",
+        "confirmTitle": "Log out?",
+        "confirmMessage": "You are about to log out of your account."
+      },
+      "deleteAccount": {
+        "title": "Delete account",
+        "confirmTitle": "Delete account?",
+        "confirmMessage": "This action will permanently delete your account and associated data. Are you sure?"
+      }
     },
     "languageSelector": {
       "title": "Select language",
@@ -201,7 +209,7 @@
   "login": {
     "title": "Welcome",
     "subtitle": "Sign in to continue",
-    "emailPlaceholder": "Username or email address",
+    "emailPlaceholder": "Email address",
     "passwordPlaceholder": "Password",
     "forgotPassword": "Forgot your password?",
     "loginButton": "Sign in",
@@ -212,7 +220,7 @@
     "errors": {
       "emptyEmail": "Please enter your email address",
       "emptyPassword": "Please enter your password",
-      "invalidCredentials": "Invalid credentials"
+      "invalidCredentials": "Invalid email or password"
     }
   },
   "signup": {
@@ -234,7 +242,12 @@
       "emptyEmail": "Please enter your email address",
       "invalidEmail": "The email address is not valid",
       "emptyPassword": "Please enter a password",
-      "shortPassword": "Password must be at least 6 characters",
+      "passwordMustHave": "Password must meet the following criteria:",
+      "shortPassword": "\t• Minimum 8 characters",
+      "minusPassword": "\t• Minimum one lowercase letter",
+      "upperPassword": "\t• Minimum one uppercase letter",
+      "numberPassword": "\t• Minimum one number",
+      "specialCharPassword": "\t• Minimum one special character (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Could not create account. Please try again."
     }

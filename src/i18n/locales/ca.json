@@ -83,8 +83,16 @@
       "about": "Sobre l'app",
       "privacy": "Privacitat",
       "terms": "Termes i condicions",
-      "logout": "Tancar sessió",
-      "deleteAccount": "Eliminar compte"
+      "logout": {
+        "title": "Tancar sessió",
+        "confirmTitle": "Vols tancar la sessió?",
+        "confirmMessage": "S'està a punt de tancar la sessió del teu compte."
+      },
+      "deleteAccount": {
+        "title": "Eliminar compte",
+        "confirmTitle": "Eliminar compte?",
+        "confirmMessage": "Aquesta acció eliminarà permanentment el teu compte i les dades associades. Estàs segur/ra?"
+      }
     },
     "languageSelector": {
       "title": "Selecciona l'idioma",
@@ -202,7 +210,7 @@
   "login": {
     "title": "Benvingut/da",
     "subtitle": "Inicia sessió per continuar",
-    "emailPlaceholder": "Nom d'usuari o correu electrònic",
+    "emailPlaceholder": "Correu electrònic",
     "passwordPlaceholder": "Contrasenya",
     "forgotPassword": "Has oblidat la contrasenya?",
     "loginButton": "Iniciar sessió",
@@ -213,7 +221,7 @@
     "errors": {
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "emptyPassword": "Si us plau, introdueix la teva contrasenya",
-      "invalidCredentials": "Credencials incorrectes"
+      "invalidCredentials": "L'usuari o la contrasenya no són correctes"
     }
   },
   "signup": {
@@ -235,7 +243,12 @@
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "invalidEmail": "El correu electrònic no és vàlid",
       "emptyPassword": "Si us plau, introdueix una contrasenya",
-      "shortPassword": "La contrasenya ha de tenir almenys 6 caràcters",
+      "passwordMustHave": "La contrasenya ha de tenir:",
+      "shortPassword": "\t• Mínim 8 caràcters",
+      "minusPassword": "\t• Mínim una lletra minúscula",
+      "upperPassword": "\t• Mínim una lletra majúscula",
+      "numberPassword": "\t• Mínim un número",
+      "specialCharPassword": "\t• Mínim un caràcter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les contrasenyes no coincideixen",
       "registrationFailed": "No s'ha pogut crear el compte. Si us plau, torna-ho a intentar."
     }

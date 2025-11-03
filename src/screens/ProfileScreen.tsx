@@ -6,6 +6,7 @@ import { useTranslation } from '../utils/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
+import { useAuth } from '../contexts/AuthContext';
 
 // Icones
 import StatsIcon from '../assets/icons/stats.svg';
@@ -20,6 +21,7 @@ export function ProfileScreen() {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
+  const { firebaseUser, backendUser, isLoading } = useAuth();
   
   return (
     <ScrollView style={styles.container}>
@@ -50,14 +52,39 @@ export function ProfileScreen() {
           {/* Avatar overlapping the background */}
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>JM</Text>
+              <Text style={styles.avatarText}>
+                {(() => {
+                  const name = backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || '';
+                  const parts = name.trim().split(/\s+/);
+                  if (parts.length === 0) return '';
+                  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                })()}
+              </Text>
             </View>
           </View>
 
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
-            <Text style={styles.nameText}>Joan Martínez</Text>
-            <Text style={styles.subtitleText}>{t('profile.stats.memberSince', { date: 'març 2026' })}</Text>
+            <Text style={styles.nameText}>
+              {backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || ''}
+            </Text>
+            <Text style={styles.subtitleText}>
+              {(() => {
+                // Prefer backendUser data if available, otherwise use Firebase creation time
+                try {
+                  const created = firebaseUser?.metadata?.creationTime;
+                  if (created) {
+                    const d = new Date(created);
+                    // show e.g. "març 2026" or localized month+year
+                    return t('profile.stats.memberSince', { date: d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) });
+                  }
+                } catch (e) {
+                  // ignore
+                }
+                return t('profile.stats.memberSince', { date: '' });
+              })()}
+            </Text>
           </View>
         </View>
       </SafeAreaView>
@@ -71,21 +98,21 @@ export function ProfileScreen() {
           <View style={styles.statsGrid}>
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>12</Text>
+                <Text style={styles.statValue}>{backendUser?.refugis_visitats?.length ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>5</Text>
+                <Text style={styles.statValue}>{backendUser?.num_refugis_reformats ?? backendUser?.reformes?.length ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
               </View>
             </View>
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>5</Text>
+                <Text style={styles.statValue}>{backendUser?.num_experiencies_compartides ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>5</Text>
+                <Text style={styles.statValue}>{backendUser?.num_fotos_pujades ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
               </View>
             </View>
@@ -96,58 +123,9 @@ export function ProfileScreen() {
           <View style={styles.sectionTitle}>
             <AltitudeIcon width={20} height={20} />
             <Text style={styles.title}>{t('profile.stats.visited')}</Text>
-            <Text style={styles.titleValue}>(12)</Text>
+            <Text style={styles.titleValue}>({backendUser?.refugis_visitats?.length ?? 0})</Text>
           </View>
         </View>
-
-              <View style={styles.content}>
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>{t('profile.settings.title')}</Text>
-                  
-                  <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuIcon}>⚙️</Text>
-                    <Text style={styles.menuText}>{t('profile.settings.preferences')}</Text>
-                    <Text style={styles.menuArrow}>›</Text>
-                  </TouchableOpacity>
-        
-                  <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuIcon}>🔔</Text>
-                    <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
-                    <Text style={styles.menuArrow}>›</Text>
-                  </TouchableOpacity>
-        
-                  <TouchableOpacity 
-                    style={styles.menuItem}
-                    onPress={() => setShowLanguageSelector(true)}
-                  >
-                    <Text style={styles.menuIcon}>🌍</Text>
-                    <View style={styles.menuTextContainer}>
-                      <Text style={styles.menuText}>{t('profile.settings.language')}</Text>
-                      <Text style={styles.menuSubtext}>
-                        {LANGUAGES[currentLanguage]?.nativeName || 'Català'}
-                      </Text>
-                    </View>
-                    <Text style={styles.menuArrow}>›</Text>
-                  </TouchableOpacity>
-        
-                  <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuIcon}>❓</Text>
-                    <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
-                    <Text style={styles.menuArrow}>›</Text>
-                  </TouchableOpacity>
-        
-                  <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuIcon}>ℹ️</Text>
-                    <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
-                    <Text style={styles.menuArrow}>›</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-        
-              <LanguageSelector
-                visible={showLanguageSelector}
-                onClose={() => setShowLanguageSelector(false)}
-              />
       </View>
     </ScrollView>
   );
@@ -296,6 +274,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Arimo',
     fontWeight: '400',
     lineHeight: 24,
+    textTransform: 'capitalize',
   },
   subtitleText: {
     color: '#5C6167',

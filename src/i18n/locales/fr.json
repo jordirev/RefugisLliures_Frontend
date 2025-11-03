@@ -82,8 +82,16 @@
       "about": "À propos de l'app",
       "privacy": "Confidentialité",
       "terms": "Conditions générales",
-      "logout": "Se déconnecter",
-      "deleteAccount": "Supprimer le compte"
+      "logout": {
+        "title": "Se déconnecter",
+        "confirmTitle": "Se déconnecter",
+        "confirmMessage": "Vous allez vous déconnecter de votre compte."
+      },
+      "deleteAccount": {
+        "title": "Supprimer le compte",
+        "confirmTitle": "Supprimer le compte",
+        "confirmMessage": "Cette action supprimera définitivement votre compte et les données associées. Êtes-vous sûr(e) ?"
+      }
     },
     "languageSelector": {
       "title": "Sélectionnez la langue",
@@ -201,7 +209,7 @@
   "login": {
     "title": "Bienvenue",
     "subtitle": "Connectez-vous pour continuer",
-    "emailPlaceholder": "Nom d'utilisateur ou adresse e-mail",
+    "emailPlaceholder": "Adresse e-mail",
     "passwordPlaceholder": "Mot de passe",
     "forgotPassword": "Mot de passe oublié ?",
     "loginButton": "Se connecter",
@@ -212,7 +220,7 @@
     "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "emptyPassword": "Veuillez entrer votre mot de passe",
-      "invalidCredentials": "Identifiants invalides"
+      "invalidCredentials": "Adresse e-mail ou mot de passe invalide"
     }
   },
   "signup": {
@@ -234,7 +242,12 @@
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "invalidEmail": "L'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer un mot de passe",
-      "shortPassword": "Le mot de passe doit contenir au moins 6 caractères",
+      "passwordMustHave": "Le mot de passe doit contenir :",
+      "shortPassword": "\t• Minimum 8 caractères",
+      "minusPassword": "\t• Minimum une lettre minuscule",
+      "upperPassword": "\t• Minimum une lettre majuscule",
+      "numberPassword": "\t• Minimum un chiffre",
+      "specialCharPassword": "\t• Minimum un caractère spécial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "registrationFailed": "Impossible de créer le compte. Veuillez réessayer."
     }

@@ -16,6 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
+import VisibleIcon from '../assets/icons/visible.svg';
+import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -28,9 +30,22 @@ interface LoginScreenProps {
 export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
   const { login } = useAuth();
+  const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
+  const handleSetEmail = (text: string) => {
+    setEmail(text);
+    // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
+    if (text && text.trim().length > 0) {
+      setStep('password');
+    } else {
+      setStep('email');
+    }
+  };
 
   const handleLogin = async () => {
     // Validació bàsica
@@ -170,33 +185,52 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 placeholder={t('login.emailPlaceholder')}
                 placeholderTextColor="#999"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleSetEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 editable={!isLoading}
+                returnKeyType={step === 'password' ? 'next' : 'done'}
               />
             </View>
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder={t('login.passwordPlaceholder')}
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-            </View>
+            {/* Mostrem el camp de password i 'forgot password' només quan l'email està omplert */}
+            {step === 'password' && (
+              <>
+                <View style={styles.inputContainer}>
+                  <View style={styles.inputWithIcon}>
+                    <TextInput
+                      style={[styles.input, styles.inputWithIconPadding]}
+                      placeholder={t('login.passwordPlaceholder')}
+                      placeholderTextColor="#999"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!showPassword}
+                      editable={!isLoading}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowPassword(prev => !prev)}
+                      style={styles.iconButton}
+                      accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? (
+                        <VisibleOffIcon width={22} height={22} />
+                      ) : (
+                        <VisibleIcon width={22} height={22} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-            <TouchableOpacity 
-              onPress={handleForgotPassword}
-              style={styles.forgotPasswordContainer}
-            >
-              <Text style={styles.forgotPasswordText}>
-                {t('login.forgotPassword')}
-              </Text>
-            </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={handleForgotPassword}
+                  style={styles.forgotPasswordContainer}
+                >
+                  <Text style={styles.forgotPasswordText}>
+                    {t('login.forgotPassword')}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
 
             {/* Botó d'iniciar sessió */}
             <TouchableOpacity
@@ -215,21 +249,6 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
-
-            {/* Enllaç per crear compte */}
-            {onNavigateToSignUp && (
-              <TouchableOpacity 
-                style={styles.signUpContainer}
-                onPress={onNavigateToSignUp}
-              >
-                <Text style={styles.noAccountText}>
-                  {t('login.noAccount')}
-                </Text>
-                <Text style={styles.signUpLinkText}>
-                  {t('login.signUpLink')}
-                </Text>
-              </TouchableOpacity>
-            )}
 
             {/* Separador */}
             <View style={styles.separatorContainer}>
@@ -251,6 +270,21 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 </Text>
               </View>
             </TouchableOpacity>
+
+            {/* Enllaç per crear compte */}
+            {onNavigateToSignUp && (
+              <TouchableOpacity 
+                style={styles.signUpContainer}
+                onPress={onNavigateToSignUp}
+              >
+                <Text style={styles.noAccountText}>
+                  {t('login.noAccount')}
+                </Text>
+                <Text style={styles.signUpLinkText}>
+                  {t('login.signUpLink')}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -382,7 +416,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 2,
+    marginTop: 24,
     marginBottom: 24,
   },
   noAccountText: {
@@ -394,5 +428,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  inputWithIcon: {
+    position: 'relative',
+    width: '100%',
+  },
+  inputWithIconPadding: {
+    paddingRight: 48,
+  },
+  iconButton: {
+    position: 'absolute',
+    right: 12,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
   },
 });
