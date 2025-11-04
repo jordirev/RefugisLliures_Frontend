@@ -133,7 +133,7 @@ export class UsersService {
       }
       
       const response = await fetchWithLog(url, {
-        method: 'PUT',
+        method: 'PATCH',
         headers,
         body: JSON.stringify(updateData),
       });

@@ -73,11 +73,12 @@ export function ProfileScreen() {
               {(() => {
                 // Prefer backendUser data if available, otherwise use Firebase creation time
                 try {
-                  const created = firebaseUser?.metadata?.creationTime;
+                  const created = backendUser?.created_at ?? firebaseUser?.metadata?.creationTime;
                   if (created) {
-                    const d = new Date(created);
-                    // show e.g. "març 2026" or localized month+year
-                    return t('profile.stats.memberSince', { date: d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) });
+                    const d = typeof created === 'number' ? new Date(created * 1000) : new Date(created);
+                    if (!isNaN(d.getTime())) {
+                      return t('profile.stats.memberSince', { date: d.toLocaleDateString(currentLanguage, { month: 'long', year: 'numeric' }) });
+                    }
                   }
                 } catch (e) {
                   // ignore

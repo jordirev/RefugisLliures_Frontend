@@ -21,5 +21,6 @@ export function mapUserFromDTO(userDTO: UserDTO): User {
     num_fotos_pujades: userDTO.num_fotos_pujades || null,
     num_experiencies_compartides: userDTO.num_experiencies_compartides || null,
     num_refugis_reformats: userDTO.num_refugis_reformats || null,
+    created_at: userDTO.created_at,
   };
 }
