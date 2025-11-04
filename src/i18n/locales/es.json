@@ -243,6 +243,7 @@
     "verificationEmailSent": "Se ha enviado un correo de verificación a {{email}}",
     "errors": {
       "emptyUsername": "Por favor, introduce un nombre de usuario",
+      "usernameTooShort": "El nombre de usuario debe tener al menos 2 caracteres",
       "emptyEmail": "Por favor, introduce tu correo electrónico",
       "invalidEmail": "El correo electrónico no es válido",
       "emptyPassword": "Por favor, introduce una contraseña",

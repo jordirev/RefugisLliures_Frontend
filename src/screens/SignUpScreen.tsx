@@ -49,7 +49,11 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const [previousStep, setPreviousStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('username');
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [username, setUsername] = useState('');
+  // Store an i18n translation key for the username error so the rendered
+  // message updates automatically when the language changes.
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrorsState, setPasswordErrors] = useState<string[]>([]);
@@ -60,8 +64,22 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
   const handleSelectLanguage = (lang: Language) => {
     setSelectedLanguage(lang);
-    i18n.changeLanguage(lang);
-    setStep(previousStep); // previousStep == username by default
+    // Change language then return to the previous step. Run validation
+    // AFTER the language change completes so translated strings update
+    // synchronously for the user.
+    i18n.changeLanguage(lang, () => {
+      setStep(previousStep); // previousStep == username by default
+      if (previousStep === 'username') {
+        const trimmed = username.trim();
+        if (!trimmed || trimmed.length === 0) {
+          setUsernameError('signup.errors.emptyUsername');
+        } else if (trimmed.length < 2) {
+          setUsernameError('signup.errors.usernameTooShort');
+        } else {
+          setUsernameError(null);
+        }
+      }
+    });
   };
 
   // Calculate flag sizes so they occupy the same space while respecting
@@ -83,20 +101,44 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   // Gestiona el text de l'username i mostra/oculta el camp de email
   const handleSetUsername = (text: string) => {
     setUsername(text);
-    // Si l'usuari escriu algun caràcter (no només espais) mostrem el email
-    if (text && text.trim().length > 0) {
-      if(step === "username"){
-        setStep('email')
-        setPreviousStep('email');
-      }
+    const trimmed = text.trim();
+    // Recompute username error inline: must have at least 2 characters
+      if (!trimmed || trimmed.length === 0) {
+        setUsernameError('signup.errors.emptyUsername');
+      return;
+    }
+
+    if (trimmed.length < 2) {
+        setUsernameError('signup.errors.usernameTooShort');
+      // remain on username step until requirement satisfied
+      return;
+    }
+
+    // Valid username: clear error and advance to email step if we are on username
+    if (trimmed.length >= 2) setUsernameError(null);
+    
+    if (step === 'username') {
+      setStep('email');
+      setPreviousStep('email');
     }
   };
   
   // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
   const handleSetEmail = (text: string) => {
     setEmail(text);
+    const trimmed = text.trim();
+    // Clear or set inline email error while the user types
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmed) {
+      setEmailError(null);
+    } else if (!emailRegex.test(trimmed)) {
+      setEmailError('signup.errors.invalidEmail');
+    } else {
+      setEmailError(null);
+    }
+
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
-    if (text && text.trim().length > 0) {
+    if (trimmed.length > 0 && emailRegex.test(trimmed)) {
       // initialize password errors so empty password shows all rules immediately
       setPasswordErrors(verifyPasswordStrength(password));
       if(step === "email"){
@@ -113,6 +155,8 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     const passwordErrors = verifyPasswordStrength(text);
     setPasswordErrors(passwordErrors);
     setConfirmPasswordError(null);
+    setPreviousStep('password');
+
 
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el confirmPassword
     if (text && text.trim().length > 0) {
@@ -171,23 +215,32 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   };
 
   const handleSignUp = async () => {
-    // Validació bàsica
-    if (!username.trim()) {
-      Alert.alert(t('common.error'), t('signup.errors.emptyUsername'));
+    // Validació bàsica (username handled inline instead of Alert)
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      setUsernameError('signup.errors.emptyUsername');
+      return;
+    }
+
+    if (trimmedUsername.length < 2) {
+      setUsernameError('signup.errors.usernameTooShort');
       return;
     }
 
     if (!email.trim()) {
-      Alert.alert(t('common.error'), t('signup.errors.emptyEmail'));
+      setEmailError(t('signup.errors.emptyEmail'));
       return;
     }
 
     // Validació bàsica d'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert(t('common.error'), t('signup.errors.invalidEmail'));
+      setEmailError(t('signup.errors.invalidEmail'));
       return;
     }
+
+    // Clear any email error now that validation passed
+    setEmailError(null);
 
     if (!password.trim()) {
       Alert.alert(t('common.error'), t('signup.errors.emptyPassword'));
@@ -227,8 +280,14 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       const errorCode = error?.code || 'unknown';
       const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
       const errorMessage = t(errorMessageKey) || t('signup.errors.registrationFailed');
-      
-      Alert.alert(t('common.error'), errorMessage);
+
+      // If the error is that the email is already in use, show it inline under the email field.
+      if (errorMessageKey === 'auth.errors.emailInUse') {
+        // show inline error under the email field
+        setEmailError(errorMessage);
+      } else {
+        Alert.alert(t('common.error'), errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -395,6 +454,9 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                     autoCapitalize="none"
                     editable={!isLoading}
                   />
+                  {usernameError ? (
+                    <Text style={[styles.errorText, { marginTop: 8 }]}>{t(usernameError) || usernameError}</Text>
+                  ) : null}
                 </View>
               </>
             )}
@@ -412,6 +474,9 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                     keyboardType="email-address"
                     editable={!isLoading}
                   />
+                  {emailError ? (
+                    <Text style={[styles.errorText, { marginTop: 8, color: 'red' }]}>{t('signup.errors.invalidEmail')}</Text>
+                  ) : null}
                 </View>
               </>
             )}
@@ -480,13 +545,13 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                     </TouchableOpacity>
                   </View>
                   {confirmPasswordError ? (
-                    <Text style={[styles.errorText, { marginTop: 8 }]}>{confirmPasswordError}</Text>
+                    <Text style={[styles.errorText, { marginTop: 8, color: 'red' }]}>{t('signup.errors.passwordMismatch')}</Text>
                   ) : null}
                 </View>
               </>
             )}
 
-            {step === "register" && (
+            {step === "register" && !usernameError && !emailError && (
               <>
                 {/* Botó de registre */}
                 <TouchableOpacity

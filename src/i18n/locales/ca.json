@@ -244,6 +244,7 @@
     "verificationEmailSent": "S'ha enviat un correu de verificació a {{email}}",
     "errors": {
       "emptyUsername": "Si us plau, introdueix un nom d'usuari",
+      "usernameTooShort": "El nom d'usuari ha de tenir almenys 2 caràcters",
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "invalidEmail": "El correu electrònic no és vàlid",
       "emptyPassword": "Si us plau, introdueix una contrasenya",

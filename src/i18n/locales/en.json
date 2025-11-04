@@ -243,6 +243,7 @@
     "verificationEmailSent": "A verification email has been sent to {{email}}",
     "errors": {
       "emptyUsername": "Please enter a username",
+      "usernameTooShort": "Username must be at least 2 characters long",
       "emptyEmail": "Please enter your email address",
       "invalidEmail": "The email address is not valid",
       "emptyPassword": "Please enter a password",
