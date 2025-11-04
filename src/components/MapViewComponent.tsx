@@ -1,10 +1,12 @@
 import React, { useState, useCallback, memo } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as ExpoLocation from 'expo-location';
 import { Location } from '../models';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
 import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 import LayersIcon from '../assets/icons/layers.svg';
 import CompassIcon from '../assets/icons/compass3.png';
@@ -19,6 +21,7 @@ interface MapViewComponentProps {
 // Memoritzem el component per evitar re-renders quan les props no canvien
 export const MapViewComponent = memo(function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
   const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showOfflineManager, setShowOfflineManager] = useState(false);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
 
@@ -63,7 +66,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
               return;
             }
 
-            Alert.alert(
+            showAlert(
               t('permissions.location.title'),
               t('permissions.location.message'),
               [
@@ -72,7 +75,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
                     try {
                       let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
                       if (status !== 'granted') {
-                        Alert.alert('Permís denegat', 'No es pot accedir a la ubicació.');
+                        showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
                         return;
                       }
                       let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
@@ -86,8 +89,8 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
                         const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
                         window.dispatchEvent(ev);
                       }
-                    } catch (err) {
-                      Alert.alert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
+                    } catch (err: any) {
+                      showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
                     }
                   }
                 }
@@ -112,6 +115,17 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
         visible={showOfflineManager}
         onClose={() => setShowOfflineManager(false)}
       />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 });

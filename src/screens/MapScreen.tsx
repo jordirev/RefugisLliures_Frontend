@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { View, StyleSheet, Alert, BackHandler, Platform } from 'react-native';
+import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
@@ -7,6 +7,8 @@ import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -22,6 +24,7 @@ export function MapScreen({
 }: MapScreenProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,14 +104,14 @@ export function MapScreen({
       }
       // Validació de la resposta
       if (!Array.isArray(data)) {
-        Alert.alert(t('common.error'), t('map.errorLoading'));
+        showAlert(t('common.error'), t('map.errorLoading'));
         //console.error('Invalid refugis response:', data);
         return;
       }
       setAllLocations(data); // Guardar tots els refugis
       setLocations(data); // Mostrar tots inicialment
     } catch (error) {
-      Alert.alert(t('common.error'), t('map.errorLoading'));
+      showAlert(t('common.error'), t('map.errorLoading'));
       //console.error(error);
     }
   };
@@ -212,6 +215,17 @@ export function MapScreen({
         maxAltitude={MAX_ALTITUDE}
         maxPlaces={MAX_PLACES}
       />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }

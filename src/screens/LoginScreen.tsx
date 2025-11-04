@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -19,6 +18,8 @@ import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import GoogleLogoIcon from '../assets/icons/googleLogo.png';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -31,6 +32,7 @@ interface LoginScreenProps {
 export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
   const { login } = useAuth();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,12 +49,12 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const handleLogin = async () => {
     // Validació bàsica
     if (!email.trim()) {
-      Alert.alert(t('common.error'), t('login.errors.emptyEmail'));
+      showAlert(t('common.error'), t('login.errors.emptyEmail'));
       return;
     }
     
     if (!password.trim()) {
-      Alert.alert(t('common.error'), t('login.errors.emptyPassword'));
+      showAlert(t('common.error'), t('login.errors.emptyPassword'));
       return;
     }
 
@@ -65,7 +67,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       // Comprovar si l'email està verificat
       const currentUser = AuthService.getCurrentUser();
       if (currentUser && !currentUser.emailVerified) {
-        Alert.alert(
+        showAlert(
           t('auth.emailNotVerified'),
           t('auth.checkEmailVerification'),
           [
@@ -74,10 +76,10 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               onPress: async () => {
                 try {
                   await AuthService.resendVerificationEmail();
-                  Alert.alert(t('common.success'), t('auth.verificationEmailResent'));
+                  showAlert(t('common.success'), t('auth.verificationEmailResent'));
                 } catch (error) {
                   console.error('Error reenviant email:', error);
-                  Alert.alert(t('common.error'), t('auth.errors.generic'));
+                  showAlert(t('common.error'), t('auth.errors.generic'));
                 }
                 // Tancar sessió després de reenviar el correu
                 await AuthService.logout();
@@ -105,7 +107,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
       const errorMessage = t(errorMessageKey) || t('login.errors.invalidCredentials');
       
-      Alert.alert(t('common.error'), errorMessage);
+      showAlert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +116,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const handleContinue = () => {
     // Validate email then reveal password field
     if (!email.trim()) {
-      Alert.alert(t('common.error'), t('login.errors.emptyEmail'));
+      showAlert(t('common.error'), t('login.errors.emptyEmail'));
       return;
     }
 
@@ -131,13 +133,13 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
 
   const handleGoogleLogin = () => {
     // TODO: Implementar login amb Google
-    Alert.alert('Google Login', 'Funcionalitat en desenvolupament');
+    showAlert('Google Login', 'Funcionalitat en desenvolupament');
   };
 
   const handleForgotPassword = async () => {
     // Validar que hi ha un email introduït
     if (!email.trim()) {
-      Alert.alert(
+      showAlert(
         t('common.error'), 
         t('login.errors.emptyEmail')
       );
@@ -145,7 +147,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     }
 
     // Confirmar abans d'enviar
-    Alert.alert(
+    showAlert(
       t('auth.passwordResetTitle'),
       `${t('auth.passwordResetMessage')}\n\n${email}`,
       [
@@ -158,7 +160,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           onPress: async () => {
             try {
               await AuthService.resetPassword(email.trim());
-              Alert.alert(
+              showAlert(
                 t('common.success'), 
                 t('auth.passwordResetEmailSent'),
                 [
@@ -173,7 +175,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               const errorCode = error?.code || 'unknown';
               const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
               const errorMessage = t(errorMessageKey) || t('auth.errors.generic');
-              Alert.alert(t('common.error'), errorMessage);
+              showAlert(t('common.error'), errorMessage);
             }
           }
         }
@@ -356,6 +358,17 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </SafeAreaView>
   );
 }

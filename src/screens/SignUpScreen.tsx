@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert
 } from 'react-native';
 import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
@@ -22,6 +21,8 @@ import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
 import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Logo provisional
 const AppLogo = require('../assets/images/profileDefaultBackground.png');
@@ -45,6 +46,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const { signup } = useAuth();
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('language');
   const [previousStep, setPreviousStep] = useState<'language' | 'username' | 'email' | 'password' | 'confirmPassword' | 'register'>('username');
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
@@ -243,12 +245,12 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     setEmailError(null);
 
     if (!password.trim()) {
-      Alert.alert(t('common.error'), t('signup.errors.emptyPassword'));
+      showAlert(t('common.error'), t('signup.errors.emptyPassword'));
       return;
     }
 
     if (!selectedLanguage) {
-      Alert.alert(t('common.error'), 'Si us plau, selecciona un idioma');
+      showAlert(t('common.error'), 'Si us plau, selecciona un idioma');
       return;
     }
 
@@ -263,7 +265,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
         selectedLanguage
       );
       
-      Alert.alert(
+      showAlert(
         t('common.success'), 
         t('signup.successMessage'),
         [
@@ -281,8 +283,8 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       let errorMessageKey = AuthService.getErrorMessageKey(errorCode);
       if (errorMessageKey === 'auth.errors.emailInUse') errorMessageKey = 'signup.errors.registrationFailed';
       const errorMessage = t(errorMessageKey) || t('signup.errors.registrationFailed');
-      
-      Alert.alert(t('common.error'), errorMessage);
+
+      showAlert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -583,6 +585,17 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </SafeAreaView>
   );
 }

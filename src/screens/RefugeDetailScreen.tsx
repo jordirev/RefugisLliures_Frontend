@@ -4,7 +4,6 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  Alert,
   ScrollView,
   Image,
   Linking,
@@ -26,6 +25,8 @@ try {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Icons (assumint que tenim aquestes icones SVG)
 import HeartIcon from '../assets/icons/fav.svg';
@@ -61,6 +62,7 @@ export function RefugeDetailScreen({
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
@@ -86,12 +88,12 @@ export function RefugeDetailScreen({
       onEdit(refuge);
       return;
     }
-    Alert.alert(t('common.edit'), t('alerts.editRefuge', { name: refuge.name }));
+    showAlert(t('common.edit'), t('alerts.editRefuge', { name: refuge.name }));
   };
 
   const handleDownloadGPX = () => {
     // Directe: només Descarregar (el SO mostrarà el selector quan calgui)
-    Alert.alert(
+    showAlert(
       t('alerts.downloadGPX.title'),
       t('alerts.downloadGPX.message', { name: refuge.name }),
       [
@@ -106,7 +108,7 @@ export function RefugeDetailScreen({
   };
 
   const handleDownloadKML = () => {
-    Alert.alert(
+    showAlert(
       t('alerts.downloadKML.title'),
       t('alerts.downloadKML.message', { name: refuge.name }),
       [
@@ -148,7 +150,7 @@ export function RefugeDetailScreen({
           // @ts-ignore
           const permission = await SAF.requestDirectoryPermissionsAsync();
           if (!permission || !permission.granted) {
-            Alert.alert(t('alerts.permissionRequired'), t('alerts.permissionDenied'));
+            showAlert(t('alerts.permissionRequired'), t('alerts.permissionDenied'));
             return;
           }
           const directoryUri = permission.directoryUri;
@@ -162,7 +164,7 @@ export function RefugeDetailScreen({
             // fallback: intentar escriure amb FileSystem
             await fsAny.writeAsStringAsync(newFileUri, content);
           }
-          Alert.alert(t('alerts.fileSaved'), t('alerts.fileSavedLocation'));
+          showAlert(t('alerts.fileSaved'), t('alerts.fileSavedLocation'));
           return;
         } catch (e) {
           console.warn('SAF save failed, falling back to sharing', e);
@@ -186,11 +188,11 @@ export function RefugeDetailScreen({
       }
 
       // Altrament, notifiquem la ubicació on s'ha desat
-      Alert.alert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
+      showAlert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
 
     } catch (e) {
       console.warn('saveFile error', e);
-      Alert.alert(t('common.error'), t('alerts.fileError'));
+      showAlert(t('common.error'), t('alerts.fileError'));
       // si tot falla, oferir compartir
       try {
         const tempName = fileName;
@@ -252,10 +254,10 @@ export function RefugeDetailScreen({
       }
 
       // Si Sharing no està disponible, informar l'usuari de la ubicació del fitxer
-      Alert.alert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
+      showAlert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
     } catch (e) {
       console.warn('Error writing/sharing file', e);
-      Alert.alert(t('common.error'), t('alerts.fileError'));
+      showAlert(t('common.error'), t('alerts.fileError'));
     }
   };
 
@@ -270,11 +272,11 @@ export function RefugeDetailScreen({
       if (supported) {
         await Linking.openURL(finalUrl);
       } else {
-        Alert.alert(t('alerts.cannotOpenLink'), finalUrl);
+        showAlert(t('alerts.cannotOpenLink'), finalUrl);
       }
     } catch (e) {
       console.warn('Error opening link', e);
-      Alert.alert(t('common.error'), t('alerts.linkError'));
+      showAlert(t('common.error'), t('alerts.linkError'));
     }
   };
 
@@ -512,6 +514,16 @@ export function RefugeDetailScreen({
         </View>
       </Modal>
       
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }

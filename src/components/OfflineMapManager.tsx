@@ -4,13 +4,14 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   Modal,
   ActivityIndicator,
   ProgressBarAndroid,
   Platform,
 } from 'react-native';
 import { MapCacheService } from '../services/MapCacheService';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 interface OfflineMapManagerProps {
   visible: boolean;
@@ -18,6 +19,7 @@ interface OfflineMapManagerProps {
 }
 
 export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) {
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [cacheStatus, setCacheStatus] = useState<any>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
@@ -39,7 +41,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
   };
 
   const handleDownloadMaps = () => {
-    Alert.alert(
+    showAlert(
       'Descarregar Mapes Offline',
       'Això descarregarà els mapes dels Pirineus per ús offline. La descàrrega pot trigar diversos minuts i utilitzar dades mòbils.',
       [
@@ -70,22 +72,22 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
         (success) => {
           setIsDownloading(false);
           if (success) {
-            Alert.alert('Èxit', 'Mapes descarregats correctament! Ara pots utilitzar l\'app offline.');
+            showAlert('Èxit', 'Mapes descarregats correctament! Ara pots utilitzar l\'app offline.');
           } else {
-            Alert.alert('Error', 'Hi ha hagut un problema descarregant els mapes. Torna-ho a intentar.');
+            showAlert('Error', 'Hi ha hagut un problema descarregant els mapes. Torna-ho a intentar.');
           }
           loadCacheStatus();
         }
       );
     } catch (error) {
       setIsDownloading(false);
-      Alert.alert('Error', 'Hi ha hagut un problema descarregant els mapes.');
+      showAlert('Error', 'Hi ha hagut un problema descarregant els mapes.');
       console.error('Download error:', error);
     }
   };
 
   const handleClearCache = () => {
-    Alert.alert(
+    showAlert(
       'Eliminar Mapes',
       'Això eliminarà tots els mapes descarregats. Hauràs de tornar-los a descarregar per utilitzar l\'app offline.',
       [
@@ -95,10 +97,10 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
           onPress: async () => {
             try {
               await MapCacheService.clearCache();
-              Alert.alert('Eliminat', 'Mapes eliminats correctament.');
+              showAlert('Eliminat', 'Mapes eliminats correctament.');
               loadCacheStatus();
             } catch (error) {
-              Alert.alert('Error', 'Hi ha hagut un problema eliminant els mapes.');
+              showAlert('Error', 'Hi ha hagut un problema eliminant els mapes.');
             }
           },
           style: 'destructive'
@@ -243,6 +245,17 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
           </View>
         </View>
       </View>
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </Modal>
   );
 }

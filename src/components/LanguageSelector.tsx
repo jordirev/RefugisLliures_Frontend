@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LANGUAGES, LanguageCode, getCurrentLanguage, changeLanguage } from '../i18n';
 import { useTranslation } from '../utils/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { UsersService } from '../services/UsersService';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -13,6 +15,7 @@ interface LanguageSelectorProps {
 export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
   const { t, i18n } = useTranslation();
   const { backendUser, authToken, reloadUser } = useAuth();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const currentLanguage = getCurrentLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -38,7 +41,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
         } catch (error) {
           console.error('Error actualitzant idioma al backend:', error);
           // Mostrar error però mantenir el canvi local
-          Alert.alert(
+          showAlert(
             t('common.error'),
             t('profile.languageSelector.updateError') || 'Error actualitzant l\'idioma al servidor'
           );
@@ -48,7 +51,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
       onClose();
     } catch (error) {
       console.error('Error canviant idioma:', error);
-      Alert.alert(t('common.error'), t('common.error'));
+      showAlert(t('common.error'), t('common.error'));
     } finally {
       setIsUpdating(false);
     }
@@ -98,6 +101,17 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
           </ScrollView>
         </View>
       </TouchableOpacity>
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </Modal>
   );
 }

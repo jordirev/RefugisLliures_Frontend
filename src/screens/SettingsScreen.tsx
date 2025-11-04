@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from '../utils/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
@@ -7,6 +7,8 @@ import { getCurrentLanguage, LANGUAGES } from '../i18n';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
@@ -15,6 +17,7 @@ export function SettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { logout, deleteAccount, backendUser } = useAuth();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
   
@@ -110,7 +113,7 @@ export function SettingsScreen() {
           <TouchableOpacity 
             style={styles.menuItem}
             onPress={() => {
-              Alert.alert(
+              showAlert(
                 t('profile.settings.logout.confirmTitle'),
                 t('profile.settings.logout.confirmMessage'),
                 [
@@ -120,7 +123,7 @@ export function SettingsScreen() {
                         await logout();
                       } catch (error) {
                         console.error('Error durant el logout:', error);
-                        Alert.alert(t('common.error'), t('auth.errors.generic'));
+                        showAlert(t('common.error'), t('auth.errors.generic'));
                       }
                     }
                   }
@@ -136,7 +139,7 @@ export function SettingsScreen() {
           <TouchableOpacity 
             style={styles.menuItem}
             onPress={() => {
-              Alert.alert(
+              showAlert(
                 t('profile.settings.deleteAccount.confirmTitle'),
                 t('profile.settings.deleteAccount.confirmMessage'),
                 [
@@ -146,7 +149,7 @@ export function SettingsScreen() {
                         await deleteAccount();
                       } catch (error) {
                         console.error('Error durant la eliminació del compte:', error);
-                        Alert.alert(t('common.error'), t('auth.errors.generic'));
+                        showAlert(t('common.error'), t('auth.errors.generic'));
                       }
                     }
                   }
@@ -165,6 +168,17 @@ export function SettingsScreen() {
         visible={showLanguageSelector}
         onClose={() => setShowLanguageSelector(false)}
       />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </ScrollView>
   );
 }

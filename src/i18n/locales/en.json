@@ -254,7 +254,7 @@
       "numberPassword": "\t• Minimum one number",
       "specialCharPassword": "\t• Minimum one special character (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Passwords do not match",
-      "registrationFailed": "Could not create account. Please try again."
+      "registrationFailed": "Could not create account. If you have an existing account, try signing in or recovering your password."
     }
   },
   "auth": {

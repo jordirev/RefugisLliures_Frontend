@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 interface FavoritesScreenProps {
   onViewDetail: (refuge: Location) => void;
@@ -12,6 +14,7 @@ interface FavoritesScreenProps {
 
 export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProps) {
   const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   // Estats locals de FavoritesScreen
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
@@ -37,7 +40,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
       const ids = new Set(favorites.map(f => f.id).filter((id): id is number => id !== undefined));
       setFavoriteIds(ids);
     } catch (error) {
-      Alert.alert(t('common.error'), t('favorites.error'));
+      showAlert(t('common.error'), t('favorites.error'));
     } finally {
       setLoading(false);
     }
@@ -83,6 +86,17 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert, BackHandler, Platform, Text } from 'react-native';
+import { StyleSheet, View, BackHandler, Platform, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,8 @@ import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 import MapIcon from '../assets/icons/map2.svg';
 import FavIcon from '../assets/icons/fav.svg';
@@ -26,6 +28,7 @@ const Tab = createBottomTabNavigator();
 export function AppNavigator() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   // Només estats globals (compartits entre pantalles)
   const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
@@ -39,14 +42,14 @@ export function AppNavigator() {
     try {
       // TODO: Implementar toggle favorits quan el backend estigui llest
       await RefugisService.addFavorite(locationId);
-      Alert.alert('', t('alerts.favoriteUpdated'));
+      showAlert('', t('alerts.favoriteUpdated'));
     } catch (error) {
-      Alert.alert(t('common.error'), t('alerts.favoriteError'));
+      showAlert(t('common.error'), t('alerts.favoriteError'));
     }
   };
 
   const handleNavigate = (location: Location) => {
-    Alert.alert(t('navigation.map'), t('alerts.navigation', { name: location.name }));
+    showAlert(t('navigation.map'), t('alerts.navigation', { name: location.name }));
   };
 
 
@@ -213,6 +216,17 @@ export function AppNavigator() {
             onNavigate={handleNavigate}
           />
         </View>
+      )}
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
       )}
     </View>
   );

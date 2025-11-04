@@ -254,7 +254,7 @@
       "numberPassword": "\t• Minimum un chiffre",
       "specialCharPassword": "\t• Minimum un caractère spécial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
-      "registrationFailed": "Impossible de créer le compte. Veuillez réessayer."
+      "registrationFailed": "Impossible de créer le compte. Si vous avez un compte existant, essayez de vous connecter ou de récupérer votre mot de passe."
     }
   },
   "auth": {
