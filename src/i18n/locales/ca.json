@@ -255,7 +255,7 @@
       "numberPassword": "\t• Mínim un número",
       "specialCharPassword": "\t• Mínim un caràcter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les contrasenyes no coincideixen",
-      "registrationFailed": "No s'ha pogut crear el compte. Si us plau, torna-ho a intentar."
+      "registrationFailed": "No s'ha pogut crear el compte. Si tens un compte existent, prova a iniciar sessió o recupera la teva contrasenya."
     }
   },
   "auth": {

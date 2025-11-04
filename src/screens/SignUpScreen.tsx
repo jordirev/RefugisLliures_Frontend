@@ -278,16 +278,11 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       
       // Obtenir missatge d'error traduït
       const errorCode = error?.code || 'unknown';
-      const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+      let errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+      if (errorMessageKey === 'auth.errors.emailInUse') errorMessageKey = 'signup.errors.registrationFailed';
       const errorMessage = t(errorMessageKey) || t('signup.errors.registrationFailed');
-
-      // If the error is that the email is already in use, show it inline under the email field.
-      if (errorMessageKey === 'auth.errors.emailInUse') {
-        // show inline error under the email field
-        setEmailError(errorMessage);
-      } else {
-        Alert.alert(t('common.error'), errorMessage);
-      }
+      
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
