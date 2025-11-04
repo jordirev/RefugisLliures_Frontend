@@ -87,7 +87,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     if (text && text.trim().length > 0) {
       if(step === "username"){
         setStep('email')
-        setPreviousStep('username');
+        setPreviousStep('email');
       }
     }
   };
@@ -101,7 +101,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       setPasswordErrors(verifyPasswordStrength(password));
       if(step === "email"){
         setStep('password');
-        setPreviousStep('email');
+        setPreviousStep('password');
       }
     }
   };
@@ -124,7 +124,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
         // the new password.
         setConfirmPassword('');
         setStep('confirmPassword');
-        setPreviousStep('password');
+        setPreviousStep('confirmPassword');
       }
     }
   };
@@ -289,16 +289,6 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
             </Text>
           </LinearGradient>
 
-          {/* Botó per tornar a seleccionar idioma */}
-          <TouchableOpacity
-            style={styles.headerBackButton}
-            onPress={() => {
-                onBackToLogin();
-            }}
-          >
-            <ArrowLeftIcon width={24} height={24} color="#FFFFFF" />
-          </TouchableOpacity>
-
           <View style={styles.flagsContainer}>
             <TouchableOpacity 
               style={[styles.flagButton, { width: scaledFlagWidth }]}
@@ -326,6 +316,19 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               onPress={() => handleSelectLanguage('en')}
             >
               <Image source={flags.en.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
+            </TouchableOpacity>
+
+            {/* Enllaç per tornar al login */}
+            <TouchableOpacity 
+              style={styles.backToLoginContainer}
+              onPress={onBackToLogin}
+            >
+              <Text style={styles.alreadyAccountText}>
+                {t('signup.alreadyHaveAccount')}
+              </Text>
+              <Text style={styles.loginLinkText}>
+                {t('signup.loginLink')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -559,7 +562,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'column',
     gap: 36,
-    marginBottom: 40,
+    marginBottom: 20,
+    marginTop: 40,
   },
   flagButton: {
     borderRadius: 12,
@@ -663,7 +667,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
     marginTop: 12,
   },
   backToLoginButton: {

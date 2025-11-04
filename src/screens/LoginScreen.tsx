@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -23,7 +23,7 @@ import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
 const AppLogo = require('../assets/images/profileDefaultBackground.png');
-
+ 
 interface LoginScreenProps {
   onNavigateToSignUp?: () => void;
 }
@@ -36,16 +36,12 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const passwordInputRef = useRef<any>(null);
 
   // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
   const handleSetEmail = (text: string) => {
     setEmail(text);
-    // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
-    if (text && text.trim().length > 0) {
-      setStep('password');
-    } else {
-      setStep('email');
-    }
+    // No auto-advance: user must press "Continue" to show password field
   };
 
   const handleLogin = async () => {
@@ -113,6 +109,24 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleContinue = () => {
+    // Validate email then reveal password field
+    if (!email.trim()) {
+      Alert.alert(t('common.error'), t('login.errors.emptyEmail'));
+      return;
+    }
+
+    setStep('password');
+    // Focus password input after it appears
+    setTimeout(() => {
+      try {
+        passwordInputRef.current?.focus();
+      } catch (e) {
+        /* ignore focus errors */
+      }
+    }, 150);
   };
 
   const handleGoogleLogin = () => {
@@ -220,6 +234,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                       placeholderTextColor="#999"
                       value={password}
                       onChangeText={setPassword}
+                      ref={passwordInputRef}
                       secureTextEntry={!showPassword}
                       editable={!isLoading}
                     />
@@ -248,63 +263,96 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               </>
             )}
 
-            {/* Botó d'iniciar sessió */}
-            <TouchableOpacity
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
-              onPress={handleLogin}
-              disabled={isLoading}
-            >
-              <LinearGradient
-                colors={["#FF8904", "#F54900"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.loginButtonGradient}
-              >
-                <Text style={styles.loginButtonText}>
-                  {isLoading ? t('common.loading') : t('login.loginButton')}
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            {/* Separador */}
-            <View style={styles.separatorContainer}>
-              <View style={styles.separatorLine} />
-              <Text style={styles.separatorText}>{t('login.orContinueWith')}</Text>
-              <View style={styles.separatorLine} />
-            </View>
-
-            {/* Botó de Google */}
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleLogin}
-              disabled={isLoading}
-            >
-              <View style={styles.googleButtonContent}>
-                <Image 
-                  source={GoogleLogoIcon} 
-                  style={styles.googleIcon} 
-                  resizeMode="contain"
-                />
-                <Text style={styles.googleButtonText}>
-                  {t('login.googleButton')}
-                </Text>
+            {step === 'email' ? (
+              (() => {
+                const continueDisabled = isLoading || !email.trim();
+                return (
+                  <TouchableOpacity
+                    style={[styles.loginButton, continueDisabled && styles.loginButtonDisabled]}
+                    onPress={handleContinue}
+                    disabled={continueDisabled}
+                  >
+                    {continueDisabled ? (
+                      <View style={styles.loginButtonGradientDisabled}>
+                        <Text style={[styles.loginButtonText, { color: '#707070ff' }]}>
+                          {isLoading ? t('common.loading') : t('login.continue')}
+                        </Text>
+                      </View>
+                    ) : (
+                      <LinearGradient
+                        colors={["#FF8904", "#F54900"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.loginButtonGradient}
+                      >
+                        <Text style={styles.loginButtonText}>
+                          {isLoading ? t('common.loading') : t('login.continue')}
+                        </Text>
+                      </LinearGradient>
+                    )}
+                  </TouchableOpacity>
+                );
+              })()
+            ) : (
+              <>
+                {/* Botó d'iniciar sessió */}
+                <TouchableOpacity
+                  style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                >
+                  <LinearGradient
+                    colors={["#FF8904", "#F54900"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.loginButtonGradient}
+                  >
+                    <Text style={styles.loginButtonText}>
+                      {isLoading ? t('common.loading') : t('login.loginButton')}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </>
+              )}
+              {/* Separador */}
+              <View style={styles.separatorContainer}>
+                <View style={styles.separatorLine} />
+                <Text style={styles.separatorText}>{t('login.orContinueWith')}</Text>
+                <View style={styles.separatorLine} />
               </View>
-            </TouchableOpacity>
 
-            {/* Enllaç per crear compte */}
-            {onNavigateToSignUp && (
-              <TouchableOpacity 
-                style={styles.signUpContainer}
-                onPress={onNavigateToSignUp}
+              {/* Botó de Google */}
+              <TouchableOpacity
+                style={styles.googleButton}
+                onPress={handleGoogleLogin}
+                disabled={isLoading}
               >
-                <Text style={styles.noAccountText}>
-                  {t('login.noAccount')}
-                </Text>
-                <Text style={styles.signUpLinkText}>
-                  {t('login.signUpLink')}
-                </Text>
+                <View style={styles.googleButtonContent}>
+                  <Image 
+                    source={GoogleLogoIcon} 
+                    style={styles.googleIcon} 
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.googleButtonText}>
+                    {t('login.googleButton')}
+                  </Text>
+                </View>
               </TouchableOpacity>
-            )}
+
+              {/* Enllaç per crear compte */}
+              {onNavigateToSignUp && (
+                <TouchableOpacity 
+                  style={styles.signUpContainer}
+                  onPress={onNavigateToSignUp}
+                >
+                  <Text style={styles.noAccountText}>
+                    {t('login.noAccount')}
+                  </Text>
+                  <Text style={styles.signUpLinkText}>
+                    {t('login.signUpLink')}
+                  </Text>
+                </TouchableOpacity>
+              )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -388,6 +436,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loginButtonGradientDisabled: {
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#dadadaff',
+  },
   loginButtonText: {
     color: '#fff',
     fontSize: 16,
@@ -401,7 +455,7 @@ const styles = StyleSheet.create({
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#6b7280',
   },
   separatorText: {
     marginHorizontal: 16,

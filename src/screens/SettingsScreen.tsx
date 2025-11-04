@@ -6,6 +6,7 @@ import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
+import i18n from '../i18n';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
@@ -13,9 +14,26 @@ import LogoutIcon from '../assets/icons/logout.svg';
 export function SettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { logout, deleteAccount } = useAuth();
+  const { logout, deleteAccount, backendUser } = useAuth();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const currentLanguage = getCurrentLanguage();
+  const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
+  
+  // Actualitzar l'idioma mostrat quan canvia l'idioma de i18n
+  useEffect(() => {
+    const updateLanguage = () => {
+      setCurrentLanguage(getCurrentLanguage());
+    };
+    
+    // Listener per als canvis d'idioma
+    i18n.on('languageChanged', updateLanguage);
+    
+    // Actualitzar inicialment
+    updateLanguage();
+    
+    return () => {
+      i18n.off('languageChanged', updateLanguage);
+    };
+  }, []);
   
   const handleGoBack = () => {
     // Navigate to the Profile tab instead of just going back

@@ -102,7 +102,8 @@
         "es": "Español",
         "en": "English",
         "fr": "Français"
-      }
+      },
+      "updateError": "No s'ha pogut actualitzar l'idioma al servidor"
     }
   },
   "refuge": {
@@ -214,8 +215,9 @@
     "emailPlaceholder": "Correu electrònic",
     "passwordPlaceholder": "Contrasenya",
     "forgotPassword": "Has oblidat la contrasenya?",
+  "continue": "Continua",
     "loginButton": "Iniciar sessió",
-    "orContinueWith": "O continua amb",
+    "orContinueWith": "o",
     "googleButton": "Continuar amb Google",
     "noAccount": "No tens compte?",
     "signUpLink": "Registra't",

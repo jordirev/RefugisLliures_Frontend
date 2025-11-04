@@ -101,7 +101,8 @@
         "es": "Español",
         "en": "English",
         "fr": "Français"
-      }
+      },
+      "updateError": "Failed to update language on the server"
     }
   },
   "refuge": {
@@ -213,8 +214,9 @@
     "emailPlaceholder": "Email address",
     "passwordPlaceholder": "Password",
     "forgotPassword": "Forgot your password?",
+  "continue": "Continue",
     "loginButton": "Sign in",
-    "orContinueWith": "Or continue with",
+    "orContinueWith": "or",
     "googleButton": "Continue with Google",
     "noAccount": "Don't have an account?",
     "signUpLink": "Sign up",

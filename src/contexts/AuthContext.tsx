@@ -3,6 +3,7 @@ import { AuthService } from '../services/AuthService';
 import type { FirebaseUser } from '../services/AuthService';
 import { User } from '../models';
 import { UsersService } from '../services/UsersService';
+import { changeLanguage, LanguageCode, LANGUAGES } from '../i18n';
 
 interface AuthContextType {
   firebaseUser: FirebaseUser | null;
@@ -44,6 +45,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Carregar dades de l'usuari des del backend
           const userData = await UsersService.getUserByUid(user.uid, token);
           setBackendUser(userData);
+          
+          // Canviar l'idioma de l'aplicació segons l'idioma de l'usuari del backend
+          if (userData.idioma) {
+            const userLanguage = userData.idioma.toLowerCase();
+            // Verificar que l'idioma sigui suportat
+            if (Object.keys(LANGUAGES).includes(userLanguage)) {
+              await changeLanguage(userLanguage as LanguageCode);
+            }
+          }
         } catch (error) {
           console.error('Error carregant dades d\'usuari:', error);
           setBackendUser(null);
@@ -92,6 +102,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setAuthToken(token);
       const userData = await UsersService.getUserByUid(firebaseUser.uid, token);
       setBackendUser(userData);
+      
+      // Actualitzar l'idioma de l'aplicació
+      if (userData.idioma) {
+        const userLanguage = userData.idioma.toLowerCase();
+        if (Object.keys(LANGUAGES).includes(userLanguage)) {
+          await changeLanguage(userLanguage as LanguageCode);
+        }
+      }
     }
   };
 

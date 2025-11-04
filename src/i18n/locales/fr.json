@@ -101,7 +101,8 @@
         "es": "Español",
         "en": "English",
         "fr": "Français"
-      }
+      },
+      "updateError": "Impossible de mettre à jour la langue sur le serveur"
     }
   },
   "refuge": {
@@ -211,10 +212,11 @@
     "title": "Bienvenue",
     "subtitle": "Connectez-vous pour continuer",
     "emailPlaceholder": "Adresse e-mail",
-    "passwordPlaceholder": "Mot de passe",
-    "forgotPassword": "Mot de passe oublié ?",
-    "loginButton": "Se connecter",
-    "orContinueWith": "Ou continuer avec",
+  "passwordPlaceholder": "Mot de passe",
+  "forgotPassword": "Mot de passe oublié ?",
+  "continue": "Continuer",
+  "loginButton": "Se connecter",
+    "orContinueWith": "ou",
     "googleButton": "Continuer avec Google",
     "noAccount": "Vous n'avez pas de compte ?",
     "signUpLink": "S'inscrire",

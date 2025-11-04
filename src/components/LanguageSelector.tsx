@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { LANGUAGES, LanguageCode, getCurrentLanguage, changeLanguage } from '../i18n';
 import { useTranslation } from '../utils/useTranslation';
+import { useAuth } from '../contexts/AuthContext';
+import { UsersService } from '../services/UsersService';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -10,11 +12,46 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
   const { t, i18n } = useTranslation();
+  const { backendUser, authToken, reloadUser } = useAuth();
   const currentLanguage = getCurrentLanguage();
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleLanguageSelect = async (languageCode: LanguageCode) => {
-    await changeLanguage(languageCode);
-    onClose();
+    if (isUpdating) return;
+    
+    try {
+      setIsUpdating(true);
+      
+      // Canviar l'idioma localment
+      await changeLanguage(languageCode);
+      
+      // Si l'usuari està autenticat, actualitzar l'idioma al backend
+      if (backendUser && authToken) {
+        try {
+          await UsersService.updateUser(
+            backendUser.uid,
+            { idioma: languageCode.toUpperCase() },
+            authToken
+          );
+          // Recarregar l'usuari per assegurar-se que les dades són correctes
+          await reloadUser();
+        } catch (error) {
+          console.error('Error actualitzant idioma al backend:', error);
+          // Mostrar error però mantenir el canvi local
+          Alert.alert(
+            t('common.error'),
+            t('profile.languageSelector.updateError') || 'Error actualitzant l\'idioma al servidor'
+          );
+        }
+      }
+      
+      onClose();
+    } catch (error) {
+      console.error('Error canviant idioma:', error);
+      Alert.alert(t('common.error'), t('common.error'));
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (

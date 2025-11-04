@@ -101,7 +101,8 @@
         "es": "Español",
         "en": "English",
         "fr": "Français"
-      }
+      },
+      "updateError": "No se ha podido actualizar el idioma en el servidor"
     }
   },
   "refuge": {
@@ -211,10 +212,11 @@
     "title": "Bienvenido/a",
     "subtitle": "Inicia sesión para continuar",
     "emailPlaceholder": "Correo electrónico",
-    "passwordPlaceholder": "Contraseña",
-    "forgotPassword": "¿Has olvidado la contraseña?",
-    "loginButton": "Iniciar sesión",
-    "orContinueWith": "O continúa con",
+  "passwordPlaceholder": "Contraseña",
+  "forgotPassword": "¿Has olvidado la contraseña?",
+  "continue": "Continuar",
+  "loginButton": "Iniciar sesión",
+    "orContinueWith": "o",
     "googleButton": "Continuar con Google",
     "noAccount": "¿No tienes cuenta?",
     "signUpLink": "Regístrate",
