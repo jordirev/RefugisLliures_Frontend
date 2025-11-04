@@ -71,7 +71,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
               t('permissions.location.message'),
               [
                 { text: t('common.cancel'), style: 'cancel' },
-                { text: 'Permet', onPress: async () => {
+                { text: t('common.allow'), onPress: async () => {
                     try {
                       let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
                       if (status !== 'granted') {
