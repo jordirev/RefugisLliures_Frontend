@@ -35,26 +35,46 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const passwordInputRef = useRef<any>(null);
 
+  const isValidEmail = (value: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(value.trim());
+  };
+
   // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
   const handleSetEmail = (text: string) => {
     setEmail(text);
+    // Clear inline email error while the user edits the field
+    if (emailError) setEmailError(null);
     // No auto-advance: user must press "Continue" to show password field
+  };
+
+  const handleSetPassword = (text: string) => {
+    setPassword(text);
+    if (passwordError) setPasswordError(null);
   };
 
   const handleLogin = async () => {
     // Validació bàsica
     if (!email.trim()) {
-      showAlert(t('common.error'), t('login.errors.emptyEmail'));
+      setEmailError(t('login.errors.emptyEmail') || 'Email buit');
       return;
     }
-    
+
+    // Validate email format and show inline error (no alert) if invalid
+    if (!isValidEmail(email)) {
+      setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');
+      return;
+    }
+
     if (!password.trim()) {
-      showAlert(t('common.error'), t('login.errors.emptyPassword'));
+      setPasswordError(t('login.errors.emptyPassword') || 'Contrasenya buida');
       return;
     }
 
@@ -101,14 +121,30 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       // L'AuthProvider gestionarà automàticament la navegació
     } catch (error: any) {
       console.error('Error durant el login:', error);
-      
-      // Obtenir missatge d'error traduït
+
+      // Obtenir el codi d'error
       const errorCode = error?.code || 'unknown';
-      const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
-      const errorMessage = t(errorMessageKey) || t('login.errors.invalidCredentials');
-      
-      showAlert(t('common.error'), errorMessage);
+
+      // Si les credencials són incorrectes (error específic d'autenticació),
+      // mostrem el missatge inline (vermell) sota el camp de contrasenya en lloc d'una alerta.
+      if (errorCode === 'auth/invalid-credential') {
+        const errorMessage = t('login.errors.invalidCredentials') || 'Credencials no vàlides';
+        setPasswordError(errorMessage);
+        // focus al camp de password perquè l'usuari pugui corregir-lo
+        try {
+          passwordInputRef.current?.focus();
+        } catch (e) {
+          /* ignore focus errors */
+        }
+      } else {
+        // Per la resta d'errors utilitzem el mapeig existent i una fallback genèrica
+        const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+        const errorMessage = t(errorMessageKey) || t('auth.errors.generic') || t('login.errors.invalidCredentials');
+        showAlert(t('common.error'), errorMessage);
+      }
     } finally {
+      // No esborrem els errors inline aquí perquè volem que l'error de contrasenya
+      // segueixi mostrat sota el camp fins que l'usuari comenci a editar-lo.
       setIsLoading(false);
     }
   };
@@ -116,10 +152,18 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const handleContinue = () => {
     // Validate email then reveal password field
     if (!email.trim()) {
-      showAlert(t('common.error'), t('login.errors.emptyEmail'));
+      // show inline error, don't use alert
+      setEmailError(t('login.errors.emptyEmail') || 'Email buit');
       return;
     }
 
+    // Validate format using regex. Show inline error (no alert) if invalid.
+    if (!isValidEmail(email)) {
+      setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');
+      return;
+    }
+
+    setEmailError(null);
     setStep('password');
     // Focus password input after it appears
     setTimeout(() => {
@@ -224,6 +268,9 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 returnKeyType={step === 'password' ? 'next' : 'done'}
               />
             </View>
+            {emailError ? (
+              <Text style={styles.emailErrorText}>{emailError}</Text>
+            ) : null}
 
             {/* Mostrem el camp de password i 'forgot password' només quan l'email està omplert */}
             {step === 'password' && (
@@ -235,7 +282,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                       placeholder={t('login.passwordPlaceholder')}
                       placeholderTextColor="#999"
                       value={password}
-                      onChangeText={setPassword}
+                      onChangeText={handleSetPassword}
                       ref={passwordInputRef}
                       secureTextEntry={!showPassword}
                       editable={!isLoading}
@@ -253,6 +300,9 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                     </TouchableOpacity>
                   </View>
                 </View>
+                {passwordError ? (
+                  <Text style={styles.emailErrorText}>{passwordError}</Text>
+                ) : null}
 
                 <TouchableOpacity 
                   onPress={handleForgotPassword}
@@ -425,6 +475,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e5e7eb',
     color: '#1f2937',
+  },
+  emailErrorText: {
+    color: '#dc2626',
+    fontSize: 13,
+    marginBottom: 8,
+    marginTop: -8,
   },
   forgotPasswordContainer: {
     alignSelf: 'flex-end',

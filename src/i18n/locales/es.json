@@ -223,6 +223,7 @@
     "signUpLink": "Regístrate",
     "errors": {
       "emptyEmail": "Por favor, introduce tu correo electrónico",
+      "invalidEmail": "El formato del correo electrónico no es válido",
       "emptyPassword": "Por favor, introduce tu contraseña",
       "invalidCredentials": "Correo electrónico o contraseña no válidos"
     }
@@ -246,7 +247,7 @@
       "emptyUsername": "Por favor, introduce un nombre de usuario",
       "usernameTooShort": "El nombre de usuario debe tener al menos 2 caracteres",
       "emptyEmail": "Por favor, introduce tu correo electrónico",
-      "invalidEmail": "El correo electrónico no es válido",
+      "invalidEmail": "El formato del correo electrónico no es válido",
       "emptyPassword": "Por favor, introduce una contraseña",
       "passwordMustHave": "La contraseña debe tener:",
       "shortPassword": "\t• Mínimo 8 caracteres",

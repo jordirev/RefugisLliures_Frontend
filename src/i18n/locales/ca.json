@@ -224,6 +224,7 @@
     "signUpLink": "Registra't",
     "errors": {
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
+      "invalidEmail": "El format del correu electrònic no és vàlid",
       "emptyPassword": "Si us plau, introdueix la teva contrasenya",
       "invalidCredentials": "L'usuari o la contrasenya no són correctes"
     }
@@ -247,7 +248,7 @@
       "emptyUsername": "Si us plau, introdueix un nom d'usuari",
       "usernameTooShort": "El nom d'usuari ha de tenir almenys 2 caràcters",
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
-      "invalidEmail": "El correu electrònic no és vàlid",
+      "invalidEmail": "El format del correu electrònic no és vàlid",
       "emptyPassword": "Si us plau, introdueix una contrasenya",
       "passwordMustHave": "La contrasenya ha de tenir:",
       "shortPassword": "\t• Mínim 8 caràcters",

@@ -223,6 +223,7 @@
     "signUpLink": "S'inscrire",
     "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
+      "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer votre mot de passe",
       "invalidCredentials": "Adresse e-mail ou mot de passe invalide"
     }
@@ -246,7 +247,7 @@
       "emptyUsername": "Veuillez entrer un nom d'utilisateur",
       "usernameTooShort": "Le nom d'utilisateur doit comporter au moins 2 caractères",
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
-      "invalidEmail": "L'adresse e-mail n'est pas valide",
+      "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer un mot de passe",
       "passwordMustHave": "Le mot de passe doit contenir :",
       "shortPassword": "\t• Minimum 8 caractères",

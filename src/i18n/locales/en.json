@@ -215,7 +215,7 @@
     "emailPlaceholder": "Email address",
     "passwordPlaceholder": "Password",
     "forgotPassword": "Forgot your password?",
-  "continue": "Continue",
+    "continue": "Continue",
     "loginButton": "Sign in",
     "orContinueWith": "or",
     "googleButton": "Continue with Google",
@@ -223,6 +223,7 @@
     "signUpLink": "Sign up",
     "errors": {
       "emptyEmail": "Please enter your email address",
+      "invalidEmail": "The email address format is not valid",
       "emptyPassword": "Please enter your password",
       "invalidCredentials": "Invalid email or password"
     }
@@ -246,7 +247,7 @@
       "emptyUsername": "Please enter a username",
       "usernameTooShort": "Username must be at least 2 characters long",
       "emptyEmail": "Please enter your email address",
-      "invalidEmail": "The email address is not valid",
+      "invalidEmail": "The email address format is not valid",
       "emptyPassword": "Please enter a password",
       "passwordMustHave": "Password must meet the following criteria:",
       "shortPassword": "\t• Minimum 8 characters",
