@@ -42,17 +42,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const token = await user.getIdToken();
           setAuthToken(token);
           
-          // Carregar dades de l'usuari des del backend
-          const userData = await UsersService.getUserByUid(user.uid, token);
-          setBackendUser(userData);
+          // Carregar dades de l'usuari des del backend amb retry
+          // per gestionar el cas on l'usuari s'acaba de crear i el backend encara està processant
+          let userData = await UsersService.getUserByUid(user.uid, token);
+          let retries = 0;
+          const maxRetries = 3;
           
-          // Canviar l'idioma de l'aplicació segons l'idioma de l'usuari del backend
-          if (userData.idioma) {
-            const userLanguage = userData.idioma.toLowerCase();
-            // Verificar que l'idioma sigui suportat
-            if (Object.keys(LANGUAGES).includes(userLanguage)) {
-              await changeLanguage(userLanguage as LanguageCode);
+          while (!userData && retries < maxRetries) {
+            retries++;
+            console.log(`Intent ${retries} de ${maxRetries} per carregar dades d'usuari...`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar 1 segon
+            userData = await UsersService.getUserByUid(user.uid, token);
+          }
+          
+          // Validar que s'hagin obtingut dades de l'usuari
+          if (userData) {
+            setBackendUser(userData);
+            
+            // Canviar l'idioma de l'aplicació segons l'idioma de l'usuari del backend
+            if (userData.idioma) {
+              const userLanguage = userData.idioma.toLowerCase();
+              // Verificar que l'idioma sigui suportat
+              if (Object.keys(LANGUAGES).includes(userLanguage)) {
+                await changeLanguage(userLanguage as LanguageCode);
+              }
             }
+          } else {
+            console.log('No s\'han pogut carregar les dades d\'usuari del backend després de ' + maxRetries + ' intents.');
+            setBackendUser(null);
           }
         } catch (error) {
           console.error('Error carregant dades d\'usuari:', error);
@@ -101,13 +118,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const token = await firebaseUser.getIdToken(true);
       setAuthToken(token);
       const userData = await UsersService.getUserByUid(firebaseUser.uid, token);
-      setBackendUser(userData);
       
-      // Actualitzar l'idioma de l'aplicació
-      if (userData.idioma) {
-        const userLanguage = userData.idioma.toLowerCase();
-        if (Object.keys(LANGUAGES).includes(userLanguage)) {
-          await changeLanguage(userLanguage as LanguageCode);
+      if (userData) {
+        setBackendUser(userData);
+        
+        // Actualitzar l'idioma de l'aplicació
+        if (userData.idioma) {
+          const userLanguage = userData.idioma.toLowerCase();
+          if (Object.keys(LANGUAGES).includes(userLanguage)) {
+            await changeLanguage(userLanguage as LanguageCode);
+          }
         }
       }
     }

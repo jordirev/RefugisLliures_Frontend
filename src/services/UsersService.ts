@@ -1,7 +1,7 @@
 import { User } from '../models';
 import { UserDTO } from './dto';
 import { mapUserFromDTO } from './mappers';
-import { fetchWithLog } from './fetchWithLog';
+import { apiGet, apiPost, apiPatch, apiDelete } from './apiClient';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -43,20 +43,9 @@ export class UsersService {
   static async createUser(userData: UserCreateData, authToken?: string): Promise<User | null> {
     try {
       const url = `${API_BASE_URL}/users/`;
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
       
-      // Afegir token d'autenticació si està disponible
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetchWithLog(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(userData),
-      });
+      // Utilitzar apiPost que gestiona automàticament el refresc de tokens
+      const response = await apiPost(url, userData);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -83,16 +72,9 @@ export class UsersService {
   static async getUserByUid(uid: string, authToken?: string): Promise<User | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/`;
-      const headers: Record<string, string> = {};
       
-      // Afegir token d'autenticació si està disponible
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetchWithLog(url, {
-        headers: Object.keys(headers).length > 0 ? headers : undefined,
-      });
+      // Utilitzar apiGet que gestiona automàticament el refresc de tokens
+      const response = await apiGet(url);
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -123,20 +105,9 @@ export class UsersService {
   static async updateUser(uid: string, updateData: UserUpdateData, authToken?: string): Promise<User | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/`;
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
       
-      // Afegir token d'autenticació si està disponible
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetchWithLog(url, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(updateData),
-      });
+      // Utilitzar apiPatch que gestiona automàticament el refresc de tokens
+      const response = await apiPatch(url, updateData);
       
       if (!response.ok) {
         const errorData = await response.json();
@@ -163,17 +134,9 @@ export class UsersService {
   static async deleteUser(uid: string, authToken?: string): Promise<boolean> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/`;
-      const headers: Record<string, string> = {};
       
-      // Afegir token d'autenticació si està disponible
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetchWithLog(url, {
-        method: 'DELETE',
-        headers: Object.keys(headers).length > 0 ? headers : undefined,
-      });
+      // Utilitzar apiDelete que gestiona automàticament el refresc de tokens
+      const response = await apiDelete(url);
       
       if (!response.ok) {
         if (response.status === 404) {

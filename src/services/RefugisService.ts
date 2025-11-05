@@ -2,7 +2,7 @@ import { Location } from '../models';
 import { mockLocations } from '../utils/mockData';
 import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
 import { mapRefugisFromDTO } from './mappers/RefugiMapper';
-import { fetchWithLog } from './fetchWithLog';
+import { apiGet } from './apiClient';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -20,7 +20,8 @@ export class RefugisService {
 
     try {
       const url = `${API_BASE_URL}/refugis/${id}/`;
-      const response = await fetchWithLog(url);
+      // No requereix autenticació, però usem apiGet per consistència i logging
+      const response = await apiGet(url, { skipAuth: true });
       
       if (!response.ok) {
         return null;
@@ -76,7 +77,8 @@ export class RefugisService {
       }
 
       const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
-      const response = await fetchWithLog(url);
+      // No requereix autenticació, però usem apiGet per consistència i logging
+      const response = await apiGet(url, { skipAuth: true });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);

@@ -48,6 +48,7 @@ npm run web
 - ✅ Targetes de refugis amb informació
 - ✅ Sistema de favorits
 - ✅ Cerca de refugis
+- ✅ **Sistema de refresc automàtic de tokens JWT** - Millora l'experiència d'usuari evitant errors d'autenticació ([Detalls](./TOKEN_REFRESH.md))
 - ✅ Bottom Sheet amb informació del refugi
 - ✅ Llista de favorits
 - ✅ 17 refugis dels Pirineus amb dades mock
