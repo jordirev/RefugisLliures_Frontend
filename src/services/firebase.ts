@@ -2,14 +2,17 @@
 import { initializeApp } from "firebase/app";
 import { 
   getAuth,
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithCredential,
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
   User as FirebaseUser,
   updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
+  OAuthProvider
 } from "firebase/auth";
 
 // Importar variables d'entorn
@@ -22,6 +25,7 @@ import {
   FIREBASE_APP_ID,
   FIREBASE_MEASUREMENT_ID
 } from '@env';
+
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -48,16 +52,21 @@ const app = initializeApp(firebaseConfig);
 // Initialize Auth
 // Note: For React Native, AsyncStorage persistence will be configured after initialization
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 export { 
   app, 
   auth,
+  provider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithCredential,
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
   updateProfile,
   onAuthStateChanged,
+  GoogleAuthProvider,
+  OAuthProvider,
   type FirebaseUser
 };

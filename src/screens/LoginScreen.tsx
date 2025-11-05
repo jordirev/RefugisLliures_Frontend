@@ -31,7 +31,7 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
@@ -175,9 +175,28 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     }, 150);
   };
 
-  const handleGoogleLogin = () => {
-    // TODO: Implementar login amb Google
-    showAlert('Google Login', 'Funcionalitat en desenvolupament');
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      await loginWithGoogle();
+      // L'AuthProvider gestionarà automàticament la navegació
+    } catch (error: any) {
+      console.error('Error durant el login amb Google:', error);
+      
+      // Si l'usuari cancel·la, no mostrem error
+      if (error.message === 'LOGIN_CANCELLED') {
+        console.log('Login amb Google cancel·lat per l\'usuari');
+        return;
+      }
+
+      // Per altres errors, mostrem un missatge genèric
+      showAlert(
+        t('common.error'),
+        t('auth.errors.googleLoginFailed') || 'Error durant l\'autenticació amb Google'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotPassword = async () => {

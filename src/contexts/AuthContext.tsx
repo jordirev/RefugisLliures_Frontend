@@ -12,6 +12,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   authToken: string | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   signup: (email: string, password: string, username: string, language: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -91,6 +92,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
+  const loginWithGoogle = async () => {
+    const user = await AuthService.loginWithGoogle();
+    // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
+  };
+
   const signup = async (email: string, password: string, username: string, language: string) => {
     await AuthService.signUp({ email, password, username, language });
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
@@ -140,6 +146,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: !!firebaseUser && firebaseUser.emailVerified,
     authToken,
     login,
+    loginWithGoogle,
     signup,
     logout,
     deleteAccount,

@@ -2,17 +2,21 @@ import {
   auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithCredential,
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
   updateProfile,
   onAuthStateChanged,
+  GoogleAuthProvider,
   FirebaseUser
 } from './firebase';
 
 // Re-exportar el tipus FirebaseUser perquè estigui disponible per altres mòduls
 export type { FirebaseUser };
 import { UsersService, UserCreateData } from './UsersService';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { FIREBASE_WEB_CLIENT_ID } from '@env';
 
 export interface SignUpData {
   email: string;
@@ -116,6 +120,86 @@ export class AuthService {
       return firebaseUser;
     } catch (error: any) {
       console.error('Error durant el login:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Inicia sessió amb Google
+   * Configura Google Sign In, obté les credencials i autentica amb Firebase
+   * Si és un usuari nou, el crea al backend
+   * 
+   * @returns L'usuari de Firebase autenticat
+   */
+  static async loginWithGoogle(): Promise<FirebaseUser> {
+    try {
+      // 1. Configurar Google Sign In
+      GoogleSignin.configure({
+        webClientId: FIREBASE_WEB_CLIENT_ID,
+        offlineAccess: false,
+      });
+
+      // 2. Verificar disponibilitat de Google Play Services (només Android)
+      await GoogleSignin.hasPlayServices();
+
+      // 3. Fer sign in amb Google
+      const userInfo = await GoogleSignin.signIn();
+      
+      // 4. Obtenir l'ID token
+      const { idToken } = userInfo.data || {};
+      
+      if (!idToken) {
+        throw new Error('No s\'ha pogut obtenir l\'ID token de Google');
+      }
+
+      // 5. Crear credencial de Firebase amb l'ID token de Google
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      // 6. Autenticar amb Firebase
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      const firebaseUser = userCredential.user;
+
+      console.log('Usuari autenticat amb Google:', {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL
+      });
+
+      // 7. Obtenir el token d'autenticació de Firebase
+      const token = await firebaseUser.getIdToken();
+
+      // 8. Verificar si l'usuari existeix al backend
+      let backendUser = await UsersService.getUserByUid(firebaseUser.uid, token);
+
+      // 9. Si no existeix, crear-lo al backend
+      if (!backendUser) {
+        console.log('Usuari nou de Google, creant al backend...');
+        
+        const userData: UserCreateData = {
+          username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuari',
+          email: firebaseUser.email || '',
+          idioma: 'ca', // Idioma per defecte, es pot canviar després
+        };
+
+        backendUser = await UsersService.createUser(userData, token);
+
+        if (!backendUser) {
+          console.error('Error creant l\'usuari al backend');
+          // No eliminem l'usuari de Firebase perquè pot ser que ja existís
+          // només mostrem l'error
+        }
+      }
+
+      return firebaseUser;
+    } catch (error: any) {
+      console.error('Error durant el login amb Google:', error);
+      
+      // Si l'usuari cancel·la el procés de login
+      if (error.code === 'SIGN_IN_CANCELLED') {
+        throw new Error('LOGIN_CANCELLED');
+      }
+      
       throw error;
     }
   }

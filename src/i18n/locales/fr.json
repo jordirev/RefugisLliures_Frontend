@@ -277,7 +277,8 @@
       "invalidCredentials": "Identifiants invalides",
       "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
       "networkError": "Erreur de connexion. Vérifiez votre connexion Internet",
-      "generic": "Une erreur s'est produite. Veuillez réessayer"
+      "generic": "Une erreur s'est produite. Veuillez réessayer",
+      "googleLoginFailed": "Erreur lors de l'authentification avec Google"
     }
   }
 }

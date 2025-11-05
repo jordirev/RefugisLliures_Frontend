@@ -278,7 +278,8 @@
       "invalidCredentials": "Credencials incorrectes",
       "tooManyRequests": "Massa intents. Si us plau, intenta-ho més tard",
       "networkError": "Error de connexió. Comprova la teva connexió a internet",
-      "generic": "S'ha produït un error. Si us plau, torna-ho a intentar"
+      "generic": "S'ha produït un error. Si us plau, torna-ho a intentar",
+      "googleLoginFailed": "Error durant l'autenticació amb Google"
     }
   }
 }
