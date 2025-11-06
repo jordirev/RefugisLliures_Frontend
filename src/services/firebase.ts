@@ -12,7 +12,11 @@ import {
   User as FirebaseUser,
   updateProfile,
   onAuthStateChanged,
-  OAuthProvider
+  OAuthProvider,
+  updatePassword,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from "firebase/auth";
 
 // Importar variables d'entorn
@@ -68,5 +72,9 @@ export {
   onAuthStateChanged,
   GoogleAuthProvider,
   OAuthProvider,
+  updatePassword,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   type FirebaseUser
 };

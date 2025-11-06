@@ -80,7 +80,10 @@
       "title": "Paramètres",
       "preferences": "Préférences",
       "notifications": "Notifications",
+      "editProfile": "Modifier le profil",
       "language": "Langue",
+      "changeEmail": "Changer l'e-mail",
+      "changePassword": "Changer le mot de passe",
       "help": "Aide et support",
       "about": "À propos de l'app",
       "privacy": "Confidentialité",
@@ -105,6 +108,46 @@
         "fr": "Français"
       },
       "updateError": "Impossible de mettre à jour la langue sur le serveur"
+    }
+  },
+  "changePassword": {
+    "title": "Changer le mot de passe",
+    "description": "Entrez votre mot de passe actuel et le nouveau mot de passe que vous souhaitez définir.",
+    "currentPassword": "Mot de passe actuel",
+    "currentPasswordPlaceholder": "Entrez le mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "confirmNewPasswordPlaceholder": "Saisissez à nouveau le nouveau mot de passe",
+    "submit": "Changer le mot de passe",
+    "successMessage": "Le mot de passe a été modifié avec succès.",
+    "errors": {
+      "emptyCurrentPassword": "Veuillez entrer votre mot de passe actuel",
+      "wrongPassword": "Le mot de passe actuel est incorrect",
+      "passwordRequirements": "Le nouveau mot de passe ne respecte pas les exigences",
+      "samePassword": "Le nouveau mot de passe doit être différent du mot de passe actuel",
+      "requiresRecentLogin": "Pour des raisons de sécurité, veuillez vous reconnecter avant de changer le mot de passe",
+      "generic": "Échec du changement de mot de passe. Veuillez réessayer."
+    }
+  },
+  "changeEmail": {
+    "title": "Changer l'e-mail",
+    "description": "Entrez la nouvelle adresse e-mail que vous souhaitez utiliser pour votre compte.",
+    "currentEmail": "E-mail actuel",
+    "newEmail": "Nouvel e-mail",
+    "newEmailPlaceholder": "Entrez le nouvel e-mail",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "passwordHelper": "Nous avons besoin de votre mot de passe pour confirmer le changement",
+    "submit": "Changer l'e-mail",
+    "successMessage": "L'e-mail a été modifié avec succès. Nous avons envoyé un e-mail de vérification à la nouvelle adresse.",
+    "errors": {
+      "emptyPassword": "Veuillez entrer votre mot de passe",
+      "wrongPassword": "Le mot de passe est incorrect",
+      "sameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
+      "requiresRecentLogin": "Pour des raisons de sécurité, veuillez vous reconnecter avant de changer l'e-mail",
+      "backendError": "Impossible de mettre à jour l'e-mail sur le serveur. Il est peut-être déjà utilisé.",
+      "generic": "Échec du changement d'e-mail. Veuillez réessayer."
     }
   },
   "refuge": {

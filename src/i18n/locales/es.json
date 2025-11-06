@@ -80,7 +80,10 @@
       "title": "Configuración",
       "preferences": "Preferencias",
       "notifications": "Notificaciones",
+      "editProfile": "Editar perfil",
       "language": "Idioma",
+      "changeEmail": "Cambiar correo electrónico",
+      "changePassword": "Cambiar contraseña",
       "help": "Ayuda y soporte",
       "about": "Sobre la app",
       "privacy": "Privacidad",
@@ -105,6 +108,46 @@
         "fr": "Français"
       },
       "updateError": "No se ha podido actualizar el idioma en el servidor"
+    }
+  },
+  "changePassword": {
+    "title": "Cambiar contraseña",
+    "description": "Introduce tu contraseña actual y la nueva contraseña que quieres establecer.",
+    "currentPassword": "Contraseña actual",
+    "currentPasswordPlaceholder": "Introduce la contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "newPasswordPlaceholder": "Introduce la nueva contraseña",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "confirmNewPasswordPlaceholder": "Vuelve a introducir la nueva contraseña",
+    "submit": "Cambiar contraseña",
+    "successMessage": "La contraseña se ha cambiado correctamente.",
+    "errors": {
+      "emptyCurrentPassword": "Por favor, introduce la contraseña actual",
+      "wrongPassword": "La contraseña actual es incorrecta",
+      "passwordRequirements": "La nueva contraseña no cumple los requisitos",
+      "samePassword": "La nueva contraseña debe ser diferente de la actual",
+      "requiresRecentLogin": "Por seguridad, vuelve a iniciar sesión antes de cambiar la contraseña",
+      "generic": "No se ha podido cambiar la contraseña. Por favor, inténtalo de nuevo."
+    }
+  },
+  "changeEmail": {
+    "title": "Cambiar correo electrónico",
+    "description": "Introduce el nuevo correo electrónico que quieres utilizar para tu cuenta.",
+    "currentEmail": "Correo electrónico actual",
+    "newEmail": "Nuevo correo electrónico",
+    "newEmailPlaceholder": "Introduce el nuevo correo electrónico",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Introduce tu contraseña",
+    "passwordHelper": "Necesitamos tu contraseña para confirmar el cambio",
+    "submit": "Cambiar correo electrónico",
+    "successMessage": "El correo electrónico se ha cambiado correctamente. Hemos enviado un correo de verificación a la nueva dirección.",
+    "errors": {
+      "emptyPassword": "Por favor, introduce tu contraseña",
+      "wrongPassword": "La contraseña es incorrecta",
+      "sameEmail": "El nuevo correo electrónico debe ser diferente del actual",
+      "requiresRecentLogin": "Por seguridad, vuelve a iniciar sesión antes de cambiar el correo electrónico",
+      "backendError": "No se ha podido actualizar el correo en el servidor. Puede que ya esté en uso.",
+      "generic": "No se ha podido cambiar el correo electrónico. Por favor, inténtalo de nuevo."
     }
   },
   "refuge": {

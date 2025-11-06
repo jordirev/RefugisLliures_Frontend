@@ -81,7 +81,10 @@
       "title": "Configuració",
       "preferences": "Preferències",
       "notifications": "Notificacions",
+      "editProfile": "Editar perfil",
       "language": "Idioma",
+      "changeEmail": "Canviar correu electrònic",
+      "changePassword": "Canviar contrasenya",
       "help": "Ajuda i suport",
       "about": "Sobre l'app",
       "privacy": "Privacitat",
@@ -106,6 +109,46 @@
         "fr": "Français"
       },
       "updateError": "No s'ha pogut actualitzar l'idioma al servidor"
+    }
+  },
+  "changePassword": {
+    "title": "Canviar contrasenya",
+    "description": "Introdueix la teva contrasenya actual i la nova contrasenya que vols establir.",
+    "currentPassword": "Contrasenya actual",
+    "currentPasswordPlaceholder": "Introdueix la contrasenya actual",
+    "newPassword": "Nova contrasenya",
+    "newPasswordPlaceholder": "Introdueix la nova contrasenya",
+    "confirmNewPassword": "Confirmar nova contrasenya",
+    "confirmNewPasswordPlaceholder": "Torna a introduir la nova contrasenya",
+    "submit": "Canviar contrasenya",
+    "successMessage": "La contrasenya s'ha canviat correctament.",
+    "errors": {
+      "emptyCurrentPassword": "Si us plau, introdueix la contrasenya actual",
+      "wrongPassword": "La contrasenya actual és incorrecta",
+      "passwordRequirements": "La nova contrasenya no compleix els requisits",
+      "samePassword": "La nova contrasenya ha de ser diferent de l'actual",
+      "requiresRecentLogin": "Per seguretat, torna a iniciar sessió abans de canviar la contrasenya",
+      "generic": "No s'ha pogut canviar la contrasenya. Si us plau, torna-ho a intentar."
+    }
+  },
+  "changeEmail": {
+    "title": "Canviar correu electrònic",
+    "description": "Introdueix el nou correu electrònic que vols utilitzar per al teu compte.",
+    "currentEmail": "Correu electrònic actual",
+    "newEmail": "Nou correu electrònic",
+    "newEmailPlaceholder": "Introdueix el nou correu electrònic",
+    "password": "Contrasenya",
+    "passwordPlaceholder": "Introdueix la teva contrasenya",
+    "passwordHelper": "Necessitem la teva contrasenya per confirmar el canvi",
+    "submit": "Canviar correu electrònic",
+    "successMessage": "El correu electrònic s'ha canviat correctament. Hem enviat un correu de verificació a la nova adreça.",
+    "errors": {
+      "emptyPassword": "Si us plau, introdueix la teva contrasenya",
+      "wrongPassword": "La contrasenya és incorrecta",
+      "sameEmail": "El nou correu electrònic ha de ser diferent de l'actual",
+      "requiresRecentLogin": "Per seguretat, torna a iniciar sessió abans de canviar el correu electrònic",
+      "backendError": "No s'ha pogut actualitzar el correu al servidor. Pot ser que ja estigui en ús.",
+      "generic": "No s'ha pogut canviar el correu electrònic. Si us plau, torna-ho a intentar."
     }
   },
   "refuge": {

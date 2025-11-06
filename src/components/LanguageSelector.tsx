@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeText: {
-    fontSize: 24,
+    fontSize: 20,
     color: '#6b7280',
   },
   languageList: {

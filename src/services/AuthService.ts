@@ -9,7 +9,11 @@ import {
   updateProfile,
   onAuthStateChanged,
   GoogleAuthProvider,
-  FirebaseUser
+  FirebaseUser,
+  updatePassword,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from './firebase';
 
 // Re-exportar el tipus FirebaseUser perquè estigui disponible per altres mòduls
@@ -396,5 +400,76 @@ export class AuthService {
    */
   static isGoogleSignInAvailable(): boolean {
     return GoogleSignin !== null;
+  }
+
+  /**
+   * Canvia la contrasenya de l'usuari actual
+   * Requereix reautenticació amb la contrasenya actual
+   * 
+   * @param currentPassword - Contrasenya actual
+   * @param newPassword - Nova contrasenya
+   */
+  static async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    try {
+      const user = auth.currentUser;
+      if (!user || !user.email) {
+        throw new Error('No hi ha cap usuari autenticat');
+      }
+
+      // 1. Reautenticar l'usuari amb la contrasenya actual
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+
+      // 2. Actualitzar la contrasenya
+      await updatePassword(user, newPassword);
+
+      console.log('Contrasenya actualitzada correctament');
+    } catch (error: any) {
+      console.error('Error canviant contrasenya:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Canvia el correu electrònic de l'usuari actual
+   * Requereix reautenticació amb la contrasenya actual
+   * Primer actualitza el backend i només si té èxit actualitza Firebase
+   * 
+   * @param password - Contrasenya actual per reautenticar
+   * @param newEmail - Nou correu electrònic
+   */
+  static async changeEmail(password: string, newEmail: string): Promise<void> {
+    try {
+      const user = auth.currentUser;
+      if (!user || !user.email) {
+        throw new Error('No hi ha cap usuari autenticat');
+      }
+
+      const oldEmail = user.email;
+
+      // 1. Reautenticar l'usuari amb la contrasenya actual
+      const credential = EmailAuthProvider.credential(oldEmail, password);
+      await reauthenticateWithCredential(user, credential);
+
+      // 2. Primer actualitzar el correu al backend
+      const token = await user.getIdToken();
+      const backendUpdated = await UsersService.updateUser(user.uid, { email: newEmail }, token);
+      
+      if (!backendUpdated) {
+        // Si falla l'actualització al backend, llançar error i no continuar
+        throw new Error('BACKEND_UPDATE_FAILED');
+      }
+
+      // 3. Si el backend s'ha actualitzat correctament, actualitzar Firebase
+      await updateEmail(user, newEmail);
+
+      // 4. Enviar email de verificació al nou correu
+      await sendEmailVerification(user);
+
+      console.log('Correu electrònic actualitzat correctament al backend i Firebase. Email de verificació enviat.');
+    } catch (error: any) {
+      console.error('Error canviant correu electrònic:', error);
+      throw error;
+    }
   }
 }

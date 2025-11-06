@@ -9,6 +9,8 @@ import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { ReformsScreen } from '../screens/ReformsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
+import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
@@ -187,6 +189,26 @@ export function AppNavigator() {
         <Tab.Screen
           name="Settings"
           component={SettingsScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden ChangePassword screen: accessible by navigation.navigate('ChangePassword') but not shown in the tab bar */}
+        <Tab.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden ChangeEmail screen: accessible by navigation.navigate('ChangeEmail') but not shown in the tab bar */}
+        <Tab.Screen
+          name="ChangeEmail"
+          component={ChangeEmailScreen}
           options={{ 
             tabBarButton: () => null,
             tabBarStyle: { display: 'none' }

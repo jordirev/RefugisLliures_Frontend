@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../utils/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
@@ -12,6 +12,7 @@ import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
+import BackIcon from '../assets/icons/arrow-left.svg';
 
 export function SettingsScreen() {
   const { t } = useTranslation();
@@ -20,6 +21,10 @@ export function SettingsScreen() {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
+  // Fixed header height (used to pad the scrollable content)
+  const HEADER_HEIGHT = 96;
+  // Insets for adaptive safe area padding (bottom on devices with home indicator)
+  const insets = useSafeAreaInsets();
   
   // Actualitzar l'idioma mostrat quan canvia l'idioma de i18n
   useEffect(() => {
@@ -42,6 +47,18 @@ export function SettingsScreen() {
     // Navigate to the Profile tab instead of just going back
     navigation.navigate(t('navigation.profile'));
   };
+
+  // Ensure any removal (including Android hardware back) leads to Settings
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
+      if (Platform.OS === 'android') {
+        e.preventDefault();
+        navigation.navigate('Profile');
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   
   // Handle Android hardware back button
   useEffect(() => {
@@ -57,57 +74,95 @@ export function SettingsScreen() {
   }, [handleGoBack]);
   
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.headerFixed}>
+        <SafeAreaView edges={["top"]} style={styles.safeArea} />
         <View style={styles.header}>
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
           >
-            <Text style={styles.backButtonText}>‹</Text>
+            <BackIcon />
           </TouchableOpacity>
           <Text style={styles.title}>{t('profile.settings.title')}</Text>
         </View>
-      <SafeAreaView />
+      </View>
 
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={{ paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) }}
+        style={styles.container}
+      >
+        <View style={styles.content}>
         <View style={styles.section}>          
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuIcon}>⚙️</Text>
             <Text style={styles.menuText}>{t('profile.settings.preferences')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuIcon}>🔔</Text>
             <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <Text style={styles.menuText}>{t('profile.settings.editProfile')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuItem}
             onPress={() => setShowLanguageSelector(true)}
           >
-            <Text style={styles.menuIcon}>🌍</Text>
             <View style={styles.menuTextContainer}>
               <Text style={styles.menuText}>{t('profile.settings.language')}</Text>
               <Text style={styles.menuSubtext}>
                 {LANGUAGES[currentLanguage]?.nativeName || 'Català'}
               </Text>
             </View>
-            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('ChangeEmail')}
+          >
+            <Text style={styles.menuText}>{t('profile.settings.changeEmail')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('ChangePassword')}
+          >
+            <Text style={styles.menuText}>{t('profile.settings.changePassword')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuIcon}>❓</Text>
             <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuIcon}>ℹ️</Text>
             <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              showAlert(
+                t('profile.settings.deleteAccount.confirmTitle'),
+                t('profile.settings.deleteAccount.confirmMessage'),
+                [
+                  { text: t('common.cancel'), style: 'cancel' },
+                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: async () => {
+                      try {
+                        await deleteAccount();
+                      } catch (error) {
+                        console.error('Error durant la eliminació del compte:', error);
+                        showAlert(t('common.error'), t('auth.errors.generic'));
+                      }
+                    }
+                  }
+                ]
+              );
+            }}
+          >
+            <Text style={[styles.menuText]}>{t('profile.settings.deleteAccount.title')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -133,37 +188,9 @@ export function SettingsScreen() {
           >
             <LogoutIcon />
             <Text style={styles.menuText}>{t('profile.settings.logout.title')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.menuItem}
-            onPress={() => {
-              showAlert(
-                t('profile.settings.deleteAccount.confirmTitle'),
-                t('profile.settings.deleteAccount.confirmMessage'),
-                [
-                  { text: t('common.cancel'), style: 'cancel' },
-                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: async () => {
-                      try {
-                        await deleteAccount();
-                      } catch (error) {
-                        console.error('Error durant la eliminació del compte:', error);
-                        showAlert(t('common.error'), t('auth.errors.generic'));
-                      }
-                    }
-                  }
-                ]
-              );
-            }}
-          >
-            <Text style={styles.menuIcon}>🗑️</Text>
-            <Text style={styles.menuText}>{t('profile.settings.deleteAccount.title')}</Text>
-            <Text style={styles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>
       </View>
-
       <LanguageSelector
         visible={showLanguageSelector}
         onClose={() => setShowLanguageSelector(false)}
@@ -180,25 +207,41 @@ export function SettingsScreen() {
         />
       )}
     </ScrollView>
+    {/* Bottom safe-area filler to ensure a visible (non-transparent) area behind home indicator */}
+    {insets.bottom > 0 && (
+      <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
+    )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#ffffffff',
   },
   safeArea: {
     backgroundColor: '#fff',
   },
   header: {
-    padding: 32,
+    padding: 16,
     backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    alignItems: 'center',
+    borderBottomWidth: 1.2,
+    borderBottomColor: '#e3e4e5ff',
     flexDirection: 'row',
-    gap: 16,
+    gap: 24,
   },
   backButton: {
     width: 40,
@@ -214,17 +257,18 @@ const styles = StyleSheet.create({
     lineHeight: 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
+    fontFamily: 'Arimo',
     color: '#111827',
     textAlign: 'left',
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: 12,
   },
   section: {
-    //marginTop: ,
+    marginTop: 20,
   },
   sectionTitle: {
     fontSize: 18,
@@ -234,7 +278,7 @@ const styles = StyleSheet.create({
   },
   statsGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 17,
   },
   statCard: {
     flex: 1,
@@ -265,16 +309,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    marginBottom: 12,
+    gap: 16,
   },
   menuIcon: {
     fontSize: 24,
-    marginRight: 12,
   },
   menuTextContainer: {
     flex: 1,
@@ -283,6 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#111827',
+    fontFamily: 'Arimo',
   },
   menuSubtext: {
     fontSize: 13,
@@ -292,5 +332,13 @@ const styles = StyleSheet.create({
   menuArrow: {
     fontSize: 24,
     color: '#9ca3af',
+  },
+  bottomSafeArea: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    zIndex: 5,
   },
 });

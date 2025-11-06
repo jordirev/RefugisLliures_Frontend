@@ -4,8 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
 import { useNavigation } from '@react-navigation/native';
-import { LanguageSelector } from '../components/LanguageSelector';
-import { getCurrentLanguage, LANGUAGES } from '../i18n';
+import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 
 // Icones
@@ -18,7 +17,6 @@ import DefaultProfileBackgroundImage from '../assets/images/profileDefaultBackgr
 
 export function ProfileScreen() {
   const { t } = useTranslation();
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
   const { firebaseUser, backendUser, isLoading } = useAuth();

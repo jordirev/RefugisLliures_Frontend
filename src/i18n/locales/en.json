@@ -80,7 +80,10 @@
       "title": "Settings",
       "preferences": "Preferences",
       "notifications": "Notifications",
+      "editProfile": "Edit profile",
       "language": "Language",
+      "changeEmail": "Change email",
+      "changePassword": "Change password",
       "help": "Help & support",
       "about": "About the app",
       "privacy": "Privacy",
@@ -105,6 +108,46 @@
         "fr": "Français"
       },
       "updateError": "Failed to update language on the server"
+    }
+  },
+  "changePassword": {
+    "title": "Change password",
+    "description": "Enter your current password and the new password you want to set.",
+    "currentPassword": "Current password",
+    "currentPasswordPlaceholder": "Enter current password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmNewPassword": "Confirm new password",
+    "confirmNewPasswordPlaceholder": "Re-enter new password",
+    "submit": "Change password",
+    "successMessage": "Password changed successfully.",
+    "errors": {
+      "emptyCurrentPassword": "Please enter your current password",
+      "wrongPassword": "Current password is incorrect",
+      "passwordRequirements": "New password does not meet requirements",
+      "samePassword": "New password must be different from current password",
+      "requiresRecentLogin": "For security, please log in again before changing password",
+      "generic": "Failed to change password. Please try again."
+    }
+  },
+  "changeEmail": {
+    "title": "Change email",
+    "description": "Enter the new email address you want to use for your account.",
+    "currentEmail": "Current email",
+    "newEmail": "New email",
+    "newEmailPlaceholder": "Enter new email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordHelper": "We need your password to confirm the change",
+    "submit": "Change email",
+    "successMessage": "Email changed successfully. We've sent a verification email to the new address.",
+    "errors": {
+      "emptyPassword": "Please enter your password",
+      "wrongPassword": "Password is incorrect",
+      "sameEmail": "New email must be different from current email",
+      "requiresRecentLogin": "For security, please log in again before changing email",
+      "backendError": "Failed to update email on the server. It may already be in use.",
+      "generic": "Failed to change email. Please try again."
     }
   },
   "refuge": {

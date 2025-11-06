@@ -18,6 +18,8 @@ interface AuthContextType {
   deleteAccount: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
   reloadUser: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  changeEmail: (password: string, newEmail: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -139,6 +141,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    await AuthService.changePassword(currentPassword, newPassword);
+  };
+
+  const changeEmail = async (password: string, newEmail: string) => {
+    await AuthService.changeEmail(password, newEmail);
+  };
+
   const value: AuthContextType = {
     firebaseUser,
     backendUser,
@@ -151,7 +161,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     deleteAccount,
     refreshToken,
-    reloadUser
+    reloadUser,
+    changePassword,
+    changeEmail
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
