@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   modalButtonSingle: {
     width: '100%',
@@ -149,6 +150,8 @@ const styles = StyleSheet.create({
   },
   modalCancel: {
     backgroundColor: '#f3f4f6',
+    textAlign: 'center',
+    paddingHorizontal: 8,
   },
   modalDestructive: {
     backgroundColor: '#ef4444',
@@ -162,6 +165,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#111827',
     fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 8,
   },
   modalPrimaryText: {
     color: '#ffffff',

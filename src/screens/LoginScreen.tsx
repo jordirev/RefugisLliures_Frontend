@@ -41,6 +41,9 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const passwordInputRef = useRef<any>(null);
+  
+  // Verificar si Google Sign In està disponible
+  const isGoogleSignInAvailable = AuthService.isGoogleSignInAvailable();
 
   const isValidEmail = (value: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,6 +94,15 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           t('auth.emailNotVerified'),
           t('auth.checkEmailVerification'),
           [
+            // Primer el botó de tancar (a l'esquerra), després el de reenviar
+            {
+              text: t('common.close'),
+              style: 'cancel',
+              onPress: async () => {
+                // Tancar sessió si l'usuari tanca l'alert
+                await AuthService.logout();
+              }
+            },
             {
               text: t('auth.resendVerificationEmail'),
               onPress: async () => {
@@ -102,14 +114,6 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                   showAlert(t('common.error'), t('auth.errors.generic'));
                 }
                 // Tancar sessió després de reenviar el correu
-                await AuthService.logout();
-              }
-            },
-            {
-              text: t('common.close'),
-              style: 'cancel',
-              onPress: async () => {
-                // Tancar sessió si l'usuari tanca l'alert
                 await AuthService.logout();
               }
             }
@@ -176,6 +180,14 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   };
 
   const handleGoogleLogin = async () => {
+    if (!isGoogleSignInAvailable) {
+      showAlert(
+        t('common.info') || 'Informació',
+        'Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat.'
+      );
+      return;
+    }
+    
     setIsLoading(true);
     try {
       await loginWithGoogle();

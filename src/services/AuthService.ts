@@ -15,7 +15,14 @@ import {
 // Re-exportar el tipus FirebaseUser perquè estigui disponible per altres mòduls
 export type { FirebaseUser };
 import { UsersService, UserCreateData } from './UsersService';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// Import condicional per Google Sign In - només disponible en builds natius
+let GoogleSignin: any = null;
+try {
+  const googleSigninModule = require('@react-native-google-signin/google-signin');
+  GoogleSignin = googleSigninModule.GoogleSignin;
+} catch (error) {
+  console.warn('Google Sign In no disponible - executant en Expo Go o sense configuració nativa');
+}
 import { FIREBASE_WEB_CLIENT_ID } from '@env';
 
 export interface SignUpData {
@@ -132,6 +139,11 @@ export class AuthService {
    * @returns L'usuari de Firebase autenticat
    */
   static async loginWithGoogle(): Promise<FirebaseUser> {
+    // Verificar si Google Sign In està disponible
+    if (!GoogleSignin) {
+      throw new Error('GOOGLE_SIGNIN_NOT_AVAILABLE');
+    }
+    
     try {
       // 1. Configurar Google Sign In
       GoogleSignin.configure({
@@ -370,8 +382,19 @@ export class AuthService {
         return 'auth.errors.tooManyRequests';
       case 'auth/network-request-failed':
         return 'auth.errors.networkError';
+      case 'GOOGLE_SIGNIN_NOT_AVAILABLE':
+        return 'auth.errors.googleSigninNotAvailable';
       default:
         return 'auth.errors.generic';
     }
+  }
+  
+  /**
+   * Verifica si Google Sign In està disponible
+   * 
+   * @returns true si Google Sign In està disponible, false en cas contrari
+   */
+  static isGoogleSignInAvailable(): boolean {
+    return GoogleSignin !== null;
   }
 }

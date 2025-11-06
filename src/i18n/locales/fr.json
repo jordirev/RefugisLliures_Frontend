@@ -18,7 +18,8 @@
     "showLess": "Afficher moins",
     "places": "places",
     "download": "Télécharger",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "info": "Info"
   },
   "navigation": {
     "map": "Carte",
@@ -278,7 +279,8 @@
       "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
       "networkError": "Erreur de connexion. Vérifiez votre connexion Internet",
       "generic": "Une erreur s'est produite. Veuillez réessayer",
-      "googleLoginFailed": "Erreur lors de l'authentification avec Google"
+      "googleLoginFailed": "Erreur lors de l'authentification avec Google",
+      "googleSigninNotAvailable": "Google Sign In n'est pas disponible dans Expo Go. Utilisez une version native pour activer cette fonctionnalité."
     }
   }
 }
