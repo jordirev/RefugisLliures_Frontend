@@ -103,7 +103,10 @@ export function SettingsScreen() {
             <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
             <Text style={styles.menuText}>{t('profile.settings.editProfile')}</Text>
           </TouchableOpacity>
 

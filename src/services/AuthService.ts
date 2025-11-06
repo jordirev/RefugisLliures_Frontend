@@ -13,7 +13,8 @@ import {
   updatePassword,
   updateEmail,
   reauthenticateWithCredential,
-  EmailAuthProvider
+  EmailAuthProvider,
+  verifyBeforeUpdateEmail
 } from './firebase';
 
 // Re-exportar el tipus FirebaseUser perquè estigui disponible per altres mòduls
@@ -431,9 +432,9 @@ export class AuthService {
   }
 
   /**
-   * Canvia el correu electrònic de l'usuari actual
+   * Inicia el procés de canvi de correu electrònic de l'usuari actual
    * Requereix reautenticació amb la contrasenya actual
-   * Primer actualitza el backend i només si té èxit actualitza Firebase
+   * Envia un email de verificació al correu actual amb un enllaç per confirmar el canvi
    * 
    * @param password - Contrasenya actual per reautenticar
    * @param newEmail - Nou correu electrònic
@@ -447,28 +448,31 @@ export class AuthService {
 
       const oldEmail = user.email;
 
+      console.log('Iniciant canvi de correu de:', oldEmail, 'a:', newEmail);
+
       // 1. Reautenticar l'usuari amb la contrasenya actual
       const credential = EmailAuthProvider.credential(oldEmail, password);
       await reauthenticateWithCredential(user, credential);
+      console.log('Usuari reautenticat correctament');
 
-      // 2. Primer actualitzar el correu al backend
-      const token = await user.getIdToken();
-      const backendUpdated = await UsersService.updateUser(user.uid, { email: newEmail }, token);
-      
-      if (!backendUpdated) {
-        // Si falla l'actualització al backend, llançar error i no continuar
-        throw new Error('BACKEND_UPDATE_FAILED');
+      // 2. Enviar email de verificació al correu actual per confirmar el canvi
+      // Firebase enviarà un correu amb un enllaç. Només quan l'usuari faci clic s'actualitzarà el correu
+      try {
+        await verifyBeforeUpdateEmail(user, newEmail);
+        console.log('verifyBeforeUpdateEmail cridat correctament. Email enviat a:', oldEmail);
+      } catch (emailError: any) {
+        console.error('Error cridant verifyBeforeUpdateEmail:', emailError);
+        console.error('Error code:', emailError?.code);
+        console.error('Error message:', emailError?.message);
+        throw emailError;
       }
 
-      // 3. Si el backend s'ha actualitzat correctament, actualitzar Firebase
-      await updateEmail(user, newEmail);
+      // Nota: El backend s'actualitzarà automàticament quan Firebase notifiqui el canvi
+      // mitjançant els tokens renovats amb el nou email
 
-      // 4. Enviar email de verificació al nou correu
-      await sendEmailVerification(user);
-
-      console.log('Correu electrònic actualitzat correctament al backend i Firebase. Email de verificació enviat.');
+      console.log('Email de verificació enviat al correu actual per confirmar el canvi a:', newEmail);
     } catch (error: any) {
-      console.error('Error canviant correu electrònic:', error);
+      console.error('Error iniciant canvi de correu electrònic:', error);
       throw error;
     }
   }

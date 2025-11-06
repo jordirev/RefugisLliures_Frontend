@@ -141,6 +141,7 @@
     "passwordHelper": "Nous avons besoin de votre mot de passe pour confirmer le changement",
     "submit": "Changer l'e-mail",
     "successMessage": "L'e-mail a été modifié avec succès. Nous avons envoyé un e-mail de vérification à la nouvelle adresse.",
+    "emailSentMessage": "Nous avons envoyé un e-mail de vérification à votre adresse actuelle. Cliquez sur le lien pour confirmer le changement.",
     "errors": {
       "emptyPassword": "Veuillez entrer votre mot de passe",
       "wrongPassword": "Le mot de passe est incorrect",
@@ -289,7 +290,7 @@
     "verificationEmailSent": "Un e-mail de vérification a été envoyé à {{email}}",
     "errors": {
       "emptyUsername": "Veuillez entrer un nom d'utilisateur",
-      "usernameTooShort": "Le nom d'utilisateur doit comporter au moins 2 caractères",
+      "invalidUsername": "Le nom d'utilisateur doit comporter entre 2 et 20 caractères",
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer un mot de passe",
@@ -301,6 +302,17 @@
       "specialCharPassword": "\t• Minimum un caractère spécial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "registrationFailed": "Impossible de créer le compte. Si vous avez un compte existant, essayez de vous connecter ou de récupérer votre mot de passe."
+    }
+  },
+  "editProfile": {
+    "title": "Modifier le profil",
+    "usernamePlaceholder": "Nom d'utilisateur",
+    "saveButton": "Enregistrer les modifications",
+    "successMessage": "Profil mis à jour avec succès.",
+    "errors": {
+      "emptyUsername": "Veuillez entrer un nom d'utilisateur",
+      "invalidUsername": "Le nom d'utilisateur doit comporter entre 2 et 20 caractères",
+      "generic": "Impossible de mettre à jour le profil. Veuillez réessayer."
     }
   },
   "auth": {

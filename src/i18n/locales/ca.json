@@ -142,6 +142,7 @@
     "passwordHelper": "Necessitem la teva contrasenya per confirmar el canvi",
     "submit": "Canviar correu electrònic",
     "successMessage": "El correu electrònic s'ha canviat correctament. Hem enviat un correu de verificació a la nova adreça.",
+    "emailSentMessage": "Hem enviat un correu electrònic de verificació al teu correu actual. Fes clic a l'enllaç per confirmar el canvi.",
     "errors": {
       "emptyPassword": "Si us plau, introdueix la teva contrasenya",
       "wrongPassword": "La contrasenya és incorrecta",
@@ -290,7 +291,7 @@
     "verificationEmailSent": "S'ha enviat un correu de verificació a {{email}}",
     "errors": {
       "emptyUsername": "Si us plau, introdueix un nom d'usuari",
-      "usernameTooShort": "El nom d'usuari ha de tenir almenys 2 caràcters",
+      "invalidUsername": "El nom d'usuari ha de tenir entre 2 i 20 caràcters",
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "invalidEmail": "El format del correu electrònic no és vàlid",
       "emptyPassword": "Si us plau, introdueix una contrasenya",
@@ -302,6 +303,17 @@
       "specialCharPassword": "\t• Mínim un caràcter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les contrasenyes no coincideixen",
       "registrationFailed": "No s'ha pogut crear el compte. Si tens un compte existent, prova a iniciar sessió o recupera la teva contrasenya."
+    }
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "usernamePlaceholder": "Nom d'usuari",
+    "saveButton": "Desar canvis",
+    "successMessage": "Perfil actualitzat correctament.",
+    "errors": {
+      "emptyUsername": "Si us plau, introdueix un nom d'usuari",
+      "invalidUsername": "El nom d'usuari ha de tenir entre 2 i 20 caràcters",
+      "generic": "No s'ha pogut actualitzar el perfil. Si us plau, torna-ho a intentar."
     }
   },
   "auth": {

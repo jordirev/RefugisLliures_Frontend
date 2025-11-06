@@ -20,6 +20,7 @@ interface AuthContextType {
   reloadUser: () => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   changeEmail: (password: string, newEmail: string) => Promise<void>;
+  updateUsername: (newUsername: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -149,6 +150,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await AuthService.changeEmail(password, newEmail);
   };
 
+  const updateUsername = async (newUsername: string) => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+
+    // Actualitzar nom d'usuari al backend
+    const updatedUser = await UsersService.updateUser(
+      firebaseUser.uid,
+      { username: newUsername },
+      authToken || undefined
+    );
+
+    if (!updatedUser) {
+      throw new Error('Failed to update username');
+    }
+
+    // Actualitzar l'estat local
+    setBackendUser(updatedUser);
+  };
+
   const value: AuthContextType = {
     firebaseUser,
     backendUser,
@@ -163,7 +184,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshToken,
     reloadUser,
     changePassword,
-    changeEmail
+    changeEmail,
+    updateUsername
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

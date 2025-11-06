@@ -16,7 +16,8 @@ import {
   updatePassword,
   updateEmail,
   reauthenticateWithCredential,
-  EmailAuthProvider
+  EmailAuthProvider,
+  verifyBeforeUpdateEmail
 } from "firebase/auth";
 
 // Importar variables d'entorn
@@ -76,5 +77,6 @@ export {
   updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  verifyBeforeUpdateEmail,
   type FirebaseUser
 };

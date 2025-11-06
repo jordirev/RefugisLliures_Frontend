@@ -141,6 +141,7 @@
     "passwordHelper": "Necesitamos tu contraseña para confirmar el cambio",
     "submit": "Cambiar correo electrónico",
     "successMessage": "El correo electrónico se ha cambiado correctamente. Hemos enviado un correo de verificación a la nueva dirección.",
+    "emailSentMessage": "Hemos enviado un correo electrónico de verificación a tu correo actual. Haz clic en el enlace para confirmar el cambio.",
     "errors": {
       "emptyPassword": "Por favor, introduce tu contraseña",
       "wrongPassword": "La contraseña es incorrecta",
@@ -289,7 +290,7 @@
     "verificationEmailSent": "Se ha enviado un correo de verificación a {{email}}",
     "errors": {
       "emptyUsername": "Por favor, introduce un nombre de usuario",
-      "usernameTooShort": "El nombre de usuario debe tener al menos 2 caracteres",
+      "invalidUsername": "El nombre de usuario debe tener entre 2 y 20 caracteres",
       "emptyEmail": "Por favor, introduce tu correo electrónico",
       "invalidEmail": "El formato del correo electrónico no es válido",
       "emptyPassword": "Por favor, introduce una contraseña",
@@ -301,6 +302,17 @@
       "specialCharPassword": "\t• Mínimo un carácter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Las contraseñas no coinciden",
       "registrationFailed": "No se pudo crear la cuenta. Si tienes una cuenta existente, prueba a iniciar sesión o recupera la contraseña."
+    }
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "usernamePlaceholder": "Nombre de usuario",
+    "saveButton": "Guardar cambios",
+    "successMessage": "Perfil actualizado correctamente",
+    "errors": {
+      "emptyUsername": "Por favor, introduce un nombre de usuario",
+      "invalidUsername": "El nombre de usuario debe tener entre 2 y 20 caracteres",
+      "generic": "No se pudo actualizar el perfil. Por favor, inténtalo de nuevo."
     }
   },
   "auth": {

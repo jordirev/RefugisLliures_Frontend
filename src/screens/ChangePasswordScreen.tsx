@@ -305,22 +305,25 @@ export function ChangePasswordScreen() {
             disabled={!isFormValid || isLoading}
           >
             {(!isFormValid || isLoading) ? (
-              <View style={styles.submitButtonGradientDisabled}>
+              <View style={styles.buttonContent}>
                 {isLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.submitButtonTextDisabled}>{t('changePassword.submit')}</Text>
+                  <View style={styles.gradientDisabledFill} />
                 )}
+                {!isLoading && <Text style={styles.submitButtonTextDisabled}>{t('changePassword.submit')}</Text>}
+                {isLoading && <Text style={styles.submitButtonText} />}
               </View>
             ) : (
-              <LinearGradient
-                colors={["#FF8904", "#F54900"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.submitButtonGradient}
-              >
+              <View style={styles.buttonContent}>
+                <LinearGradient
+                  colors={["#FF8904", "#F54900"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientFill}
+                />
                 <Text style={styles.submitButtonText}>{t('changePassword.submit')}</Text>
-              </LinearGradient>
+              </View>
             )}
           </TouchableOpacity>
         </View>
@@ -456,27 +459,29 @@ const styles = StyleSheet.create({
     fontFamily: 'Arimo',
   },
   submitButton: {
-    backgroundColor: '#f97316',
     borderRadius: 8,
-    padding: 16,
     alignItems: 'center',
     marginTop: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   submitButtonDisabled: {
     backgroundColor: '#d1d5db',
   },
-  submitButtonGradient: {
+  buttonContent: {
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+  },
+  gradientFill: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: 8,
   },
-  submitButtonGradientDisabled: {
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#dadadaff',
+  gradientDisabledFill: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: 8,
+    backgroundColor: '#dadadaff',
   },
   submitButtonTextDisabled: {
     color: '#707070ff',

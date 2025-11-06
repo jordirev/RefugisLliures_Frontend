@@ -110,14 +110,14 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       return;
     }
 
-    if (trimmed.length < 2) {
-        setUsernameError('signup.errors.usernameTooShort');
+    if (trimmed.length < 2 || trimmed.length > 20) {
+        setUsernameError('signup.errors.invalidUsername');
       // remain on username step until requirement satisfied
       return;
     }
 
     // Valid username: clear error and advance to email step if we are on username
-    if (trimmed.length >= 2) setUsernameError(null);
+    if (trimmed.length >= 2 && trimmed.length <= 20) setUsernameError(null);
     
     if (step === 'username') {
       setStep('email');

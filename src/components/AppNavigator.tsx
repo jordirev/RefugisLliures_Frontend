@@ -11,6 +11,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
@@ -209,6 +210,16 @@ export function AppNavigator() {
         <Tab.Screen
           name="ChangeEmail"
           component={ChangeEmailScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+  
+      {/* Hidden EditProfile screen: accessible by navigation.navigate('EditProfile') but not shown in the tab bar */}
+        <Tab.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
           options={{ 
             tabBarButton: () => null,
             tabBarStyle: { display: 'none' }

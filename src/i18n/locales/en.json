@@ -141,6 +141,7 @@
     "passwordHelper": "We need your password to confirm the change",
     "submit": "Change email",
     "successMessage": "Email changed successfully. We've sent a verification email to the new address.",
+    "emailSentMessage": "We've sent a verification email to your current address. Click the link to confirm the change.",
     "errors": {
       "emptyPassword": "Please enter your password",
       "wrongPassword": "Password is incorrect",
@@ -289,7 +290,7 @@
     "verificationEmailSent": "A verification email has been sent to {{email}}",
     "errors": {
       "emptyUsername": "Please enter a username",
-      "usernameTooShort": "Username must be at least 2 characters long",
+      "invalidUsername": "Username must be between 2 and 20 characters",
       "emptyEmail": "Please enter your email address",
       "invalidEmail": "The email address format is not valid",
       "emptyPassword": "Please enter a password",
@@ -301,6 +302,17 @@
       "specialCharPassword": "\t• Minimum one special character (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Passwords do not match",
       "registrationFailed": "Could not create account. If you have an existing account, try signing in or recovering your password."
+    }
+  },
+  "editProfile": {
+    "title": "Edit profile",
+    "usernamePlaceholder": "Username",
+    "saveButton": "Save changes",
+    "successMessage": "Profile updated successfully.",
+    "errors": {
+      "emptyUsername": "Please enter a username",
+      "invalidUsername": "Username must be between 2 and 20 characters",
+      "generic": "Failed to update profile. Please try again."
     }
   },
   "auth": {
