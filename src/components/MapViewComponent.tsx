@@ -1,6 +1,16 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { Location } from '../types';
+import React, { useState, useCallback, memo } from 'react';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import * as ExpoLocation from 'expo-location';
+import { Location } from '../models';
+import { LeafletWebMap } from './LeafletWebMap';
+import { OfflineMapManager } from './OfflineMapManager';
+import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
+
+import LayersIcon from '../assets/icons/layers.svg';
+import CompassIcon from '../assets/icons/compass3.png';
+import TargetIcon from '../assets/icons/target.png';
 
 interface MapViewComponentProps {
   locations: Location[];
@@ -8,7 +18,13 @@ interface MapViewComponentProps {
   selectedLocation?: Location;
 }
 
-export function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
+// Memoritzem el component per evitar re-renders quan les props no canvien
+export const MapViewComponent = memo(function MapViewComponent({ locations, onLocationSelect, selectedLocation }: MapViewComponentProps) {
+  const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const [showOfflineManager, setShowOfflineManager] = useState(false);
+  const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
+
   // Centre dels Pirineus
   const initialRegion = {
     latitude: 42.6,
@@ -19,18 +35,15 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
 
   return (
     <View style={styles.container}>
-      {/* Temporary placeholder for map */}
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapPlaceholderText}>🗺️ Mapa dels Refugis</Text>
-        <Text style={styles.mapPlaceholderSubtext}>
-          {locations.length} refugis disponibles
-        </Text>
-        {selectedLocation && (
-          <Text style={styles.selectedText}>
-            Seleccionat: {selectedLocation.name}
-          </Text>
-        )}
-      </View>
+      {/* Mapa d'OpenTopoMap amb Leaflet */}
+      <LeafletWebMap
+        locations={locations}
+        onLocationSelect={onLocationSelect}
+        selectedLocation={selectedLocation}
+        center={[initialRegion.latitude, initialRegion.longitude]}
+        zoom={8}
+        userLocation={userLocation}
+      />
 
       {/* Botons de control */}
       <View style={styles.controls}>
@@ -39,28 +52,83 @@ export function MapViewComponent({ locations, onLocationSelect, selectedLocation
           style={styles.controlButton}
           onPress={() => {/* TODO: Implementar orientació de brúixola */}}
         >
-          <Text style={styles.controlIcon}>🧭</Text>
+          <Image source={CompassIcon} style={{ width: 72, height: 72, transform: [{ rotate: '30deg' }] }} />
+          {/*<CompassIcon width={24} height={24} color="#4A5565" strokeWidth="3" />*/}
         </TouchableOpacity>
 
         {/* Centrar ubicació */}
         <TouchableOpacity 
           style={styles.controlButton}
-          onPress={() => {/* TODO: Centrar en ubicació actual */}}
+          onPress={async () => {
+            // Si ja tenim la ubicació mostrada, la amaguem
+            if (userLocation) {
+              setUserLocation(null);
+              return;
+            }
+
+            showAlert(
+              t('permissions.location.title'),
+              t('permissions.location.message'),
+              [
+                { text: t('common.cancel'), style: 'cancel' },
+                { text: t('common.allow'), onPress: async () => {
+                    try {
+                      let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+                      if (status !== 'granted') {
+                        showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
+                        return;
+                      }
+                      let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
+                      const latitude = location.coords.latitude;
+                      const longitude = location.coords.longitude;
+
+                      // Guardar la ubicació de l'usuari sense seleccionar-la
+                      setUserLocation({ latitude, longitude });
+
+                      if (typeof window !== 'undefined' && 'CustomEvent' in window) {
+                        const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
+                        window.dispatchEvent(ev);
+                      }
+                    } catch (err: any) {
+                      showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
+                    }
+                  }
+                }
+              ]
+            );
+          }}
         >
-          <Text style={styles.controlIcon}>📍</Text>
+          <Image source={TargetIcon} style={{ width: 20, height: 20, tintColor: '#4A5565' }} />
         </TouchableOpacity>
 
         {/* Capes */}
         <TouchableOpacity 
           style={styles.controlButton}
-          onPress={() => {/* TODO: Canviar capes del mapa */}}
+          onPress={() => setShowOfflineManager(true)}
         >
-          <Text style={styles.controlIcon}>🗺️</Text>
+          <LayersIcon width={16} height={16} color="#4A5565" />
         </TouchableOpacity>
       </View>
+
+      {/* Gestor de mapes offline */}
+      <OfflineMapManager
+        visible={showOfflineManager}
+        onClose={() => setShowOfflineManager(false)}
+      />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -95,29 +163,7 @@ const styles = StyleSheet.create({
   markerText: {
     fontSize: 18,
   },
-  mapPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f9ff',
-    padding: 20,
-  },
-  mapPlaceholderText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e40af',
-    marginBottom: 8,
-  },
-  mapPlaceholderSubtext: {
-    fontSize: 16,
-    color: '#64748b',
-    marginBottom: 12,
-  },
-  selectedText: {
-    fontSize: 14,
-    color: '#ea580c',
-    fontWeight: '600',
-  },
+
   controls: {
     position: 'absolute',
     bottom: 24,

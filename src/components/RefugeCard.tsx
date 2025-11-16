@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Location } from '../types';
+import { Location } from '../models';
+import { useTranslation } from '../utils/useTranslation';
 
 interface RefugeCardProps {
   refuge: Location;
@@ -16,6 +17,8 @@ const conditionColors = {
 };
 
 export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
+  const { t } = useTranslation();
+  
   return (
     <TouchableOpacity 
       style={styles.card} 
@@ -24,11 +27,6 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
     >
       {/* Imatge principal */}
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
-          style={styles.image}
-          resizeMode="cover"
-        />
         
         {/* Estat en cantonada superior dreta */}
         {refuge.condition && (
@@ -41,13 +39,13 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
       {/* Informació del refugi */}
       <View style={styles.infoContainer}>
         {/* Nom del refugi */}
-        <Text style={styles.name} numberOfLines={1}>{refuge.name}</Text>
+        <Text style={styles.name} numberOfLines={1}>{refuge.name || refuge.surname || t('refuge.title')}</Text>
         
         {/* Regió i capacitat */}
         <View style={styles.detailsRow}>
-          <Text style={styles.detailText}>{refuge.region || 'Pirineus'}</Text>
+          <Text style={styles.detailText}>{refuge.region ?? 'Pirineus'}</Text>
           <Text style={styles.separator}>•</Text>
-          <Text style={styles.detailText}>👤 {refuge.capacity || 60}</Text>
+          <Text style={styles.detailText}>👤 {refuge.places ?? 60}</Text>
         </View>
         
         {/* Botó veure mapa */}
@@ -57,7 +55,7 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
             onViewMap?.();
           }}
         >
-          <Text style={styles.mapButtonText}>🗺️</Text>
+          <Text style={styles.mapButtonText}>🗺️ {t('refuge.actions.viewOnMap')}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

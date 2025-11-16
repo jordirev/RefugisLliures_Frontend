@@ -1,0 +1,344 @@
+{
+  "common": {
+    "search": "Cercar refugis...",
+    "filters": "Filtres",
+    "clear": "Netejar",
+    "apply": "Aplicar",
+    "cancel": "Cancel·lar",
+    "save": "Desar",
+    "back": "Enrere",
+    "close": "Tancar",
+    "ok": "D'acord",
+    "allow": "Permetre",
+    "loading": "Carregant...",
+    "error": "Error",
+    "success": "Èxit",
+    "noResults": "No s'han trobat resultats",
+    "readMore": "Llegir més...",
+    "showLess": "Mostrar menys",
+    "places": "places",
+    "download": "Descarregar",
+    "edit": "Editar",
+    "info": "Info",
+    "unknown": "Desconegut"
+  },
+  "navigation": {
+    "map": "Mapa",
+    "favorites": "Favorits",
+    "renovations": "Reformes",
+    "profile": "Perfil"
+  },
+  "map": {
+    "title": "Mapa de Refugis",
+    "searchPlaceholder": "Cercar refugis...",
+    "noLocationsFound": "No s'han pogut carregar els refugis",
+    "errorLoading": "No s'han pogut carregar els refugis"
+  },
+  "favorites": {
+    "title": "Els meus favorits",
+    "count": "{{count}} refugi",
+    "count_plural": "{{count}} refugis",
+    "empty": {
+      "title": "Encara no tens favorits",
+      "message": "Afegeix refugis als teus favorits per veure'ls aquí"
+    },
+    "added": "Refugi afegit als favorits",
+    "removed": "Refugi eliminat dels favorits",
+    "error": "No s'han pogut carregar els favorits"
+  },
+  "renovations": {
+    "title": "Reformes i Millores",
+    "count": "{{count}} reforma",
+    "count_plural": "{{count}} reformes",
+    "priority": {
+      "high": "Alta",
+      "medium": "Mitjana",
+      "low": "Baixa"
+    },
+    "status": {
+      "pending": "Pendent",
+      "inProgress": "En curs",
+      "completed": "Completada"
+    },
+    "contributeButton": "Contribuir",
+    "moreInfo": "Més informació",
+    "empty": {
+      "title": "No hi ha reformes pendents",
+      "message": "Totes les reformes estan completades"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "stats": {
+      "title": "Les meves estadístiques",
+      "visited": "Refugis visitats",
+      "renovations": "Refugis reformats",
+      "contributions": "Experiències compartides",
+      "photos": "Fotos pujades",
+      "memberSince": "Membre des de {{date}}",
+      "memberSinceBis": "Membre des d'{{date}}"
+    },
+    "settings": {
+      "title": "Configuració",
+      "preferences": "Preferències",
+      "notifications": "Notificacions",
+      "editProfile": "Editar perfil",
+      "language": "Idioma",
+      "changeEmail": "Canviar correu electrònic",
+      "changePassword": "Canviar contrasenya",
+      "help": "Ajuda i suport",
+      "about": "Sobre l'app",
+      "privacy": "Privacitat",
+      "terms": "Termes i condicions",
+      "logout": {
+        "title": "Tancar sessió",
+        "confirmTitle": "Vols tancar la sessió?",
+        "confirmMessage": "S'està a punt de tancar la sessió del teu compte."
+      },
+      "deleteAccount": {
+        "title": "Eliminar compte",
+        "confirmTitle": "Eliminar compte?",
+        "confirmMessage": "Aquesta acció eliminarà permanentment el teu compte i les dades associades. Estàs segur/ra?"
+      }
+    },
+    "languageSelector": {
+      "title": "Selecciona l'idioma",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      },
+      "updateError": "No s'ha pogut actualitzar l'idioma al servidor"
+    }
+  },
+  "changePassword": {
+    "title": "Canviar contrasenya",
+    "description": "Introdueix la teva contrasenya actual i la nova contrasenya que vols establir.",
+    "currentPassword": "Contrasenya actual",
+    "currentPasswordPlaceholder": "Introdueix la contrasenya actual",
+    "newPassword": "Nova contrasenya",
+    "newPasswordPlaceholder": "Introdueix la nova contrasenya",
+    "confirmNewPassword": "Confirmar nova contrasenya",
+    "confirmNewPasswordPlaceholder": "Torna a introduir la nova contrasenya",
+    "submit": "Canviar contrasenya",
+    "successMessage": "La contrasenya s'ha canviat correctament.",
+    "errors": {
+      "emptyCurrentPassword": "Si us plau, introdueix la contrasenya actual",
+      "wrongPassword": "La contrasenya actual és incorrecta",
+      "passwordRequirements": "La nova contrasenya no compleix els requisits",
+      "samePassword": "La nova contrasenya ha de ser diferent de l'actual",
+      "requiresRecentLogin": "Per seguretat, torna a iniciar sessió abans de canviar la contrasenya",
+      "generic": "No s'ha pogut canviar la contrasenya. Si us plau, torna-ho a intentar."
+    }
+  },
+  "changeEmail": {
+    "title": "Canviar correu electrònic",
+    "description": "Introdueix el nou correu electrònic que vols utilitzar per al teu compte.",
+    "currentEmail": "Correu electrònic actual",
+    "newEmail": "Nou correu electrònic",
+    "newEmailPlaceholder": "Introdueix el nou correu electrònic",
+    "password": "Contrasenya",
+    "passwordPlaceholder": "Introdueix la teva contrasenya",
+    "passwordHelper": "Necessitem la teva contrasenya per confirmar el canvi",
+    "submit": "Canviar correu electrònic",
+    "successMessage": "El correu electrònic s'ha canviat correctament. Hem enviat un correu de verificació a la nova adreça.",
+    "emailSentMessage": "Hem enviat un correu electrònic de verificació al teu correu actual. Fes clic a l'enllaç per confirmar el canvi.",
+    "errors": {
+      "emptyPassword": "Si us plau, introdueix la teva contrasenya",
+      "wrongPassword": "La contrasenya és incorrecta",
+      "sameEmail": "El nou correu electrònic ha de ser diferent de l'actual",
+      "requiresRecentLogin": "Per seguretat, torna a iniciar sessió abans de canviar el correu electrònic",
+      "backendError": "No s'ha pogut actualitzar el correu al servidor. Pot ser que ja estigui en ús.",
+      "generic": "No s'ha pogut canviar el correu electrònic. Si us plau, torna-ho a intentar."
+    }
+  },
+  "refuge": {
+    "title": "Refugi no guardat",
+    "type": {
+      "shelter": "Orri",
+      "noGuarded": "No guardat",
+      "closed": "Tancat",
+      "emergency": "D'emergència",
+      "occupiedInSummer": "Ocupat estiu per pastor",
+      "unknown": "Desconegut"
+    },
+    "condition": {
+      "label": "Estat:",
+      "excellent": "Excel·lent",
+      "good": "Bé",
+      "fair": "Correcte",
+      "poor": "Pobre",
+      "unknown": "Desconegut"
+    },
+    "details": {
+      "altitude": "Altitud",
+      "capacity": "Places",
+      "region": "Regió",
+      "occupation": "Ocupació",
+      "seeOccupation": "Veure ocupació",
+      "description": "Descripció",
+      "localisation": "Localització",
+      "services": "Serveis",
+      "prepareRoute": "Prepara la teva sortida",
+      "moreInformation": "Per a més informació:",
+      "weather": "Meteo",
+      "nearbyRoutes": "Rutes a prop"
+    },
+    "actions": {
+      "navigate": "Navegar",
+      "viewDetails": "Veure detalls",
+      "favorite": "Favorit",
+      "viewOnMap": "Veure al mapa",
+      "add": "Afegeix"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "clearAll": "Netejar tot",
+    "applyFilters": "Aplicar filtres",
+    "activeFilters": "{{count}} filtre actiu",
+    "activeFilters_plural": "{{count}} filtres actius",
+    "types": {
+      "title": "Tipus de refugi",
+      "shelter": "Orri",
+      "noGuarded": "No guardat",
+      "closed": "Tancat",
+      "emergency": "D'emergència",
+      "occupiedInSummer": "Ocupat estiu per pastor",
+      "unknown": "Desconegut"
+    },
+    "altitude": "Altitud",
+    "capacity": "Capacitat",
+    "condition": {
+      "title": "Estat del refugi",
+      "excellent": "Excel·lent",
+      "good": "Bé",
+      "fair": "Correcte",
+      "poor": "Pobre"
+    }
+  },
+  "alerts": {
+    "navigation": "Navegant a {{name}}",
+    "favoriteUpdated": "Favorit actualitzat",
+    "favoriteError": "No s'ha pogut actualitzar els favorits",
+    "confirmDelete": "Estàs segur que vols eliminar aquest refugi dels favorits?",
+    "deleteSuccess": "Refugi eliminat dels favorits",
+    "shareError": "No s'ha pogut compartir",
+    "linkCopied": "Enllaç copiat al portapapers",
+    "downloadGPX": {
+      "title": "Descarregar GPX",
+      "message": "Vols descarregar el fitxer GPX per a \"{{name}}\"?"
+    },
+    "downloadKML": {
+      "title": "Descarregar KML",
+      "message": "Vols descarregar el fitxer KML per a \"{{name}}\"?"
+    },
+    "fileSaved": "Fitxer desat",
+    "fileSavedAt": "S'ha desat el fitxer a: {{path}}",
+    "fileSavedLocation": "S'ha desat el fitxer a la ubicació seleccionada.",
+    "permissionRequired": "Permís necessari",
+    "permissionDenied": "No s'ha atorgat permís per desar a l'emmagatzematge.",
+    "fileError": "No s'ha pogut desar el fitxer. S'intentarà compartir-lo en canvi.",
+    "cannotOpenLink": "No es pot obrir l'enllaç",
+    "linkError": "No s'ha pogut obrir l'enllaç",
+    "redirectTo": "Se't redirigirà cap a:",
+    "windyMessage": "https://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegura't que la ruta passa pel refugi. ⚠️",
+    "editRefuge": "Editar {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Permís d'ubicació",
+      "message": "Permetre accedir a la ubicació actual del dispositiu?"
+    },
+    "notifications": {
+      "title": "Permís de notificacions",
+      "message": "Permetre enviar notificacions?"
+    }
+  },
+  "login": {
+    "title": "Benvingut/da",
+    "subtitle": "Inicia sessió per continuar",
+    "emailPlaceholder": "Correu electrònic",
+    "passwordPlaceholder": "Contrasenya",
+    "forgotPassword": "Has oblidat la contrasenya?",
+  "continue": "Continua",
+    "loginButton": "Iniciar sessió",
+    "orContinueWith": "o",
+    "googleButton": "Continuar amb Google",
+    "noAccount": "No tens compte?",
+    "signUpLink": "Registra't",
+    "errors": {
+      "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
+      "invalidEmail": "El format del correu electrònic no és vàlid",
+      "emptyPassword": "Si us plau, introdueix la teva contrasenya",
+      "invalidCredentials": "L'usuari o la contrasenya no són correctes"
+    }
+  },
+  "signup": {
+    "title": "Crear compte",
+    "subtitle": "Registra't per començar",
+    "selectLanguage": "Selecciona el teu idioma",
+    "usernamePlaceholder": "Nom d'usuari",
+    "emailPlaceholder": "Correu electrònic",
+    "passwordPlaceholder": "Contrasenya",
+    "confirmPasswordPlaceholder": "Confirmar contrasenya",
+    "signUpButton": "Registrar-se",
+    "alreadyHaveAccount": "Ja tens un compte?",
+    "loginLink": "Inicia sessió",
+    "backToLogin": "Tornar a l'inici de sessió",
+    "backToLanguage": "Tornar a l'idioma",
+    "successMessage": "Compte creat correctament! Comprova el teu correu per verificar el compte.",
+    "verificationEmailSent": "S'ha enviat un correu de verificació a {{email}}",
+    "errors": {
+      "emptyUsername": "Si us plau, introdueix un nom d'usuari",
+      "invalidUsername": "El nom d'usuari ha de tenir entre 2 i 20 caràcters",
+      "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
+      "invalidEmail": "El format del correu electrònic no és vàlid",
+      "emptyPassword": "Si us plau, introdueix una contrasenya",
+      "passwordMustHave": "La contrasenya ha de tenir:",
+      "shortPassword": "\t• Mínim 8 caràcters",
+      "minusPassword": "\t• Mínim una lletra minúscula",
+      "upperPassword": "\t• Mínim una lletra majúscula",
+      "numberPassword": "\t• Mínim un número",
+      "specialCharPassword": "\t• Mínim un caràcter especial (!,@,#,$,%,^,&,*)",
+      "passwordMismatch": "Les contrasenyes no coincideixen",
+      "registrationFailed": "No s'ha pogut crear el compte. Si tens un compte existent, prova a iniciar sessió o recupera la teva contrasenya."
+    }
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "usernamePlaceholder": "Nom d'usuari",
+    "saveButton": "Desar canvis",
+    "successMessage": "Perfil actualitzat correctament.",
+    "errors": {
+      "emptyUsername": "Si us plau, introdueix un nom d'usuari",
+      "invalidUsername": "El nom d'usuari ha de tenir entre 2 i 20 caràcters",
+      "generic": "No s'ha pogut actualitzar el perfil. Si us plau, torna-ho a intentar."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "El teu correu electrònic no està verificat",
+    "checkEmailVerification": "Si us plau, verifica el teu correu abans d'iniciar sessió",
+    "resendVerificationEmail": "Reenviar correu de verificació",
+    "verificationEmailResent": "Correu de verificació reenviat",
+    "passwordResetEmailSent": "S'ha enviat un correu electrònic a la teva adreça amb instruccions per restablir la contrasenya. Revisa la safata d'entrada i la carpeta de correu brossa.",
+    "passwordResetTitle": "Recuperar contrasenya",
+    "passwordResetMessage": "S'enviarà un correu de recuperació a:",
+    "sendResetEmail": "Enviar correu",
+    "errors": {
+      "emailInUse": "Aquest correu electrònic ja està en ús",
+      "invalidEmail": "El correu electrònic no és vàlid",
+      "operationNotAllowed": "Operació no permesa",
+      "weakPassword": "La contrasenya és massa feble",
+      "userDisabled": "Aquest compte ha estat desactivat",
+      "invalidCredentials": "Credencials incorrectes",
+      "tooManyRequests": "Massa intents. Si us plau, intenta-ho més tard",
+      "networkError": "Error de connexió. Comprova la teva connexió a internet",
+      "generic": "S'ha produït un error. Si us plau, torna-ho a intentar",
+      "googleLoginFailed": "Error durant l'autenticació amb Google",
+      "googleSigninNotAvailable": "Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat."
+    }
+  }
+}

@@ -1,0 +1,600 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapshot amb props bàsiques 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "elevation": 4,
+      "marginHorizontal": 16,
+      "marginVertical": 8,
+      "opacity": 1,
+      "overflow": "hidden",
+      "shadowColor": "#000",
+      "shadowOffset": {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 8,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "height": 200,
+        "position": "relative",
+        "width": "100%",
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "borderRadius": 16,
+            "paddingHorizontal": 12,
+            "paddingVertical": 4,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          },
+          {
+            "backgroundColor": "#22c55e",
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#fff",
+            "fontSize": 12,
+            "fontWeight": "600",
+            "textTransform": "capitalize",
+          }
+        }
+      >
+        bé
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "padding": 12,
+        "position": "relative",
+      }
+    }
+  >
+    <Text
+      numberOfLines={1}
+      style={
+        {
+          "color": "#111827",
+          "fontSize": 16,
+          "fontWeight": "600",
+          "marginBottom": 4,
+        }
+      }
+    >
+      Refugi Test
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        Pirineus
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#9ca3af",
+            "fontSize": 12,
+          }
+        }
+      >
+        •
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        👤 
+        20
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#fff",
+          "borderColor": "#e5e7eb",
+          "borderRadius": 20,
+          "borderWidth": 1,
+          "bottom": 8,
+          "height": 40,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "width": 40,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "fontSize": 20,
+          }
+        }
+      >
+        🗺️ 
+        Veure al mapa
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapshot amb tots els camps 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "elevation": 4,
+      "marginHorizontal": 16,
+      "marginVertical": 8,
+      "opacity": 1,
+      "overflow": "hidden",
+      "shadowColor": "#000",
+      "shadowOffset": {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 8,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "height": 200,
+        "position": "relative",
+        "width": "100%",
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "borderRadius": 16,
+            "paddingHorizontal": 12,
+            "paddingVertical": 4,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          },
+          {
+            "backgroundColor": "#eab308",
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#fff",
+            "fontSize": 12,
+            "fontWeight": "600",
+            "textTransform": "capitalize",
+          }
+        }
+      >
+        excel·lent
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "padding": 12,
+        "position": "relative",
+      }
+    }
+  >
+    <Text
+      numberOfLines={1}
+      style={
+        {
+          "color": "#111827",
+          "fontSize": 16,
+          "fontWeight": "600",
+          "marginBottom": 4,
+        }
+      }
+    >
+      Refugi Complet
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        Pallars Sobirà
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#9ca3af",
+            "fontSize": 12,
+          }
+        }
+      >
+        •
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        👤 
+        30
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#fff",
+          "borderColor": "#e5e7eb",
+          "borderRadius": 20,
+          "borderWidth": 1,
+          "bottom": 8,
+          "height": 40,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "width": 40,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "fontSize": 20,
+          }
+        }
+      >
+        🗺️ 
+        Veure al mapa
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapshot sense condició 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={false}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#fff",
+      "borderRadius": 16,
+      "elevation": 4,
+      "marginHorizontal": 16,
+      "marginVertical": 8,
+      "opacity": 1,
+      "overflow": "hidden",
+      "shadowColor": "#000",
+      "shadowOffset": {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 8,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "height": 200,
+        "position": "relative",
+        "width": "100%",
+      }
+    }
+  />
+  <View
+    style={
+      {
+        "padding": 12,
+        "position": "relative",
+      }
+    }
+  >
+    <Text
+      numberOfLines={1}
+      style={
+        {
+          "color": "#111827",
+          "fontSize": 16,
+          "fontWeight": "600",
+          "marginBottom": 4,
+        }
+      }
+    >
+      Refugi Test
+    </Text>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        Pirineus
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#9ca3af",
+            "fontSize": 12,
+          }
+        }
+      >
+        •
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#6b7280",
+            "fontSize": 14,
+          }
+        }
+      >
+        👤 
+        20
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "#fff",
+          "borderColor": "#e5e7eb",
+          "borderRadius": 20,
+          "borderWidth": 1,
+          "bottom": 8,
+          "height": 40,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "width": 40,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "fontSize": 20,
+          }
+        }
+      >
+        🗺️ 
+        Veure al mapa
+      </Text>
+    </View>
+  </View>
+</View>
+`;

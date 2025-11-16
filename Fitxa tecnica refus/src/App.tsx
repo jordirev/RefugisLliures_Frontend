@@ -104,18 +104,6 @@ export default function App() {
       lat: 42.6500,
       lng: 0.0500,
       elevation: 1240,
-      difficulty: 'fàcil',
-      description: 'Refugi no guardat a la vall de Pineta, punt de partida cap a Mont Perdut.',
-      distance: '2,1 km',
-      rating: 4.2,
-      visitors: 1100
-    },
-    {
-      id: '6',
-      name: 'Refugi de Wallon',
-      type: 'refuge',
-      lat: 42.8500,
-      lng: -0.1000,
       elevation: 1865,
       difficulty: 'fàcil',
       description: 'Refugi guardat al Parc Nacional dels Pirineus francesos.',
@@ -147,7 +135,6 @@ export default function App() {
       description: 'Refugi lliure a la base del Naranjo de Bulnes als Pics d\'Europa.',
       distance: '5,2 km',
       rating: 4.8,
-      visitors: 1400
     },
     {
       id: '9',
@@ -177,7 +164,6 @@ export default function App() {
     },
     {
       id: '11',
-      name: 'Refugi de Salardu',
       type: 'refuge',
       lat: 42.7800,
       lng: 0.8900,
@@ -366,7 +352,6 @@ export default function App() {
           onBack={handleBackFromDetail}
           onToggleFavorite={handleToggleFavorite}
           onNavigate={handleNavigate}
-          onShare={handleShare}
         />
       );
     }
@@ -396,7 +381,6 @@ export default function App() {
             favorites={favoriteLocations}
             onToggleFavorite={handleToggleFavorite}
             onNavigate={handleNavigate}
-            onShare={handleShare}
             onViewDetail={handleShowRefugeDetail}
           />
         );

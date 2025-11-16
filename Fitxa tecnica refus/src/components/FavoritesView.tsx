@@ -24,7 +24,6 @@ interface FavoritesViewProps {
   favorites: Location[];
   onToggleFavorite: (locationId: string) => void;
   onNavigate: (location: Location) => void;
-  onShare: (location: Location) => void;
   onViewDetail?: (location: Location) => void;
 }
 
@@ -79,7 +78,7 @@ const refugeExamples = [
   }
 ];
 
-export function FavoritesView({ favorites, onToggleFavorite, onNavigate, onShare, onViewDetail }: FavoritesViewProps) {
+export function FavoritesView({ favorites, onToggleFavorite, onNavigate, onViewDetail }: FavoritesViewProps) {
   return (
     <div className="h-full overflow-y-auto bg-gray-50">
       <div className="p-4 pb-8">
@@ -99,7 +98,7 @@ export function FavoritesView({ favorites, onToggleFavorite, onNavigate, onShare
               condition={refuge.condition}
               imageUrl={refuge.imageUrl}
               region={refuge.region}
-              onViewMap={() => console.log(`Veure ${refuge.name} en el mapa`)}
+              onViewMap={() => {/* view on map handler - removed debug log */}}
               onViewDetail={() => onViewDetail && onViewDetail({
                 id: refuge.id,
                 name: refuge.name,
