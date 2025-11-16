@@ -21,6 +21,7 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
       undefined,
     ]
   }
+  testID="badge-container"
 >
   <Text
     style={
@@ -64,6 +65,7 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
       undefined,
     ]
   }
+  testID="badge-container"
 >
   <Text
     style={
@@ -109,6 +111,7 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
       },
     ]
   }
+  testID="badge-container"
 >
   <Text
     style={

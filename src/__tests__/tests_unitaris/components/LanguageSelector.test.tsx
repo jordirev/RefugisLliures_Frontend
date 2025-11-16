@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { TouchableOpacity, ScrollView } from 'react-native';
 import { LanguageSelector } from '../../../components/LanguageSelector';
 import { UsersService } from '../../../services/UsersService';
 import * as i18n from '../../../i18n';
@@ -357,7 +358,7 @@ describe('LanguageSelector Component', () => {
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      const touchables = UNSAFE_getAllByType('TouchableOpacity');
+      const touchables = UNSAFE_getAllByType(TouchableOpacity);
       // El primer touchable hauria de ser l'overlay
       fireEvent.press(touchables[0]);
       
@@ -415,7 +416,7 @@ describe('LanguageSelector Component', () => {
     it('hauria de tenir un ScrollView per la llista d\'idiomes', () => {
       const { UNSAFE_getByType } = render(<LanguageSelector {...defaultProps} />);
       
-      const scrollView = UNSAFE_getByType('ScrollView');
+      const scrollView = UNSAFE_getByType(ScrollView);
       expect(scrollView).toBeTruthy();
     });
   });

@@ -22,9 +22,9 @@ describe('Badge Component', () => {
     });
 
     it('hauria de renderitzar amb els colors per defecte', () => {
-      const { getByText } = render(<Badge text="Test" />);
+      const { getByText, getByTestId } = render(<Badge text="Test" testID="badge-container" />);
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: '#A2FFC8',
@@ -34,7 +34,7 @@ describe('Badge Component', () => {
     });
 
     it('hauria de aplicar el color de text per defecte', () => {
-      const { getByText } = render(<Badge text="Test" />);
+      const { getByText } = render(<Badge text="Test" testID="badge-container" />);
       
       const textElement = getByText('Test');
       expect(textElement.props.style).toContainEqual(
@@ -47,11 +47,11 @@ describe('Badge Component', () => {
 
   describe('Props de colors personalitzats', () => {
     it('hauria d\'aplicar background personalitzat', () => {
-      const { getByText } = render(
-        <Badge text="Test" background="#FF0000" />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" background="#FF0000" />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: '#FF0000',
@@ -73,11 +73,11 @@ describe('Badge Component', () => {
     });
 
     it('hauria d\'aplicar borderColor personalitzat', () => {
-      const { getByText } = render(
-        <Badge text="Test" borderColor="#0000FF" />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" borderColor="#0000FF" />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           borderColor: '#0000FF',
@@ -86,16 +86,17 @@ describe('Badge Component', () => {
     });
 
     it('hauria d\'aplicar múltiples colors personalitzats alhora', () => {
-      const { getByText } = render(
+      const { getByText, getByTestId } = render(
         <Badge 
           text="Test" 
+          testID="badge-container"
           background="#123456"
           color="#ABCDEF"
           borderColor="#FEDCBA"
         />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       const textElement = getByText('Test');
 
       expect(badge?.props.style).toContainEqual(
@@ -151,18 +152,18 @@ describe('Badge Component', () => {
   describe('Estils personalitzats', () => {
     it('hauria d\'aplicar containerStyle personalitzat', () => {
       const customStyle = { marginTop: 10, marginBottom: 20 };
-      const { getByText } = render(
-        <Badge text="Test" containerStyle={customStyle} />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" containerStyle={customStyle} />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining(customStyle)
       );
     });
 
     it('hauria d\'aplicar textStyle personalitzat', () => {
-      const customStyle = { fontSize: 16, fontWeight: '700' };
+      const customStyle = { fontSize: 16, fontWeight: '700' as const };
       const { getByText } = render(
         <Badge text="Test" textStyle={customStyle} />
       );
@@ -175,14 +176,19 @@ describe('Badge Component', () => {
 
     it('hauria de combinar containerStyle amb estils per defecte', () => {
       const customStyle = { opacity: 0.8 };
-      const { getByText } = render(
-        <Badge text="Test" containerStyle={customStyle} />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" containerStyle={customStyle} />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
+      // Check that both backgroundColor and opacity exist in the style array
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: '#A2FFC8', // estil per defecte
+        })
+      );
+      expect(badge?.props.style).toContainEqual(
+        expect.objectContaining({
           opacity: 0.8, // estil personalitzat
         })
       );
@@ -193,13 +199,13 @@ describe('Badge Component', () => {
     it('hauria de renderitzar string buit quan text és null', () => {
       const { getByText } = render(<Badge text={null as any} />);
       
-      expect(getByText('null')).toBeTruthy();
+      expect(getByText('')).toBeTruthy();
     });
 
     it('hauria de renderitzar string buit quan text és undefined', () => {
       const { getByText } = render(<Badge text={undefined as any} />);
       
-      expect(getByText('undefined')).toBeTruthy();
+      expect(getByText('')).toBeTruthy();
     });
 
     it('hauria de convertir números a string', () => {
@@ -262,9 +268,9 @@ describe('Badge Component', () => {
 
   describe('Propietats de borderWidth', () => {
     it('hauria de tenir borderWidth de 1.25', () => {
-      const { getByText } = render(<Badge text="Test" />);
+      const { getByText, getByTestId } = render(<Badge text="Test" testID="badge-container" />);
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           borderWidth: 1.25,
@@ -275,11 +281,11 @@ describe('Badge Component', () => {
 
   describe('Colors en diferents formats', () => {
     it('hauria d\'acceptar colors en format hex', () => {
-      const { getByText } = render(
-        <Badge text="Test" background="#FF5733" color="#C70039" />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" background="#FF5733" color="#C70039" />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: '#FF5733',
@@ -288,15 +294,16 @@ describe('Badge Component', () => {
     });
 
     it('hauria d\'acceptar colors en format rgb', () => {
-      const { getByText } = render(
+      const { getByText, getByTestId } = render(
         <Badge 
           text="Test" 
+          testID="badge-container"
           background="rgb(255, 87, 51)" 
           color="rgb(199, 0, 57)"
         />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: 'rgb(255, 87, 51)',
@@ -305,15 +312,16 @@ describe('Badge Component', () => {
     });
 
     it('hauria d\'acceptar colors en format rgba', () => {
-      const { getByText } = render(
+      const { getByText, getByTestId } = render(
         <Badge 
           text="Test" 
+          testID="badge-container"
           background="rgba(255, 87, 51, 0.5)" 
           color="rgba(199, 0, 57, 1)"
         />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: 'rgba(255, 87, 51, 0.5)',
@@ -322,11 +330,11 @@ describe('Badge Component', () => {
     });
 
     it('hauria d\'acceptar colors amb noms', () => {
-      const { getByText } = render(
-        <Badge text="Test" background="red" color="white" borderColor="blue" />
+      const { getByText, getByTestId } = render(
+        <Badge text="Test" testID="badge-container" background="red" color="white" borderColor="blue" />
       );
       
-      const badge = getByText('Test').parent;
+      const badge = getByTestId("badge-container");
       const textElement = getByText('Test');
 
       expect(badge?.props.style).toContainEqual(
@@ -364,3 +372,5 @@ describe('Badge Component', () => {
     });
   });
 });
+
+

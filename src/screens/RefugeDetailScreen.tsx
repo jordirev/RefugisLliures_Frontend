@@ -99,8 +99,8 @@ export function RefugeDetailScreen({
       [
         { text: t('common.cancel'), style: 'cancel' },
         { text: t('common.download'), onPress: async () => {
-          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude || 0}</ele>\n  </wpt>\n</gpx>`;
-          const fileName = sanitizeFileName(`${refuge.name}.gpx`);
+          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude ?? t('common.unknown')}</ele>\n  </wpt>\n</gpx>`;
+          const fileName = sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);
           await saveFile(gpxContent, fileName, 'application/gpx+xml');
         } }
       ]

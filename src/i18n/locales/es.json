@@ -19,7 +19,8 @@
     "places": "plazas",
     "download": "Descargar",
     "edit": "Editar",
-    "info": "Info"
+    "info": "Info",
+    "unknown": "Desconocido"
   },
   "navigation": {
     "map": "Mapa",
@@ -152,6 +153,7 @@
     }
   },
   "refuge": {
+    "title": "Refugio libre",
     "type": {
       "shelter": "Orri",
       "noGuarded": "No guardado",

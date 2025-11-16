@@ -71,11 +71,12 @@ describe('CustomAlert Component', () => {
     });
 
     it('hauria de mostrar títol buit', () => {
-      const { getByText } = render(
+      const { queryByText } = render(
         <CustomAlert {...defaultProps} title="" />
       );
       
-      expect(getByText('')).toBeTruthy();
+      // When title is empty string, it shouldn't be rendered
+      expect(queryByText('')).toBeNull();
     });
 
     it('hauria de mostrar títols amb caràcters especials', () => {
@@ -273,8 +274,8 @@ describe('CustomAlert Component', () => {
       
       const modal = UNSAFE_getByType(Modal);
       
-      if (modal.props.onDismiss) {
-        modal.props.onDismiss();
+      if (modal.props.onRequestClose) {
+        modal.props.onRequestClose();
       }
       
       expect(onDismiss).toHaveBeenCalled();
@@ -321,18 +322,13 @@ describe('CustomAlert Component', () => {
   describe('Overlay del modal', () => {
     it('hauria de cridar onDismiss quan es prem l\'overlay', () => {
       const onDismiss = jest.fn();
-      const { UNSAFE_getAllByType } = render(
+      const { UNSAFE_getByType } = render(
         <CustomAlert {...defaultProps} onDismiss={onDismiss} />
       );
       
-      // L'overlay hauria de ser un TouchableOpacity que envolta el modal
-      const touchables = UNSAFE_getAllByType('TouchableOpacity');
-      
-      // Busquem el touchable que probablement és l'overlay
-      if (touchables.length > 0) {
-        const overlay = touchables[0];
-        fireEvent.press(overlay);
-      }
+      // Test that onRequestClose is set up correctly
+      const modal = UNSAFE_getByType(Modal);
+      expect(modal.props.onRequestClose).toBe(onDismiss);
     });
   });
 

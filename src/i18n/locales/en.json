@@ -19,7 +19,8 @@
     "places": "places",
     "download": "Download",
     "edit": "Edit",
-    "info": "Info"
+    "info": "Info",
+    "unknown": "Unknown"
   },
   "navigation": {
     "map": "Map",
@@ -152,6 +153,7 @@
     }
   },
   "refuge": {
+    "title": "Shelter not staffed",
     "type": {
       "shelter": "Shelter",
       "noGuarded": "Not staffed",

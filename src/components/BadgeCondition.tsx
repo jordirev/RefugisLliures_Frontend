@@ -35,12 +35,12 @@ export const BadgeCondition: React.FC<Props> = ({ condition = 'Desconegut', styl
     const neutralColor = '#6B7280';
     const neutralBorder = '#D1D5DB';
     const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
-    return <Badge text={condition} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+    return <Badge text={condition} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} testID="badge-container" />;
   }
 
   if (muted) {
-    return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} textColor={'#6B7280'} />;
+    return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} textColor={'#6B7280'} testID="badge-container" />;
   }
 
-  return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} />;
+  return <Badge text={condition} background={colors.background} color={colors.color} borderColor={colors.borderColor} containerStyle={style} testID="badge-container" />;
 };

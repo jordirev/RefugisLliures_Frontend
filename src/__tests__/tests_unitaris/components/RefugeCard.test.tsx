@@ -12,6 +12,7 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { RefugeCard } from '../../../components/RefugeCard';
 import { Location } from '../../../models';
 
@@ -268,7 +269,7 @@ describe('RefugeCard Component', () => {
     it('hauria de tenir activeOpacity 0.7', () => {
       const { UNSAFE_getAllByType } = render(<RefugeCard refuge={baseRefuge} />);
       
-      const touchables = UNSAFE_getAllByType('TouchableOpacity');
+      const touchables = UNSAFE_getAllByType(TouchableOpacity);
       // El primer touchable és la card principal
       const mainCard = touchables[0];
       
@@ -280,7 +281,7 @@ describe('RefugeCard Component', () => {
     it('hauria de tenir una View per la imatge', () => {
       const { UNSAFE_getAllByType } = render(<RefugeCard refuge={baseRefuge} />);
       
-      const views = UNSAFE_getAllByType('View');
+      const views = UNSAFE_getAllByType(View);
       // Verificar que hi ha múltiples Views (imageContainer, infoContainer, etc.)
       expect(views.length).toBeGreaterThan(3);
     });
@@ -288,7 +289,8 @@ describe('RefugeCard Component', () => {
     it('hauria de tenir el badge posicionat a la cantonada superior dreta', () => {
       const { getByText } = render(<RefugeCard refuge={baseRefuge} />);
       
-      const badge = getByText('bé').parent;
+      const badgeText = getByText('bé');
+      const badge = badgeText.parent?.parent; // View container with position styles
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           position: 'absolute',
@@ -340,7 +342,7 @@ describe('RefugeCard Component', () => {
       const refuge: Location = { ...baseRefuge, name: '' };
       const { getByText } = render(<RefugeCard refuge={refuge} />);
       
-      expect(getByText('')).toBeTruthy();
+      expect(getByText('refuge.title')).toBeTruthy();
     });
 
     it('hauria de gestionar regió buida', () => {

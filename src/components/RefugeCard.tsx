@@ -39,13 +39,13 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
       {/* Informació del refugi */}
       <View style={styles.infoContainer}>
         {/* Nom del refugi */}
-        <Text style={styles.name} numberOfLines={1}>{refuge.name}</Text>
+        <Text style={styles.name} numberOfLines={1}>{refuge.name || refuge.surname || t('refuge.title')}</Text>
         
         {/* Regió i capacitat */}
         <View style={styles.detailsRow}>
-          <Text style={styles.detailText}>{refuge.region || 'Pirineus'}</Text>
+          <Text style={styles.detailText}>{refuge.region ?? 'Pirineus'}</Text>
           <Text style={styles.separator}>•</Text>
-          <Text style={styles.detailText}>👤 {refuge.places || 60}</Text>
+          <Text style={styles.detailText}>👤 {refuge.places ?? 60}</Text>
         </View>
         
         {/* Botó veure mapa */}

@@ -63,13 +63,13 @@ export const BadgeType: React.FC<Props> = ({ type, style, neutral = false, muted
     const neutralBorder = '#D1D5DB';
     // merge provided style with opacity
     const containerStyle = Object.assign({}, (style as any) || {}, { opacity: 0.7 });
-    return <Badge text={displayText} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} />;
+    return <Badge text={displayText} background={neutralBg} color={neutralColor} borderColor={neutralBorder} containerStyle={containerStyle} testID="badge-container" />;
   }
 
   // If caller requested muted text (e.g., unselected in FilterPanel), pass a grey textColor
   if (muted) {
-    return <Badge text={displayText} background={typeInfo.color.background} color={typeInfo.color.color} borderColor={typeInfo.color.borderColor} containerStyle={style} textColor={'#6B7280'} />;
+    return <Badge text={displayText} background={typeInfo.color.background} color={typeInfo.color.color} borderColor={typeInfo.color.borderColor} containerStyle={style} textColor={'#6B7280'} testID="badge-container" />;
   }
 
-  return <Badge text={displayText} background={typeInfo.color.background} color={typeInfo.color.color} borderColor={typeInfo.color.borderColor} containerStyle={style} />;
+  return <Badge text={displayText} background={typeInfo.color.background} color={typeInfo.color.color} borderColor={typeInfo.color.borderColor} containerStyle={style} testID="badge-container" />;
 };
