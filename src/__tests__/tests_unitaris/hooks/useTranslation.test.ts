@@ -7,7 +7,7 @@
  * - Integració amb i18next
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-native';
 import { useTranslation } from '../../../utils/useTranslation';
 import { useTranslation as useTranslationOriginal } from 'react-i18next';
 
@@ -286,7 +286,7 @@ describe('useTranslation Hook', () => {
 
       const initialT = result.current.t;
 
-      rerender();
+      rerender({});
 
       expect(result.current.t).toBe(initialT);
     });
@@ -303,7 +303,7 @@ describe('useTranslation Hook', () => {
 
       const initialI18n = result.current.i18n;
 
-      rerender();
+      rerender({});
 
       expect(result.current.i18n).toBe(initialI18n);
     });

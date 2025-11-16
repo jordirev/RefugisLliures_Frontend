@@ -9,7 +9,7 @@
  * - Casos límit i errors
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-native';
 import { useCustomAlert } from '../../../utils/useCustomAlert';
 
 describe('useCustomAlert Hook', () => {
@@ -29,7 +29,7 @@ describe('useCustomAlert Hook', () => {
       const initialShowAlert = result.current.showAlert;
       const initialHideAlert = result.current.hideAlert;
 
-      rerender();
+      rerender({});
 
       expect(result.current.showAlert).toBe(initialShowAlert);
       expect(result.current.hideAlert).toBe(initialHideAlert);
