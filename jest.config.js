@@ -18,8 +18,12 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+    'src/**/*.{ts,tsx,js,jsx}',
     '!src/**/*.d.ts',
     '!src/**/__tests__/**',
+    '!src/**/*.test.{ts,tsx,js,jsx}',
+    '!src/**/*.spec.{ts,tsx,js,jsx}',
   ],
+  coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
+  coverageDirectory: 'coverage',
 };
