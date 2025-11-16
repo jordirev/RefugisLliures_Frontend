@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useTranslation } from '../utils/useTranslation';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';
@@ -12,13 +13,16 @@ interface SearchBarProps {
   onOpenFilters: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
+  topInset?: number;
 }
 
 // Memoritzem el component per evitar re-renders innecessaris
-export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect }: SearchBarProps) {
+export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect, topInset = 0 }: SearchBarProps) {
+  const { t } = useTranslation();
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: topInset + 8 }]}>
       {/* Container de cerca */}
       <View style={styles.searchContainer}>
         <View style={styles.inputWrapper}>
@@ -29,7 +33,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           />
           <TextInput
             style={styles.input}
-            placeholder="Cercar refugis..."
+            placeholder={t('map.searchPlaceholder')}
             value={searchQuery}
             onChangeText={onSearchChange}
             placeholderTextColor="#6B7280"
@@ -41,7 +45,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           {/* Clear (cross) button shown when there is a query */}
           {searchQuery && searchQuery.trim().length > 0 && (
             <TouchableOpacity
-              accessibilityLabel="Netejar cerca"
+              accessibilityLabel={t('common.clear')}
               onPress={() => {
                 Keyboard.dismiss();
                 onSearchChange('');
@@ -91,7 +95,9 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
           <View style={styles.addIconContainer}>
             <Text style={styles.plusText}>+</Text>
           </View>
-          <Text style={styles.addText}>Afegeix</Text>
+          <Text style={styles.addText}>
+            {t('refuge.actions.add')}
+          </Text>
         </TouchableOpacity>
       )}
       </View>
@@ -103,7 +109,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 8,
     backgroundColor: 'transparent',
-    marginTop: 16,
   },
   addButton: {
     height: 32,

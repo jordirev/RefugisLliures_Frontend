@@ -1,4 +1,4 @@
-import { Location } from '../types';
+import { Location } from '../models';
 
 export const mockLocations: Location[] = [
   {

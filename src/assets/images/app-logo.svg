@@ -1,0 +1,20 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cercle de fons -->
+  <circle cx="60" cy="60" r="55" fill="white" opacity="0.2"/>
+  
+  <!-- Muntanya esquerra -->
+  <path d="M20 80 L40 40 L50 60 L35 80 Z" fill="white" opacity="0.9"/>
+  
+  <!-- Muntanya dreta (més gran) -->
+  <path d="M45 80 L70 20 L95 80 Z" fill="white"/>
+  
+  <!-- Casa/refugi -->
+  <path d="M50 65 L60 55 L70 65 L70 80 L50 80 Z" fill="#FF8904"/>
+  <path d="M50 65 L60 55 L70 65" stroke="white" stroke-width="1" fill="none"/>
+  
+  <!-- Finestra -->
+  <rect x="56" y="70" width="8" height="6" fill="white" opacity="0.8"/>
+  
+  <!-- Text Refugis (opcional) -->
+  <text x="60" y="105" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">REFUGIS</text>
+</svg>

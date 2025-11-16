@@ -10,6 +10,7 @@ interface BadgeProps {
   textStyle?: TextStyle;
   // explicit text color override (useful for muted/unselected state)
   textColor?: string;
+  testID?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -20,16 +21,21 @@ export const Badge: React.FC<BadgeProps> = ({
   containerStyle,
   textStyle,
   textColor,
+  testID,
 }) => {
+  // Ensure text is always a valid string
+  const safeText = text != null ? String(text) : '';
+  
   return (
     <View
+      testID={testID}
       style={[
         styles.container,
         { backgroundColor: background, borderColor: borderColor, borderWidth: 1.25 },
         containerStyle,
       ]}
     >
-      <Text style={[styles.text, { color: textColor ?? color }, textStyle]}>{text}</Text>
+      <Text style={[styles.text, { color: textColor ?? color }, textStyle]}>{safeText}</Text>
     </View>
   );
 };

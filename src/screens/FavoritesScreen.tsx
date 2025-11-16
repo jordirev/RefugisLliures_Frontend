@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { RefugeCard } from '../components/RefugeCard';
-import { Location } from '../types';
+import { Location } from '../models';
 import { RefugisService } from '../services/RefugisService';
+import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 interface FavoritesScreenProps {
   onViewDetail: (refuge: Location) => void;
@@ -10,6 +13,9 @@ interface FavoritesScreenProps {
 }
 
 export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProps) {
+  const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  
   // Estats locals de FavoritesScreen
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
   const [locations, setLocations] = useState<Location[]>([]);
@@ -34,7 +40,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
       const ids = new Set(favorites.map(f => f.id).filter((id): id is number => id !== undefined));
       setFavoriteIds(ids);
     } catch (error) {
-      Alert.alert('Error', 'No s\'han pogut carregar els favorits');
+      showAlert(t('common.error'), t('favorites.error'));
     } finally {
       setLoading(false);
     }
@@ -51,9 +57,9 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>❤️</Text>
-        <Text style={styles.emptyTitle}>Encara no tens favorits</Text>
+        <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
         <Text style={styles.emptyText}>
-          Afegeix refugis als teus favorits per veure'ls aquí
+          {t('favorites.empty.message')}
         </Text>
       </View>
     );
@@ -62,8 +68,10 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Els meus favorits</Text>
-        <Text style={styles.count}>{favoriteLocations.length} refugi{favoriteLocations.length !== 1 ? 's' : ''}</Text>
+        <Text style={styles.title}>{t('favorites.title')}</Text>
+        <Text style={styles.count}>
+          {favoriteLocations.length} {t('favorites.count', { count: favoriteLocations.length })}
+        </Text>
       </View>
       
       <FlatList
@@ -78,6 +86,17 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }
