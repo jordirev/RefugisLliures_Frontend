@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert, BackHandler, Platform } from 'react-native';
+import { StyleSheet, View, BackHandler, Platform, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MapScreen } from '../screens/MapScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { ReformsScreen } from '../screens/ReformsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
+import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
-import { Location } from '../types';
+import { Location } from '../models';
+import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 import MapIcon from '../assets/icons/map2.svg';
 import FavIcon from '../assets/icons/fav.svg';
@@ -21,7 +29,9 @@ import UserIcon from '../assets/icons/user.svg';
 const Tab = createBottomTabNavigator();
 
 export function AppNavigator() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   // Només estats globals (compartits entre pantalles)
   const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
@@ -35,14 +45,14 @@ export function AppNavigator() {
     try {
       // TODO: Implementar toggle favorits quan el backend estigui llest
       await RefugisService.addFavorite(locationId);
-      Alert.alert('', 'Favorit actualitzat');
+      showAlert('', t('alerts.favoriteUpdated'));
     } catch (error) {
-      Alert.alert('Error', 'No s\'ha pogut actualitzar els favorits');
+      showAlert(t('common.error'), t('alerts.favoriteError'));
     }
   };
 
   const handleNavigate = (location: Location) => {
-    Alert.alert('Navegació', `Navegant a ${location.name}`);
+    showAlert(t('navigation.map'), t('alerts.navigation', { name: location.name }));
   };
 
 
@@ -81,7 +91,7 @@ export function AppNavigator() {
         handleCloseBottomSheet();
         return true;
       }
-      return false; // allow default behavior
+      return false; // allow default behavior (including navigation back from Settings)
     };
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -89,28 +99,30 @@ export function AppNavigator() {
   }, [showBottomSheet, showDetailScreen]);
 
   return (
-    <View style={[styles.container, {
-      paddingTop: insets.top,
-      paddingBottom: insets.bottom,
-    }]}>
+    <View style={styles.container}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: '#4A5565',
-          tabBarInactiveTintColor: '#4A5565',
           tabBarStyle: {
-            height: 60,
-            paddingBottom: 0,
+            height: 60 + insets.bottom,
+            paddingBottom: insets.bottom,
+            backgroundColor: '#ffffff',
+            borderTopWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
           },
         }}
       >
         <Tab.Screen 
-          name="Mapa" 
+          name={t('navigation.map')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <MapIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.map')}
+                </Text>
               </View>
             ),
           }}
@@ -124,11 +136,14 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name="Favorits"
+          name={t('navigation.favorites')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <FavIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.favorites')}
+                </Text>
               </View>
             ),
           }}
@@ -142,11 +157,14 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name="Reformes"
+          name={t('navigation.renovations')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <ReformIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.renovations')}
+                </Text>
               </View>
             ),
           }}
@@ -154,15 +172,58 @@ export function AppNavigator() {
         />
 
         <Tab.Screen 
-          name="Perfil"
+          name={t('navigation.profile')}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
                 <UserIcon width={20} height={20} color="#4A5565" />
+                <Text style={styles.tabLabel}>
+                  {t('navigation.profile')}
+                </Text>
               </View>
             ),
           }}
           component={ProfileScreen}
+        />
+      
+        {/* Hidden Settings screen: accessible by navigation.navigate('Settings') but not shown in the tab bar */}
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden ChangePassword screen: accessible by navigation.navigate('ChangePassword') but not shown in the tab bar */}
+        <Tab.Screen
+          name="ChangePassword"
+          component={ChangePasswordScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden ChangeEmail screen: accessible by navigation.navigate('ChangeEmail') but not shown in the tab bar */}
+        <Tab.Screen
+          name="ChangeEmail"
+          component={ChangeEmailScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+  
+      {/* Hidden EditProfile screen: accessible by navigation.navigate('EditProfile') but not shown in the tab bar */}
+        <Tab.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
         />
       </Tab.Navigator>
 
@@ -189,6 +250,17 @@ export function AppNavigator() {
           />
         </View>
       )}
+      
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }
@@ -206,6 +278,14 @@ const styles = StyleSheet.create({
   },
   tabIconActive: {
     backgroundColor: '#f3f4f6',
+  },
+  tabLabel: {
+    fontSize: 10,
+    color: '#4A5565',
+    marginTop: 4,
+  },
+  tabLabelActive: {
+    color: '#9CA3AF',
   },
   detailScreenOverlay: {
     position: 'absolute',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { Location } from '../types';
+import { Location } from '../models';
 import { MapCacheService } from '../services/MapCacheService';
 
 interface LeafletWebMapProps {

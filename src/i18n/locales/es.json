@@ -1,0 +1,343 @@
+{
+  "common": {
+    "search": "Buscar refugios...",
+    "filters": "Filtros",
+    "clear": "Limpiar",
+    "apply": "Aplicar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "back": "Atrás",
+    "close": "Cerrar",
+    "ok": "Aceptar",
+    "allow": "Permitir",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "noResults": "No se encontraron resultados",
+    "readMore": "Leer más...",
+    "showLess": "Mostrar menos",
+    "places": "plazas",
+    "download": "Descargar",
+    "edit": "Editar",
+    "info": "Info",
+    "unknown": "Desconocido"
+  },
+  "navigation": {
+    "map": "Mapa",
+    "favorites": "Favoritos",
+    "renovations": "Reformas",
+    "profile": "Perfil"
+  },
+  "map": {
+    "title": "Mapa de Refugios",
+    "searchPlaceholder": "Buscar refugios...",
+    "noLocationsFound": "No se pudieron cargar los refugios",
+    "errorLoading": "No se pudieron cargar los refugios"
+  },
+  "favorites": {
+    "title": "Mis favoritos",
+    "count": "{{count}} refugio",
+    "count_plural": "{{count}} refugios",
+    "empty": {
+      "title": "Aún no tienes favoritos",
+      "message": "Añade refugios a tus favoritos para verlos aquí"
+    },
+    "added": "Refugio añadido a favoritos",
+    "removed": "Refugio eliminado de favoritos",
+    "error": "No se pudieron cargar los favoritos"
+  },
+  "renovations": {
+    "title": "Reformas y Mejoras",
+    "count": "{{count}} reforma",
+    "count_plural": "{{count}} reformas",
+    "priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "inProgress": "En curso",
+      "completed": "Completada"
+    },
+    "contributeButton": "Contribuir",
+    "moreInfo": "Más información",
+    "empty": {
+      "title": "No hay reformas pendientes",
+      "message": "Todas las reformas están completadas"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "stats": {
+      "title": "Mis estadísticas",
+      "visited": "Refugios visitados",
+      "renovations": "Refugios reformados",
+      "contributions": "Experiencias compartidas",
+      "photos": "Fotos subidas",
+      "memberSince": "Miembro desde {{date}}"
+    },
+    "settings": {
+      "title": "Configuración",
+      "preferences": "Preferencias",
+      "notifications": "Notificaciones",
+      "editProfile": "Editar perfil",
+      "language": "Idioma",
+      "changeEmail": "Cambiar correo electrónico",
+      "changePassword": "Cambiar contraseña",
+      "help": "Ayuda y soporte",
+      "about": "Sobre la app",
+      "privacy": "Privacidad",
+      "terms": "Términos y condiciones",
+      "logout": {
+        "title": "Cerrar sesión",
+        "confirmTitle": "Cerrar sesión",
+        "confirmMessage": "Se cerrará la sesión de tu cuenta."
+      },
+      "deleteAccount": {
+        "title": "Eliminar cuenta",
+        "confirmTitle": "Eliminar cuenta",
+        "confirmMessage": "Esta acción eliminará permanentemente tu cuenta y los datos asociados. ¿Estás seguro/a?"
+      }
+    },
+    "languageSelector": {
+      "title": "Selecciona el idioma",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      },
+      "updateError": "No se ha podido actualizar el idioma en el servidor"
+    }
+  },
+  "changePassword": {
+    "title": "Cambiar contraseña",
+    "description": "Introduce tu contraseña actual y la nueva contraseña que quieres establecer.",
+    "currentPassword": "Contraseña actual",
+    "currentPasswordPlaceholder": "Introduce la contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "newPasswordPlaceholder": "Introduce la nueva contraseña",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "confirmNewPasswordPlaceholder": "Vuelve a introducir la nueva contraseña",
+    "submit": "Cambiar contraseña",
+    "successMessage": "La contraseña se ha cambiado correctamente.",
+    "errors": {
+      "emptyCurrentPassword": "Por favor, introduce la contraseña actual",
+      "wrongPassword": "La contraseña actual es incorrecta",
+      "passwordRequirements": "La nueva contraseña no cumple los requisitos",
+      "samePassword": "La nueva contraseña debe ser diferente de la actual",
+      "requiresRecentLogin": "Por seguridad, vuelve a iniciar sesión antes de cambiar la contraseña",
+      "generic": "No se ha podido cambiar la contraseña. Por favor, inténtalo de nuevo."
+    }
+  },
+  "changeEmail": {
+    "title": "Cambiar correo electrónico",
+    "description": "Introduce el nuevo correo electrónico que quieres utilizar para tu cuenta.",
+    "currentEmail": "Correo electrónico actual",
+    "newEmail": "Nuevo correo electrónico",
+    "newEmailPlaceholder": "Introduce el nuevo correo electrónico",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Introduce tu contraseña",
+    "passwordHelper": "Necesitamos tu contraseña para confirmar el cambio",
+    "submit": "Cambiar correo electrónico",
+    "successMessage": "El correo electrónico se ha cambiado correctamente. Hemos enviado un correo de verificación a la nueva dirección.",
+    "emailSentMessage": "Hemos enviado un correo electrónico de verificación a tu correo actual. Haz clic en el enlace para confirmar el cambio.",
+    "errors": {
+      "emptyPassword": "Por favor, introduce tu contraseña",
+      "wrongPassword": "La contraseña es incorrecta",
+      "sameEmail": "El nuevo correo electrónico debe ser diferente del actual",
+      "requiresRecentLogin": "Por seguridad, vuelve a iniciar sesión antes de cambiar el correo electrónico",
+      "backendError": "No se ha podido actualizar el correo en el servidor. Puede que ya esté en uso.",
+      "generic": "No se ha podido cambiar el correo electrónico. Por favor, inténtalo de nuevo."
+    }
+  },
+  "refuge": {
+    "title": "Refugio libre",
+    "type": {
+      "shelter": "Orri",
+      "noGuarded": "No guardado",
+      "closed": "Cerrado",
+      "emergency": "De emergencia",
+      "occupiedInSummer": "Ocupado verano por pastor",
+      "unknown": "Desconocido"
+    },
+    "condition": {
+      "label": "Estado:",
+      "excellent": "Excelente",
+      "good": "Bien",
+      "fair": "Correcto",
+      "poor": "Pobre",
+      "unknown": "Desconocido"
+    },
+    "details": {
+      "altitude": "Altitud",
+      "capacity": "Plazas",
+      "region": "Región",
+      "occupation": "Ocupación",
+      "seeOccupation": "Ver ocupación",
+      "description": "Descripción",
+      "localisation": "Localización",
+      "services": "Servicios",
+      "prepareRoute": "Prepara tu salida",
+      "moreInformation": "Para más información:",
+      "weather": "Meteo",
+      "nearbyRoutes": "Rutas cercanas"
+    },
+    "actions": {
+      "navigate": "Navegar",
+      "viewDetails": "Ver detalles",
+      "favorite": "Favorito",
+      "viewOnMap": "Ver en el mapa",
+      "add": "Añadir"
+    }
+  },
+  "filters": {
+    "title": "Filtros",
+    "clearAll": "Limpiar todo",
+    "applyFilters": "Aplicar filtros",
+    "activeFilters": "{{count}} filtro activo",
+    "activeFilters_plural": "{{count}} filtros activos",
+    "types": {
+      "title": "Tipo de refugio",
+      "shelter": "Orri",
+      "noGuarded": "No guardado",
+      "closed": "Cerrado",
+      "emergency": "De emergencia",
+      "occupiedInSummer": "Ocupado verano por pastor",
+      "unknown": "Desconocido"
+    },
+    "altitude": "Altitud",
+    "capacity": "Capacidad",
+    "condition": {
+      "title": "Estado del refugio",
+      "excellent": "Excelente",
+      "good": "Bien",
+      "fair": "Correcto",
+      "poor": "Pobre"
+    }
+  },
+  "alerts": {
+    "navigation": "Navegando a {{name}}",
+    "favoriteUpdated": "Favorito actualizado",
+    "favoriteError": "No se pudo actualizar los favoritos",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar este refugio de tus favoritos?",
+    "deleteSuccess": "Refugio eliminado de favoritos",
+    "shareError": "No se pudo compartir",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "downloadGPX": {
+      "title": "Descargar GPX",
+      "message": "¿Quieres descargar el archivo GPX para \"{{name}}\"?"
+    },
+    "downloadKML": {
+      "title": "Descargar KML",
+      "message": "¿Quieres descargar el archivo KML para \"{{name}}\"?"
+    },
+    "fileSaved": "Archivo guardado",
+    "fileSavedAt": "Se ha guardado el archivo en: {{path}}",
+    "fileSavedLocation": "Se ha guardado el archivo en la ubicación seleccionada.",
+    "permissionRequired": "Permiso necesario",
+    "permissionDenied": "No se ha otorgado permiso para guardar en el almacenamiento.",
+    "fileError": "No se pudo guardar el archivo. Se intentará compartirlo en su lugar.",
+    "cannotOpenLink": "No se puede abrir el enlace",
+    "linkError": "No se pudo abrir el enlace",
+    "redirectTo": "Se te redirigirá a:",
+    "windyMessage": "https://www.windy.com.\n\nEsta es una web de meteorología que ofrece varias previsiones. Las más recomendadas son Meteoblue (MBLUE) y Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Puede que no haya rutas que pasen por el refugio. Asegúrate de que la ruta pasa por el refugio. ⚠️",
+    "editRefuge": "Editar {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Permiso de ubicación",
+      "message": "¿Permitir acceder a la ubicación actual del dispositivo?"
+    },
+    "notifications": {
+      "title": "Permiso de notificaciones",
+      "message": "¿Permitir enviar notificaciones?"
+    }
+  },
+  "login": {
+    "title": "Bienvenido/a",
+    "subtitle": "Inicia sesión para continuar",
+    "emailPlaceholder": "Correo electrónico",
+  "passwordPlaceholder": "Contraseña",
+  "forgotPassword": "¿Has olvidado la contraseña?",
+  "continue": "Continuar",
+  "loginButton": "Iniciar sesión",
+    "orContinueWith": "o",
+    "googleButton": "Continuar con Google",
+    "noAccount": "¿No tienes cuenta?",
+    "signUpLink": "Regístrate",
+    "errors": {
+      "emptyEmail": "Por favor, introduce tu correo electrónico",
+      "invalidEmail": "El formato del correo electrónico no es válido",
+      "emptyPassword": "Por favor, introduce tu contraseña",
+      "invalidCredentials": "Correo electrónico o contraseña no válidos"
+    }
+  },
+  "signup": {
+    "title": "Crear cuenta",
+    "subtitle": "Regístrate para empezar",
+    "selectLanguage": "Selecciona tu idioma",
+    "usernamePlaceholder": "Nombre de usuario",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "confirmPasswordPlaceholder": "Confirmar contraseña",
+    "signUpButton": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "loginLink": "Inicia sesión",
+    "backToLogin": "Volver al inicio de sesión",
+    "backToLanguage": "Volver al idioma",
+    "successMessage": "¡Cuenta creada correctamente! Comprueba tu correo para verificar la cuenta.",
+    "verificationEmailSent": "Se ha enviado un correo de verificación a {{email}}",
+    "errors": {
+      "emptyUsername": "Por favor, introduce un nombre de usuario",
+      "invalidUsername": "El nombre de usuario debe tener entre 2 y 20 caracteres",
+      "emptyEmail": "Por favor, introduce tu correo electrónico",
+      "invalidEmail": "El formato del correo electrónico no es válido",
+      "emptyPassword": "Por favor, introduce una contraseña",
+      "passwordMustHave": "La contraseña debe tener:",
+      "shortPassword": "\t• Mínimo 8 caracteres",
+      "minusPassword": "\t• Mínimo una letra minúscula",
+      "upperPassword": "\t• Mínimo una letra mayúscula",
+      "numberPassword": "\t• Mínimo un número",
+      "specialCharPassword": "\t• Mínimo un carácter especial (!,@,#,$,%,^,&,*)",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "registrationFailed": "No se pudo crear la cuenta. Si tienes una cuenta existente, prueba a iniciar sesión o recupera la contraseña."
+    }
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "usernamePlaceholder": "Nombre de usuario",
+    "saveButton": "Guardar cambios",
+    "successMessage": "Perfil actualizado correctamente",
+    "errors": {
+      "emptyUsername": "Por favor, introduce un nombre de usuario",
+      "invalidUsername": "El nombre de usuario debe tener entre 2 y 20 caracteres",
+      "generic": "No se pudo actualizar el perfil. Por favor, inténtalo de nuevo."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "Tu correo electrónico no está verificado",
+    "checkEmailVerification": "Por favor, verifica tu correo antes de iniciar sesión",
+    "resendVerificationEmail": "Reenviar correo de verificación",
+    "verificationEmailResent": "Correo de verificación reenviado",
+    "passwordResetEmailSent": "Se ha enviado un correo electrónico a tu dirección con instrucciones para restablecer la contraseña. Revisa la bandeja de entrada y la carpeta de correo no deseado.",
+    "passwordResetTitle": "Recuperar contraseña",
+    "passwordResetMessage": "Se enviará un correo de recuperación a:",
+    "sendResetEmail": "Enviar correo",
+    "errors": {
+      "emailInUse": "Este correo electrónico ya está en uso",
+      "invalidEmail": "El correo electrónico no es válido",
+      "operationNotAllowed": "Operación no permitida",
+      "weakPassword": "La contraseña es demasiado débil",
+      "userDisabled": "Esta cuenta ha sido desactivada",
+      "invalidCredentials": "Credenciales incorrectas",
+      "tooManyRequests": "Demasiados intentos. Por favor, inténtalo más tarde",
+      "networkError": "Error de conexión. Comprueba tu conexión a internet",
+      "generic": "Se ha producido un error. Por favor, inténtalo de nuevo",
+      "googleLoginFailed": "Error durante la autenticación con Google",
+      "googleSigninNotAvailable": "Google Sign In no está disponible en Expo Go. Utiliza un build nativo para activar esta funcionalidad."
+    }
+  }
+}

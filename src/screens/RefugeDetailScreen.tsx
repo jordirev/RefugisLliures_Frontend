@@ -4,7 +4,6 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  Alert,
   ScrollView,
   Image,
   Linking,
@@ -24,7 +23,10 @@ try {
   Sharing = null;
 }
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Location } from '../types';
+import { Location } from '../models';
+import { useTranslation } from '../utils/useTranslation';
+import { CustomAlert } from '../components/CustomAlert';
+import { useCustomAlert } from '../utils/useCustomAlert';
 
 // Icons (assumint que tenim aquestes icones SVG)
 import HeartIcon from '../assets/icons/fav.svg';
@@ -39,6 +41,7 @@ import { BadgeCondition } from '../components/BadgeCondition';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
+import CalendarIcon from '../assets/icons/calendar.svg';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -58,6 +61,8 @@ export function RefugeDetailScreen({
   onEdit,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
@@ -83,19 +88,19 @@ export function RefugeDetailScreen({
       onEdit(refuge);
       return;
     }
-    Alert.alert('Editar', `Editar ${refuge.name}`);
+    showAlert(t('common.edit'), t('alerts.editRefuge', { name: refuge.name }));
   };
 
   const handleDownloadGPX = () => {
     // Directe: només Descarregar (el SO mostrarà el selector quan calgui)
-    Alert.alert(
-      'Descarregar GPX',
-      `Vols descarregar el fitxer GPX per a "${refuge.name}"?`,
+    showAlert(
+      t('alerts.downloadGPX.title'),
+      t('alerts.downloadGPX.message', { name: refuge.name }),
       [
-        { text: 'Cancel·lar', style: 'cancel' },
-        { text: 'Descarregar', onPress: async () => {
-          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude || 0}</ele>\n  </wpt>\n</gpx>`;
-          const fileName = sanitizeFileName(`${refuge.name}.gpx`);
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.download'), onPress: async () => {
+          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude ?? t('common.unknown')}</ele>\n  </wpt>\n</gpx>`;
+          const fileName = sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);
           await saveFile(gpxContent, fileName, 'application/gpx+xml');
         } }
       ]
@@ -103,12 +108,12 @@ export function RefugeDetailScreen({
   };
 
   const handleDownloadKML = () => {
-    Alert.alert(
-      'Descarregar KML',
-      `Vols descarregar el fitxer KML per a "${refuge.name}"?`,
+    showAlert(
+      t('alerts.downloadKML.title'),
+      t('alerts.downloadKML.message', { name: refuge.name }),
       [
-        { text: 'Cancel·lar', style: 'cancel' },
-        { text: 'Descarregar', onPress: async () => {
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.download'), onPress: async () => {
           const kmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n  <Document>\n    <Placemark>\n      <name><![CDATA[${refuge.name}]]></name>\n      <description><![CDATA[${refuge.description || ''}]]></description>\n      <Point>\n        <coordinates>${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}</coordinates>\n      </Point>\n    </Placemark>\n  </Document>\n</kml>`;
           const fileName = sanitizeFileName(`${refuge.name}.kml`);
           await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');
@@ -145,7 +150,7 @@ export function RefugeDetailScreen({
           // @ts-ignore
           const permission = await SAF.requestDirectoryPermissionsAsync();
           if (!permission || !permission.granted) {
-            Alert.alert('Permís necessari', 'No s\'ha atorgat permís per desar a l\'emmagatzematge.');
+            showAlert(t('alerts.permissionRequired'), t('alerts.permissionDenied'));
             return;
           }
           const directoryUri = permission.directoryUri;
@@ -159,7 +164,7 @@ export function RefugeDetailScreen({
             // fallback: intentar escriure amb FileSystem
             await fsAny.writeAsStringAsync(newFileUri, content);
           }
-          Alert.alert('Fitxer desat', 'S\'ha desat el fitxer a la ubicació seleccionada.');
+          showAlert(t('alerts.fileSaved'), t('alerts.fileSavedLocation'));
           return;
         } catch (e) {
           console.warn('SAF save failed, falling back to sharing', e);
@@ -183,11 +188,11 @@ export function RefugeDetailScreen({
       }
 
       // Altrament, notifiquem la ubicació on s'ha desat
-      Alert.alert('Fitxer desat', `S'ha desat el fitxer a: ${fileUri}`);
+      showAlert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
 
     } catch (e) {
       console.warn('saveFile error', e);
-      Alert.alert('Error', 'No s\'ha pogut desar el fitxer. S\'intentarà compartir-lo en canvi.');
+      showAlert(t('common.error'), t('alerts.fileError'));
       // si tot falla, oferir compartir
       try {
         const tempName = fileName;
@@ -249,10 +254,10 @@ export function RefugeDetailScreen({
       }
 
       // Si Sharing no està disponible, informar l'usuari de la ubicació del fitxer
-      Alert.alert('Fitxer desat', `S'ha desat el fitxer a: ${fileUri}`);
+      showAlert(t('alerts.fileSaved'), t('alerts.fileSavedAt', { path: fileUri }));
     } catch (e) {
       console.warn('Error writing/sharing file', e);
-      Alert.alert('Error', 'No s\'ha pogut crear o desar el fitxer.');
+      showAlert(t('common.error'), t('alerts.fileError'));
     }
   };
 
@@ -267,11 +272,11 @@ export function RefugeDetailScreen({
       if (supported) {
         await Linking.openURL(finalUrl);
       } else {
-        Alert.alert('No es pot obrir l\'enllaç', finalUrl);
+        showAlert(t('alerts.cannotOpenLink'), finalUrl);
       }
     } catch (e) {
       console.warn('Error opening link', e);
-      Alert.alert('Error', 'No s\'ha pogut obrir l\'enllaç');
+      showAlert(t('common.error'), t('alerts.linkError'));
     }
   };
 
@@ -281,7 +286,7 @@ export function RefugeDetailScreen({
     const lon = refuge.coord.long;
     // Build URL: https://www.windy.com/lat/long/mblue?lat,long,13,p:cities
     const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
-    const message = `https://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.`;
+    const message = t('alerts.windyMessage');
     confirmAndOpen(url, message);
   };
 
@@ -291,7 +296,7 @@ export function RefugeDetailScreen({
     const encoded = encodeURIComponent(name);
     // Example: https://ca.wikiloc.com/wikiloc/map.do?q=Refuge%20de%20la%20Gola&fitMapToTrails=1&page=1
     const url = `https://ca.wikiloc.com/wikiloc/map.do?q=${encoded}&fitMapToTrails=1&page=1`;
-    const message = `https://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegure\'t que la ruta passa pel refugi. ⚠️`;
+    const message = t('alerts.wikilocMessage');
     confirmAndOpen(url, message);
   };
 
@@ -328,14 +333,14 @@ export function RefugeDetailScreen({
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{refuge.name}</Text>
             {refuge.departement ? (
-              <Text style={styles.departmentText}>{refuge.departement}</Text>
+              <Text style={styles.departmentText}>{refuge.departement}, {refuge.region}</Text>
             ) : null}
             <View style={styles.badgesContainer}>
-              {refuge.type && (
+              {refuge.type !== undefined && (
                 <BadgeType type={refuge.type} style={{ marginRight: 8 }} />
               )}
               {refuge.condition && (
-                <BadgeCondition condition={'Estat: ' + refuge.condition} />
+                <BadgeCondition condition={String(t('refuge.condition.label')) + ' ' + String(refuge.condition)} />
               )}
             </View>
           </View>
@@ -344,20 +349,20 @@ export function RefugeDetailScreen({
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
               <AltitudeIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>Altitud</Text>
+              <Text style={styles.statLabel}>{t('refuge.details.altitude')}</Text>
               <Text style={styles.statValue}>{refuge.altitude ? `${refuge.altitude}m` : 'N/A'}</Text>
             </View>
             
             <View style={styles.statCard}>
               <UsersIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>Places</Text>
-              <Text style={styles.statValue}>{refuge.places !== undefined ? refuge.places : 'N/A'}</Text>
+              <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
+              <Text style={styles.statValue}>{refuge.places !== undefined ? String(refuge.places) : 'N/A'}</Text>
             </View>
             
             <View style={styles.statCard}>
-              <MapPinIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>Regió</Text>
-              <Text style={styles.statValue}>{refuge.region || 'N/A'}</Text>
+              <CalendarIcon width={24} height={24} color="#FF6900" />
+              <Text style={styles.statLabel}>{t('refuge.details.occupation')}</Text>
+              <Text style={styles.statValue}>{t('refuge.details.seeOccupation')}</Text>
             </View>
           </View>
         </View>
@@ -365,7 +370,7 @@ export function RefugeDetailScreen({
         {/* Descripció */}
         {refuge.description && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Descripció</Text>
+            <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
             <View>
               <Text
                 style={styles.description}
@@ -382,7 +387,7 @@ export function RefugeDetailScreen({
                   activeOpacity={0.7}
                 >
                   <Text style={styles.readMoreText}>
-                    {descriptionExpanded ? 'Show less' : 'Read more...'}
+                    {descriptionExpanded ? t('common.showLess') : t('common.readMore')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -392,7 +397,7 @@ export function RefugeDetailScreen({
         
         {/* Informació de localització */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Localització</Text>
+          <Text style={styles.sectionTitle}>{t('refuge.details.localisation')}</Text>
           <View style={styles.locationCard}>
             <View style={styles.locationInfo}>
               <MapPinIcon width={16} height={16} color="#FF6900" />
@@ -416,7 +421,7 @@ export function RefugeDetailScreen({
         {/* Informació extra */}
         {/* Informació de localització */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Prepara la teva sortida</Text>
+          <Text style={styles.sectionTitle}>{t('refuge.details.prepareRoute')}</Text>
           {/* Stats en grid */}
           <View style={styles.statsGrid}>
             <TouchableOpacity style={styles.statCard} onPress={handleOpenWindy} activeOpacity={0.7}>
@@ -424,12 +429,12 @@ export function RefugeDetailScreen({
                 source={WeatherIcon}
                 style={{ width: 48, height: 48, transform: [{ scaleX: -1 }] }}
               />
-              <Text style={styles.statLabel2}>Meteo</Text>
+              <Text style={styles.statLabel2}>{t('refuge.details.weather')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.statCard} onPress={handleOpenWikiloc} activeOpacity={0.7}>
               <Image source={RoutesIcon} style={{ width: 48, height: 48 }} />
-              <Text style={styles.statLabel2}>Rutes a prop</Text>
+              <Text style={styles.statLabel2}>{t('refuge.details.nearbyRoutes')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -437,7 +442,7 @@ export function RefugeDetailScreen({
         {/* Enllaços si existeixen */}
         {refuge.links && refuge.links.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Per a més informació:</Text>
+            <Text style={styles.sectionTitle}>{t('refuge.details.moreInformation')}</Text>
             {refuge.links.map((link, index) => (
               <TouchableOpacity
                 key={index}
@@ -489,18 +494,18 @@ export function RefugeDetailScreen({
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
-              <Text style={styles.modalTitle}>Se't redirigirà cap a:</Text>
+              <Text style={styles.modalTitle}>{t('alerts.redirectTo')}</Text>
               <Text style={styles.modalMessage}>{confirmModalMessage}</Text>
             </ScrollView>
             <View style={styles.modalButtonsRow}>
               <TouchableOpacity style={[styles.modalButtonRow, styles.modalCancel, { marginRight: 8 }]} onPress={() => setConfirmModalVisible(false)}>
                 <View style={styles.modalButtonContent}>
-                  <Text style={styles.modalButtonText}>Cancel·lar</Text>
+                  <Text style={styles.modalButtonText}>{t('common.cancel')}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalButtonRow, styles.modalPrimary]} onPress={() => { setConfirmModalVisible(false); handleOpenLink(confirmModalUrl); }}>
                 <View style={styles.modalButtonContent}>
-                  <Text style={[styles.modalButtonText, styles.modalPrimaryText]}>Navegar</Text>
+                  <Text style={[styles.modalButtonText, styles.modalPrimaryText]}>{t('refuge.actions.navigate')}</Text>
                   <NavigationIcon width={16} height={16} color="#ffffff" style={styles.modalIcon} />
                 </View>
               </TouchableOpacity>
@@ -509,6 +514,16 @@ export function RefugeDetailScreen({
         </View>
       </Modal>
       
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }
@@ -642,6 +657,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
     marginTop: 4,
+    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 16,

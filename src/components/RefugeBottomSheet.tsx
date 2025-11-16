@@ -2,8 +2,9 @@ import React from 'react';
 import { BadgeCondition } from './BadgeCondition';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Location } from '../types';
+import { Location } from '../models';
 import { BadgeType } from './BadgeType';
+import { useTranslation } from '../utils/useTranslation';
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
@@ -37,6 +38,7 @@ export function RefugeBottomSheet({
   onNavigate,
   onViewDetails 
 }: RefugeBottomSheetProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   if (!isVisible) return null;
 
@@ -75,7 +77,8 @@ export function RefugeBottomSheet({
               <View style={styles.details}>
                 {/* Type */}
                 <View style={styles.detailItem}>
-                  <BadgeType type={refuge.type || 'no guardat'} />
+                  {/* pass numeric type (or undefined) to match BadgeType props */}
+                  <BadgeType type={refuge.type} />
                 </View>
                 {/* Estat */}
                 {refuge.condition && (
@@ -113,7 +116,7 @@ export function RefugeBottomSheet({
           onPress={() => onViewDetails(refuge)}
         >
           <Text style={[styles.buttonText, styles.detailsButtonText]}>
-            Veure detalls
+            {t('refuge.actions.viewDetails')}
           </Text>
         </TouchableOpacity>
       </View>

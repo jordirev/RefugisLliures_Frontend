@@ -1,0 +1,343 @@
+{
+  "common": {
+    "search": "Rechercher refuges...",
+    "filters": "Filtres",
+    "clear": "Effacer",
+    "apply": "Appliquer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "back": "Retour",
+    "close": "Fermer",
+    "ok": "OK",
+    "allow": "Autoriser",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "noResults": "Aucun résultat trouvé",
+    "readMore": "Lire plus...",
+    "showLess": "Afficher moins",
+    "places": "places",
+    "download": "Télécharger",
+    "edit": "Modifier",
+    "info": "Info",
+    "unknown": "Inconnu"
+  },
+  "navigation": {
+    "map": "Carte",
+    "favorites": "Favoris",
+    "renovations": "Rénovations",
+    "profile": "Profil"
+  },
+  "map": {
+    "title": "Carte des Refuges",
+    "searchPlaceholder": "Rechercher refuges...",
+    "noLocationsFound": "Impossible de charger les refuges",
+    "errorLoading": "Impossible de charger les refuges"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "count": "{{count}} refuge",
+    "count_plural": "{{count}} refuges",
+    "empty": {
+      "title": "Vous n'avez pas encore de favoris",
+      "message": "Ajoutez des refuges à vos favoris pour les voir ici"
+    },
+    "added": "Refuge ajouté aux favoris",
+    "removed": "Refuge supprimé des favoris",
+    "error": "Impossible de charger les favoris"
+  },
+  "renovations": {
+    "title": "Améliorations et Rénovations",
+    "count": "{{count}} amélioration",
+    "count_plural": "{{count}} améliorations",
+    "priority": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "status": {
+      "pending": "En attente",
+      "inProgress": "En cours",
+      "completed": "Terminée"
+    },
+    "contributeButton": "Contribuer",
+    "moreInfo": "Plus d'infos",
+    "empty": {
+      "title": "Aucune amélioration en attente",
+      "message": "Toutes les améliorations sont terminées"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "stats": {
+      "title": "Mes statistiques",
+      "visited": "Refuges visités",
+      "renovations": "Refuges rénovés",
+      "contributions": "Expériences partagées",
+      "photos": "Photos téléchargées",
+      "memberSince": "Membre depuis {{date}}"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "preferences": "Préférences",
+      "notifications": "Notifications",
+      "editProfile": "Modifier le profil",
+      "language": "Langue",
+      "changeEmail": "Changer l'e-mail",
+      "changePassword": "Changer le mot de passe",
+      "help": "Aide et support",
+      "about": "À propos de l'app",
+      "privacy": "Confidentialité",
+      "terms": "Conditions générales",
+      "logout": {
+        "title": "Se déconnecter",
+        "confirmTitle": "Se déconnecter",
+        "confirmMessage": "Vous allez vous déconnecter de votre compte."
+      },
+      "deleteAccount": {
+        "title": "Supprimer le compte",
+        "confirmTitle": "Supprimer le compte",
+        "confirmMessage": "Cette action supprimera définitivement votre compte et les données associées. Êtes-vous sûr(e) ?"
+      }
+    },
+    "languageSelector": {
+      "title": "Sélectionnez la langue",
+      "languages": {
+        "ca": "Català",
+        "es": "Español",
+        "en": "English",
+        "fr": "Français"
+      },
+      "updateError": "Impossible de mettre à jour la langue sur le serveur"
+    }
+  },
+  "changePassword": {
+    "title": "Changer le mot de passe",
+    "description": "Entrez votre mot de passe actuel et le nouveau mot de passe que vous souhaitez définir.",
+    "currentPassword": "Mot de passe actuel",
+    "currentPasswordPlaceholder": "Entrez le mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "confirmNewPasswordPlaceholder": "Saisissez à nouveau le nouveau mot de passe",
+    "submit": "Changer le mot de passe",
+    "successMessage": "Le mot de passe a été modifié avec succès.",
+    "errors": {
+      "emptyCurrentPassword": "Veuillez entrer votre mot de passe actuel",
+      "wrongPassword": "Le mot de passe actuel est incorrect",
+      "passwordRequirements": "Le nouveau mot de passe ne respecte pas les exigences",
+      "samePassword": "Le nouveau mot de passe doit être différent du mot de passe actuel",
+      "requiresRecentLogin": "Pour des raisons de sécurité, veuillez vous reconnecter avant de changer le mot de passe",
+      "generic": "Échec du changement de mot de passe. Veuillez réessayer."
+    }
+  },
+  "changeEmail": {
+    "title": "Changer l'e-mail",
+    "description": "Entrez la nouvelle adresse e-mail que vous souhaitez utiliser pour votre compte.",
+    "currentEmail": "E-mail actuel",
+    "newEmail": "Nouvel e-mail",
+    "newEmailPlaceholder": "Entrez le nouvel e-mail",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "passwordHelper": "Nous avons besoin de votre mot de passe pour confirmer le changement",
+    "submit": "Changer l'e-mail",
+    "successMessage": "L'e-mail a été modifié avec succès. Nous avons envoyé un e-mail de vérification à la nouvelle adresse.",
+    "emailSentMessage": "Nous avons envoyé un e-mail de vérification à votre adresse actuelle. Cliquez sur le lien pour confirmer le changement.",
+    "errors": {
+      "emptyPassword": "Veuillez entrer votre mot de passe",
+      "wrongPassword": "Le mot de passe est incorrect",
+      "sameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
+      "requiresRecentLogin": "Pour des raisons de sécurité, veuillez vous reconnecter avant de changer l'e-mail",
+      "backendError": "Impossible de mettre à jour l'e-mail sur le serveur. Il est peut-être déjà utilisé.",
+      "generic": "Échec du changement d'e-mail. Veuillez réessayer."
+    }
+  },
+  "refuge": {
+    "title": "Refuge non gardé",
+    "type": {
+      "shelter": "Orri",
+      "noGuarded": "Non gardé",
+      "closed": "Fermé",
+      "emergency": "D'urgence",
+      "occupiedInSummer": "Occupé été par berger",
+      "unknown": "Inconnu"
+    },
+    "condition": {
+      "label": "État:",
+      "excellent": "Excellent",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Pauvre",
+      "unknown": "Inconnu"
+    },
+    "details": {
+      "altitude": "Altitude",
+      "capacity": "Capacité",
+      "region": "Région",
+      "occupation": "Occupation",
+      "seeOccupation": "Voir occupation",
+      "description": "Description",
+      "localisation": "Localisation",
+      "services": "Services",
+      "prepareRoute": "Préparez votre sortie",
+      "moreInformation": "Pour plus d'informations:",
+      "weather": "Météo",
+      "nearbyRoutes": "Itinéraires à proximité"
+    },
+    "actions": {
+      "navigate": "Naviguer",
+      "viewDetails": "Voir détails",
+      "favorite": "Favori",
+      "viewOnMap": "Voir sur la carte",
+      "add": "Ajouter"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "clearAll": "Tout effacer",
+    "applyFilters": "Appliquer les filtres",
+    "activeFilters": "{{count}} filtre actif",
+    "activeFilters_plural": "{{count}} filtres actifs",
+    "types": {
+      "title": "Type de refuge",
+      "shelter": "Orri",
+      "noGuarded": "Non gardé",
+      "closed": "Fermé",
+      "emergency": "D'urgence",
+      "occupiedInSummer": "Occupé été par berger",
+      "unknown": "Inconnu"
+    },
+    "altitude": "Altitude",
+    "capacity": "Capacité",
+    "condition": {
+      "title": "État du refuge",
+      "excellent": "Excellent",
+      "good": "Bon",
+      "fair": "Correct",
+      "poor": "Pauvre"
+    }
+  },
+  "alerts": {
+    "navigation": "Navigation vers {{name}}",
+    "favoriteUpdated": "Favori mis à jour",
+    "favoriteError": "Impossible de mettre à jour les favoris",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce refuge de vos favoris?",
+    "deleteSuccess": "Refuge supprimé des favoris",
+    "shareError": "Impossible de partager",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "downloadGPX": {
+      "title": "Télécharger GPX",
+      "message": "Voulez-vous télécharger le fichier GPX pour \"{{name}}\" ?"
+    },
+    "downloadKML": {
+      "title": "Télécharger KML",
+      "message": "Voulez-vous télécharger le fichier KML pour \"{{name}}\" ?"
+    },
+    "fileSaved": "Fichier enregistré",
+    "fileSavedAt": "Le fichier a été enregistré à : {{path}}",
+    "fileSavedLocation": "Le fichier a été enregistré à l'emplacement sélectionné.",
+    "permissionRequired": "Permission requise",
+    "permissionDenied": "L'autorisation d'enregistrer dans le stockage n'a pas été accordée.",
+    "fileError": "Impossible d'enregistrer le fichier. Essai de partage à la place.",
+    "cannotOpenLink": "Impossible d'ouvrir le lien",
+    "linkError": "Impossible d'ouvrir le lien",
+    "redirectTo": "Vous serez redirigé vers :",
+    "windyMessage": "https://www.windy.com.\n\nCe site web de météorologie offre diverses prévisions. Les plus recommandées sont Meteoblue (MBLUE) et Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Il se peut qu'il n'y ait pas d'itinéraires passant par le refuge. Assurez-vous que l'itinéraire passe par le refuge. ⚠️",
+    "editRefuge": "Modifier {{name}}"
+  },
+  "permissions": {
+    "location": {
+      "title": "Permission de localisation",
+      "message": "Autoriser l'accès à la localisation actuelle de l'appareil ?"
+    },
+    "notifications": {
+      "title": "Permission de notifications",
+      "message": "Autoriser l'envoi de notifications ?"
+    }
+  },
+  "login": {
+    "title": "Bienvenue",
+    "subtitle": "Connectez-vous pour continuer",
+    "emailPlaceholder": "Adresse e-mail",
+  "passwordPlaceholder": "Mot de passe",
+  "forgotPassword": "Mot de passe oublié ?",
+  "continue": "Continuer",
+  "loginButton": "Se connecter",
+    "orContinueWith": "ou",
+    "googleButton": "Continuer avec Google",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUpLink": "S'inscrire",
+    "errors": {
+      "emptyEmail": "Veuillez entrer votre adresse e-mail",
+      "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
+      "emptyPassword": "Veuillez entrer votre mot de passe",
+      "invalidCredentials": "Adresse e-mail ou mot de passe invalide"
+    }
+  },
+  "signup": {
+    "title": "Créer un compte",
+    "subtitle": "Inscrivez-vous pour commencer",
+    "selectLanguage": "Sélectionnez votre langue",
+    "usernamePlaceholder": "Nom d'utilisateur",
+    "emailPlaceholder": "Adresse e-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "confirmPasswordPlaceholder": "Confirmer le mot de passe",
+    "signUpButton": "S'inscrire",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Se connecter",
+    "backToLogin": "Retour à la connexion",
+    "backToLanguage": "Retour à la langue",
+    "successMessage": "Compte créé avec succès ! Vérifiez votre e-mail pour confirmer votre compte.",
+    "verificationEmailSent": "Un e-mail de vérification a été envoyé à {{email}}",
+    "errors": {
+      "emptyUsername": "Veuillez entrer un nom d'utilisateur",
+      "invalidUsername": "Le nom d'utilisateur doit comporter entre 2 et 20 caractères",
+      "emptyEmail": "Veuillez entrer votre adresse e-mail",
+      "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
+      "emptyPassword": "Veuillez entrer un mot de passe",
+      "passwordMustHave": "Le mot de passe doit contenir :",
+      "shortPassword": "\t• Minimum 8 caractères",
+      "minusPassword": "\t• Minimum une lettre minuscule",
+      "upperPassword": "\t• Minimum une lettre majuscule",
+      "numberPassword": "\t• Minimum un chiffre",
+      "specialCharPassword": "\t• Minimum un caractère spécial (!,@,#,$,%,^,&,*)",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "registrationFailed": "Impossible de créer le compte. Si vous avez un compte existant, essayez de vous connecter ou de récupérer votre mot de passe."
+    }
+  },
+  "editProfile": {
+    "title": "Modifier le profil",
+    "usernamePlaceholder": "Nom d'utilisateur",
+    "saveButton": "Enregistrer les modifications",
+    "successMessage": "Profil mis à jour avec succès.",
+    "errors": {
+      "emptyUsername": "Veuillez entrer un nom d'utilisateur",
+      "invalidUsername": "Le nom d'utilisateur doit comporter entre 2 et 20 caractères",
+      "generic": "Impossible de mettre à jour le profil. Veuillez réessayer."
+    }
+  },
+  "auth": {
+    "emailNotVerified": "Votre adresse e-mail n'est pas vérifiée",
+    "checkEmailVerification": "Veuillez vérifier votre e-mail avant de vous connecter",
+    "resendVerificationEmail": "Renvoyer l'e-mail de vérification",
+    "verificationEmailResent": "E-mail de vérification renvoyé",
+    "passwordResetEmailSent": "Un e-mail de réinitialisation du mot de passe a été envoyé à votre adresse avec les instructions. Vérifiez votre boîte de réception et le dossier spam.",
+    "passwordResetTitle": "Réinitialiser le mot de passe",
+    "passwordResetMessage": "Un e-mail de récupération sera envoyé à:",
+    "sendResetEmail": "Envoyer l'e-mail",
+    "errors": {
+      "emailInUse": "Cette adresse e-mail est déjà utilisée",
+      "invalidEmail": "L'adresse e-mail n'est pas valide",
+      "operationNotAllowed": "Opération non autorisée",
+      "weakPassword": "Le mot de passe est trop faible",
+      "userDisabled": "Ce compte a été désactivé",
+      "invalidCredentials": "Identifiants invalides",
+      "tooManyRequests": "Trop de tentatives. Veuillez réessayer plus tard",
+      "networkError": "Erreur de connexion. Vérifiez votre connexion Internet",
+      "generic": "Une erreur s'est produite. Veuillez réessayer",
+      "googleLoginFailed": "Erreur lors de l'authentification avec Google",
+      "googleSigninNotAvailable": "Google Sign In n'est pas disponible dans Expo Go. Utilisez une version native pour activer cette fonctionnalité."
+    }
+  }
+}
