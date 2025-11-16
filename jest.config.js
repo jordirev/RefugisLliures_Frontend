@@ -16,6 +16,7 @@ module.exports = {
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@env$': '<rootDir>/__mocks__/env.js',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx,js,jsx}',

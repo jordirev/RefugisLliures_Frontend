@@ -9,13 +9,13 @@ import {
   updateProfile,
   onAuthStateChanged,
   GoogleAuthProvider,
-  FirebaseUser,
   updatePassword,
   updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
   verifyBeforeUpdateEmail
 } from './firebase';
+import type { FirebaseUser } from './firebase';
 
 // Re-exportar el tipus FirebaseUser perquè estigui disponible per altres mòduls
 export type { FirebaseUser };

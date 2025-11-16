@@ -9,7 +9,6 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
-  User as FirebaseUser,
   updateProfile,
   onAuthStateChanged,
   OAuthProvider,
@@ -19,6 +18,7 @@ import {
   EmailAuthProvider,
   verifyBeforeUpdateEmail
 } from "firebase/auth";
+import type { User as FirebaseUser } from "firebase/auth";
 
 // Importar variables d'entorn
 import {
