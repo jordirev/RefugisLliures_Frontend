@@ -74,7 +74,7 @@ export function ProfileScreen() {
                   const created = backendUser?.created_at ?? firebaseUser?.metadata?.creationTime;
                   if (created) {
                     const d = typeof created === 'number' ? new Date(created * 1000) : new Date(created);
-                    if (!isNaN(d.getTime())) {
+                    if (!Number.isNaN(d.getTime())) {
                       return t('profile.stats.memberSince', { date: d.toLocaleDateString(currentLanguage, { month: 'long', year: 'numeric' }) });
                     }
                   }

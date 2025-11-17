@@ -89,7 +89,7 @@ export function RefugeBottomSheet({
               </View>
               <View style={[styles.details, styles.detailsDetails]}>
                 {/* Altitud */}
-                {refuge.altitude && (
+                {refuge.altitude != null && (
                     <View style={styles.detailItem}>
                     <AltitudeIcon width={16} height={16} color={'#6b7280'} />
                     <Text style={styles.detailValue}>{refuge.altitude} m</Text>

@@ -98,10 +98,12 @@ export function RefugeDetailScreen({
       t('alerts.downloadGPX.message', { name: refuge.name }),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.download'), onPress: async () => {
-          const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude ?? t('common.unknown')}</ele>\n  </wpt>\n</gpx>`;
-          const fileName = sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);
-          await saveFile(gpxContent, fileName, 'application/gpx+xml');
+        { text: t('common.download'), onPress: () => {
+          (async () => {
+            const gpxContent = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1">\n  <wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}">\n    <name><![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]></name>\n    <desc><![CDATA[${refuge.description || ''}]]></desc>\n    <ele>${refuge.altitude ?? t('common.unknown')}</ele>\n  </wpt>\n</gpx>`;
+            const fileName = sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);
+            await saveFile(gpxContent, fileName, 'application/gpx+xml');
+          })();
         } }
       ]
     );
@@ -113,10 +115,12 @@ export function RefugeDetailScreen({
       t('alerts.downloadKML.message', { name: refuge.name }),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.download'), onPress: async () => {
-          const kmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n  <Document>\n    <Placemark>\n      <name><![CDATA[${refuge.name}]]></name>\n      <description><![CDATA[${refuge.description || ''}]]></description>\n      <Point>\n        <coordinates>${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}</coordinates>\n      </Point>\n    </Placemark>\n  </Document>\n</kml>`;
-          const fileName = sanitizeFileName(`${refuge.name}.kml`);
-          await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');
+        { text: t('common.download'), onPress: () => {
+          (async () => {
+            const kmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2">\n  <Document>\n    <Placemark>\n      <name><![CDATA[${refuge.name}]]></name>\n      <description><![CDATA[${refuge.description || ''}]]></description>\n      <Point>\n        <coordinates>${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}</coordinates>\n      </Point>\n    </Placemark>\n  </Document>\n</kml>`;
+            const fileName = sanitizeFileName(`${refuge.name}.kml`);
+            await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');
+          })();
         } }
       ]
     );
@@ -205,7 +209,7 @@ export function RefugeDetailScreen({
 
   // Sanititza un nom de fitxer per evitar caràcters problemàtics
   const sanitizeFileName = (name: string) => {
-    return name.replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_').slice(0, 120);
+    return name.replaceAll(/[\\/:*?"<>|]+/g, '_').replaceAll(/\s+/g, '_').slice(0, 120);
   };
 
   // Escriu el fitxer al sistema i obre el dialeg de compartir/guardar (nadiu) o dispara la descàrrega (web)
@@ -368,9 +372,9 @@ export function RefugeDetailScreen({
         </View>
         
         {/* Descripció */}
-        {refuge.description && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+          {refuge.description && (
             <View>
               <Text
                 style={styles.description}
@@ -392,8 +396,8 @@ export function RefugeDetailScreen({
                 </TouchableOpacity>
               )}
             </View>
-          </View>
-        )}
+          )}
+        </View>
         
         {/* Informació de localització */}
         <View style={styles.section}>

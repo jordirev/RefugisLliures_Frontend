@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import validator from 'validator';
 import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -129,18 +130,16 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const handleSetEmail = (text: string) => {
     setEmail(text);
     const trimmed = text.trim();
-    // Clear or set inline email error while the user types
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!trimmed) {
       setEmailError(null);
-    } else if (!emailRegex.test(trimmed)) {
+    } else if (!validator.isEmail(trimmed)) {
       setEmailError('signup.errors.invalidEmail');
     } else {
       setEmailError(null);
     }
 
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
-    if (trimmed.length > 0 && emailRegex.test(trimmed)) {
+    if (trimmed.length > 0 && validator.isEmail(trimmed)) {
       // initialize password errors so empty password shows all rules immediately
       setPasswordErrors(verifyPasswordStrength(password));
       if(step === "email"){
@@ -235,8 +234,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     }
 
     // Validació bàsica d'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!validator.isEmail(email)) {
       setEmailError(t('signup.errors.invalidEmail'));
       return;
     }

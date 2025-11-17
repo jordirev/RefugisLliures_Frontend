@@ -71,27 +71,29 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
               t('permissions.location.message'),
               [
                 { text: t('common.cancel'), style: 'cancel' },
-                { text: t('common.allow'), onPress: async () => {
-                    try {
-                      let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
-                      if (status !== 'granted') {
-                        showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
-                        return;
-                      }
-                      let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
-                      const latitude = location.coords.latitude;
-                      const longitude = location.coords.longitude;
+                { text: t('common.allow'), onPress: () => {
+                    (async () => {
+                      try {
+                        let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+                        if (status !== 'granted') {
+                          showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
+                          return;
+                        }
+                        let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
+                        const latitude = location.coords.latitude;
+                        const longitude = location.coords.longitude;
 
-                      // Guardar la ubicació de l'usuari sense seleccionar-la
-                      setUserLocation({ latitude, longitude });
+                        // Guardar la ubicació de l'usuari sense seleccionar-la
+                        setUserLocation({ latitude, longitude });
 
-                      if (typeof window !== 'undefined' && 'CustomEvent' in window) {
-                        const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
-                        window.dispatchEvent(ev);
+                        if (typeof window !== 'undefined' && 'CustomEvent' in window) {
+                          const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
+                          window.dispatchEvent(ev);
+                        }
+                      } catch (err: any) {
+                        showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
                       }
-                    } catch (err: any) {
-                      showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
-                    }
+                    })();
                   }
                 }
               ]

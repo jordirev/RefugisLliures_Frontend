@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
@@ -45,11 +46,6 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   // Verificar si Google Sign In està disponible
   const isGoogleSignInAvailable = AuthService.isGoogleSignInAvailable();
 
-  const isValidEmail = (value: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(value.trim());
-  };
-
   // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
   const handleSetEmail = (text: string) => {
     setEmail(text);
@@ -71,7 +67,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     }
 
     // Validate email format and show inline error (no alert) if invalid
-    if (!isValidEmail(email)) {
+    if (!validator.isEmail(email)) {
       setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');
       return;
     }
@@ -98,23 +94,27 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
             {
               text: t('common.close'),
               style: 'cancel',
-              onPress: async () => {
-                // Tancar sessió si l'usuari tanca l'alert
-                await AuthService.logout();
+              onPress: () => {
+                (async () => {
+                  // Tancar sessió si l'usuari tanca l'alert
+                  await AuthService.logout();
+                })();
               }
             },
             {
               text: t('auth.resendVerificationEmail'),
-              onPress: async () => {
-                try {
-                  await AuthService.resendVerificationEmail();
-                  showAlert(t('common.success'), t('auth.verificationEmailResent'));
-                } catch (error) {
-                  console.error('Error reenviant email:', error);
-                  showAlert(t('common.error'), t('auth.errors.generic'));
-                }
-                // Tancar sessió després de reenviar el correu
-                await AuthService.logout();
+              onPress: () => {
+                (async () => {
+                  try {
+                    await AuthService.resendVerificationEmail();
+                    showAlert(t('common.success'), t('auth.verificationEmailResent'));
+                  } catch (error) {
+                    console.error('Error reenviant email:', error);
+                    showAlert(t('common.error'), t('auth.errors.generic'));
+                  }
+                  // Tancar sessió després de reenviar el correu
+                  await AuthService.logout();
+                })();
               }
             }
           ]
@@ -161,8 +161,8 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       return;
     }
 
-    // Validate format using regex. Show inline error (no alert) if invalid.
-    if (!isValidEmail(email)) {
+    // Validate format
+    if (!validator.isEmail(email)) {
       setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');
       return;
     }
@@ -232,26 +232,28 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
         },
         {
           text: t('auth.sendResetEmail'),
-          onPress: async () => {
-            try {
-              await AuthService.resetPassword(email.trim());
-              showAlert(
-                t('common.success'), 
-                t('auth.passwordResetEmailSent'),
-                [
-                  {
-                    text: t('common.ok'),
-                    onPress: () => console.log('Email de recuperació enviat correctament')
-                  }
-                ]
-              );
-            } catch (error: any) {
-              console.error('Error enviant email de recuperació:', error);
-              const errorCode = error?.code || 'unknown';
-              const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
-              const errorMessage = t(errorMessageKey) || t('auth.errors.generic');
-              showAlert(t('common.error'), errorMessage);
-            }
+          onPress: () => {
+            (async () => {
+              try {
+                await AuthService.resetPassword(email.trim());
+                showAlert(
+                  t('common.success'), 
+                  t('auth.passwordResetEmailSent'),
+                  [
+                    {
+                      text: t('common.ok'),
+                      onPress: () => console.log('Email de recuperació enviat correctament')
+                    }
+                  ]
+                );
+              } catch (error: any) {
+                console.error('Error enviant email de recuperació:', error);
+                const errorCode = error?.code || 'unknown';
+                const errorMessageKey = AuthService.getErrorMessageKey(errorCode);
+                const errorMessage = t(errorMessageKey) || t('auth.errors.generic');
+                showAlert(t('common.error'), errorMessage);
+              }
+            })();
           }
         }
       ]

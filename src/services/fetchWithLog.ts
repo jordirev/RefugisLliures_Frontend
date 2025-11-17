@@ -55,7 +55,7 @@ export async function fetchWithLog(input: RequestInfo, init?: RequestInit) {
       // Log status + optional body snippet when not ok
       const statusMsg = `${res.status} ${res.statusText || ''}`.trim();
       if (!res.ok) {
-        logApi(method, urlStr, `status=${statusMsg} timeMs=${duration}${bodySnippet ? ' error="' + bodySnippet.replace(/\n/g, ' ') + '"' : ''}`);
+        logApi(method, urlStr, `status=${statusMsg} timeMs=${duration}${bodySnippet ? ' error="' + bodySnippet.replaceAll(/\n/g, ' ') + '"' : ''}`);
       } else {
         logApi(method, urlStr, `status=${statusMsg} timeMs=${duration}`);
       }
