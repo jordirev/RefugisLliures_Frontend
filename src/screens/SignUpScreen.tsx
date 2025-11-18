@@ -345,35 +345,44 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
           <View style={styles.flagsContainer}>
             <TouchableOpacity 
+              testID="language-ca"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('ca')}
+              accessibilityLabel="Català"
             >
               <Image source={flags.ca.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-es"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('es')}
+              accessibilityLabel="Español"
             >
               <Image source={flags.es.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-fr"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('fr')}
+              accessibilityLabel="Français"
             >
               <Image source={flags.fr.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-en"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('en')}
+              accessibilityLabel="English"
             >
               <Image source={flags.en.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             {/* Enllaç per tornar al login */}
             <TouchableOpacity 
+              testID="back-button"
               style={styles.backToLoginContainer}
               onPress={onBackToLogin}
             >

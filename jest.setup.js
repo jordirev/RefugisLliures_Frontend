@@ -44,6 +44,21 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(() => ({})),
 }));
 
+// Mock expo-file-system/legacy
+jest.mock('expo-file-system/legacy', () => ({
+  documentDirectory: 'file://documents/',
+  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
+  EncodingType: {
+    UTF8: 'utf8',
+  },
+}));
+
+// Mock expo-sharing
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Mock react-i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -53,6 +68,10 @@ jest.mock('react-i18next', () => ({
       changeLanguage: jest.fn(),
     },
   }),
+  initReactI18next: {
+    type: '3rdParty',
+    init: jest.fn(),
+  },
 }));
 
 // Mock @react-navigation/native

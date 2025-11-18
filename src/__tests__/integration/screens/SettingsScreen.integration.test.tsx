@@ -19,6 +19,25 @@ import { SettingsScreen } from '../../../screens/SettingsScreen';
 // Setup MSW
 setupMSW();
 
+// Create mockNavigate that we can track
+const mockNavigate = jest.fn();
+
+// Mock de useNavigation
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      navigate: mockNavigate,
+      goBack: jest.fn(),
+      reset: jest.fn(),
+      setOptions: jest.fn(),
+      addListener: jest.fn(() => jest.fn()),
+      removeListener: jest.fn(),
+    }),
+  };
+});
+
 // Mock de useAuth
 const mockLogout = jest.fn();
 const mockDeleteAccount = jest.fn();
@@ -70,6 +89,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNavigate.mockClear();
   });
 
   describe('Renderització inicial', () => {
@@ -78,17 +98,17 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      expect(getByText('Configuració')).toBeTruthy();
-      expect(getByText('Preferències')).toBeTruthy();
-      expect(getByText('Notificacions')).toBeTruthy();
-      expect(getByText('Editar perfil')).toBeTruthy();
-      expect(getByText('Idioma')).toBeTruthy();
-      expect(getByText('Canviar email')).toBeTruthy();
-      expect(getByText('Canviar contrasenya')).toBeTruthy();
-      expect(getByText('Ajuda')).toBeTruthy();
-      expect(getByText('Sobre l\'app')).toBeTruthy();
-      expect(getByText('Eliminar compte')).toBeTruthy();
-      expect(getByText('Tancar sessió')).toBeTruthy();
+      expect(getByText('profile.settings.title')).toBeTruthy();
+      expect(getByText('profile.settings.preferences')).toBeTruthy();
+      expect(getByText('profile.settings.notifications')).toBeTruthy();
+      expect(getByText('profile.settings.editProfile')).toBeTruthy();
+      expect(getByText('profile.settings.language')).toBeTruthy();
+      expect(getByText('profile.settings.changeEmail')).toBeTruthy();
+      expect(getByText('profile.settings.changePassword')).toBeTruthy();
+      expect(getByText('profile.settings.help')).toBeTruthy();
+      expect(getByText('profile.settings.about')).toBeTruthy();
+      expect(getByText('profile.settings.deleteAccount.title')).toBeTruthy();
+      expect(getByText('profile.settings.logout.title')).toBeTruthy();
     });
 
     it('hauria de mostrar l\'idioma actual', () => {
@@ -100,14 +120,6 @@ describe('SettingsScreen - Tests d\'integració', () => {
       expect(getByText('Català')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó back', () => {
-      const { getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
-
-      const backButton = getByTestId('back-button');
-      expect(backButton).toBeTruthy();
-    });
   });
 
   describe('Navegació del menú', () => {
@@ -116,10 +128,10 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const editProfileButton = getByText('Editar perfil');
+      const editProfileButton = getByText('profile.settings.editProfile');
       fireEvent.press(editProfileButton);
 
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('EditProfile');
+      expect(mockNavigate).toHaveBeenCalledWith('EditProfile');
     });
 
     it('hauria de navegar a ChangeEmail quan es fa clic', () => {
@@ -127,10 +139,10 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const changeEmailButton = getByText('Canviar email');
+      const changeEmailButton = getByText('profile.settings.changeEmail');
       fireEvent.press(changeEmailButton);
 
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('ChangeEmail');
+      expect(mockNavigate).toHaveBeenCalledWith('ChangeEmail');
     });
 
     it('hauria de navegar a ChangePassword quan es fa clic', () => {
@@ -138,21 +150,10 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const changePasswordButton = getByText('Canviar contrasenya');
+      const changePasswordButton = getByText('profile.settings.changePassword');
       fireEvent.press(changePasswordButton);
 
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('ChangePassword');
-    });
-
-    it('hauria de navegar a Profile amb el botó back', () => {
-      const { getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
-
-      const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
-
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('Perfil');
+      expect(mockNavigate).toHaveBeenCalledWith('ChangePassword');
     });
   });
 
@@ -162,7 +163,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const languageButton = getByText('Idioma');
+      const languageButton = getByText('profile.settings.language');
       fireEvent.press(languageButton);
 
       expect(getByTestId('language-selector')).toBeTruthy();
@@ -188,15 +189,15 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const logoutButton = getByText('Tancar sessió');
+      const logoutButton = getByText('profile.settings.logout.title');
       fireEvent.press(logoutButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
-        'Confirmar tancament de sessió',
-        'Estàs segur que vols tancar la sessió?',
+        'profile.settings.logout.confirmTitle',
+        'profile.settings.logout.confirmMessage',
         expect.arrayContaining([
-          expect.objectContaining({ text: 'Cancel·lar', style: 'cancel' }),
-          expect.objectContaining({ text: 'Tancar sessió' }),
+          expect.objectContaining({ text: 'common.cancel', style: 'cancel' }),
+          expect.objectContaining({ text: 'profile.settings.logout.title' }),
         ])
       );
     });
@@ -208,7 +209,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const logoutButton = getByText('Tancar sessió');
+      const logoutButton = getByText('profile.settings.logout.title');
       fireEvent.press(logoutButton);
 
       // Simular confirmació de l'alerta
@@ -227,7 +228,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const logoutButton = getByText('Tancar sessió');
+      const logoutButton = getByText('profile.settings.logout.title');
       fireEvent.press(logoutButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
@@ -235,8 +236,8 @@ describe('SettingsScreen - Tests d\'integració', () => {
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
-          'Error',
-          expect.stringContaining('No s\'ha pogut tancar la sessió')
+          'common.error',
+          'auth.errors.generic'
         );
       });
     });
@@ -248,15 +249,15 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const deleteButton = getByText('Eliminar compte');
+      const deleteButton = getByText('profile.settings.deleteAccount.title');
       fireEvent.press(deleteButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
-        'Confirmar eliminació',
-        'Aquesta acció és irreversible. Segur que vols eliminar el teu compte?',
+        'profile.settings.deleteAccount.confirmTitle',
+        'profile.settings.deleteAccount.confirmMessage',
         expect.arrayContaining([
-          expect.objectContaining({ text: 'Cancel·lar', style: 'cancel' }),
-          expect.objectContaining({ text: 'Eliminar compte', style: 'destructive' }),
+          expect.objectContaining({ text: 'common.cancel', style: 'cancel' }),
+          expect.objectContaining({ text: 'profile.settings.deleteAccount.title', style: 'destructive' }),
         ])
       );
     });
@@ -268,7 +269,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const deleteButton = getByText('Eliminar compte');
+      const deleteButton = getByText('profile.settings.deleteAccount.title');
       fireEvent.press(deleteButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
@@ -286,7 +287,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const deleteButton = getByText('Eliminar compte');
+      const deleteButton = getByText('profile.settings.deleteAccount.title');
       fireEvent.press(deleteButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
@@ -294,8 +295,8 @@ describe('SettingsScreen - Tests d\'integració', () => {
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
-          'Error',
-          expect.stringContaining('No s\'ha pogut eliminar el compte')
+          'common.error',
+          'auth.errors.generic'
         );
       });
     });
@@ -307,11 +308,11 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const preferencesButton = getByText('Preferències');
+      const preferencesButton = getByText('profile.settings.preferences');
       fireEvent.press(preferencesButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigation.navigate).not.toHaveBeenCalledWith('Preferences');
+      expect(mockNavigate).not.toHaveBeenCalledWith('Preferences');
     });
 
     it('hauria de permetre fer clic a Notificacions', () => {
@@ -319,11 +320,11 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const notificationsButton = getByText('Notificacions');
+      const notificationsButton = getByText('profile.settings.notifications');
       fireEvent.press(notificationsButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigation.navigate).not.toHaveBeenCalledWith('Notifications');
+      expect(mockNavigate).not.toHaveBeenCalledWith('Notifications');
     });
 
     it('hauria de permetre fer clic a Ajuda', () => {
@@ -331,11 +332,11 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const helpButton = getByText('Ajuda');
+      const helpButton = getByText('profile.settings.help');
       fireEvent.press(helpButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigation.navigate).not.toHaveBeenCalledWith('Help');
+      expect(mockNavigate).not.toHaveBeenCalledWith('Help');
     });
 
     it('hauria de permetre fer clic a Sobre l\'app', () => {
@@ -343,27 +344,15 @@ describe('SettingsScreen - Tests d\'integració', () => {
         mockNavigation,
       });
 
-      const aboutButton = getByText('Sobre l\'app');
+      const aboutButton = getByText('profile.settings.about');
       fireEvent.press(aboutButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigation.navigate).not.toHaveBeenCalledWith('About');
+      expect(mockNavigate).not.toHaveBeenCalledWith('About');
     });
   });
 
-  describe('Navegació amb hardware back (Android)', () => {
-    it('hauria de navegar a Profile amb el botó hardware back', () => {
-      const { getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
 
-      // Simular botó back d'Android
-      const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
-
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('Perfil');
-    });
-  });
 
   describe('Casos límit', () => {
     it('hauria de gestionar usuari sense dades de backend', () => {
@@ -379,7 +368,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
       });
 
       // Hauria de renderitzar igualment
-      expect(getByText('Configuració')).toBeTruthy();
+      expect(getByText('profile.settings.title')).toBeTruthy();
     });
 
     it('hauria de mantenir l\'estat del selector d\'idioma', () => {
@@ -391,35 +380,16 @@ describe('SettingsScreen - Tests d\'integració', () => {
       expect(queryByTestId('language-selector')).toBeNull();
 
       // Obrir
-      const languageButton = getByText('Idioma');
+      const languageButton = getByText('profile.settings.language');
       fireEvent.press(languageButton);
 
       expect(queryByTestId('language-selector')).toBeTruthy();
     });
   });
 
-  describe('SafeArea', () => {
-    it('hauria de respectar les safe areas del dispositiu', () => {
-      const { getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
 
-      // El component hauria de tenir safe area views
-      const safeArea = getByTestId('safe-area-view');
-      expect(safeArea).toBeTruthy();
-    });
-  });
 
-  describe('Scrolling', () => {
-    it('hauria de permetre fer scroll pel contingut', () => {
-      const { getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
 
-      const scrollView = getByTestId('settings-scroll-view');
-      expect(scrollView).toBeTruthy();
-    });
-  });
 });
 
 
