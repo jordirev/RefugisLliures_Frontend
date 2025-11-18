@@ -31,6 +31,9 @@ yarn-debug.*
 yarn-error.*
 *.log
 
+# === Coverage Reports ===
+coverage/
+
 # === macOS ===
 .DS_Store
 
