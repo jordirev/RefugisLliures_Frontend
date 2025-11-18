@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/147</span>
+                <span class='fraction'>0/149</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/146</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
@@ -924,7 +924,11 @@
 <a name='L859'></a><a href='#L859'>859</a>
 <a name='L860'></a><a href='#L860'>860</a>
 <a name='L861'></a><a href='#L861'>861</a>
-<a name='L862'></a><a href='#L862'>862</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L862'></a><a href='#L862'>862</a>
+<a name='L863'></a><a href='#L863'>863</a>
+<a name='L864'></a><a href='#L864'>864</a>
+<a name='L865'></a><a href='#L865'>865</a>
+<a name='L866'></a><a href='#L866'>866</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1028,6 +1032,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1043,6 +1049,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1885,10 +1893,12 @@ export function <span class="fstat-no" title="function not covered" >RefugeDetai
       t('alerts.downloadGPX.message', { name: refuge.name }),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.download'), onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-          const gpxContent = <span class="cstat-no" title="statement not covered" >`&lt;?xml version="1.0" encoding="UTF-8"?&gt;\n&lt;gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1"&gt;\n  &lt;wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}"&gt;\n    &lt;name&gt;&lt;![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]&gt;&lt;/name&gt;\n    &lt;desc&gt;&lt;![CDATA[${refuge.description || ''}]]&gt;&lt;/desc&gt;\n    &lt;ele&gt;${refuge.altitude ?? t('common.unknown')}&lt;/ele&gt;\n  &lt;/wpt&gt;\n&lt;/gpx&gt;`;</span>
-          const fileName = <span class="cstat-no" title="statement not covered" >sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);</span>
-<span class="cstat-no" title="statement not covered" >          await saveFile(gpxContent, fileName, 'application/gpx+xml');</span>
+        { text: t('common.download'), onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >          (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+            const gpxContent = <span class="cstat-no" title="statement not covered" >`&lt;?xml version="1.0" encoding="UTF-8"?&gt;\n&lt;gpx version="1.1" creator="RefugisLliures" xmlns="http://www.topografix.com/GPX/1/1"&gt;\n  &lt;wpt lat="${refuge.coord.lat}" lon="${refuge.coord.long}"&gt;\n    &lt;name&gt;&lt;![CDATA[${refuge.name || refuge.surname || t('refuge.title')}]]&gt;&lt;/name&gt;\n    &lt;desc&gt;&lt;![CDATA[${refuge.description || ''}]]&gt;&lt;/desc&gt;\n    &lt;ele&gt;${refuge.altitude ?? t('common.unknown')}&lt;/ele&gt;\n  &lt;/wpt&gt;\n&lt;/gpx&gt;`;</span>
+            const fileName = <span class="cstat-no" title="statement not covered" >sanitizeFileName(`${refuge.name || refuge.surname || t('refuge.title')}.gpx`);</span>
+<span class="cstat-no" title="statement not covered" >            await saveFile(gpxContent, fileName, 'application/gpx+xml');</span>
+          })();
         } }
       ]
     );
@@ -1900,10 +1910,12 @@ export function <span class="fstat-no" title="function not covered" >RefugeDetai
       t('alerts.downloadKML.message', { name: refuge.name }),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.download'), onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-          const kmlContent = <span class="cstat-no" title="statement not covered" >`&lt;?xml version="1.0" encoding="UTF-8"?&gt;\n&lt;kml xmlns="http://www.opengis.net/kml/2.2"&gt;\n  &lt;Document&gt;\n    &lt;Placemark&gt;\n      &lt;name&gt;&lt;![CDATA[${refuge.name}]]&gt;&lt;/name&gt;\n      &lt;description&gt;&lt;![CDATA[${refuge.description || ''}]]&gt;&lt;/description&gt;\n      &lt;Point&gt;\n        &lt;coordinates&gt;${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}&lt;/coordinates&gt;\n      &lt;/Point&gt;\n    &lt;/Placemark&gt;\n  &lt;/Document&gt;\n&lt;/kml&gt;`;</span>
-          const fileName = <span class="cstat-no" title="statement not covered" >sanitizeFileName(`${refuge.name}.kml`);</span>
-<span class="cstat-no" title="statement not covered" >          await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');</span>
+        { text: t('common.download'), onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >          (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+            const kmlContent = <span class="cstat-no" title="statement not covered" >`&lt;?xml version="1.0" encoding="UTF-8"?&gt;\n&lt;kml xmlns="http://www.opengis.net/kml/2.2"&gt;\n  &lt;Document&gt;\n    &lt;Placemark&gt;\n      &lt;name&gt;&lt;![CDATA[${refuge.name}]]&gt;&lt;/name&gt;\n      &lt;description&gt;&lt;![CDATA[${refuge.description || ''}]]&gt;&lt;/description&gt;\n      &lt;Point&gt;\n        &lt;coordinates&gt;${refuge.coord.long},${refuge.coord.lat},${refuge.altitude || 0}&lt;/coordinates&gt;\n      &lt;/Point&gt;\n    &lt;/Placemark&gt;\n  &lt;/Document&gt;\n&lt;/kml&gt;`;</span>
+            const fileName = <span class="cstat-no" title="statement not covered" >sanitizeFileName(`${refuge.name}.kml`);</span>
+<span class="cstat-no" title="statement not covered" >            await saveFile(kmlContent, fileName, 'application/vnd.google-earth.kml+xml');</span>
+          })();
         } }
       ]
     );
@@ -1992,7 +2004,7 @@ export function <span class="fstat-no" title="function not covered" >RefugeDetai
 &nbsp;
   // Sanititza un nom de fitxer per evitar caràcters problemàtics
   const sanitizeFileName = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ame: string) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return name.replace(/[\\/:*?"&lt;&gt;|]+/g, '_').replace(/\s+/g, '_').slice(0, 120);</span>
+<span class="cstat-no" title="statement not covered" >    return name.replaceAll(/[\\/:*?"&lt;&gt;|]+/g, '_').replaceAll(/\s+/g, '_').slice(0, 120);</span>
   };
 &nbsp;
   // Escriu el fitxer al sistema i obre el dialeg de compartir/guardar (nadiu) o dispara la descàrrega (web)
@@ -2155,9 +2167,9 @@ export function <span class="fstat-no" title="function not covered" >RefugeDetai
         &lt;/View&gt;
         
         {/* Descripció */}
-        {refuge.description &amp;&amp; (
-          &lt;View style={styles.section}&gt;
-            &lt;Text style={styles.sectionTitle}&gt;{t('refuge.details.description')}&lt;/Text&gt;
+        &lt;View style={styles.section}&gt;
+          &lt;Text style={styles.sectionTitle}&gt;{t('refuge.details.description')}&lt;/Text&gt;
+          {refuge.description &amp;&amp; (
             &lt;View&gt;
               &lt;Text
                 style={styles.description}
@@ -2179,8 +2191,8 @@ export function <span class="fstat-no" title="function not covered" >RefugeDetai
                 &lt;/TouchableOpacity&gt;
               )}
             &lt;/View&gt;
-          &lt;/View&gt;
-        )}
+          )}
+        &lt;/View&gt;
         
         {/* Informació de localització */}
         &lt;View style={styles.section}&gt;
@@ -2653,7 +2665,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T20:50:45.785Z
+                at 2025-11-17T19:13:46.589Z
             </div>
         <script src="../prettify.js"></script>
         <script>

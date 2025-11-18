@@ -48,7 +48,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
         { text: 'Cancel·lar', style: 'cancel' },
         { 
           text: 'Descarregar', 
-          onPress: startDownload,
+          onPress: () => { startDownload(); },
           style: 'default'
         }
       ]

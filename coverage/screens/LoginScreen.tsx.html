@@ -39,7 +39,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -687,7 +687,9 @@
 <a name='L622'></a><a href='#L622'>622</a>
 <a name='L623'></a><a href='#L623'>623</a>
 <a name='L624'></a><a href='#L624'>624</a>
-<a name='L625'></a><a href='#L625'>625</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L625'></a><a href='#L625'>625</a>
+<a name='L626'></a><a href='#L626'>626</a>
+<a name='L627'></a><a href='#L627'>627</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -712,6 +714,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -731,13 +734,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -788,6 +786,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -795,6 +794,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -808,6 +809,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -925,6 +927,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -940,6 +943,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1323,6 +1327,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../utils/useTranslation';
@@ -1358,11 +1363,6 @@ export function <span class="fstat-no" title="function not covered" >LoginScreen
   // Verificar si Google Sign In està disponible
   const isGoogleSignInAvailable = <span class="cstat-no" title="statement not covered" >AuthService.isGoogleSignInAvailable();</span>
 &nbsp;
-  const isValidEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; {</span>
-    const re = <span class="cstat-no" title="statement not covered" >/^[^\s@]+@[^\s@]+\.[^\s@]+$/;</span>
-<span class="cstat-no" title="statement not covered" >    return re.test(value.trim());</span>
-  };
-&nbsp;
   // Gestiona el text de l'email i mostra/oculta el camp de contrasenya
   const handleSetEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ext: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEmail(text);</span>
@@ -1384,7 +1384,7 @@ export function <span class="fstat-no" title="function not covered" >LoginScreen
     }
 &nbsp;
     // Validate email format and show inline error (no alert) if invalid
-<span class="cstat-no" title="statement not covered" >    if (!isValidEmail(email)) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!validator.isEmail(email)) {</span>
 <span class="cstat-no" title="statement not covered" >      setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
@@ -1411,23 +1411,27 @@ export function <span class="fstat-no" title="function not covered" >LoginScreen
             {
               text: t('common.close'),
               style: 'cancel',
-              onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-                // Tancar sessió si l'usuari tanca l'alert
-<span class="cstat-no" title="statement not covered" >                await AuthService.logout();</span>
+              onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >                (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+                  // Tancar sessió si l'usuari tanca l'alert
+<span class="cstat-no" title="statement not covered" >                  await AuthService.logout();</span>
+                })();
               }
             },
             {
               text: t('auth.resendVerificationEmail'),
-              onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >                try {</span>
-<span class="cstat-no" title="statement not covered" >                  await AuthService.resendVerificationEmail();</span>
-<span class="cstat-no" title="statement not covered" >                  showAlert(t('common.success'), t('auth.verificationEmailResent'));</span>
-                } catch (error) {
-<span class="cstat-no" title="statement not covered" >                  console.error('Error reenviant email:', error);</span>
-<span class="cstat-no" title="statement not covered" >                  showAlert(t('common.error'), t('auth.errors.generic'));</span>
-                }
-                // Tancar sessió després de reenviar el correu
-<span class="cstat-no" title="statement not covered" >                await AuthService.logout();</span>
+              onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >                (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                  try {</span>
+<span class="cstat-no" title="statement not covered" >                    await AuthService.resendVerificationEmail();</span>
+<span class="cstat-no" title="statement not covered" >                    showAlert(t('common.success'), t('auth.verificationEmailResent'));</span>
+                  } catch (error) {
+<span class="cstat-no" title="statement not covered" >                    console.error('Error reenviant email:', error);</span>
+<span class="cstat-no" title="statement not covered" >                    showAlert(t('common.error'), t('auth.errors.generic'));</span>
+                  }
+                  // Tancar sessió després de reenviar el correu
+<span class="cstat-no" title="statement not covered" >                  await AuthService.logout();</span>
+                })();
               }
             }
           ]
@@ -1474,8 +1478,8 @@ export function <span class="fstat-no" title="function not covered" >LoginScreen
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
 &nbsp;
-    // Validate format using regex. Show inline error (no alert) if invalid.
-<span class="cstat-no" title="statement not covered" >    if (!isValidEmail(email)) {</span>
+    // Validate format
+<span class="cstat-no" title="statement not covered" >    if (!validator.isEmail(email)) {</span>
 <span class="cstat-no" title="statement not covered" >      setEmailError(t('login.errors.invalidEmail') || 'Email no vàlid');</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
@@ -1545,26 +1549,28 @@ export function <span class="fstat-no" title="function not covered" >LoginScreen
         },
         {
           text: t('auth.sendResetEmail'),
-          onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >            try {</span>
-<span class="cstat-no" title="statement not covered" >              await AuthService.resetPassword(email.trim());</span>
-<span class="cstat-no" title="statement not covered" >              showAlert(</span>
-                t('common.success'), 
-                t('auth.passwordResetEmailSent'),
-                [
-                  {
-                    text: t('common.ok'),
-                    onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >console.log('Email de recuperació enviat correctament')</span>
-                  }
-                ]
-              );
-            } catch (error: any) {
-<span class="cstat-no" title="statement not covered" >              console.error('Error enviant email de recuperació:', error);</span>
-              const errorCode = <span class="cstat-no" title="statement not covered" >error?.code || 'unknown';</span>
-              const errorMessageKey = <span class="cstat-no" title="statement not covered" >AuthService.getErrorMessageKey(errorCode);</span>
-              const errorMessage = <span class="cstat-no" title="statement not covered" >t(errorMessageKey) || t('auth.errors.generic');</span>
-<span class="cstat-no" title="statement not covered" >              showAlert(t('common.error'), errorMessage);</span>
-            }
+          onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >            (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >              try {</span>
+<span class="cstat-no" title="statement not covered" >                await AuthService.resetPassword(email.trim());</span>
+<span class="cstat-no" title="statement not covered" >                showAlert(</span>
+                  t('common.success'), 
+                  t('auth.passwordResetEmailSent'),
+                  [
+                    {
+                      text: t('common.ok'),
+                      onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >console.log('Email de recuperació enviat correctament')</span>
+                    }
+                  ]
+                );
+              } catch (error: any) {
+<span class="cstat-no" title="statement not covered" >                console.error('Error enviant email de recuperació:', error);</span>
+                const errorCode = <span class="cstat-no" title="statement not covered" >error?.code || 'unknown';</span>
+                const errorMessageKey = <span class="cstat-no" title="statement not covered" >AuthService.getErrorMessageKey(errorCode);</span>
+                const errorMessage = <span class="cstat-no" title="statement not covered" >t(errorMessageKey) || t('auth.errors.generic');</span>
+<span class="cstat-no" title="statement not covered" >                showAlert(t('common.error'), errorMessage);</span>
+              }
+            })();
           }
         }
       ]
@@ -1942,7 +1948,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T20:50:45.785Z
+                at 2025-11-17T19:13:46.589Z
             </div>
         <script src="../prettify.js"></script>
         <script>

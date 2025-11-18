@@ -8,7 +8,7 @@
  * - Validacions i conversions
  */
 
-import { Location, Coord, Filters } from '../../models';
+import { Location, Coord, Filters } from '../../../models';
 import {
   RefugiDTO,
   CoordDTO,
@@ -16,12 +16,12 @@ import {
   RefugisResponseDTO,
   RefugiSimpleDTO,
   RefugisSimpleResponseDTO,
-} from '../../services/dto/RefugiDTO';
+} from '../../../services/dto/RefugiDTO';
 import {
   mapCoordFromDTO,
   mapRefugiFromDTO,
   mapRefugisFromDTO,
-} from '../../services/mappers/RefugiMapper';
+} from '../../../services/mappers/RefugiMapper';
 
 describe('Models de Refugis', () => {
   describe('Coord Model', () => {

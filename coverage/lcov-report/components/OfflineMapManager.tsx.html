@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/58</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
@@ -484,7 +484,9 @@
 <a name='L419'></a><a href='#L419'>419</a>
 <a name='L420'></a><a href='#L420'>420</a>
 <a name='L421'></a><a href='#L421'>421</a>
-<a name='L422'></a><a href='#L422'>422</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -534,7 +536,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -585,8 +587,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -955,7 +959,7 @@ export function <span class="fstat-no" title="function not covered" >OfflineMapM
         { text: 'Cancel·lar', style: 'cancel' },
         { 
           text: 'Descarregar', 
-          onPress: startDownload,
+          onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >startDownload(); </span>},
           style: 'default'
         }
       ]
@@ -1001,14 +1005,16 @@ export function <span class="fstat-no" title="function not covered" >OfflineMapM
         { text: 'Cancel·lar', style: 'cancel' },
         { 
           text: 'Eliminar', 
-          onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >            try {</span>
-<span class="cstat-no" title="statement not covered" >              await MapCacheService.clearCache();</span>
-<span class="cstat-no" title="statement not covered" >              showAlert('Eliminat', 'Mapes eliminats correctament.');</span>
-<span class="cstat-no" title="statement not covered" >              loadCacheStatus();</span>
-            } catch (error) {
-<span class="cstat-no" title="statement not covered" >              showAlert('Error', 'Hi ha hagut un problema eliminant els mapes.');</span>
-            }
+          onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >            (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >              try {</span>
+<span class="cstat-no" title="statement not covered" >                await MapCacheService.clearCache();</span>
+<span class="cstat-no" title="statement not covered" >                showAlert('Eliminat', 'Mapes eliminats correctament.');</span>
+<span class="cstat-no" title="statement not covered" >                loadCacheStatus();</span>
+              } catch (error) {
+<span class="cstat-no" title="statement not covered" >                showAlert('Error', 'Hi ha hagut un problema eliminant els mapes.');</span>
+              }
+            })();
           },
           style: 'destructive'
         }
@@ -1333,7 +1339,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T20:50:45.521Z
+                at 2025-11-17T19:13:46.335Z
             </div>
         <script src="../prettify.js"></script>
         <script>

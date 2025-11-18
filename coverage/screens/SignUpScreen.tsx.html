@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/175</span>
+                <span class='fraction'>0/173</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/169</span>
+                <span class='fraction'>0/167</span>
             </div>
         
             
@@ -847,9 +847,7 @@
 <a name='L782'></a><a href='#L782'>782</a>
 <a name='L783'></a><a href='#L783'>783</a>
 <a name='L784'></a><a href='#L784'>784</a>
-<a name='L785'></a><a href='#L785'>785</a>
-<a name='L786'></a><a href='#L786'>786</a>
-<a name='L787'></a><a href='#L787'>787</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L785'></a><a href='#L785'>785</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -876,6 +874,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -977,10 +976,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1086,7 +1083,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1647,6 +1643,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import validator from 'validator';
 import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -1766,18 +1763,16 @@ export function <span class="fstat-no" title="function not covered" >SignUpScree
   const handleSetEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ext: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setEmail(text);</span>
     const trimmed = <span class="cstat-no" title="statement not covered" >text.trim();</span>
-    // Clear or set inline email error while the user types
-    const emailRegex = <span class="cstat-no" title="statement not covered" >/^[^\s@]+@[^\s@]+\.[^\s@]+$/;</span>
 <span class="cstat-no" title="statement not covered" >    if (!trimmed) {</span>
 <span class="cstat-no" title="statement not covered" >      setEmailError(null);</span>
-    } else <span class="cstat-no" title="statement not covered" >if (!emailRegex.test(trimmed)) {</span>
+    } else <span class="cstat-no" title="statement not covered" >if (!validator.isEmail(trimmed)) {</span>
 <span class="cstat-no" title="statement not covered" >      setEmailError('signup.errors.invalidEmail');</span>
     } else {
 <span class="cstat-no" title="statement not covered" >      setEmailError(null);</span>
     }
 &nbsp;
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
-<span class="cstat-no" title="statement not covered" >    if (trimmed.length &gt; 0 &amp;&amp; emailRegex.test(trimmed)) {</span>
+<span class="cstat-no" title="statement not covered" >    if (trimmed.length &gt; 0 &amp;&amp; validator.isEmail(trimmed)) {</span>
       // initialize password errors so empty password shows all rules immediately
 <span class="cstat-no" title="statement not covered" >      setPasswordErrors(verifyPasswordStrength(password));</span>
 <span class="cstat-no" title="statement not covered" >      if(step === "email"){</span>
@@ -1872,8 +1867,7 @@ export function <span class="fstat-no" title="function not covered" >SignUpScree
     }
 &nbsp;
     // Validació bàsica d'email
-    const emailRegex = <span class="cstat-no" title="statement not covered" >/^[^\s@]+@[^\s@]+\.[^\s@]+$/;</span>
-<span class="cstat-no" title="statement not covered" >    if (!emailRegex.test(email)) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!validator.isEmail(email)) {</span>
 <span class="cstat-no" title="statement not covered" >      setEmailError(t('signup.errors.invalidEmail'));</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
@@ -2428,7 +2422,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T20:50:45.785Z
+                at 2025-11-17T19:13:46.589Z
             </div>
         <script src="../prettify.js"></script>
         <script>

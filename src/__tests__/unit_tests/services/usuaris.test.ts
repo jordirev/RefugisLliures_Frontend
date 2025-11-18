@@ -8,9 +8,9 @@
  * - Validacions i conversions
  */
 
-import { User } from '../../models';
-import { UserDTO } from '../../services/dto/UserDTO';
-import { mapUserFromDTO } from '../../services/mappers/UserMapper';
+import { User } from '../../../models';
+import { UserDTO } from '../../../services/dto/UserDTO';
+import { mapUserFromDTO } from '../../../services/mappers/UserMapper';
 
 describe('Models d\'Usuaris', () => {
   describe('User Model', () => {

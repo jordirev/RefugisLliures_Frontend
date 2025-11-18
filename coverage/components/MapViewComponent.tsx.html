@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -252,7 +252,9 @@
 <a name='L187'></a><a href='#L187'>187</a>
 <a name='L188'></a><a href='#L188'>188</a>
 <a name='L189'></a><a href='#L189'>189</a>
-<a name='L190'></a><a href='#L190'>190</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -331,12 +333,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -345,6 +341,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -514,27 +518,29 @@ export const MapViewComponent = <span class="cstat-no" title="statement not cove
               t('permissions.location.message'),
               [
                 { text: t('common.cancel'), style: 'cancel' },
-                { text: t('common.allow'), onPress: <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >                    try {</span>
-                      let { status } = <span class="cstat-no" title="statement not covered" >await ExpoLocation.requestForegroundPermissionsAsync();</span>
-<span class="cstat-no" title="statement not covered" >                      if (status !== 'granted') {</span>
-<span class="cstat-no" title="statement not covered" >                        showAlert('Permís denegat', 'No es pot accedir a la ubicació.');</span>
-<span class="cstat-no" title="statement not covered" >                        return;</span>
-                      }
-                      let location = <span class="cstat-no" title="statement not covered" >await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });</span>
-                      const latitude = <span class="cstat-no" title="statement not covered" >location.coords.latitude;</span>
-                      const longitude = <span class="cstat-no" title="statement not covered" >location.coords.longitude;</span>
+                { text: t('common.allow'), onPress: <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >                    (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                      try {</span>
+                        let { status } = <span class="cstat-no" title="statement not covered" >await ExpoLocation.requestForegroundPermissionsAsync();</span>
+<span class="cstat-no" title="statement not covered" >                        if (status !== 'granted') {</span>
+<span class="cstat-no" title="statement not covered" >                          showAlert('Permís denegat', 'No es pot accedir a la ubicació.');</span>
+<span class="cstat-no" title="statement not covered" >                          return;</span>
+                        }
+                        let location = <span class="cstat-no" title="statement not covered" >await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });</span>
+                        const latitude = <span class="cstat-no" title="statement not covered" >location.coords.latitude;</span>
+                        const longitude = <span class="cstat-no" title="statement not covered" >location.coords.longitude;</span>
 &nbsp;
-                      // Guardar la ubicació de l'usuari sense seleccionar-la
-<span class="cstat-no" title="statement not covered" >                      setUserLocation({ latitude, longitude });</span>
+                        // Guardar la ubicació de l'usuari sense seleccionar-la
+<span class="cstat-no" title="statement not covered" >                        setUserLocation({ latitude, longitude });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                      if (typeof window !== 'undefined' &amp;&amp; 'CustomEvent' in window) {</span>
-                        const ev = <span class="cstat-no" title="statement not covered" >new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });</span>
-<span class="cstat-no" title="statement not covered" >                        window.dispatchEvent(ev);</span>
+<span class="cstat-no" title="statement not covered" >                        if (typeof window !== 'undefined' &amp;&amp; 'CustomEvent' in window) {</span>
+                          const ev = <span class="cstat-no" title="statement not covered" >new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });</span>
+<span class="cstat-no" title="statement not covered" >                          window.dispatchEvent(ev);</span>
+                        }
+                      } catch (err: any) {
+<span class="cstat-no" title="statement not covered" >                        showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));</span>
                       }
-                    } catch (err: any) {
-<span class="cstat-no" title="statement not covered" >                      showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));</span>
-                    }
+                    })();
                   }
                 }
               ]
@@ -637,7 +643,7 @@ const styles = <span class="cstat-no" title="statement not covered" >StyleSheet.
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-16T20:50:45.785Z
+                at 2025-11-17T19:13:46.589Z
             </div>
         <script src="../prettify.js"></script>
         <script>
