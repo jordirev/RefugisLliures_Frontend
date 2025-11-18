@@ -11,17 +11,6 @@
  * Escenaris d'èxit i límit per màxim coverage
  */
 
-// Mock de les variables d'entorn abans d'importar firebase
-jest.mock('@env', () => ({
-  FIREBASE_API_KEY: 'test-api-key',
-  FIREBASE_AUTH_DOMAIN: 'test-project.firebaseapp.com',
-  FIREBASE_PROJECT_ID: 'test-project',
-  FIREBASE_STORAGE_BUCKET: 'test-project.appspot.com',
-  FIREBASE_MESSAGING_SENDER_ID: '123456789',
-  FIREBASE_APP_ID: '1:123456789:web:abcdef123456',
-  FIREBASE_MEASUREMENT_ID: 'G-ABCDEFGHIJ'
-}));
-
 // Mock de firebase/app
 const mockInitializeApp = jest.fn();
 jest.mock('firebase/app', () => ({
@@ -52,6 +41,8 @@ jest.mock('firebase/auth', () => ({
   verifyBeforeUpdateEmail: jest.fn()
 }));
 
+// Les variables d'entorn es carreguen des de __mocks__/env.js via moduleNameMapper
+
 describe('firebase', () => {
   let consoleErrorSpy: jest.SpyInstance;
 
@@ -59,10 +50,10 @@ describe('firebase', () => {
     jest.clearAllMocks();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     
-    // Reset del mock d'app
+    // Reset del mock d'app amb valors per defecte
     mockInitializeApp.mockReturnValue({
       name: '[DEFAULT]',
-      options: {}
+      options: mockInitializeApp.mock.calls[0]?.[0] || {}
     });
 
     // Reset del mock d'auth
