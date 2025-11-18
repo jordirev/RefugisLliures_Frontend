@@ -201,6 +201,7 @@ export function ChangePasswordScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
+            testID="back-button"
           >
             <BackIcon />
           </TouchableOpacity>
@@ -220,6 +221,7 @@ export function ChangePasswordScreen() {
             <Text style={styles.label}>{t('changePassword.currentPassword')}</Text>
             <View style={styles.passwordInputWrapper}>
               <TextInput
+                testID="current-password-input"
                 style={[styles.input, currentPasswordError && styles.inputError]}
                 value={currentPassword}
                 onChangeText={(text) => {
@@ -232,6 +234,7 @@ export function ChangePasswordScreen() {
                 editable={!isLoading}
               />
               <TouchableOpacity
+                testID="toggle-current-password"
                 style={styles.eyeIcon}
                 onPress={() => setShowCurrentPassword(!showCurrentPassword)}
               >
@@ -248,6 +251,7 @@ export function ChangePasswordScreen() {
             <Text style={styles.label}>{t('changePassword.newPassword')}</Text>
             <View style={styles.passwordInputWrapper}>
               <TextInput
+                testID="new-password-input"
                 style={[styles.input, passwordRequirements.length > 0 && newPassword.length > 0 && styles.inputError]}
                 value={newPassword}
                 onChangeText={handleNewPasswordChange}
@@ -257,6 +261,7 @@ export function ChangePasswordScreen() {
                 editable={!isLoading}
               />
               <TouchableOpacity
+                testID="toggle-new-password"
                 style={styles.eyeIcon}
                 onPress={() => setShowNewPassword(!showNewPassword)}
               >
@@ -278,6 +283,7 @@ export function ChangePasswordScreen() {
             <Text style={styles.label}>{t('changePassword.confirmNewPassword')}</Text>
             <View style={styles.passwordInputWrapper}>
               <TextInput
+                testID="confirm-password-input"
                 style={[styles.input, confirmPasswordError && styles.inputError]}
                 value={confirmPassword}
                 onChangeText={handleConfirmPasswordChange}
@@ -287,6 +293,7 @@ export function ChangePasswordScreen() {
                 editable={!isLoading}
               />
               <TouchableOpacity
+                testID="toggle-confirm-password"
                 style={styles.eyeIcon}
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
@@ -300,6 +307,7 @@ export function ChangePasswordScreen() {
           
           {/* Submit Button */}
           <TouchableOpacity
+            testID="submit-button"
             style={[styles.submitButton, (!isFormValid || isLoading) && styles.submitButtonDisabled]}
             onPress={handleChangePassword}
             disabled={!isFormValid || isLoading}

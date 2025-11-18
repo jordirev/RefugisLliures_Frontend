@@ -152,13 +152,15 @@ export function SettingsScreen() {
                 t('profile.settings.deleteAccount.confirmMessage'),
                 [
                   { text: t('common.cancel'), style: 'cancel' },
-                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: async () => {
-                      try {
-                        await deleteAccount();
-                      } catch (error) {
-                        console.error('Error durant la eliminació del compte:', error);
-                        showAlert(t('common.error'), t('auth.errors.generic'));
-                      }
+                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: () => {
+                      (async () => {
+                        try {
+                          await deleteAccount();
+                        } catch (error) {
+                          console.error('Error durant la eliminació del compte:', error);
+                          showAlert(t('common.error'), t('auth.errors.generic'));
+                        }
+                      })();
                     }
                   }
                 ]
@@ -176,13 +178,15 @@ export function SettingsScreen() {
                 t('profile.settings.logout.confirmMessage'),
                 [
                   { text: t('common.cancel'), style: 'cancel' },
-                  { text: t('profile.settings.logout.title'), onPress: async () => {
-                      try {
-                        await logout();
-                      } catch (error) {
-                        console.error('Error durant el logout:', error);
-                        showAlert(t('common.error'), t('auth.errors.generic'));
-                      }
+                  { text: t('profile.settings.logout.title'), onPress: () => {
+                      (async () => {
+                        try {
+                          await logout();
+                        } catch (error) {
+                          console.error('Error durant el logout:', error);
+                          showAlert(t('common.error'), t('auth.errors.generic'));
+                        }
+                      })();
                     }
                   }
                 ]

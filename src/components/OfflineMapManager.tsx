@@ -48,7 +48,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
         { text: 'Cancel·lar', style: 'cancel' },
         { 
           text: 'Descarregar', 
-          onPress: startDownload,
+          onPress: () => { startDownload(); },
           style: 'default'
         }
       ]
@@ -94,14 +94,16 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
         { text: 'Cancel·lar', style: 'cancel' },
         { 
           text: 'Eliminar', 
-          onPress: async () => {
-            try {
-              await MapCacheService.clearCache();
-              showAlert('Eliminat', 'Mapes eliminats correctament.');
-              loadCacheStatus();
-            } catch (error) {
-              showAlert('Error', 'Hi ha hagut un problema eliminant els mapes.');
-            }
+          onPress: () => {
+            (async () => {
+              try {
+                await MapCacheService.clearCache();
+                showAlert('Eliminat', 'Mapes eliminats correctament.');
+                loadCacheStatus();
+              } catch (error) {
+                showAlert('Error', 'Hi ha hagut un problema eliminant els mapes.');
+              }
+            })();
           },
           style: 'destructive'
         }

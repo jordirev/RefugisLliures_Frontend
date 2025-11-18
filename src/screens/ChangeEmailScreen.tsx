@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../utils/useCustomAlert';
+import validator from 'validator';
 import BackIcon from '../assets/icons/arrow-left.svg';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
@@ -31,17 +32,14 @@ export function ChangeEmailScreen() {
   
   const currentEmail = firebaseUser?.email || '';
   
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-  
+
+
   const handleNewEmailChange = (text: string) => {
     setNewEmail(text);
     
     if (text.trim() === '') {
       setEmailError(null);
-    } else if (!validateEmail(text)) {
+    } else if (!validator.isEmail(text)) {
       setEmailError(t('signup.errors.invalidEmail'));
     } else if (text.toLowerCase() === currentEmail.toLowerCase()) {
       setEmailError(t('changeEmail.errors.sameEmail'));
@@ -62,7 +60,7 @@ export function ChangeEmailScreen() {
       return;
     }
     
-    if (!validateEmail(newEmail)) {
+    if (!validator.isEmail(newEmail)) {
       setEmailError(t('signup.errors.invalidEmail'));
       return;
     }
@@ -153,7 +151,7 @@ export function ChangeEmailScreen() {
     newEmail.trim() !== '' &&
     !passwordError &&
     !emailError &&
-    validateEmail(newEmail) &&
+    validator.isEmail(newEmail) &&
     newEmail.toLowerCase() !== currentEmail.toLowerCase();
   
   return (
@@ -165,6 +163,7 @@ export function ChangeEmailScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
+            testID="back-button"
           >
             <BackIcon />
           </TouchableOpacity>
@@ -194,6 +193,7 @@ export function ChangeEmailScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>{t('changeEmail.newEmail')}</Text>
             <TextInput
+              testID="new-email-input"
               style={[styles.input, emailError && styles.inputError]}
               value={newEmail}
               onChangeText={handleNewEmailChange}
@@ -213,6 +213,7 @@ export function ChangeEmailScreen() {
             <Text style={styles.label}>{t('changeEmail.password')}</Text>
             <View style={styles.passwordInputWrapper}>
               <TextInput
+                testID="password-input"
                 style={[styles.input, passwordError && styles.inputError]}
                 value={password}
                 onChangeText={(text) => {
@@ -225,6 +226,7 @@ export function ChangeEmailScreen() {
                 editable={!isLoading}
               />
               <TouchableOpacity
+                testID="toggle-password-visibility"
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
@@ -239,6 +241,7 @@ export function ChangeEmailScreen() {
           
           {/* Submit Button */}
           <TouchableOpacity
+            testID="submit-button"
             style={[styles.submitButton, (!isFormValid || isLoading) && styles.submitButtonDisabled]}
             onPress={handleChangeEmail}
             disabled={!isFormValid || isLoading}
