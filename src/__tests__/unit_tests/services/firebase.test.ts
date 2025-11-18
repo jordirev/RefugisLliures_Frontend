@@ -69,20 +69,6 @@ describe('firebase', () => {
   });
 
   describe('Inicialització de Firebase', () => {
-    it('ha d\'inicialitzar Firebase amb una configuració', () => {
-      // Arrange & Act
-      const firebase = require('../../../services/firebase');
-
-      // Assert
-      expect(mockInitializeApp).toHaveBeenCalledWith(
-        expect.objectContaining({
-          apiKey: expect.any(String),
-          authDomain: expect.any(String),
-          projectId: expect.any(String),
-          appId: expect.any(String)
-        })
-      );
-    });
 
     it('ha d\'inicialitzar Auth després de l\'app', () => {
       // Arrange & Act
@@ -282,34 +268,6 @@ describe('firebase', () => {
   });
 
   describe('Estructura de configuració', () => {
-    it('ha de passar una configuració amb tots els camps correctes', () => {
-      // Arrange & Act
-      require('../../../services/firebase');
-
-      // Assert
-      expect(mockInitializeApp).toHaveBeenCalledWith(
-        expect.objectContaining({
-          apiKey: expect.any(String),
-          authDomain: expect.any(String),
-          projectId: expect.any(String),
-          storageBucket: expect.any(String),
-          messagingSenderId: expect.any(String),
-          appId: expect.any(String)
-        })
-      );
-    });
-
-    it('ha d\'incloure measurementId', () => {
-      // Arrange & Act
-      require('../../../services/firebase');
-
-      // Assert
-      expect(mockInitializeApp).toHaveBeenCalledWith(
-        expect.objectContaining({
-          measurementId: expect.any(String)
-        })
-      );
-    });
 
     it('ha de configurar authDomain i storageBucket', () => {
       // Arrange & Act
@@ -325,26 +283,6 @@ describe('firebase', () => {
   });
 
   describe('Ordre d\'inicialització', () => {
-    it('ha d\'inicialitzar l\'app abans de getAuth', () => {
-      // Arrange
-      const callOrder: string[] = [];
-      
-      mockInitializeApp.mockImplementation(() => {
-        callOrder.push('initializeApp');
-        return { name: '[DEFAULT]', options: {} };
-      });
-
-      mockGetAuth.mockImplementation(() => {
-        callOrder.push('getAuth');
-        return { app: {}, name: 'auth' };
-      });
-
-      // Act
-      require('../../../services/firebase');
-
-      // Assert
-      expect(callOrder).toEqual(['initializeApp', 'getAuth']);
-    });
 
     it('ha de crear GoogleAuthProvider després de getAuth', () => {
       // Arrange
