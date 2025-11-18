@@ -82,19 +82,19 @@ Els tests cobreixen els següents aspectes del mòdul i18n:
 
 ## Executar els Tests
 
-### Executar tots els tests del mòdul i18n
+###  Executar tots els tests del mòdul i18n
 ```bash
-npm test -- src/__tests__/tests_unitaris/i18n/index.test.ts
+npm test -- src/__tests__/unit_tests/i18n/index.test.ts
 ```
 
 ### Executar amb cobertura
 ```bash
-npm test -- src/__tests__/tests_unitaris/i18n/index.test.ts --coverage --collectCoverageFrom="src/i18n/index.ts"
+npm test -- src/__tests__/unit_tests/i18n/index.test.ts --coverage --collectCoverageFrom="src/i18n/index.ts"
 ```
 
 ### Executar en mode watch
 ```bash
-npm test -- src/__tests__/tests_unitaris/i18n/index.test.ts --watch
+npm test -- src/__tests__/unit_tests/i18n/index.test.ts --watch
 ```
 
 ## Resultats

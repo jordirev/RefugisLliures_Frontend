@@ -441,6 +441,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
                 <View style={styles.inputContainer}>
                   <TextInput
+                    testID="username-input"
                     style={styles.input}
                     placeholder={t('signup.usernamePlaceholder')}
                     placeholderTextColor="#999"
@@ -460,6 +461,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               <>
                 <View style={styles.inputContainer}>
                   <TextInput
+                    testID="email-input"
                     style={styles.input}
                     placeholder={t('signup.emailPlaceholder')}
                     placeholderTextColor="#999"
@@ -481,6 +483,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                 <View style={styles.inputContainer}>
                   <View style={styles.inputWithIcon}>
                     <TextInput
+                      testID="password-input"
                       style={[styles.input, styles.inputWithIconPadding]}
                       placeholder={t('signup.passwordPlaceholder')}
                       placeholderTextColor="#999"
@@ -490,6 +493,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                       editable={!isLoading}
                     />
                     <TouchableOpacity
+                      testID="toggle-password-visibility"
                       onPress={() => setShowPassword(prev => !prev)}
                       style={styles.iconButton}
                       accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
@@ -519,6 +523,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                 <View style={styles.inputContainer}>
                   <View style={styles.inputWithIcon}>
                     <TextInput
+                      testID="confirm-password-input"
                       style={[styles.input, styles.inputWithIconPadding]}
                       placeholder={t('signup.confirmPasswordPlaceholder')}
                       placeholderTextColor="#999"
@@ -528,6 +533,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                       editable={!isLoading}
                     />
                     <TouchableOpacity
+                      testID="toggle-confirm-password-visibility"
                       onPress={() => setShowConfirmPassword(prev => !prev)}
                       style={styles.iconButton}
                       accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
@@ -550,6 +556,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               <>
                 {/* Botó de registre */}
                 <TouchableOpacity
+                  testID="signup-button"
                   style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]}
                   onPress={handleSignUp}
                   disabled={isLoading}

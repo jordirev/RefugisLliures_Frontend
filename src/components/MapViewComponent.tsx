@@ -49,6 +49,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
       <View style={styles.controls}>
         {/* Brúixola */}
         <TouchableOpacity 
+          testID="compass-button"
           style={styles.controlButton}
           onPress={() => {/* TODO: Implementar orientació de brúixola */}}
         >
@@ -58,6 +59,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
 
         {/* Centrar ubicació */}
         <TouchableOpacity 
+          testID="target-button"
           style={styles.controlButton}
           onPress={async () => {
             // Si ja tenim la ubicació mostrada, la amaguem
@@ -105,6 +107,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
 
         {/* Capes */}
         <TouchableOpacity 
+          testID="layers-button"
           style={styles.controlButton}
           onPress={() => setShowOfflineManager(true)}
         >

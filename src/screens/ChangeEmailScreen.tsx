@@ -163,6 +163,7 @@ export function ChangeEmailScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
+            testID="back-button"
           >
             <BackIcon />
           </TouchableOpacity>
@@ -192,6 +193,7 @@ export function ChangeEmailScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>{t('changeEmail.newEmail')}</Text>
             <TextInput
+              testID="new-email-input"
               style={[styles.input, emailError && styles.inputError]}
               value={newEmail}
               onChangeText={handleNewEmailChange}
@@ -211,6 +213,7 @@ export function ChangeEmailScreen() {
             <Text style={styles.label}>{t('changeEmail.password')}</Text>
             <View style={styles.passwordInputWrapper}>
               <TextInput
+                testID="password-input"
                 style={[styles.input, passwordError && styles.inputError]}
                 value={password}
                 onChangeText={(text) => {
@@ -223,6 +226,7 @@ export function ChangeEmailScreen() {
                 editable={!isLoading}
               />
               <TouchableOpacity
+                testID="toggle-password-visibility"
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
@@ -237,6 +241,7 @@ export function ChangeEmailScreen() {
           
           {/* Submit Button */}
           <TouchableOpacity
+            testID="submit-button"
             style={[styles.submitButton, (!isFormValid || isLoading) && styles.submitButtonDisabled]}
             onPress={handleChangeEmail}
             disabled={!isFormValid || isLoading}

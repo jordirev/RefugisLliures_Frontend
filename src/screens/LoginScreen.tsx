@@ -290,6 +290,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
               <TextInput
+                testID="email-input"
                 style={styles.input}
                 placeholder={t('login.emailPlaceholder')}
                 placeholderTextColor="#999"
@@ -311,6 +312,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 <View style={styles.inputContainer}>
                   <View style={styles.inputWithIcon}>
                     <TextInput
+                      testID="password-input"
                       style={[styles.input, styles.inputWithIconPadding]}
                       placeholder={t('login.passwordPlaceholder')}
                       placeholderTextColor="#999"
@@ -321,6 +323,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                       editable={!isLoading}
                     />
                     <TouchableOpacity
+                      testID="toggle-password-visibility"
                       onPress={() => setShowPassword(prev => !prev)}
                       style={styles.iconButton}
                       accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
@@ -338,6 +341,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 ) : null}
 
                 <TouchableOpacity 
+                  testID="forgot-password-button"
                   onPress={handleForgotPassword}
                   style={styles.forgotPasswordContainer}
                 >
@@ -353,6 +357,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                 const continueDisabled = isLoading || !email.trim();
                 return (
                   <TouchableOpacity
+                    testID="continue-button"
                     style={[styles.loginButton, continueDisabled && styles.loginButtonDisabled]}
                     onPress={handleContinue}
                     disabled={continueDisabled}
@@ -382,6 +387,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               <>
                 {/* Botó d'iniciar sessió */}
                 <TouchableOpacity
+                  testID="login-button"
                   style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
                   onPress={handleLogin}
                   disabled={isLoading}
@@ -408,6 +414,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
 
               {/* Botó de Google */}
               <TouchableOpacity
+                testID="google-login-button"
                 style={styles.googleButton}
                 onPress={handleGoogleLogin}
                 disabled={isLoading}
@@ -427,6 +434,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               {/* Enllaç per crear compte */}
               {onNavigateToSignUp && (
                 <TouchableOpacity 
+                  testID="signup-link"
                   style={styles.signUpContainer}
                   onPress={onNavigateToSignUp}
                 >

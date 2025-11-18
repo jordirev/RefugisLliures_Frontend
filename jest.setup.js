@@ -44,6 +44,39 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(() => ({})),
 }));
 
+// Mock react-i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key) => key,
+    i18n: {
+      language: 'ca',
+      changeLanguage: jest.fn(),
+    },
+  }),
+}));
+
+// Mock @react-navigation/native
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+      reset: jest.fn(),
+      setOptions: jest.fn(),
+      addListener: jest.fn(() => jest.fn()),
+      removeListener: jest.fn(),
+    }),
+    useRoute: () => ({
+      params: {},
+    }),
+    useFocusEffect: (callback) => {
+      callback();
+    },
+  };
+});
+
 // Silenciar advertències de console.warn i console.error en tests
 global.console = {
   ...console,
