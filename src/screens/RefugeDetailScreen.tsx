@@ -410,11 +410,19 @@ export function RefugeDetailScreen({
               </Text>
             </View>
             <View style={styles.downloadButtons}>
-              <TouchableOpacity style={styles.downloadButton} onPress={handleDownloadGPX}>
+              <TouchableOpacity 
+                style={styles.downloadButton} 
+                onPress={handleDownloadGPX}
+                testID="download-gpx-button"
+              >
                 <DownloadIcon width={14} height={14} color="#4A5565" />
                 <Text style={styles.downloadButtonText}>GPX</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.downloadButton} onPress={handleDownloadKML}>
+              <TouchableOpacity 
+                style={styles.downloadButton} 
+                onPress={handleDownloadKML}
+                testID="download-kml-button"
+              >
                 <DownloadIcon width={14} height={14} color="#4A5565" />
                 <Text style={styles.downloadButtonText}>KML</Text>
               </TouchableOpacity>
@@ -428,7 +436,12 @@ export function RefugeDetailScreen({
           <Text style={styles.sectionTitle}>{t('refuge.details.prepareRoute')}</Text>
           {/* Stats en grid */}
           <View style={styles.statsGrid}>
-            <TouchableOpacity style={styles.statCard} onPress={handleOpenWindy} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.statCard} 
+              onPress={handleOpenWindy} 
+              activeOpacity={0.7}
+              testID="weather-button"
+            >
               <Image
                 source={WeatherIcon}
                 style={{ width: 48, height: 48, transform: [{ scaleX: -1 }] }}
@@ -436,7 +449,12 @@ export function RefugeDetailScreen({
               <Text style={styles.statLabel2}>{t('refuge.details.weather')}</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.statCard} onPress={handleOpenWikiloc} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.statCard} 
+              onPress={handleOpenWikiloc} 
+              activeOpacity={0.7}
+              testID="routes-button"
+            >
               <Image source={RoutesIcon} style={{ width: 48, height: 48 }} />
               <Text style={styles.statLabel2}>{t('refuge.details.nearbyRoutes')}</Text>
             </TouchableOpacity>
@@ -468,10 +486,18 @@ export function RefugeDetailScreen({
 
       {/* Action buttons overlay (fixed) */}
       <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
-        <TouchableOpacity style={styles.actionButton} onPress={handleToggleFavorite}>
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={handleToggleFavorite}
+          testID="favorite-button"
+        >
           <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, { marginLeft: 8 }]} onPress={handleEdit}>
+        <TouchableOpacity 
+          style={[styles.actionButton, { marginLeft: 8 }]} 
+          onPress={handleEdit}
+          testID="edit-button"
+        >
           <EditIcon width={18} height={18} color="#4A5565" />
         </TouchableOpacity>
       </View>
@@ -480,6 +506,7 @@ export function RefugeDetailScreen({
       <TouchableOpacity 
         style={[styles.backButton, { top: 16 + insets.top, zIndex: 1000 }]} 
         onPress={onBack}
+        testID="back-button"
       >
         <ArrowLeftIcon width={20} height={20} color="#4A5565" />
       </TouchableOpacity>
