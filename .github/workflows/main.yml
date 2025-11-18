@@ -33,7 +33,7 @@ jobs:
       run: npm run test:coverage
       
     - name: Run E2E tests without coverage
-      run: npm run test:e2e  
+      run: npm run test:e2e
       env:
         CI: true # Firebase Emulator does not require authentication
     
