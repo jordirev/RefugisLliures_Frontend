@@ -45,16 +45,18 @@ export function RefugeBottomSheet({
   return (
     <View style={styles.overlay}>
       <TouchableOpacity 
+        testID="backdrop"
         style={styles.backdrop} 
         onPress={onClose}
         activeOpacity={1}
       />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom }]}> 
+      <View testID="bottom-sheet" style={[styles.sheet, { paddingBottom: insets.bottom }]}> 
         {/* Handle */}
         <View style={styles.handle} />
           {/* Imatge del refugi */}
           <View style={styles.imageContainer}>
             <Image
+              testID="refuge-image"
               source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
               style={styles.image}
               resizeMode="cover"
@@ -65,7 +67,7 @@ export function RefugeBottomSheet({
               {/* Nom */}
               <Text style={styles.name}>{refuge.name}</Text>
               {/* Favorit */}
-              <TouchableOpacity onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
+              <TouchableOpacity testID="favorite-button" onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
                 <FavouriteIcon width={24} height={24} />
               </TouchableOpacity>
             </View>
@@ -89,7 +91,7 @@ export function RefugeBottomSheet({
               </View>
               <View style={[styles.details, styles.detailsDetails]}>
                 {/* Altitud */}
-                {refuge.altitude && (
+                {refuge.altitude != null && (
                     <View style={styles.detailItem}>
                     <AltitudeIcon width={16} height={16} color={'#6b7280'} />
                     <Text style={styles.detailValue}>{refuge.altitude} m</Text>

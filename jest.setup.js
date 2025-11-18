@@ -44,6 +44,58 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(() => ({})),
 }));
 
+// Mock expo-file-system/legacy
+jest.mock('expo-file-system/legacy', () => ({
+  documentDirectory: 'file://documents/',
+  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
+  EncodingType: {
+    UTF8: 'utf8',
+  },
+}));
+
+// Mock expo-sharing
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Mock react-i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key) => key,
+    i18n: {
+      language: 'ca',
+      changeLanguage: jest.fn(),
+    },
+  }),
+  initReactI18next: {
+    type: '3rdParty',
+    init: jest.fn(),
+  },
+}));
+
+// Mock @react-navigation/native
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+      reset: jest.fn(),
+      setOptions: jest.fn(),
+      addListener: jest.fn(() => jest.fn()),
+      removeListener: jest.fn(),
+    }),
+    useRoute: () => ({
+      params: {},
+    }),
+    useFocusEffect: (callback) => {
+      callback();
+    },
+  };
+});
+
 // Silenciar advertències de console.warn i console.error en tests
 global.console = {
   ...console,

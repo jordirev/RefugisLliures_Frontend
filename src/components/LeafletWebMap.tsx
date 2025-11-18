@@ -30,9 +30,14 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   useEffect(() => {
     // Inicialitzar cache i obtenir estat
     const initCache = async () => {
-      await MapCacheService.initializeCache();
-      const status = await MapCacheService.getCacheStatus();
-      setCacheStatus(status);
+      try {
+        await MapCacheService.initializeCache();
+        const status = await MapCacheService.getCacheStatus();
+        setCacheStatus(status);
+      } catch (error) {
+        console.error('Error initializing cache:', error);
+        // Continue with default cache status (null)
+      }
     };
     initCache();
   }, []);
@@ -347,6 +352,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         bounces={false}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
+        testID="webview"
       />
     </View>
   );

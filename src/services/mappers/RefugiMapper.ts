@@ -93,7 +93,7 @@ function mapTypeFromBackend(backendType: string | undefined): number {
  */
 export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
   return {
-    id: parseInt(refugiDTO.id, 10),
+    id: Number.parseInt(refugiDTO.id, 10),
     name: refugiDTO.name,
     surname: refugiDTO.surname || undefined,
     coord: mapCoordFromDTO(refugiDTO.coord),

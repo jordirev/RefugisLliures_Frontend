@@ -150,6 +150,7 @@ export function EditProfileScreen() {
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
+            testID="back-button"
           >
             <BackIcon />
           </TouchableOpacity>
@@ -167,6 +168,7 @@ export function EditProfileScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>{t('editProfile.usernamePlaceholder')}</Text>
             <TextInput
+              testID="username-input"
               style={[styles.input, usernameError && styles.inputError]}
               value={username}
               onChangeText={handleNewUsername}
@@ -183,6 +185,7 @@ export function EditProfileScreen() {
           
           {/* Submit Button */}
           <TouchableOpacity
+            testID="submit-button"
             style={[styles.submitButton, (!isFormValid || isLoading) && styles.submitButtonDisabled]}
             onPress={handleChangeUsername}
             disabled={!isFormValid || isLoading}

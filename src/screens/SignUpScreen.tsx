@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import validator from 'validator';
 import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -129,18 +130,16 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const handleSetEmail = (text: string) => {
     setEmail(text);
     const trimmed = text.trim();
-    // Clear or set inline email error while the user types
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!trimmed) {
       setEmailError(null);
-    } else if (!emailRegex.test(trimmed)) {
+    } else if (!validator.isEmail(trimmed)) {
       setEmailError('signup.errors.invalidEmail');
     } else {
       setEmailError(null);
     }
 
     // Si l'usuari escriu algun caràcter (no només espais) mostrem el password
-    if (trimmed.length > 0 && emailRegex.test(trimmed)) {
+    if (trimmed.length > 0 && validator.isEmail(trimmed)) {
       // initialize password errors so empty password shows all rules immediately
       setPasswordErrors(verifyPasswordStrength(password));
       if(step === "email"){
@@ -235,8 +234,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     }
 
     // Validació bàsica d'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!validator.isEmail(email)) {
       setEmailError(t('signup.errors.invalidEmail'));
       return;
     }
@@ -347,35 +345,44 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
           <View style={styles.flagsContainer}>
             <TouchableOpacity 
+              testID="language-ca"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('ca')}
+              accessibilityLabel="Català"
             >
               <Image source={flags.ca.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-es"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('es')}
+              accessibilityLabel="Español"
             >
               <Image source={flags.es.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-fr"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('fr')}
+              accessibilityLabel="Français"
             >
               <Image source={flags.fr.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             <TouchableOpacity 
+              testID="language-en"
               style={[styles.flagButton, { width: scaledFlagWidth }]}
               onPress={() => handleSelectLanguage('en')}
+              accessibilityLabel="English"
             >
               <Image source={flags.en.image} style={[styles.flagImage, { width: Math.round(scaledFlagWidth * 0.92), height: scaledFlagHeight }]} resizeMode="cover" />
             </TouchableOpacity>
 
             {/* Enllaç per tornar al login */}
             <TouchableOpacity 
+              testID="back-button"
               style={styles.backToLoginContainer}
               onPress={onBackToLogin}
             >
@@ -443,6 +450,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
                 <View style={styles.inputContainer}>
                   <TextInput
+                    testID="username-input"
                     style={styles.input}
                     placeholder={t('signup.usernamePlaceholder')}
                     placeholderTextColor="#999"
@@ -462,6 +470,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               <>
                 <View style={styles.inputContainer}>
                   <TextInput
+                    testID="email-input"
                     style={styles.input}
                     placeholder={t('signup.emailPlaceholder')}
                     placeholderTextColor="#999"
@@ -483,6 +492,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                 <View style={styles.inputContainer}>
                   <View style={styles.inputWithIcon}>
                     <TextInput
+                      testID="password-input"
                       style={[styles.input, styles.inputWithIconPadding]}
                       placeholder={t('signup.passwordPlaceholder')}
                       placeholderTextColor="#999"
@@ -492,6 +502,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                       editable={!isLoading}
                     />
                     <TouchableOpacity
+                      testID="toggle-password-visibility"
                       onPress={() => setShowPassword(prev => !prev)}
                       style={styles.iconButton}
                       accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
@@ -521,6 +532,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                 <View style={styles.inputContainer}>
                   <View style={styles.inputWithIcon}>
                     <TextInput
+                      testID="confirm-password-input"
                       style={[styles.input, styles.inputWithIconPadding]}
                       placeholder={t('signup.confirmPasswordPlaceholder')}
                       placeholderTextColor="#999"
@@ -530,6 +542,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
                       editable={!isLoading}
                     />
                     <TouchableOpacity
+                      testID="toggle-confirm-password-visibility"
                       onPress={() => setShowConfirmPassword(prev => !prev)}
                       style={styles.iconButton}
                       accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
@@ -552,6 +565,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               <>
                 {/* Botó de registre */}
                 <TouchableOpacity
+                  testID="signup-button"
                   style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]}
                   onPress={handleSignUp}
                   disabled={isLoading}
