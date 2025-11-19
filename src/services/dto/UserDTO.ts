@@ -8,8 +8,8 @@ export interface UserDTO {
     email: string;
     avatar?: string | null;
     language: string;
-    favourite_refuges?: number[] | null;
-    visited_refuges?: number[] | null;
+    favourite_refuges?: string[] | null;
+    visited_refuges?: string[] | null;
     renovations?: string[] | null;
     num_uploaded_photos?: number | null;
     num_shared_experiences?: number | null;

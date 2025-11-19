@@ -53,14 +53,14 @@ jest.mock('../../../assets/images/profileDefaultBackground.png', () => 'DefaultB
 
 describe('ProfileScreen - Tests d\'integració', () => {
   const mockBackendUser: User = {
-    id: 1,
     uid: 'test-uid-123',
     username: 'Test User',
     email: 'test@example.com',
     language: 'ca',
+    favourite_refuges: [1, 2],
     visited_refuges: [1, 2, 3],
     num_renovated_refuges: 2,
-    renovations: [1, 2],
+    renovations: ["1", "2"],
     num_shared_experiences: 5,
     num_uploaded_photos: 10,
     created_at: '2024-01-01T00:00:00Z',

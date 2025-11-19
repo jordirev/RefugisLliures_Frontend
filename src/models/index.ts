@@ -33,8 +33,8 @@ export interface User {
   email: string;
   avatar?: string;
   language: string;
-  favourite_refuges: number[];
-  visited_refuges: number[];
+  favourite_refuges: string[];
+  visited_refuges: string[];
   renovations: string[];
   num_uploaded_photos: number | null;
   num_shared_experiences: number | null;
