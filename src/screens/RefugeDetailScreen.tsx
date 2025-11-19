@@ -27,9 +27,11 @@ import { Location } from '../models';
 import { useTranslation } from '../utils/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../utils/useCustomAlert';
+import useFavourite from '../hooks/useFavourite';
 
 // Icons (assumint que tenim aquestes icones SVG)
 import HeartIcon from '../assets/icons/fav.svg';
+import HeartFilledIcon from '../assets/icons/favourite2.svg';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
 import AltitudeIcon from '../assets/icons/altitude2.svg';
 import UsersIcon from '../assets/icons/users.svg';
@@ -63,6 +65,7 @@ export function RefugeDetailScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refuge.id);
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
@@ -79,8 +82,14 @@ export function RefugeDetailScreen({
 
   // Static header image - will scroll together with the content
 
-  const handleToggleFavorite = () => {
-    onToggleFavorite(refuge.id);
+  const handleToggleFavorite = async () => {
+    try {
+      await toggleFavourite();
+      if (onToggleFavorite) onToggleFavorite(refuge.id);
+    } catch (err) {
+      // Error already logged in hook
+      showAlert(t('common.error'), t('alerts.favoriteError'));
+    }
   };
 
   const handleEdit = () => {
@@ -366,7 +375,7 @@ export function RefugeDetailScreen({
             <View style={styles.statCard}>
               <CalendarIcon width={24} height={24} color="#FF6900" />
               <Text style={styles.statLabel}>{t('refuge.details.occupation')}</Text>
-              <Text style={styles.statValue}>{t('refuge.details.seeOccupation')}</Text>
+              <Text style={[styles.statValue, {fontSize: 12}]}>{t('refuge.details.seeOccupation')}</Text>
             </View>
           </View>
         </View>
@@ -490,8 +499,13 @@ export function RefugeDetailScreen({
           style={styles.actionButton} 
           onPress={handleToggleFavorite}
           testID="favorite-button"
+          disabled={isProcessing}
         >
-          <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
+          {isFavourite ? (
+            <HeartFilledIcon width={20} height={20} color="#FF6900" />
+          ) : (
+            <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
+          )}
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.actionButton, { marginLeft: 8 }]} 
@@ -670,6 +684,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   statLabel: {
     fontSize: 12,

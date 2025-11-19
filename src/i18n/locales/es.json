@@ -20,7 +20,8 @@
     "download": "Descargar",
     "edit": "Editar",
     "info": "Info",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "pyrenees": "Pirineos"
   },
   "navigation": {
     "map": "Mapa",
@@ -175,7 +176,7 @@
       "capacity": "Plazas",
       "region": "Región",
       "occupation": "Ocupación",
-      "seeOccupation": "Ver ocupación",
+      "seeOccupation": "Ver\n ocupación",
       "description": "Descripción",
       "localisation": "Localización",
       "services": "Servicios",

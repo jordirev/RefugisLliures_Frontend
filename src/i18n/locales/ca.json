@@ -20,11 +20,12 @@
     "download": "Descarregar",
     "edit": "Editar",
     "info": "Info",
-    "unknown": "Desconegut"
+    "unknown": "Desconegut",
+    "pyrenees": "Pirineus"
   },
   "navigation": {
     "map": "Mapa",
-    "favorites": "Favorits",
+    "favorites": "Preferits",
     "renovations": "Reformes",
     "profile": "Perfil"
   },
@@ -35,16 +36,16 @@
     "errorLoading": "No s'han pogut carregar els refugis"
   },
   "favorites": {
-    "title": "Els meus favorits",
+    "title": "Els meus preferits",
     "count": "{{count}} refugi",
     "count_plural": "{{count}} refugis",
     "empty": {
-      "title": "Encara no tens favorits",
-      "message": "Afegeix refugis als teus favorits per veure'ls aquí"
+      "title": "Encara no tens preferits",
+      "message": "Afegeix refugis als teus preferits per veure'ls aquí"
     },
-    "added": "Refugi afegit als favorits",
-    "removed": "Refugi eliminat dels favorits",
-    "error": "No s'han pogut carregar els favorits"
+    "added": "Refugi afegit als preferits",
+    "removed": "Refugi eliminat dels preferits",
+    "error": "No s'han pogut carregar els preferits"
   },
   "renovations": {
     "title": "Reformes i Millores",
@@ -176,7 +177,7 @@
       "capacity": "Places",
       "region": "Regió",
       "occupation": "Ocupació",
-      "seeOccupation": "Veure ocupació",
+      "seeOccupation": "Veure\n ocupació",
       "description": "Descripció",
       "localisation": "Localització",
       "services": "Serveis",
@@ -221,9 +222,9 @@
   "alerts": {
     "navigation": "Navegant a {{name}}",
     "favoriteUpdated": "Favorit actualitzat",
-    "favoriteError": "No s'ha pogut actualitzar els favorits",
-    "confirmDelete": "Estàs segur que vols eliminar aquest refugi dels favorits?",
-    "deleteSuccess": "Refugi eliminat dels favorits",
+    "favoriteError": "No s'ha pogut actualitzar els preferits",
+    "confirmDelete": "Estàs segur que vols eliminar aquest refugi dels preferits?",
+    "deleteSuccess": "Refugi eliminat dels preferits",
     "shareError": "No s'ha pogut compartir",
     "linkCopied": "Enllaç copiat al portapapers",
     "downloadGPX": {
