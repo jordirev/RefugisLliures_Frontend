@@ -7,12 +7,12 @@ export interface UserDTO {
     username: string;
     email: string;
     avatar?: string | null;
-    idioma: string;
-    refugis_favorits?: number[] | null;
-    refugis_visitats?: number[] | null;
-    reformes?: string[] | null;
-    num_fotos_pujades?: number | null;
-    num_experiencies_compartides?: number | null;
-    num_refugis_reformats?: number | null;
+    language: string;
+    favourite_refuges?: number[] | null;
+    visited_refuges?: number[] | null;
+    renovations?: string[] | null;
+    num_uploaded_photos?: number | null;
+    num_shared_experiences?: number | null;
+    num_renovated_refuges?: number | null;
     created_at: string; // ISO date string
 }

@@ -19,7 +19,7 @@ export class RefugisService {
     }
 
     try {
-      const url = `${API_BASE_URL}/refugis/${id}/`;
+      const url = `${API_BASE_URL}/refuges/${id}/`;
       // No requereix autenticació, però usem apiGet per consistència i logging
       const response = await apiGet(url, { skipAuth: true });
       
@@ -76,7 +76,7 @@ export class RefugisService {
         }
       }
 
-      const url = `${API_BASE_URL}/refugis/?${params.toString()}`;
+      const url = `${API_BASE_URL}/refuges/?${params.toString()}`;
       // No requereix autenticació, però usem apiGet per consistència i logging
       const response = await apiGet(url, { skipAuth: true });
       

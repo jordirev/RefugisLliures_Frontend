@@ -11,7 +11,7 @@ const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 export interface UserCreateData {
   username: string;
   email: string;
-  idioma: string;
+  language: string;
   avatar?: string;
 }
 
@@ -22,10 +22,10 @@ export interface UserUpdateData {
   username?: string;
   email?: string;
   avatar?: string;
-  idioma?: string;
-  refugis_favorits?: number[];
-  refugis_visitats?: number[];
-  reformes?: string[];
+  language?: string;
+  favourite_refuges?: number[];
+  visited_refuges?: number[];
+  renovations?: string[];
 }
 
 /**
@@ -152,6 +152,36 @@ export class UsersService {
     } catch (err) {
       console.error(`Error deleting user ${uid}:`, err);
       return false;
+    }
+  }
+
+  /**
+   * Afegeix un refugi al preferits de l'usuari
+   * POST /users/
+   * 
+   * @param uid - UID de l'usuari
+   * @param refuge_id - ID del refugi a afegir als preferits
+   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @returns Un llistat amb els refugis preferits o null si hi ha error
+   */
+  static async addRefugeFavourite(uid: string, refuge_id: string, authToken?: string): Promise<User | null> {
+    try {
+      const url = `${API_BASE_URL}/users/${uid}/favourites/`;
+      
+      // Utilitzar apiPost que gestiona automàticament el refresc de tokens
+      const response = await apiPost(url, { refuge_id });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error creating user:', errorData);
+        return null;
+      }
+      
+      const data: UserDTO = await response.json();
+      return mapUserFromDTO(data);
+    } catch (err) {
+      console.error('Error creating user:', err);
+      return null;
     }
   }
 }

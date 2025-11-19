@@ -64,8 +64,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setBackendUser(userData);
             
             // Canviar l'idioma de l'aplicació segons l'idioma de l'usuari del backend
-            if (userData.idioma) {
-              const userLanguage = userData.idioma.toLowerCase();
+            if (userData.language) {
+              const userLanguage = userData.language.toLowerCase();
               // Verificar que l'idioma sigui suportat
               if (Object.keys(LANGUAGES).includes(userLanguage)) {
                 await changeLanguage(userLanguage as LanguageCode);
@@ -132,8 +132,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setBackendUser(userData);
         
         // Actualitzar l'idioma de l'aplicació
-        if (userData.idioma) {
-          const userLanguage = userData.idioma.toLowerCase();
+        if (userData.language) {
+          const userLanguage = userData.language.toLowerCase();
           if (Object.keys(LANGUAGES).includes(userLanguage)) {
             await changeLanguage(userLanguage as LanguageCode);
           }

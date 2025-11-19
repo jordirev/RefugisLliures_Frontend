@@ -40,13 +40,13 @@ const mockBackendUser = {
   uid: 'test-uid-123',
   username: 'testuser',
   email: 'test@example.com',
-  idioma: 'ca',
-  refugis_favorits: [1, 2, 3],
-  refugis_visitats: [1],
-  reformes: [],
-  num_fotos_pujades: 5,
-  num_experiencies_compartides: 2,
-  num_refugis_reformats: 1,
+  language: 'ca',
+  favourite_refuges: [1, 2, 3],
+  visited_refuges: [1],
+  renovations: [],
+  num_uploaded_photos: 5,
+  num_shared_experiences: 2,
+  num_renovated_refuges: 1,
   created_at: '2023-01-01T00:00:00Z',
 };
 
@@ -458,7 +458,7 @@ describe('useAuth Hook', () => {
       const updatedBackendUser = {
         ...mockBackendUser,
         username: 'updateduser',
-        num_fotos_pujades: 10,
+        num_uploaded_photos: 10,
       };
 
       (AuthService.reloadUser as jest.Mock).mockResolvedValue(undefined);
@@ -486,7 +486,7 @@ describe('useAuth Hook', () => {
 
       await waitFor(() => {
         expect(result.current.backendUser?.username).toBe('updateduser');
-        expect(result.current.backendUser?.num_fotos_pujades).toBe(10);
+        expect(result.current.backendUser?.num_uploaded_photos).toBe(10);
       });
     });
   });

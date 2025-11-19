@@ -79,7 +79,7 @@ export class AuthService {
       const userData: UserCreateData = {
         username: signUpData.username,
         email: signUpData.email,
-        idioma: signUpData.language,
+        language: signUpData.language,
       };
 
       const backendUser = await UsersService.createUser(userData, token);
@@ -196,7 +196,7 @@ export class AuthService {
         const userData: UserCreateData = {
           username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuari',
           email: firebaseUser.email || '',
-          idioma: 'ca', // Idioma per defecte, es pot canviar després
+          language: 'ca', // Idioma per defecte, es pot canviar després
         };
 
         backendUser = await UsersService.createUser(userData, token);

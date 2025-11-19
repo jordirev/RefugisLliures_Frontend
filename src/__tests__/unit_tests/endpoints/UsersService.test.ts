@@ -26,13 +26,13 @@ jest.mock('../../../services/mappers/UserMapper', () => ({
     username: dto.username,
     email: dto.email,
     avatar: dto.avatar || undefined,
-    idioma: dto.idioma,
-    refugis_favorits: dto.refugis_favorits || [],
-    refugis_visitats: dto.refugis_visitats || [],
-    reformes: dto.reformes || [],
-    num_fotos_pujades: dto.num_fotos_pujades ?? null,
-    num_experiencies_compartides: dto.num_experiencies_compartides ?? null,
-    num_refugis_reformats: dto.num_refugis_reformats ?? null,
+    language: dto.language,
+    favourite_refuges: dto.favourite_refuges || [],
+    visited_refuges: dto.visited_refuges || [],
+    renovations: dto.renovations || [],
+    num_uploaded_photos: dto.num_uploaded_photos ?? null,
+    num_shared_experiences: dto.num_shared_experiences ?? null,
+    num_renovated_refuges: dto.num_renovated_refuges ?? null,
     created_at: dto.created_at,
   })),
 }));
@@ -51,14 +51,14 @@ describe('UsersService', () => {
     const mockUserCreateData: UserCreateData = {
       username: 'testuser',
       email: 'test@example.com',
-      idioma: 'CA',
+      language: 'CA',
     };
 
     const mockUserDTO: UserDTO = {
       uid: 'user123',
       username: 'testuser',
       email: 'test@example.com',
-      idioma: 'CA',
+      language: 'CA',
       created_at: '2024-01-01T00:00:00Z',
     };
 
@@ -195,9 +195,9 @@ describe('UsersService', () => {
       uid: 'user123',
       username: 'testuser',
       email: 'test@example.com',
-      idioma: 'CA',
-      refugis_favorits: [1, 2, 3],
-      refugis_visitats: [1],
+      language: 'CA',
+      favourite_refuges: [1, 2, 3],
+      visited_refuges: [1],
       created_at: '2024-01-01T00:00:00Z',
     };
 
@@ -306,7 +306,7 @@ describe('UsersService', () => {
       uid: 'user123',
       username: 'newusername',
       email: 'test@example.com',
-      idioma: 'CA',
+      language: 'CA',
       created_at: '2024-01-01T00:00:00Z',
     };
 
@@ -333,7 +333,7 @@ describe('UsersService', () => {
       const multiUpdateData: UserUpdateData = {
         username: 'newusername',
         email: 'newemail@example.com',
-        idioma: 'ES',
+        language: 'ES',
         avatar: 'https://example.com/new-avatar.jpg',
       };
 
@@ -352,19 +352,19 @@ describe('UsersService', () => {
       expect(result).not.toBeNull();
       expect(result?.username).toBe('newusername');
       expect(result?.email).toBe('newemail@example.com');
-      expect(result?.idioma).toBe('ES');
+      expect(result?.language).toBe('ES');
     });
 
     it('hauria d\'actualitzar refugis favorits', async () => {
       const updateData: UserUpdateData = {
-        refugis_favorits: [1, 2, 3, 4],
+        favourite_refuges: [1, 2, 3, 4],
       };
 
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({
           ...mockUpdatedUserDTO,
-          refugis_favorits: [1, 2, 3, 4],
+          favourite_refuges: [1, 2, 3, 4],
         }),
       } as unknown as Response;
 
@@ -373,19 +373,19 @@ describe('UsersService', () => {
       const result = await UsersService.updateUser('user123', updateData);
 
       expect(result).not.toBeNull();
-      expect(result?.refugis_favorits).toEqual([1, 2, 3, 4]);
+      expect(result?.favourite_refuges).toEqual([1, 2, 3, 4]);
     });
 
     it('hauria d\'actualitzar refugis visitats', async () => {
       const updateData: UserUpdateData = {
-        refugis_visitats: [1, 2],
+        visited_refuges: [1, 2],
       };
 
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({
           ...mockUpdatedUserDTO,
-          refugis_visitats: [1, 2],
+          visited_refuges: [1, 2],
         }),
       } as unknown as Response;
 
@@ -394,19 +394,19 @@ describe('UsersService', () => {
       const result = await UsersService.updateUser('user123', updateData);
 
       expect(result).not.toBeNull();
-      expect(result?.refugis_visitats).toEqual([1, 2]);
+      expect(result?.visited_refuges).toEqual([1, 2]);
     });
 
     it('hauria d\'actualitzar reformes', async () => {
       const updateData: UserUpdateData = {
-        reformes: ['reforma1', 'reforma2'],
+        renovations: ['reforma1', 'reforma2'],
       };
 
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({
           ...mockUpdatedUserDTO,
-          reformes: ['reforma1', 'reforma2'],
+          renovations: ['reforma1', 'reforma2'],
         }),
       } as unknown as Response;
 
@@ -415,7 +415,7 @@ describe('UsersService', () => {
       const result = await UsersService.updateUser('user123', updateData);
 
       expect(result).not.toBeNull();
-      expect(result?.reformes).toEqual(['reforma1', 'reforma2']);
+      expect(result?.renovations).toEqual(['reforma1', 'reforma2']);
     });
 
     it('hauria de retornar null quan la resposta no és ok', async () => {
@@ -601,7 +601,7 @@ describe('UsersService', () => {
           uid: longUid,
           username: 'test',
           email: 'test@example.com',
-          idioma: 'CA',
+          language: 'CA',
           created_at: '2024-01-01T00:00:00Z',
         }),
       } as unknown as Response;
@@ -637,10 +637,10 @@ describe('UsersService', () => {
           uid: 'user123',
           username: 'test',
           email: 'test@example.com',
-          idioma: 'CA',
-          refugis_favorits: [],
-          refugis_visitats: [],
-          reformes: [],
+          language: 'CA',
+          favourite_refuges: [],
+          visited_refuges: [],
+          renovations: [],
           created_at: '2024-01-01T00:00:00Z',
         }),
       } as unknown as Response;
@@ -648,15 +648,15 @@ describe('UsersService', () => {
       mockApiPatch.mockResolvedValue(mockResponse);
 
       const result = await UsersService.updateUser('user123', {
-        refugis_favorits: [],
-        refugis_visitats: [],
-        reformes: [],
+        favourite_refuges: [],
+        visited_refuges: [],
+        renovations: [],
       });
 
       expect(result).not.toBeNull();
-      expect(result?.refugis_favorits).toEqual([]);
-      expect(result?.refugis_visitats).toEqual([]);
-      expect(result?.reformes).toEqual([]);
+      expect(result?.favourite_refuges).toEqual([]);
+      expect(result?.visited_refuges).toEqual([]);
+      expect(result?.renovations).toEqual([]);
     });
 
     it('hauria de gestionar email invàlid en creació', async () => {
@@ -673,7 +673,7 @@ describe('UsersService', () => {
       const result = await UsersService.createUser({
         username: 'test',
         email: 'invalid-email',
-        idioma: 'CA',
+        language: 'CA',
       });
 
       expect(result).toBeNull();
@@ -684,7 +684,7 @@ describe('UsersService', () => {
         ok: false,
         status: 400,
         json: jest.fn().mockResolvedValue({
-          idioma: ['Invalid language code'],
+          language: ['Invalid language code'],
         }),
       } as unknown as Response;
 
@@ -693,7 +693,7 @@ describe('UsersService', () => {
       const result = await UsersService.createUser({
         username: 'test',
         email: 'test@example.com',
-        idioma: 'INVALID',
+        language: 'INVALID',
       });
 
       expect(result).toBeNull();

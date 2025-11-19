@@ -57,12 +57,12 @@ describe('ProfileScreen - Tests d\'integració', () => {
     uid: 'test-uid-123',
     username: 'Test User',
     email: 'test@example.com',
-    idioma: 'ca',
-    refugis_visitats: [1, 2, 3],
-    num_refugis_reformats: 2,
-    reformes: [1, 2],
-    num_experiencies_compartides: 5,
-    num_fotos_pujades: 10,
+    language: 'ca',
+    visited_refuges: [1, 2, 3],
+    num_renovated_refuges: 2,
+    renovations: [1, 2],
+    num_shared_experiences: 5,
+    num_uploaded_photos: 10,
     created_at: '2024-01-01T00:00:00Z',
   };
 
@@ -215,10 +215,10 @@ describe('ProfileScreen - Tests d\'integració', () => {
     it('hauria de mostrar 0 per estadístiques buides', () => {
       const userWithoutStats = {
         ...mockBackendUser,
-        refugis_visitats: [],
-        num_refugis_reformats: 0,
-        num_experiencies_compartides: 0,
-        num_fotos_pujades: 0,
+        visited_refuges: [],
+        num_renovated_refuges: 0,
+        num_shared_experiences: 0,
+        num_uploaded_photos: 0,
       };
 
       const { getAllByText } = renderWithProviders(
@@ -241,8 +241,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
     it('hauria de utilitzar reformes.length si num_refugis_reformats no existeix', () => {
       const userWithReformes = {
         ...mockBackendUser,
-        num_refugis_reformats: undefined,
-        reformes: [1, 2, 3],
+        num_renovated_refuges: undefined,
+        renovations: [1, 2, 3],
       };
 
       const { getAllByText, getByTestId } = renderWithProviders(

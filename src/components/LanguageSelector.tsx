@@ -33,7 +33,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
         try {
           await UsersService.updateUser(
             backendUser.uid,
-            { idioma: languageCode.toUpperCase() },
+            { language: languageCode.toUpperCase() },
             authToken
           );
           // Recarregar l'usuari per assegurar-se que les dades són correctes
@@ -50,7 +50,7 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
       
       onClose();
     } catch (error) {
-      console.error('Error canviant idioma:', error);
+      console.error('Error canviant language:', error);
       showAlert(t('common.error'), t('common.error'));
     } finally {
       setIsUpdating(false);
