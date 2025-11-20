@@ -320,7 +320,7 @@ export function RefugeDetailScreen({
     const lat = refuge.coord.lat;
     const lon = refuge.coord.long;
     // Build URL: https://www.windy.com/lat/lon/mblue?lat,lon,zoom,p:cities
-    const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},10,p:cities`;
+    const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
     const message = t('alerts.windyMessage');
     confirmAndOpen(url, message);
   };
