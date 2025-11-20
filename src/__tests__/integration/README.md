@@ -60,27 +60,27 @@ Proporciona:
 
 ### Tots els tests d'integració
 ```bash
-npm test -- src/__tests__/integration
+npx jest -- src/__tests__/integration
 ```
 
 ### Tests de components
 ```bash
-npm test -- src/__tests__/integration/components
+npx jest -- src/__tests__/integration/components
 ```
 
 ### Tests de screens
 ```bash
-npm test -- src/__tests__/integration/screens
+npx jest -- src/__tests__/integration/screens
 ```
 
 ### Test específic
 ```bash
-npm test -- src/__tests__/integration/screens/LoginScreen.integration.test.tsx
+npx jest -- src/__tests__/integration/screens/LoginScreen.integration.test.tsx
 ```
 
 ### Amb coverage
 ```bash
-npm test -- --coverage src/__tests__/integration
+npx jest -- --coverage src/__tests__/integration
 ```
 
 ## Cobertura dels Tests

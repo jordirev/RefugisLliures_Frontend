@@ -76,6 +76,7 @@ export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: Ref
         </View>
         {/* Botó veure mapa */}
         <TouchableOpacity
+          testID="map-button"
           style={styles.mapButton}
           onPress={() => {
             onViewMap?.();

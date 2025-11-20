@@ -24,6 +24,14 @@ interface MockAuthContextValue {
   changePassword?: jest.Mock;
   changeEmail?: jest.Mock;
   updateUsername?: jest.Mock;
+  favouriteRefuges?: any[];
+  visitedRefuges?: any[];
+  getFavouriteRefuges?: jest.Mock;
+  addFavouriteRefuge?: jest.Mock;
+  removeFavouriteRefuge?: jest.Mock;
+  getVisitedRefuges?: jest.Mock;
+  addVisitedRefuge?: jest.Mock;
+  removeVisitedRefuge?: jest.Mock;
 }
 
 export const createMockAuthContext = (overrides: MockAuthContextValue = {}) => ({
@@ -42,6 +50,14 @@ export const createMockAuthContext = (overrides: MockAuthContextValue = {}) => (
   changePassword: jest.fn().mockResolvedValue(undefined),
   changeEmail: jest.fn().mockResolvedValue(undefined),
   updateUsername: jest.fn().mockResolvedValue(undefined),
+  favouriteRefuges: [],
+  visitedRefuges: [],
+  getFavouriteRefuges: jest.fn().mockResolvedValue([]),
+  addFavouriteRefuge: jest.fn().mockResolvedValue(undefined),
+  removeFavouriteRefuge: jest.fn().mockResolvedValue(undefined),
+  getVisitedRefuges: jest.fn().mockResolvedValue([]),
+  addVisitedRefuge: jest.fn().mockResolvedValue(undefined),
+  removeVisitedRefuge: jest.fn().mockResolvedValue(undefined),
   ...overrides,
 });
 
