@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
@@ -77,61 +77,52 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
     <View style={styles.root}>
       {/* Fixed header */}
       <View style={styles.headerFixed}>
-        <SafeAreaView edges={["top"]} style={styles.safeArea} />
-        <View style={styles.header}>
-          <FavouriteIcon width={20} height={20} />
-          <Text style={styles.title}>
-            {t('favorites.title')}
-            <Text style={styles.count}> {`(${favouriteRefuges.length})`}</Text>
-          </Text>
-        </View>
+        <SafeAreaView edges={["top"]} style={styles.safeArea}>
+          <View style={styles.header}>
+            <FavouriteIcon width={20} height={20} />
+            <Text style={styles.title}>
+              {t('favorites.title')}
+              <Text style={styles.count}> {`(${favouriteRefuges.length})`}</Text>
+            </Text>
+          </View>
+        </SafeAreaView>
       </View>
 
-      {favoriteLocations.length === 0 && (
-          <View 
-            style={[styles.emptyContainer, { 
-              paddingTop: HEADER_HEIGHT + 160, 
-              paddingBottom: Math.max(insets.bottom, 16),
-              flexGrow: 1
-            }]}>
-        
+      <FlatList
+        data={favoriteLocations}
+        style={styles.container}
+        renderItem={({ item }: { item: Location }) => (
+          <RefugeCard
+            refuge={item}
+            onPress={() => handleViewDetail(item)}
+            onViewMap={() => handleViewMap(item)}
+          />
+        )}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) },
+        ]}
+        ListEmptyComponent={() => (
+          <View style={[styles.emptyContainer, { paddingTop: HEADER_HEIGHT + 200 }]}> 
             <FavouriteFilledIcon width={64} height={64} style={styles.emptyIcon} />
             <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
             <Text style={styles.emptyText}>{t('favorites.empty.message')}</Text>
           </View>
-      )}
-
-      <ScrollView
-        contentContainerStyle={{ 
-          paddingTop: HEADER_HEIGHT, 
-        }}
-        style={styles.container}
-      >
-        
-        <FlatList
-          data={favoriteLocations}
-          renderItem={({ item }: { item: Location }) => (
-            <RefugeCard
-              refuge={item}
-              onPress={() => handleViewDetail(item)}
-              onViewMap={() => handleViewMap(item)}
-            />
-          )}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
-
-        {/* CustomAlert */}
-        {alertConfig && (
-          <CustomAlert
-            visible={alertVisible}
-            title={alertConfig.title}
-            message={alertConfig.message}
-            buttons={alertConfig.buttons}
-            onDismiss={hideAlert}
-          />
         )}
-      </ScrollView>
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item, index) => (item.id ? String(item.id) : String(index))}
+      />
+
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }
@@ -146,7 +137,7 @@ const styles = StyleSheet.create({
   },
   headerFixed: {
     position: 'absolute',
-    top: 8,
+    top: 0,
     left: 0,
     right: 0,
     zIndex: 10,

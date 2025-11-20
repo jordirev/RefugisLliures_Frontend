@@ -281,15 +281,37 @@ export function RefugeDetailScreen({
       if (!/^https?:\/\//i.test(finalUrl)) {
         finalUrl = `https://${finalUrl}`;
       }
+      console.log('Attempting to open URL:', finalUrl);
+      
+      // Per URLs de windy.com, intentem obrir-les directament sense validació prèvia
+      // ja que canOpenURL pot fallar amb URLs complexes però openURL encara pot funcionar
+      if (finalUrl.includes('windy.com')) {
+        console.log('Opening Windy URL directly without validation');
+        await Linking.openURL(finalUrl);
+        console.log('Windy URL opened successfully');
+        return;
+      }
+      
       const supported = await Linking.canOpenURL(finalUrl);
+      console.log('URL supported:', supported);
       if (supported) {
         await Linking.openURL(finalUrl);
+        console.log('URL opened successfully');
       } else {
-        showAlert(t('alerts.cannotOpenLink'), finalUrl);
+        // Intentem obrir-la igualment, ja que canOpenURL pot donar falsos negatius
+        console.log('Attempting to open URL despite canOpenURL returning false');
+        try {
+          await Linking.openURL(finalUrl);
+          console.log('URL opened successfully despite validation failure');
+        } catch (openError) {
+          console.warn('URL not supported and failed to open:', finalUrl);
+          showAlert(t('alerts.cannotOpenLink'), `${t('alerts.linkError')}\n\nURL: ${finalUrl}\n\nMotiu: El sistema no pot obrir aquest tipus d'enllaç.`);
+        }
       }
     } catch (e) {
-      console.warn('Error opening link', e);
-      showAlert(t('common.error'), t('alerts.linkError'));
+      console.error('Error opening link:', e);
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      showAlert(t('common.error'), `${t('alerts.linkError')}\n\nURL: ${url}\n\nError: ${errorMessage}`);
     }
   };
 
@@ -297,8 +319,8 @@ export function RefugeDetailScreen({
   const handleOpenWindy = () => {
     const lat = refuge.coord.lat;
     const lon = refuge.coord.long;
-    // Build URL: https://www.windy.com/lat/long/mblue?lat,long,13,p:cities
-    const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},13,p:cities`;
+    // Build URL: https://www.windy.com/lat/lon/mblue?lat,lon,zoom,p:cities
+    const url = `https://www.windy.com/${lat}/${lon}/mblue?${lat},${lon},10,p:cities`;
     const message = t('alerts.windyMessage');
     confirmAndOpen(url, message);
   };
