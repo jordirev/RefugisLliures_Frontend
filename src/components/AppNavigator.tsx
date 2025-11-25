@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MapScreen } from '../screens/MapScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
-import { ReformsScreen } from '../screens/ReformsScreen';
+import { RenovationsScreen } from '../screens/RenovationsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
@@ -168,7 +168,7 @@ export function AppNavigator() {
               </View>
             ),
           }}
-          component={ReformsScreen}
+          component={RenovationsScreen}
         />
 
         <Tab.Screen 

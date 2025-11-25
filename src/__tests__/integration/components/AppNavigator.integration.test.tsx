@@ -18,8 +18,8 @@ jest.mock('../../../screens/FavoritesScreen', () => ({
   FavoritesScreen: () => null,
 }));
 
-jest.mock('../../../screens/ReformsScreen', () => ({
-  ReformsScreen: () => null,
+jest.mock('../../../screens/RenovationsScreen', () => ({
+  RenovationsScreen: () => null,
 }));
 
 jest.mock('../../../screens/ProfileScreen', () => ({
