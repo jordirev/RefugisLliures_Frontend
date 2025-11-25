@@ -5,11 +5,14 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Location } from '../models';
 import { BadgeType } from './BadgeType';
 import { useTranslation } from '../utils/useTranslation';
+import useFavourite from '../hooks/useFavourite';
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
 import RegionIcon from '../assets/icons/region.svg';
-import FavouriteIcon from '../assets/icons/favourite2.svg';
+import FavouriteIcon from '../assets/icons/favRed.svg';
+import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
+
 
 // BadgeCondition component handles mapping condition -> colors
 
@@ -40,6 +43,7 @@ export function RefugeBottomSheet({
 }: RefugeBottomSheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refuge.id);
   if (!isVisible) return null;
 
   return (
@@ -67,8 +71,25 @@ export function RefugeBottomSheet({
               {/* Nom */}
               <Text style={styles.name}>{refuge.name}</Text>
               {/* Favorit */}
-              <TouchableOpacity testID="favorite-button" onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
-                <FavouriteIcon width={24} height={24} />
+              <TouchableOpacity
+                testID="favorite-button"
+                onPress={async () => {
+                  try {
+                    await toggleFavourite();
+                    if (onToggleFavorite) onToggleFavorite(refuge.id);
+                  } catch (err) {
+                    // already logged in hook
+                  }
+                }}
+                style={styles.favoriteButton}
+                disabled={isProcessing}
+                accessibilityState={{ disabled: isProcessing, selected: !!isFavourite }}
+              >
+                {isFavourite ? (
+                  <FavouriteFilledIcon width={24} height={24} />
+                ) : (
+                  <FavouriteIcon width={24} height={24} />
+                )}
               </TouchableOpacity>
             </View>
 

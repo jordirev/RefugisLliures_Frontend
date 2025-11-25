@@ -45,7 +45,7 @@ export function AppNavigator() {
     try {
       // TODO: Implementar toggle favorits quan el backend estigui llest
       await RefugisService.addFavorite(locationId);
-      showAlert('', t('alerts.favoriteUpdated'));
+      // success: no mostrar alerta per a favorits (es maneja visualment a les UI components)
     } catch (error) {
       showAlert(t('common.error'), t('alerts.favoriteError'));
     }
@@ -140,7 +140,7 @@ export function AppNavigator() {
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
-                <FavIcon width={20} height={20} color="#4A5565" />
+                <FavIcon width={20} height={20} />
                 <Text style={styles.tabLabel}>
                   {t('navigation.favorites')}
                 </Text>

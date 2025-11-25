@@ -40,13 +40,13 @@ const mockBackendUser = {
   uid: 'test-uid-123',
   username: 'testuser',
   email: 'test@example.com',
-  idioma: 'ca',
-  refugis_favorits: [1, 2, 3],
-  refugis_visitats: [1],
-  reformes: [],
-  num_fotos_pujades: 5,
-  num_experiencies_compartides: 2,
-  num_refugis_reformats: 1,
+  language: 'ca',
+  favourite_refuges: [1, 2, 3],
+  visited_refuges: [1],
+  renovations: [],
+  num_uploaded_photos: 5,
+  num_shared_experiences: 2,
+  num_renovated_refuges: 1,
   created_at: '2023-01-01T00:00:00Z',
 };
 
@@ -458,7 +458,7 @@ describe('useAuth Hook', () => {
       const updatedBackendUser = {
         ...mockBackendUser,
         username: 'updateduser',
-        num_fotos_pujades: 10,
+        num_uploaded_photos: 10,
       };
 
       (AuthService.reloadUser as jest.Mock).mockResolvedValue(undefined);
@@ -486,7 +486,7 @@ describe('useAuth Hook', () => {
 
       await waitFor(() => {
         expect(result.current.backendUser?.username).toBe('updateduser');
-        expect(result.current.backendUser?.num_fotos_pujades).toBe(10);
+        expect(result.current.backendUser?.num_uploaded_photos).toBe(10);
       });
     });
   });
@@ -702,6 +702,333 @@ describe('useAuth Hook', () => {
       expect(UsersService.getUserByUid).toHaveBeenCalledTimes(3);
 
       jest.useRealTimers();
+    });
+  });
+
+  describe('Gestió de refugis favorits', () => {
+    it('hauria de carregar refugis favorits quan l\'usuari fa login', async () => {
+      const mockFavorites = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+      ];
+
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue(mockFavorites);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.favouriteRefuges).toEqual(mockFavorites);
+      });
+    });
+
+    it('hauria de retornar refugis favorits amb getFavouriteRefuges', async () => {
+      const mockFavorites = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+      ];
+
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue(mockFavorites);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let favorites;
+      await act(async () => {
+        favorites = await result.current.getFavouriteRefuges();
+      });
+
+      expect(favorites).toEqual(mockFavorites);
+      expect(UsersService.getFavouriteRefuges).toHaveBeenCalledWith(
+        mockFirebaseUser.uid,
+        'mock-token-123'
+      );
+    });
+
+    it('hauria d\'afegir un refugi als favorits', async () => {
+      const mockUpdatedFavorites = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+      ];
+
+      (UsersService.addFavouriteRefuge as jest.Mock).mockResolvedValue(mockUpdatedFavorites);
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let updatedFavorites;
+      await act(async () => {
+        updatedFavorites = await result.current.addFavouriteRefuge(2);
+      });
+
+      expect(updatedFavorites).toEqual(mockUpdatedFavorites);
+      expect(result.current.favouriteRefuges).toEqual(mockUpdatedFavorites);
+      expect(result.current.backendUser?.favourite_refuges).toEqual(['1', '2']);
+    });
+
+    it('hauria d\'eliminar un refugi dels favorits', async () => {
+      const mockUpdatedFavorites = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+      ];
+
+      (UsersService.removeFavouriteRefuge as jest.Mock).mockResolvedValue(mockUpdatedFavorites);
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue(mockUpdatedFavorites);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let updatedFavorites;
+      await act(async () => {
+        updatedFavorites = await result.current.removeFavouriteRefuge(2);
+      });
+
+      expect(updatedFavorites).toEqual(mockUpdatedFavorites);
+      expect(result.current.favouriteRefuges).toEqual(mockUpdatedFavorites);
+      expect(result.current.backendUser?.favourite_refuges).toEqual(['1']);
+    });
+
+    it('hauria de llançar error si no hi ha usuari logat', async () => {
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(null);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      await expect(
+        act(async () => {
+          await result.current.getFavouriteRefuges();
+        })
+      ).rejects.toThrow('No user is logged in');
+
+      await expect(
+        act(async () => {
+          await result.current.addFavouriteRefuge(1);
+        })
+      ).rejects.toThrow('No user is logged in');
+
+      await expect(
+        act(async () => {
+          await result.current.removeFavouriteRefuge(1);
+        })
+      ).rejects.toThrow('No user is logged in');
+    });
+  });
+
+  describe('Gestió de refugis visitats', () => {
+    it('hauria de carregar refugis visitats quan l\'usuari fa login', async () => {
+      const mockVisited = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+      ];
+
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue(mockVisited);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.visitedRefuges).toEqual(mockVisited);
+      });
+    });
+
+    it('hauria de retornar refugis visitats amb getVisitedRefuges', async () => {
+      const mockVisited = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+      ];
+
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue(mockVisited);
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let visited;
+      await act(async () => {
+        visited = await result.current.getVisitedRefuges();
+      });
+
+      expect(visited).toEqual(mockVisited);
+    });
+
+    it('hauria d\'afegir un refugi als visitats', async () => {
+      const mockUpdatedVisited = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+      ];
+
+      (UsersService.addVisitedRefuge as jest.Mock).mockResolvedValue(mockUpdatedVisited);
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let updatedVisited;
+      await act(async () => {
+        updatedVisited = await result.current.addVisitedRefuge(2);
+      });
+
+      expect(updatedVisited).toEqual(mockUpdatedVisited);
+      expect(result.current.visitedRefuges).toEqual(mockUpdatedVisited);
+      expect(result.current.backendUser?.visited_refuges).toEqual(['1', '2']);
+    });
+
+    it('hauria d\'eliminar un refugi dels visitats', async () => {
+      const mockUpdatedVisited = [
+        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+      ];
+
+      (UsersService.removeVisitedRefuge as jest.Mock).mockResolvedValue(mockUpdatedVisited);
+      (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
+      (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue(mockUpdatedVisited);
+      (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(mockFirebaseUser);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.backendUser).toBeTruthy();
+      });
+
+      let updatedVisited;
+      await act(async () => {
+        updatedVisited = await result.current.removeVisitedRefuge(2);
+      });
+
+      expect(updatedVisited).toEqual(mockUpdatedVisited);
+      expect(result.current.visitedRefuges).toEqual(mockUpdatedVisited);
+      expect(result.current.backendUser?.visited_refuges).toEqual(['1']);
+    });
+
+    it('hauria de llançar error si no hi ha usuari logat', async () => {
+      (AuthService.onAuthStateChange as jest.Mock).mockImplementation((callback) => {
+        callback(null);
+        return jest.fn();
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AuthProvider>{children}</AuthProvider>
+      );
+
+      const { result } = renderHook(() => useAuth(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      await expect(
+        act(async () => {
+          await result.current.getVisitedRefuges();
+        })
+      ).rejects.toThrow('No user is logged in');
+
+      await expect(
+        act(async () => {
+          await result.current.addVisitedRefuge(1);
+        })
+      ).rejects.toThrow('No user is logged in');
+
+      await expect(
+        act(async () => {
+          await result.current.removeVisitedRefuge(1);
+        })
+      ).rejects.toThrow('No user is logged in');
     });
   });
 });

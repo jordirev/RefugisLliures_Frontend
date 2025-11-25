@@ -32,12 +32,12 @@ export interface User {
   username: string;
   email: string;
   avatar?: string;
-  idioma: string;
-  refugis_favorits: number[];
-  refugis_visitats: number[];
-  reformes: string[];
-  num_fotos_pujades: number | null;
-  num_experiencies_compartides: number | null;
-  num_refugis_reformats: number | null;
+  language: string;
+  favourite_refuges: string[];
+  visited_refuges: string[];
+  renovations: string[];
+  num_uploaded_photos: number | null;
+  num_shared_experiences: number | null;
+  num_renovated_refuges: number | null;
   created_at: string; // ISO date string
 }

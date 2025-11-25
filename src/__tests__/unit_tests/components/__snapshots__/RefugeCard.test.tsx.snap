@@ -38,6 +38,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
       "marginVertical": 8,
       "opacity": 1,
       "overflow": "hidden",
+      "position": "relative",
       "shadowColor": "#000",
       "shadowOffset": {
         "height": 2,
@@ -51,104 +52,173 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   <View
     style={
       {
-        "height": 200,
+        "backgroundColor": "#f3f4f6",
+        "height": 216,
         "position": "relative",
         "width": "100%",
       }
     }
   >
-    <View
-      style={
-        [
-          {
-            "borderRadius": 16,
-            "paddingHorizontal": 12,
-            "paddingVertical": 4,
-            "position": "absolute",
-            "right": 8,
-            "top": 8,
-          },
-          {
-            "backgroundColor": "#22c55e",
-          },
-        ]
-      }
-    >
-      <Text
-        style={
-          {
-            "color": "#fff",
-            "fontSize": 12,
-            "fontWeight": "600",
-            "textTransform": "capitalize",
-          }
+    <Image
+      resizeMode="cover"
+      source={
+        {
+          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
         }
-      >
-        bé
-      </Text>
-    </View>
-  </View>
-  <View
-    style={
-      {
-        "padding": 12,
-        "position": "relative",
       }
-    }
-  >
-    <Text
-      numberOfLines={1}
       style={
         {
-          "color": "#111827",
-          "fontSize": 16,
-          "fontWeight": "600",
-          "marginBottom": 4,
+          "height": "100%",
+          "width": "100%",
         }
       }
-    >
-      Refugi Test
-    </Text>
+      testID="refuge-image"
+    />
     <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         {
           "alignItems": "center",
-          "flexDirection": "row",
-          "gap": 4,
+          "borderRadius": 18,
+          "height": 36,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "top": 8,
+          "width": 36,
+        }
+      }
+      testID="favorite-button"
+    >
+      <test-file-stub
+        height={24}
+        width={24}
+      />
+    </View>
+  </View>
+  <View
+    pointerEvents="box-none"
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "transparent",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "flex": 1,
+          "marginTop": 4,
         }
       }
     >
       <Text
+        numberOfLines={1}
         style={
           {
-            "color": "#6b7280",
-            "fontSize": 14,
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "marginBottom": 4,
           }
         }
       >
-        Pirineus
+        Refugi Test
       </Text>
-      <Text
+      <View
         style={
           {
-            "color": "#9ca3af",
-            "fontSize": 12,
+            "alignItems": "center",
+            "flexDirection": "row",
+            "paddingRight": 64,
           }
         }
       >
-        •
-      </Text>
-      <Text
-        style={
-          {
-            "color": "#6b7280",
-            "fontSize": 14,
+        <Text
+          ellipsizeMode="tail"
+          numberOfLines={2}
+          style={
+            {
+              "color": "#6b7280",
+              "flexShrink": 1,
+              "flexWrap": "wrap",
+              "fontSize": 13,
+            }
           }
-        }
-      >
-        👤 
-        20
-      </Text>
+        >
+          Pirineus
+        </Text>
+        <Text
+          style={
+            {
+              "color": "#9ca3af",
+              "fontSize": 12,
+              "marginHorizontal": 6,
+            }
+          }
+        >
+          •
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+            }
+          }
+        >
+          <test-file-stub
+            height={16}
+            width={16}
+          />
+          <Text
+            style={
+              {
+                "color": "#6b7280",
+                "fontSize": 13,
+                "lineHeight": 16,
+              }
+            }
+          >
+             
+            20
+          </Text>
+        </View>
+      </View>
     </View>
     <View
       accessibilityState={
@@ -183,28 +253,30 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "alignItems": "center",
           "backgroundColor": "#fff",
           "borderColor": "#e5e7eb",
-          "borderRadius": 20,
+          "borderRadius": 8,
           "borderWidth": 1,
-          "bottom": 8,
+          "bottom": 12,
           "height": 40,
           "justifyContent": "center",
           "opacity": 1,
           "position": "absolute",
-          "right": 8,
+          "right": 16,
           "width": 40,
+          "zIndex": 5,
         }
       }
+      testID="map-button"
     >
-      <Text
+      <Image
+        resizeMode="stretch"
+        source="test-file-stub"
         style={
           {
-            "fontSize": 20,
+            "height": 18,
+            "width": 16,
           }
         }
-      >
-        🗺️ 
-        Veure al mapa
-      </Text>
+      />
     </View>
   </View>
 </View>
@@ -248,6 +320,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
       "marginVertical": 8,
       "opacity": 1,
       "overflow": "hidden",
+      "position": "relative",
       "shadowColor": "#000",
       "shadowOffset": {
         "height": 2,
@@ -261,104 +334,173 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   <View
     style={
       {
-        "height": 200,
+        "backgroundColor": "#f3f4f6",
+        "height": 216,
         "position": "relative",
         "width": "100%",
       }
     }
   >
-    <View
-      style={
-        [
-          {
-            "borderRadius": 16,
-            "paddingHorizontal": 12,
-            "paddingVertical": 4,
-            "position": "absolute",
-            "right": 8,
-            "top": 8,
-          },
-          {
-            "backgroundColor": "#eab308",
-          },
-        ]
-      }
-    >
-      <Text
-        style={
-          {
-            "color": "#fff",
-            "fontSize": 12,
-            "fontWeight": "600",
-            "textTransform": "capitalize",
-          }
+    <Image
+      resizeMode="cover"
+      source={
+        {
+          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
         }
-      >
-        excel·lent
-      </Text>
-    </View>
-  </View>
-  <View
-    style={
-      {
-        "padding": 12,
-        "position": "relative",
       }
-    }
-  >
-    <Text
-      numberOfLines={1}
       style={
         {
-          "color": "#111827",
-          "fontSize": 16,
-          "fontWeight": "600",
-          "marginBottom": 4,
+          "height": "100%",
+          "width": "100%",
         }
       }
-    >
-      Refugi Complet
-    </Text>
+      testID="refuge-image"
+    />
     <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         {
           "alignItems": "center",
-          "flexDirection": "row",
-          "gap": 4,
+          "borderRadius": 18,
+          "height": 36,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "top": 8,
+          "width": 36,
+        }
+      }
+      testID="favorite-button"
+    >
+      <test-file-stub
+        height={24}
+        width={24}
+      />
+    </View>
+  </View>
+  <View
+    pointerEvents="box-none"
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "transparent",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "flex": 1,
+          "marginTop": 4,
         }
       }
     >
       <Text
+        numberOfLines={1}
         style={
           {
-            "color": "#6b7280",
-            "fontSize": 14,
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "marginBottom": 4,
           }
         }
       >
-        Pallars Sobirà
+        Refugi Complet
       </Text>
-      <Text
+      <View
         style={
           {
-            "color": "#9ca3af",
-            "fontSize": 12,
+            "alignItems": "center",
+            "flexDirection": "row",
+            "paddingRight": 64,
           }
         }
       >
-        •
-      </Text>
-      <Text
-        style={
-          {
-            "color": "#6b7280",
-            "fontSize": 14,
+        <Text
+          ellipsizeMode="tail"
+          numberOfLines={2}
+          style={
+            {
+              "color": "#6b7280",
+              "flexShrink": 1,
+              "flexWrap": "wrap",
+              "fontSize": 13,
+            }
           }
-        }
-      >
-        👤 
-        30
-      </Text>
+        >
+          Pallars Sobirà
+        </Text>
+        <Text
+          style={
+            {
+              "color": "#9ca3af",
+              "fontSize": 12,
+              "marginHorizontal": 6,
+            }
+          }
+        >
+          •
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+            }
+          }
+        >
+          <test-file-stub
+            height={16}
+            width={16}
+          />
+          <Text
+            style={
+              {
+                "color": "#6b7280",
+                "fontSize": 13,
+                "lineHeight": 16,
+              }
+            }
+          >
+             
+            30
+          </Text>
+        </View>
+      </View>
     </View>
     <View
       accessibilityState={
@@ -393,28 +535,30 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "alignItems": "center",
           "backgroundColor": "#fff",
           "borderColor": "#e5e7eb",
-          "borderRadius": 20,
+          "borderRadius": 8,
           "borderWidth": 1,
-          "bottom": 8,
+          "bottom": 12,
           "height": 40,
           "justifyContent": "center",
           "opacity": 1,
           "position": "absolute",
-          "right": 8,
+          "right": 16,
           "width": 40,
+          "zIndex": 5,
         }
       }
+      testID="map-button"
     >
-      <Text
+      <Image
+        resizeMode="stretch"
+        source="test-file-stub"
         style={
           {
-            "fontSize": 20,
+            "height": 18,
+            "width": 16,
           }
         }
-      >
-        🗺️ 
-        Veure al mapa
-      </Text>
+      />
     </View>
   </View>
 </View>
@@ -458,6 +602,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
       "marginVertical": 8,
       "opacity": 1,
       "overflow": "hidden",
+      "position": "relative",
       "shadowColor": "#000",
       "shadowOffset": {
         "height": 2,
@@ -471,73 +616,173 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   <View
     style={
       {
-        "height": 200,
+        "backgroundColor": "#f3f4f6",
+        "height": 216,
         "position": "relative",
         "width": "100%",
       }
     }
-  />
-  <View
-    style={
-      {
-        "padding": 12,
-        "position": "relative",
-      }
-    }
   >
-    <Text
-      numberOfLines={1}
-      style={
+    <Image
+      resizeMode="cover"
+      source={
         {
-          "color": "#111827",
-          "fontSize": 16,
-          "fontWeight": "600",
-          "marginBottom": 4,
+          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
         }
       }
-    >
-      Refugi Test
-    </Text>
+      style={
+        {
+          "height": "100%",
+          "width": "100%",
+        }
+      }
+      testID="refuge-image"
+    />
     <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         {
           "alignItems": "center",
-          "flexDirection": "row",
-          "gap": 4,
+          "borderRadius": 18,
+          "height": 36,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 8,
+          "top": 8,
+          "width": 36,
+        }
+      }
+      testID="favorite-button"
+    >
+      <test-file-stub
+        height={24}
+        width={24}
+      />
+    </View>
+  </View>
+  <View
+    pointerEvents="box-none"
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "transparent",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "flex": 1,
+          "marginTop": 4,
         }
       }
     >
       <Text
+        numberOfLines={1}
         style={
           {
-            "color": "#6b7280",
-            "fontSize": 14,
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "marginBottom": 4,
           }
         }
       >
-        Pirineus
+        Refugi Test
       </Text>
-      <Text
+      <View
         style={
           {
-            "color": "#9ca3af",
-            "fontSize": 12,
+            "alignItems": "center",
+            "flexDirection": "row",
+            "paddingRight": 64,
           }
         }
       >
-        •
-      </Text>
-      <Text
-        style={
-          {
-            "color": "#6b7280",
-            "fontSize": 14,
+        <Text
+          ellipsizeMode="tail"
+          numberOfLines={2}
+          style={
+            {
+              "color": "#6b7280",
+              "flexShrink": 1,
+              "flexWrap": "wrap",
+              "fontSize": 13,
+            }
           }
-        }
-      >
-        👤 
-        20
-      </Text>
+        >
+          Pirineus
+        </Text>
+        <Text
+          style={
+            {
+              "color": "#9ca3af",
+              "fontSize": 12,
+              "marginHorizontal": 6,
+            }
+          }
+        >
+          •
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+            }
+          }
+        >
+          <test-file-stub
+            height={16}
+            width={16}
+          />
+          <Text
+            style={
+              {
+                "color": "#6b7280",
+                "fontSize": 13,
+                "lineHeight": 16,
+              }
+            }
+          >
+             
+            20
+          </Text>
+        </View>
+      </View>
     </View>
     <View
       accessibilityState={
@@ -572,28 +817,30 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "alignItems": "center",
           "backgroundColor": "#fff",
           "borderColor": "#e5e7eb",
-          "borderRadius": 20,
+          "borderRadius": 8,
           "borderWidth": 1,
-          "bottom": 8,
+          "bottom": 12,
           "height": 40,
           "justifyContent": "center",
           "opacity": 1,
           "position": "absolute",
-          "right": 8,
+          "right": 16,
           "width": 40,
+          "zIndex": 5,
         }
       }
+      testID="map-button"
     >
-      <Text
+      <Image
+        resizeMode="stretch"
+        source="test-file-stub"
         style={
           {
-            "fontSize": 20,
+            "height": 18,
+            "width": 16,
           }
         }
-      >
-        🗺️ 
-        Veure al mapa
-      </Text>
+      />
     </View>
   </View>
 </View>

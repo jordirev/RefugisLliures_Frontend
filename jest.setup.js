@@ -96,6 +96,27 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
+// Mock @react-navigation/bottom-tabs
+jest.mock('@react-navigation/bottom-tabs', () => {
+  const React = require('react');
+  return {
+    createBottomTabNavigator: () => ({
+      Navigator: ({ children, ...props }) => React.createElement('Navigator', props, children),
+      Screen: ({ children, ...props }) => React.createElement('Screen', props, children),
+    }),
+    BottomTabBarHeightContext: React.createContext(0),
+    BottomTabBarHeightCallbackContext: React.createContext(undefined),
+  };
+});
+
+// Mock react-native-safe-area-context
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({ children }) => children,
+  SafeAreaView: ({ children }) => children,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+  useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+}));
+
 // Silenciar advertències de console.warn i console.error en tests
 global.console = {
   ...console,

@@ -118,7 +118,7 @@ describe('AuthService - Tests Unitaris', () => {
         {
           username: signUpData.username,
           email: signUpData.email,
-          idioma: signUpData.language,
+          language: signUpData.language,
         },
         'mock-token'
       );
@@ -288,7 +288,7 @@ describe('AuthService - Tests Unitaris', () => {
         {
           username: mockGoogleUser.displayName,
           email: mockGoogleUser.email,
-          idioma: 'ca',
+          language: 'ca',
         },
         'google-token'
       );

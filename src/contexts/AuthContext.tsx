@@ -1,13 +1,15 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { AuthService } from '../services/AuthService';
 import type { FirebaseUser } from '../services/AuthService';
-import { User } from '../models';
+import { User, Location } from '../models';
 import { UsersService } from '../services/UsersService';
 import { changeLanguage, LanguageCode, LANGUAGES } from '../i18n';
 
 interface AuthContextType {
   firebaseUser: FirebaseUser | null;
   backendUser: User | null;
+  favouriteRefuges: Location[];
+  visitedRefuges: Location[];
   isLoading: boolean;
   isAuthenticated: boolean;
   authToken: string | null;
@@ -21,6 +23,12 @@ interface AuthContextType {
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   changeEmail: (password: string, newEmail: string) => Promise<void>;
   updateUsername: (newUsername: string) => Promise<void>;
+  getFavouriteRefuges: () => Promise<Location[] | null>;
+  addFavouriteRefuge: (refugeId: number) => Promise<Location[] | null>;
+  removeFavouriteRefuge: (refugeId: number) => Promise<Location[] | null>;
+  getVisitedRefuges: () => Promise<Location[] | null>;
+  addVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
+  removeVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,6 +40,8 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [backendUser, setBackendUser] = useState<User | null>(null);
+  const [favouriteRefuges, setFavouriteRefuges] = useState<Location[]>([]);
+  const [visitedRefuges, setVisitedRefuges] = useState<Location[]>([]);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -63,9 +73,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (userData) {
             setBackendUser(userData);
             
+            // Carregar refugis favorits i visitats
+            const [favourites, visited] = await Promise.all([
+              UsersService.getFavouriteRefuges(user.uid, token),
+              UsersService.getVisitedRefuges(user.uid, token)
+            ]);
+            
+            if (favourites) setFavouriteRefuges(favourites);
+            if (visited) setVisitedRefuges(visited);
+            
             // Canviar l'idioma de l'aplicació segons l'idioma de l'usuari del backend
-            if (userData.idioma) {
-              const userLanguage = userData.idioma.toLowerCase();
+            if (userData.language) {
+              const userLanguage = userData.language.toLowerCase();
               // Verificar que l'idioma sigui suportat
               if (Object.keys(LANGUAGES).includes(userLanguage)) {
                 await changeLanguage(userLanguage as LanguageCode);
@@ -82,6 +101,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         setAuthToken(null);
         setBackendUser(null);
+        setFavouriteRefuges([]);
+        setVisitedRefuges([]);
       }
       
       setIsLoading(false);
@@ -131,9 +152,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (userData) {
         setBackendUser(userData);
         
+        // Recarregar refugis favorits i visitats
+        const [favourites, visited] = await Promise.all([
+          UsersService.getFavouriteRefuges(firebaseUser.uid, token),
+          UsersService.getVisitedRefuges(firebaseUser.uid, token)
+        ]);
+        
+        if (favourites) setFavouriteRefuges(favourites);
+        if (visited) setVisitedRefuges(visited);
+        
         // Actualitzar l'idioma de l'aplicació
-        if (userData.idioma) {
-          const userLanguage = userData.idioma.toLowerCase();
+        if (userData.language) {
+          const userLanguage = userData.language.toLowerCase();
           if (Object.keys(LANGUAGES).includes(userLanguage)) {
             await changeLanguage(userLanguage as LanguageCode);
           }
@@ -170,9 +200,83 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setBackendUser(updatedUser);
   };
 
+  const getFavouriteRefuges = async (): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    return await UsersService.getFavouriteRefuges(firebaseUser.uid, authToken || undefined);
+  };
+
+  const addFavouriteRefuge = async (refugeId: number): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    const result = await UsersService.addFavouriteRefuge(firebaseUser.uid, refugeId, authToken || undefined);
+    console.log('addFavouriteRefuge result:', result);
+    
+    if (result !== null && backendUser) {
+      const ids = result.filter(r => r.id != null).map(r => String(r.id));
+      console.log('Updating backendUser.favourite_refuges with IDs:', ids);
+      setBackendUser({ ...backendUser, favourite_refuges: ids });
+      setFavouriteRefuges(result);
+    }
+    return result;
+  };
+
+  const removeFavouriteRefuge = async (refugeId: number): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    const result = await UsersService.removeFavouriteRefuge(firebaseUser.uid, refugeId, authToken || undefined);
+    console.log('removeFavouriteRefuge result:', result);
+    
+    if (result !== null && backendUser) {
+      const ids = result.filter(r => r.id != null).map(r => String(r.id));
+      console.log('Updating backendUser.favourite_refuges with IDs:', ids);
+      setBackendUser({ ...backendUser, favourite_refuges: ids });
+      setFavouriteRefuges(result);
+    }
+    return result;
+  };
+
+  const getVisitedRefuges = async (): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    return await UsersService.getVisitedRefuges(firebaseUser.uid, authToken || undefined);
+  };
+
+  const addVisitedRefuge = async (refugeId: number): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    const result = await UsersService.addVisitedRefuge(firebaseUser.uid, refugeId, authToken || undefined);
+    if (result !== null && backendUser) {
+      const ids = result.filter(r => r.id != null).map(r => String(r.id));
+      setBackendUser({ ...backendUser, visited_refuges: ids });
+      setVisitedRefuges(result);
+    }
+    return result;
+  };
+
+  const removeVisitedRefuge = async (refugeId: number): Promise<Location[] | null> => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    const result = await UsersService.removeVisitedRefuge(firebaseUser.uid, refugeId, authToken || undefined);
+    if (result !== null && backendUser) {
+      const ids = result.filter(r => r.id != null).map(r => String(r.id));
+      setBackendUser({ ...backendUser, visited_refuges: ids });
+      setVisitedRefuges(result);
+    }
+    return result;
+  };
+
   const value: AuthContextType = {
     firebaseUser,
     backendUser,
+    favouriteRefuges,
+    visitedRefuges,
     isLoading,
     isAuthenticated: !!firebaseUser && firebaseUser.emailVerified,
     authToken,
@@ -185,7 +289,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     reloadUser,
     changePassword,
     changeEmail,
-    updateUsername
+    updateUsername,
+    getFavouriteRefuges,
+    addFavouriteRefuge,
+    removeFavouriteRefuge,
+    getVisitedRefuges,
+    addVisitedRefuge,
+    removeVisitedRefuge
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

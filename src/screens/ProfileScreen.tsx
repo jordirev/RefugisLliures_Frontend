@@ -99,21 +99,21 @@ export function ProfileScreen() {
           <View style={styles.statsGrid}>
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.refugis_visitats?.length ?? 0}</Text>
+                <Text style={styles.statValue}>{backendUser?.visited_refuges?.length ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_refugis_reformats ?? backendUser?.reformes?.length ?? 0}</Text>
+                <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? backendUser?.renovations?.length ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
               </View>
             </View>
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_experiencies_compartides ?? 0}</Text>
+                <Text style={styles.statValue}>{backendUser?.num_shared_experiences ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_fotos_pujades ?? 0}</Text>
+                <Text style={styles.statValue}>{backendUser?.num_uploaded_photos ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
               </View>
             </View>
@@ -124,7 +124,7 @@ export function ProfileScreen() {
           <View style={styles.sectionTitle}>
             <AltitudeIcon width={20} height={20} />
             <Text style={styles.title}>{t('profile.stats.visited')}</Text>
-            <Text style={styles.titleValue}>({backendUser?.refugis_visitats?.length ?? 0})</Text>
+            <Text style={styles.titleValue}>({backendUser?.visited_refuges?.length ?? 0})</Text>
           </View>
         </View>
       </View>

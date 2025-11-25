@@ -62,7 +62,7 @@ describe('RefugisService', () => {
       const result = await RefugisService.getRefugiById(1);
 
       expect(mockApiGet).toHaveBeenCalledWith(
-        'https://refugislliures-backend.onrender.com/api/refugis/1/',
+        'https://refugislliures-backend.onrender.com/api/refuges/1/',
         { skipAuth: true }
       );
       expect(result).not.toBeNull();

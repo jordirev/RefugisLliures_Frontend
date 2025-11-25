@@ -20,7 +20,8 @@
     "download": "Download",
     "edit": "Edit",
     "info": "Info",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "pyrenees": "Pyrenees"
   },
   "navigation": {
     "map": "Map",
@@ -175,7 +176,7 @@
       "capacity": "Capacity",
       "region": "Region",
       "occupation": "Occupation",
-      "seeOccupation": "See occupation",
+      "seeOccupation": "See\n occupation",
       "description": "Description",
       "localisation": "Localisation",
       "services": "Services",

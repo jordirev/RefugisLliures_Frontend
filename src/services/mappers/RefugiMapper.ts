@@ -3,7 +3,7 @@
  */
 
 import { Location, Coord } from '../../models';
-import { RefugiDTO, CoordDTO } from '../dto/RefugiDTO';
+import { RefugiDTO, CoordDTO, UserRefugiInfoDTO } from '../dto/RefugiDTO';
 
 /**
  * Converteix les coordenades del DTO al format del frontend
@@ -36,7 +36,8 @@ function determineCondition(refugiDTO: RefugiDTO): "pobre" | "normal" | "bé" | 
     info.couchage,
     info.bas_flancs,
     info.lits,
-    info["mezzanine/etage"]
+    // DTO property is `mezzanine_etage`, not `mezzanine/etage`
+    info.mezzanine_etage
   ].filter(val => val === 1).length;
   
   // Si falta un mur, la condició no pot ser excel·lent
@@ -79,8 +80,8 @@ function mapTypeFromBackend(backendType: string | undefined): number {
     return 3;
   }
   
-  // "emergence" -> 4 -> emergency
-  if (typeNormalized.includes('emergence')) {
+  // "emergence" or "urgence" -> 4 -> emergency
+  if (typeNormalized.includes('emergence') || typeNormalized.includes('urgence')) {
     return 4;
   }
   
@@ -119,3 +120,28 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
 export function mapRefugisFromDTO(refugisDTO: RefugiDTO[]): Location[] {
   return refugisDTO.map(mapRefugiFromDTO);
 }
+
+
+
+export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): Location {
+  // Handle both 'coordinates' (from user endpoints) and 'coord' (from refuge endpoints)
+  const coordData = userRefugiInfoDTO.coordinates || userRefugiInfoDTO.coord;
+  
+  if (!coordData) {
+    throw new Error('Missing coordinate data in UserRefugiInfoDTO');
+  }
+  
+  return {
+    id: typeof userRefugiInfoDTO.id === 'string' ? parseInt(userRefugiInfoDTO.id, 10) : userRefugiInfoDTO.id,
+    name: userRefugiInfoDTO.name,
+    coord: mapCoordFromDTO(coordData),
+    places: userRefugiInfoDTO.places,
+    region: userRefugiInfoDTO.region,
+  };
+}
+
+export function mapperUserRefugiInfoResponseDTO(userRefugiInfoDTOs: UserRefugiInfoDTO[]): Location[] {
+  return userRefugiInfoDTOs.map(mapperUserRefugiInfoDTO);
+}
+
+

@@ -177,7 +177,7 @@ describe('LanguageSelector Component', () => {
       await waitFor(() => {
         expect(UsersService.updateUser).toHaveBeenCalledWith(
           'user123',
-          { idioma: 'EN' },
+          { language: 'EN' },
           'token123'
         );
       });

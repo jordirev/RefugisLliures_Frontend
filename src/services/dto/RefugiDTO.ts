@@ -75,3 +75,18 @@ export interface RefugisSimpleResponseDTO {
   count: number;
   results: RefugiSimpleDTO[];
 }
+
+export interface UserRefugiInfoDTO {
+  id: string | number;
+  name: string;
+  coordinates?: CoordDTO;
+  coord?: CoordDTO;
+  places?: number | null;
+  region?: string | null;
+  condition?: string | null;
+}
+
+export interface UserRefugiInfoResponseDTO {
+  count: number;
+  list_refuges: UserRefugiInfoDTO[];
+}

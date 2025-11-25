@@ -290,7 +290,7 @@ describe('MapScreen - Tests d\'integració', () => {
       const mockLocation: Location = {
         id: 1,
         name: 'Refugi de Colomers',
-        coordinates: { type: 'Point', coordinates: [0.9858, 42.6531] },
+        coord: { long: 0.9858, lat: 42.6531 },
         altitude: 2135,
         places: 16,
         type: 1,

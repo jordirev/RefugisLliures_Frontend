@@ -206,6 +206,17 @@ export function MapScreen({
         />
       </View>
 
+      {/* Dim the safe area (status bar) when filters are open — same tone as FilterPanel/RefugeBottomSheet */}
+      {isFilterOpen && (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.safeAreaOverlay,
+            { height: insets.top, backgroundColor: 'rgba(0,0,0,0.5)' },
+          ]}
+        />
+      )}
+
       {/* Panel de filtres */}
       <FilterPanel
         isOpen={isFilterOpen}
@@ -234,5 +245,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+  },
+  safeAreaOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    zIndex: 1000,
+    elevation: 1000,
   },
 });
