@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: 20,
     paddingBottom: 8,
   },
   headerLeft: {
@@ -140,8 +140,9 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '400',
+    fontFamily: 'Arimo',
     color: '#111827',
     marginBottom: 8,
   },
@@ -177,6 +178,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     lineHeight: 20,
     marginBottom: 12,
+    marginTop: 16,
   },
   whatsappButton: {
     flexDirection: 'row',
