@@ -1,27 +1,19 @@
 import { Location } from '../models';
-import { mockLocations } from '../utils/mockData';
 import { RefugisResponseDTO, RefugisSimpleResponseDTO } from './dto/RefugiDTO';
 import { mapRefugisFromDTO } from './mappers/RefugiMapper';
 import { apiGet } from './apiClient';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
-const DEBUG = false;
-
 export class RefugisService {
   /**
    * Get a single refugi by id.
    */
-  static async getRefugiById(id: number): Promise<Location | null> {
-    if (DEBUG) {
-      const mock = mockLocations.find(m => m.id === id);
-      return mock || null;
-    }
-
+  static async getRefugiById(id: string): Promise<Location | null> {
     try {
       const url = `${API_BASE_URL}/refuges/${id}/`;
-      // No requereix autenticació, però usem apiGet per consistència i logging
-      const response = await apiGet(url, { skipAuth: true });
+      // No requereix autenticació, però hem de passar el token igualmet i usem apiGet per consistència i logging.
+      const response = await apiGet(url);
       
       if (!response.ok) {
         return null;
@@ -47,9 +39,6 @@ export class RefugisService {
     condition?: string;
     search?: string;
   }): Promise<Location[]> {
-    if (DEBUG) {
-      return mockLocations;
-    }
 
     try {
       const params = new URLSearchParams();
@@ -76,9 +65,14 @@ export class RefugisService {
         }
       }
 
-      const url = `${API_BASE_URL}/refuges/?${params.toString()}`;
-      // No requereix autenticació, però usem apiGet per consistència i logging
-      const response = await apiGet(url, { skipAuth: true });
+      // URLSearchParams encodes spaces as '+' (application/x-www-form-urlencoded).
+      // The backend expects spaces encoded as '%20' in the query string, so
+      // replace '+' with '%20' after serializing. This preserves proper
+      // percent-encoding for accented characters while avoiding '+' for spaces.
+      const queryString = params.toString().replace(/\+/g, '%20');
+      const url = `${API_BASE_URL}/refuges/?${queryString}`;
+      // No requereix autenticació, però hem de passar el token igualmet i usem apiGet per consistència i logging.
+      const response = await apiGet(url);
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -94,32 +88,5 @@ export class RefugisService {
       console.error('Error loading refugis:', error);
       throw new Error('No s\'han pogut carregar els refugis');
     }
-  }
-
-  /**
-   * Obté els favorits de l'usuari
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
-   */
-  static async getFavorites(): Promise<Location[]> {
-    // Placeholder - retornar array buit fins que el backend estigui llest
-    return [];
-  }
-
-  /**
-   * Afegeix un refugi als favorits
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
-   */
-  static async addFavorite(refugiId: number): Promise<void> {
-    // Placeholder
-    // TODO: implement adding favorite on backend
-  }
-
-  /**
-   * Elimina un refugi dels favorits
-   * TODO: Implementar quan el backend tingui aquesta funcionalitat
-   */
-  static async removeFavorite(refugiId: number): Promise<void> {
-    // Placeholder
-    // TODO: implement removing favorite on backend
   }
 }

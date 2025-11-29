@@ -40,7 +40,7 @@ jest.mock('../../../components/BadgeCondition', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {

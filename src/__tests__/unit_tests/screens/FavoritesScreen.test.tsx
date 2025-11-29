@@ -22,7 +22,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: any) => {
       const translations: Record<string, string> = {
@@ -52,7 +52,7 @@ jest.mock('../../../services/RefugisService', () => ({
 }));
 
 // Mock de useCustomAlert
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,
@@ -67,36 +67,36 @@ const mockGetRefugiById = RefugisService.getRefugiById as jest.MockedFunction<ty
 describe('FavoritesScreen Component', () => {
   const mockFavouriteRefuges: Location[] = [
     {
-      id: 1,
+      id: "1",
       name: 'Refugi de Colomers',
       coord: { long: 0.9456, lat: 42.6497 },
       region: 'Val d\'Aran',
       places: 50,
       condition: 'bé',
       altitude: 2135,
-      type: 1,
+      type: "1",
       imageUrl: 'https://example.com/image1.jpg',
     },
     {
-      id: 2,
+      id: "2",
       name: 'Refugi d\'Amitges',
       coord: { long: 0.9876, lat: 42.5678 },
       region: 'Pallars Sobirà',
       places: 60,
       condition: 'excel·lent',
       altitude: 2380,
-      type: 1,
+      type: "1",
       imageUrl: 'https://example.com/image2.jpg',
     },
     {
-      id: 3,
+      id: "3",
       name: 'Refugi de Restanca',
       coord: { long: 0.7890, lat: 42.7890 },
       region: 'Val d\'Aran',
       places: 40,
       condition: 'normal',
       altitude: 2010,
-      type: 1,
+      type: "1",
     },
   ];
 
@@ -413,7 +413,7 @@ describe('FavoritesScreen Component', () => {
   describe('Casos límit', () => {
     it('hauria de gestionar un refugi amb tots els camps opcionals', () => {
       const minimalRefuge: Location = {
-        id: 99,
+        id: "99",
         name: 'Refugi Mínim',
         coord: { long: 1, lat: 42 },
       };
@@ -432,7 +432,7 @@ describe('FavoritesScreen Component', () => {
 
     it('hauria de gestionar noms llargs', () => {
       const longNameRefuge: Location = {
-        id: 99,
+        id: "99",
         name: 'Refugi amb un nom extremadament llarg que podria causar problemes de layout',
         coord: { long: 1, lat: 42 },
         region: 'Regió amb nom llarg',
@@ -492,7 +492,7 @@ describe('FavoritesScreen Component', () => {
       mockUseAuth.mockReturnValue({
         ...mockUseAuth(),
         favouriteRefuges: [...mockFavouriteRefuges, {
-          id: 4,
+          id: "4",
           name: 'Nou Refugi',
           coord: { long: 1, lat: 42 },
           region: 'Test',

@@ -17,9 +17,9 @@ import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../models';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 import MapIcon from '../assets/icons/map2.svg';
 import FavIcon from '../assets/icons/fav.svg';
@@ -39,13 +39,13 @@ export function AppNavigator() {
   const [showDetailScreen, setShowDetailScreen] = useState(false);
 
   // Handlers globals per al BottomSheet
-  const handleToggleFavorite = async (locationId: number | undefined) => {
+  const handleToggleFavorite = async (locationId: string | undefined) => {
     if (!locationId) return;
     
     try {
-      // TODO: Implementar toggle favorits quan el backend estigui llest
-      await RefugisService.addFavorite(locationId);
-      // success: no mostrar alerta per a favorits (es maneja visualment a les UI components)
+      // El hook useFavourite ja gestiona l'afegir/eliminar favorits
+      // Aquest handler només es crida com a callback després de la UI actualització
+      // No cal fer res aquí, ja que el hook useFavourite ho gestiona
     } catch (error) {
       showAlert(t('common.error'), t('alerts.favoriteError'));
     }

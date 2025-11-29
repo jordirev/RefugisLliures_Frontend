@@ -3,3 +3,4 @@
  */
 export * from './RefugiDTO';
 export * from './UserDTO';
+export * from './RenovationDTO';

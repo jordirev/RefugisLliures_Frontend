@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function useFavourite(refugeId?: number) {
+export default function useFavourite(refugeId?: string) {
   const { backendUser, addFavouriteRefuge, removeFavouriteRefuge } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [optimistic, setOptimistic] = useState<boolean | null>(null);

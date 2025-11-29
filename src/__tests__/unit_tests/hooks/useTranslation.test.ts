@@ -8,7 +8,7 @@
  */
 
 import { renderHook } from '@testing-library/react-native';
-import { useTranslation } from '../../../utils/useTranslation';
+import { useTranslation } from '../../../hooks/useTranslation';
 import { useTranslation as useTranslationOriginal } from 'react-i18next';
 
 // Mock de react-i18next

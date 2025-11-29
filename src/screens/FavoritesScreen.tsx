@@ -4,9 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
 import { useAuth } from '../contexts/AuthContext';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RefugisService } from '../services/RefugisService';
 
@@ -103,7 +103,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
           { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) },
         ]}
         ListEmptyComponent={() => (
-          <View style={[styles.emptyContainer, { paddingTop: HEADER_HEIGHT + 200 }]}> 
+          <View style={[styles.emptyContainer, { paddingTop: HEADER_HEIGHT + 140 }]}> 
             <FavouriteFilledIcon width={64} height={64} style={styles.emptyIcon} />
             <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
             <Text style={styles.emptyText}>{t('favorites.empty.message')}</Text>

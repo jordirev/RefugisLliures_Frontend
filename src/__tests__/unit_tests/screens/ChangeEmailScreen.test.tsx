@@ -43,7 +43,7 @@ jest.mock('@react-navigation/native', () => {
 });
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: any) => {
       const translations: Record<string, any> = {
@@ -77,7 +77,7 @@ jest.mock('../../../utils/useTranslation', () => ({
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,

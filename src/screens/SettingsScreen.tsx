@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';

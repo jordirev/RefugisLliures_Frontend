@@ -18,7 +18,7 @@ import useFavourite from '../../../hooks/useFavourite';
 import { Linking } from 'react-native';
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: any) => {
       const translations: Record<string, any> = {
@@ -54,7 +54,7 @@ jest.mock('../../../hooks/useFavourite', () => ({
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,
@@ -67,14 +67,14 @@ const mockUseFavourite = useFavourite as jest.MockedFunction<typeof useFavourite
 
 describe('RefugeDetailScreen Component', () => {
   const baseRefuge: Location = {
-    id: 1,
+    id: "1",
     name: 'Refugi de Colomers',
     coord: { long: 0.9456, lat: 42.6497 },
     region: 'Val d\'Aran',
     places: 50,
     condition: 'bé',
     altitude: 2135,
-    type: 1,
+    type: "1",
     imageUrl: 'https://example.com/image.jpg',
     description: 'Un refugi preciós situat als Pirineus',
   };
@@ -536,7 +536,7 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de coincidir amb el snapshot sense dades opcionals', () => {
       const minimalRefuge: Location = {
-        id: 1,
+        id: "1",
         name: 'Refugi Mínim',
         coord: { long: 1, lat: 42 },
       };

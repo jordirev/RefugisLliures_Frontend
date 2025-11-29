@@ -10,7 +10,7 @@
  */
 
 import { renderHook, act } from '@testing-library/react-native';
-import { useCustomAlert } from '../../../utils/useCustomAlert';
+import { useCustomAlert } from '../../../hooks/useCustomAlert';
 
 describe('useCustomAlert Hook', () => {
   describe('Estat inicial', () => {

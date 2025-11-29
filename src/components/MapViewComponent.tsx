@@ -4,9 +4,9 @@ import * as ExpoLocation from 'expo-location';
 import { Location } from '../models';
 import { LeafletWebMap } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 import LayersIcon from '../assets/icons/layers.svg';
 import CompassIcon from '../assets/icons/compass3.png';

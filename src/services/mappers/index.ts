@@ -3,3 +3,4 @@
  */
 export * from './RefugiMapper';
 export * from './UserMapper';
+export * from './RenovationMapper';

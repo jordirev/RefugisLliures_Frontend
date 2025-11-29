@@ -24,8 +24,8 @@ interface AuthContextType {
   changeEmail: (password: string, newEmail: string) => Promise<void>;
   updateUsername: (newUsername: string) => Promise<void>;
   getFavouriteRefuges: () => Promise<Location[] | null>;
-  addFavouriteRefuge: (refugeId: number) => Promise<Location[] | null>;
-  removeFavouriteRefuge: (refugeId: number) => Promise<Location[] | null>;
+  addFavouriteRefuge: (refugeId: string) => Promise<Location[] | null>;
+  removeFavouriteRefuge: (refugeId: string) => Promise<Location[] | null>;
   getVisitedRefuges: () => Promise<Location[] | null>;
   addVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
   removeVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
@@ -207,7 +207,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return await UsersService.getFavouriteRefuges(firebaseUser.uid, authToken || undefined);
   };
 
-  const addFavouriteRefuge = async (refugeId: number): Promise<Location[] | null> => {
+  const addFavouriteRefuge = async (refugeId: string): Promise<Location[] | null> => {
     if (!firebaseUser) {
       throw new Error('No user is logged in');
     }
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return result;
   };
 
-  const removeFavouriteRefuge = async (refugeId: number): Promise<Location[] | null> => {
+  const removeFavouriteRefuge = async (refugeId: string): Promise<Location[] | null> => {
     if (!firebaseUser) {
       throw new Error('No user is logged in');
     }

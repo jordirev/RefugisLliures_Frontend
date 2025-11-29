@@ -18,7 +18,7 @@ import { Filters } from '../../../models';
 // Mock de les icones i altres components externs
 jest.mock('../../../assets/icons/x.svg', () => 'XIcon');
 jest.mock('../../../assets/icons/filters.svg', () => 'FilterIcon');
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {

@@ -752,7 +752,7 @@ describe('UsersService', () => {
   describe('getFavouriteRefuges', () => {
     const mockFavoriteRefuges = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,
@@ -762,7 +762,7 @@ describe('UsersService', () => {
         altitud: 2135,
       },
       {
-        id: 2,
+        id: "2",
         nom: 'Refugi d\'Amitges',
         longitud: 0.9876,
         latitud: 42.5678,
@@ -776,7 +776,10 @@ describe('UsersService', () => {
     it('hauria de retornar refugis favorits correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockFavoriteRefuges),
+        json: jest.fn().mockResolvedValue({
+          count: 2,
+          results: mockFavoriteRefuges
+        }),
       } as unknown as Response;
 
       mockApiGet.mockResolvedValue(mockResponse);
@@ -793,7 +796,10 @@ describe('UsersService', () => {
     it('hauria de retornar array buit si no hi ha favorits', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue([]),
+        json: jest.fn().mockResolvedValue({
+          count: 0,
+          results: []
+        }),
       } as unknown as Response;
 
       mockApiGet.mockResolvedValue(mockResponse);
@@ -820,7 +826,7 @@ describe('UsersService', () => {
     it('hauria de gestionar resposta invàlida (no array)', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ results: [] }),
+        json: jest.fn().mockResolvedValue({ count: 0 }),
       } as unknown as Response;
 
       mockApiGet.mockResolvedValue(mockResponse);
@@ -842,7 +848,7 @@ describe('UsersService', () => {
   describe('addFavouriteRefuge', () => {
     const mockUpdatedFavorites = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,
@@ -850,7 +856,7 @@ describe('UsersService', () => {
         places: 50,
       },
       {
-        id: 2,
+        id: "2",
         nom: 'Refugi d\'Amitges',
         longitud: 0.9876,
         latitud: 42.5678,
@@ -930,7 +936,7 @@ describe('UsersService', () => {
   describe('removeFavouriteRefuge', () => {
     const mockUpdatedFavorites = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,
@@ -995,7 +1001,7 @@ describe('UsersService', () => {
   describe('getVisitedRefuges', () => {
     const mockVisitedRefuges = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,
@@ -1007,7 +1013,10 @@ describe('UsersService', () => {
     it('hauria de retornar refugis visitats correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockVisitedRefuges),
+        json: jest.fn().mockResolvedValue({
+          count: 1,
+          results: mockVisitedRefuges
+        }),
       } as unknown as Response;
 
       mockApiGet.mockResolvedValue(mockResponse);
@@ -1024,7 +1033,10 @@ describe('UsersService', () => {
     it('hauria de retornar array buit si no hi ha refugis visitats', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue([]),
+        json: jest.fn().mockResolvedValue({
+          count: 0,
+          results: []
+        }),
       } as unknown as Response;
 
       mockApiGet.mockResolvedValue(mockResponse);
@@ -1046,7 +1058,7 @@ describe('UsersService', () => {
   describe('addVisitedRefuge', () => {
     const mockUpdatedVisited = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,
@@ -1054,7 +1066,7 @@ describe('UsersService', () => {
         places: 50,
       },
       {
-        id: 2,
+        id: "2",
         nom: 'Refugi d\'Amitges',
         longitud: 0.9876,
         latitud: 42.5678,
@@ -1107,7 +1119,7 @@ describe('UsersService', () => {
   describe('removeVisitedRefuge', () => {
     const mockUpdatedVisited = [
       {
-        id: 1,
+        id: "1",
         nom: 'Refugi de Colomers',
         longitud: 0.9456,
         latitud: 42.6497,

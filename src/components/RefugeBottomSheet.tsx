@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../models';
 import { BadgeType } from './BadgeType';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
@@ -20,7 +20,7 @@ interface RefugeBottomSheetProps {
   refuge: Location;
   isVisible: boolean;
   onClose: () => void;
-  onToggleFavorite: (id: number | undefined) => void;
+  onToggleFavorite: (id: string | undefined) => void;
   onNavigate: (refuge: Location) => void;
   onViewDetails: (refuge: Location) => void;
 }
@@ -104,7 +104,7 @@ export function RefugeBottomSheet({
                   <BadgeType type={refuge.type} />
                 </View>
                 {/* Estat */}
-                {refuge.condition && (
+                {refuge.condition != null && (
                   <View style={styles.detailItem}>
                     <BadgeCondition condition={refuge.condition} />
                   </View>
@@ -121,7 +121,7 @@ export function RefugeBottomSheet({
                 {/* Places */}
                 <View style={styles.detailItem}>
                   <CapacityIcon color={'#4A5565'} />
-                  <Text style={styles.detailValue}>{refuge.places} </Text>
+                  <Text style={styles.detailValue}>{refuge.places ?? "?"} </Text>
                 </View>
                 {/* Regió */}
                 <View style={styles.detailItem}>

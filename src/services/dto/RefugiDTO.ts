@@ -45,7 +45,7 @@ export interface RefugiDTO {
   modified_at?: string | null;
   region?: string | null;
   departement?: string | null;
-  condition?: string | null;
+  condition?: number | null;
   images_urls?: string[];
 }
 
@@ -77,16 +77,14 @@ export interface RefugisSimpleResponseDTO {
 }
 
 export interface UserRefugiInfoDTO {
-  id: string | number;
+  id: string;
   name: string;
-  coordinates?: CoordDTO;
   coord?: CoordDTO;
   places?: number | null;
   region?: string | null;
-  condition?: string | null;
 }
 
 export interface UserRefugiInfoResponseDTO {
   count: number;
-  list_refuges: UserRefugiInfoDTO[];
+  results: UserRefugiInfoDTO[];
 }

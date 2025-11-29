@@ -178,13 +178,13 @@ export class UsersService {
       const data = await response.json();
       console.log('getFavouriteRefuges response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend returns {count, results: []}
+      if (!data || !data.results || !Array.isArray(data.results)) {
         console.warn('Invalid favourite refuges response');
         return [];
       }
       
-      return mapperUserRefugiInfoResponseDTO(data);
+      return mapperUserRefugiInfoResponseDTO(data.results);
     } catch (err) {
       console.error('Error fetching favourite refuges:', err);
       return null;
@@ -200,7 +200,7 @@ export class UsersService {
    * @param authToken - Token d'autenticació de Firebase (opcional)
    * @returns Un llistat amb els refugis preferits actualitzats o null si hi ha error
    */
-  static async addFavouriteRefuge(uid: string, refuge_id: number, authToken?: string): Promise<Location[] | null> {
+  static async addFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/favorite-refuges/`;
       
@@ -215,13 +215,14 @@ export class UsersService {
       const data = await response.json();
       console.log('addFavouriteRefuge response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend may return either a direct array or an object with {count, results: []}
+      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
+      if (!items) {
         console.warn('Invalid add favourite refuge response');
         return [];
       }
-      
-      return mapperUserRefugiInfoResponseDTO(data);
+
+      return mapperUserRefugiInfoResponseDTO(items);
     } catch (err) {
       console.error('Error adding favourite refuge:', err);
       return null;
@@ -237,7 +238,7 @@ export class UsersService {
    * @param authToken - Token d'autenticació de Firebase (opcional)
    * @returns Un llistat amb els refugis preferits actualitzats o null si hi ha error
    */
-  static async removeFavouriteRefuge(uid: string, refuge_id: number, authToken?: string): Promise<Location[] | null> {
+  static async removeFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/favorite-refuges/${refuge_id}/`;
       
@@ -252,13 +253,14 @@ export class UsersService {
       const data = await response.json();
       console.log('removeFavouriteRefuge response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend may return either a direct array or an object with {count, results: []}
+      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
+      if (!items) {
         console.warn('Invalid remove favourite refuge response');
         return [];
       }
-      
-      return mapperUserRefugiInfoResponseDTO(data);
+
+      return mapperUserRefugiInfoResponseDTO(items);
     } catch (err) {
       console.error('Error removing favourite refuge:', err);
       return null;
@@ -288,13 +290,13 @@ export class UsersService {
       const data = await response.json();
       console.log('getVisitedRefuges response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend returns {count, results: []}
+      if (!data || !data.results || !Array.isArray(data.results)) {
         console.warn('Invalid visited refuges response');
         return [];
       }
       
-      return mapperUserRefugiInfoResponseDTO(data);
+      return mapperUserRefugiInfoResponseDTO(data.results);
     } catch (err) {
       console.error('Error fetching visited refuges:', err);
       return null;
@@ -325,13 +327,14 @@ export class UsersService {
       const data = await response.json();
       console.log('addVisitedRefuge response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend may return either a direct array or an object with {count, results: []}
+      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
+      if (!items) {
         console.warn('Invalid add visited refuge response');
         return [];
       }
-      
-      return mapperUserRefugiInfoResponseDTO(data);
+
+      return mapperUserRefugiInfoResponseDTO(items);
     } catch (err) {
       console.error('Error adding visited refuge:', err);
       return null;
@@ -362,13 +365,14 @@ export class UsersService {
       const data = await response.json();
       console.log('removeVisitedRefuge response:', data);
       
-      // Backend returns direct array, not {results: []}
-      if (!data || !Array.isArray(data)) {
+      // Backend may return either a direct array or an object with {count, results: []}
+      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
+      if (!items) {
         console.warn('Invalid remove visited refuge response');
         return [];
       }
-      
-      return mapperUserRefugiInfoResponseDTO(data);
+
+      return mapperUserRefugiInfoResponseDTO(items);
     } catch (err) {
       console.error('Error removing visited refuge:', err);
       return null;

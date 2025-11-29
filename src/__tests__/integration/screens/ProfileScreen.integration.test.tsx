@@ -24,7 +24,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: any) => {
       const translations: Record<string, string> = {

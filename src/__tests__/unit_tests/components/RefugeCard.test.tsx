@@ -20,7 +20,7 @@ import useFavourite from '../../../hooks/useFavourite';
 const mockUseFavourite = useFavourite as jest.MockedFunction<typeof useFavourite>;
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -41,7 +41,7 @@ jest.mock('../../../hooks/useFavourite', () => ({
 
 describe('RefugeCard Component', () => {
   const baseRefuge: Location = {
-    id: 1,
+    id: "1",
     name: 'Refugi Test',
     coord: { long: 1.5, lat: 42.5 },
     region: 'Pirineus',
@@ -507,8 +507,8 @@ describe('RefugeCard Component', () => {
 
   describe('Interacció amb múltiples cards', () => {
     it('hauria de gestionar múltiples cards independents', () => {
-      const refuge1: Location = { ...baseRefuge, id: 1, name: 'Refugi 1' };
-      const refuge2: Location = { ...baseRefuge, id: 2, name: 'Refugi 2' };
+      const refuge1: Location = { ...baseRefuge, id: "1", name: 'Refugi 1' };
+      const refuge2: Location = { ...baseRefuge, id: "2", name: 'Refugi 2' };
 
       const onPress1 = jest.fn();
       const onPress2 = jest.fn();
@@ -539,7 +539,7 @@ describe('RefugeCard Component', () => {
 
     it('hauria de coincidir amb el snapshot amb tots els camps', () => {
       const fullRefuge: Location = {
-        id: 1,
+        id: "1",
         name: 'Refugi Complet',
         coord: { long: 1.5, lat: 42.5 },
         region: 'Pallars Sobirà',

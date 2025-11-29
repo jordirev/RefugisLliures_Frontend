@@ -233,7 +233,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       const webview = getByTestId('webview');
       const html = webview.props.source.html;
 
-      expect(html).toContain('selectedLocationId = 1');
+      expect(html).toContain('selectedLocationId = "1"');
     });
 
     it('hauria de gestionar array de refugis buit', () => {

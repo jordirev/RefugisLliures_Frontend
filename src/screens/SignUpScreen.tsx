@@ -15,7 +15,7 @@ import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
@@ -23,7 +23,7 @@ import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Logo provisional
 const AppLogo = require('../assets/images/profileDefaultBackground.png');

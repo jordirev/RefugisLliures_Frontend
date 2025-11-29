@@ -14,7 +14,7 @@ import { render } from '@testing-library/react-native';
 import { BadgeType } from '../../../components/BadgeType';
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -323,12 +323,12 @@ describe('BadgeType Component', () => {
 
   describe('Tots els tipus', () => {
     const testCases = [
-      { type: 0, expectedText: 'No vigilat', expectedBg: '#D1FAE5' },
-      { type: 1, expectedText: 'Ocupat a l\'estiu', expectedBg: '#DBEAFE' },
-      { type: 2, expectedText: 'Tancat', expectedBg: '#FEE2E2' },
-      { type: 3, expectedText: 'Abric', expectedBg: '#F3F4F6' },
-      { type: 4, expectedText: 'Emergència', expectedBg: '#FEF3C7' },
-      { type: 5, expectedText: 'Desconegut', expectedBg: '#E5E7EB' },
+      { type: "0", expectedText: 'No vigilat', expectedBg: '#D1FAE5' },
+      { type: "1", expectedText: 'Ocupat a l\'estiu', expectedBg: '#DBEAFE' },
+      { type: "2", expectedText: 'Tancat', expectedBg: '#FEE2E2' },
+      { type: "3", expectedText: 'Abric', expectedBg: '#F3F4F6' },
+      { type: "4", expectedText: 'Emergència', expectedBg: '#FEF3C7' },
+      { type: "5", expectedText: 'Desconegut', expectedBg: '#E5E7EB' },
     ];
 
     testCases.forEach(({ type, expectedText, expectedBg }) => {

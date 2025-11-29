@@ -24,9 +24,9 @@ try {
 }
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../models';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
 
 // Icons (assumint que tenim aquestes icones SVG)
@@ -48,7 +48,7 @@ import CalendarIcon from '../assets/icons/calendar.svg';
 interface RefugeDetailScreenProps {
   refuge: Location;
   onBack: () => void;
-  onToggleFavorite: (id: number | undefined) => void;
+  onToggleFavorite: (id: string | undefined) => void;
   onNavigate: (location: Location) => void;
   onEdit?: (location: Location) => void;
 }
@@ -374,8 +374,8 @@ export function RefugeDetailScreen({
               {refuge.type !== undefined && (
                 <BadgeType type={refuge.type} style={{ marginRight: 8 }} />
               )}
-              {refuge.condition && (
-                <BadgeCondition condition={String(t('refuge.condition.label')) + ' ' + String(refuge.condition)} />
+              {(refuge.condition !== undefined && refuge.condition !== null) && (
+                <BadgeCondition condition={refuge.condition} />
               )}
             </View>
           </View>
@@ -391,7 +391,7 @@ export function RefugeDetailScreen({
             <View style={styles.statCard}>
               <UsersIcon width={24} height={24} color="#FF6900" />
               <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
-              <Text style={styles.statValue}>{refuge.places !== undefined ? String(refuge.places) : 'N/A'}</Text>
+              <Text style={styles.statValue}>{refuge.places !== null ? String(refuge.places) : 'N/A'}</Text>
             </View>
             
             <View style={styles.statCard}>

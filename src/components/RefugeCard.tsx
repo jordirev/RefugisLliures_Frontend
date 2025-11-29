@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Location } from '../models';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
 
 // Icon imports
@@ -14,7 +14,7 @@ interface RefugeCardProps {
   refuge: Location;
   onPress?: () => void;
   onViewMap?: () => void;
-  onToggleFavorite?: (id: number | undefined) => void;
+  onToggleFavorite?: (id: string | undefined) => void;
 }
 
 export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: RefugeCardProps) {

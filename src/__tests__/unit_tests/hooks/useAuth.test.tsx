@@ -708,8 +708,8 @@ describe('useAuth Hook', () => {
   describe('Gestió de refugis favorits', () => {
     it('hauria de carregar refugis favorits quan l\'usuari fa login', async () => {
       const mockFavorites = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
-        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "2", name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
       ];
 
       (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue(mockFavorites);
@@ -733,7 +733,7 @@ describe('useAuth Hook', () => {
 
     it('hauria de retornar refugis favorits amb getFavouriteRefuges', async () => {
       const mockFavorites = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
       ];
 
       (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue(mockFavorites);
@@ -768,8 +768,8 @@ describe('useAuth Hook', () => {
 
     it('hauria d\'afegir un refugi als favorits', async () => {
       const mockUpdatedFavorites = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
-        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "2", name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
       ];
 
       (UsersService.addFavouriteRefuge as jest.Mock).mockResolvedValue(mockUpdatedFavorites);
@@ -803,7 +803,7 @@ describe('useAuth Hook', () => {
 
     it('hauria d\'eliminar un refugi dels favorits', async () => {
       const mockUpdatedFavorites = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
       ];
 
       (UsersService.removeFavouriteRefuge as jest.Mock).mockResolvedValue(mockUpdatedFavorites);
@@ -874,7 +874,7 @@ describe('useAuth Hook', () => {
   describe('Gestió de refugis visitats', () => {
     it('hauria de carregar refugis visitats quan l\'usuari fa login', async () => {
       const mockVisited = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
       ];
 
       (UsersService.getFavouriteRefuges as jest.Mock).mockResolvedValue([]);
@@ -898,7 +898,7 @@ describe('useAuth Hook', () => {
 
     it('hauria de retornar refugis visitats amb getVisitedRefuges', async () => {
       const mockVisited = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
       ];
 
       (UsersService.getVisitedRefuges as jest.Mock).mockResolvedValue(mockVisited);
@@ -929,8 +929,8 @@ describe('useAuth Hook', () => {
 
     it('hauria d\'afegir un refugi als visitats', async () => {
       const mockUpdatedVisited = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
-        { id: 2, name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "2", name: 'Refugi 2', coord: { long: 1.5, lat: 42.5 } },
       ];
 
       (UsersService.addVisitedRefuge as jest.Mock).mockResolvedValue(mockUpdatedVisited);
@@ -964,7 +964,7 @@ describe('useAuth Hook', () => {
 
     it('hauria d\'eliminar un refugi dels visitats', async () => {
       const mockUpdatedVisited = [
-        { id: 1, name: 'Refugi 1', coord: { long: 1, lat: 42 } },
+        { id: "1", name: 'Refugi 1', coord: { long: 1, lat: 42 } },
       ];
 
       (UsersService.removeVisitedRefuge as jest.Mock).mockResolvedValue(mockUpdatedVisited);

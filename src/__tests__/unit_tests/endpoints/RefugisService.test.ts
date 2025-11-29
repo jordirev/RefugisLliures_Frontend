@@ -41,7 +41,7 @@ describe('RefugisService', () => {
 
   describe('getRefugiById', () => {
     const mockRefugiDTO: RefugiDTO = {
-      id: 1,
+      id: "1",
       name: 'Refugi Test',
       coord: { long: 1.5, lat: 42.5 },
       altitude: 2500,
@@ -149,7 +149,7 @@ describe('RefugisService', () => {
       previous: null,
       results: [
         {
-          id: 1,
+          id: "1",
           name: 'Refugi 1',
           coord: { long: 1.5, lat: 42.5 },
           altitude: 2500,
@@ -158,7 +158,7 @@ describe('RefugisService', () => {
           type: 'cabane ouverte',
         },
         {
-          id: 2,
+          id: "2",
           name: 'Refugi 2',
           coord: { long: 1.6, lat: 42.6 },
           altitude: 2600,
@@ -465,7 +465,7 @@ describe('RefugisService', () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue({
-          id: 999999999,
+          id: "999999999",
           name: 'Refugi Gran ID',
           coord: { long: 1, lat: 42 },
         }),
@@ -476,7 +476,7 @@ describe('RefugisService', () => {
       const result = await RefugisService.getRefugiById(999999999);
 
       expect(result).not.toBeNull();
-      expect(result?.id).toBe(999999999);
+      expect(result?.id).toBe("999999999");
     });
 
     it('hauria de gestionar IDs negatius', async () => {

@@ -17,7 +17,6 @@ export function mapUserFromDTO(userDTO: UserDTO): User {
     language: userDTO.language,
     favourite_refuges: userDTO.favourite_refuges || [],
     visited_refuges: userDTO.visited_refuges || [],
-    renovations: userDTO.renovations || [],
     num_uploaded_photos: userDTO.num_uploaded_photos ?? null,
     num_shared_experiences: userDTO.num_shared_experiences ?? null,
     num_renovated_refuges: userDTO.num_renovated_refuges ?? null,

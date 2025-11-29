@@ -3,7 +3,7 @@ import { ViewStyle } from 'react-native';
 import { Badge } from './Badge';
 
 interface Props {
-  type?: number;
+  type?: string;
   style?: ViewStyle;
   neutral?: boolean;
   // when true, render text in muted (grey) color while keeping background/border
@@ -11,39 +11,33 @@ interface Props {
 }
 
 export const BadgeType: React.FC<Props> = ({ type, style, neutral = false, muted = false }) => {
-  // Map type number to translation key and display text
-  const getTypeInfo = (typeNum: number | undefined): { key: string; color: { background: string; color: string; borderColor: string } } => {
-    switch (typeNum) {
-      case 0: // noGuarded
-        return {
-          key: 'refuge.type.noGuarded',
-          color: { background: '#D1FAE5', color: '#065F46', borderColor: '#34D399' }
-        };
-      case 1: // occupiedInSummer
+  // Map type string to translation key and display text
+  const getTypeInfo = (typeStr: string | undefined): { key: string; color: { background: string; color: string; borderColor: string } } => {
+    switch (typeStr) {
+      case "cabane ouverte mais ocupee par le berger l ete": // occupiedInSummer
         return {
           key: 'refuge.type.occupiedInSummer',
           color: { background: '#DBEAFE', color: '#1E40AF', borderColor: '#60A5FA' }
         };
-      case 2: // closed
+      case "fermée": // closed
         return {
           key: 'refuge.type.closed',
           color: { background: '#FEE2E2', color: '#7A0B0B', borderColor: '#F87171' }
         };
-      case 3: // shelter
+      case "orri": // shelter
         return {
           key: 'refuge.type.shelter',
           color: { background: '#F3F4F6', color: '#374151', borderColor: '#9CA3AF' }
         };
-      case 4: // emergency
+      case "emergence": // emergency
         return {
           key: 'refuge.type.emergency',
           color: { background: '#FEF3C7', color: '#92400E', borderColor: '#F59E42' }
         };
-      case 5: // unknown
-      default:
+      default: // including "non gardé" (noGuarded) and unknown types
         return {
-          key: 'refuge.type.unknown',
-          color: { background: '#E5E7EB', color: '#6B7280', borderColor: '#9CA3AF' }
+          key: 'refuge.type.noGuarded',
+          color: { background: '#D1FAE5', color: '#065F46', borderColor: '#34D399' }
         };
     }
   };
@@ -51,7 +45,7 @@ export const BadgeType: React.FC<Props> = ({ type, style, neutral = false, muted
   const typeInfo = getTypeInfo(type);
   
   // Import useTranslation
-  const { useTranslation } = require('../utils/useTranslation');
+  const { useTranslation } = require('../hooks/useTranslation');
   const { t } = useTranslation();
   
   const displayText = t(typeInfo.key);

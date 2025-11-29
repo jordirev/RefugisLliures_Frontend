@@ -13,14 +13,14 @@ import {
 import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app

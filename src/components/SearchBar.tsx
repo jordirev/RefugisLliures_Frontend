@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';

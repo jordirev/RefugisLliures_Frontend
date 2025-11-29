@@ -19,7 +19,7 @@ export function mapCoordFromDTO(coordDTO: CoordDTO): Coord {
  * Determina la condició del refugi basant-se en info_comp
  * Aquesta és una lògica provisional - es pot millorar segons criteris reals
  */
-function determineCondition(refugiDTO: RefugiDTO): "pobre" | "normal" | "bé" | "excel·lent" | undefined {
+function determineCondition(refugiDTO: RefugiDTO): number | undefined {
   if (!refugiDTO.info_comp) return undefined;
   
   const info = refugiDTO.info_comp;
@@ -36,57 +36,19 @@ function determineCondition(refugiDTO: RefugiDTO): "pobre" | "normal" | "bé" | 
     info.couchage,
     info.bas_flancs,
     info.lits,
-    // DTO property is `mezzanine_etage`, not `mezzanine/etage`
     info.mezzanine_etage
   ].filter(val => val === 1).length;
   
   // Si falta un mur, la condició no pot ser excel·lent
   if (info.manque_un_mur === 1) {
-    return "pobre";
-  }
-  
-  // Determinem la condició segons les comoditats
-  if (amenities >= 8) return "excel·lent";
-  if (amenities >= 5) return "bé";
-  if (amenities >= 3) return "normal";
-  return "pobre";
-}
-
-/**
- * Maps backend type string to frontend type number
- */
-function mapTypeFromBackend(backendType: string | undefined): number {
-  if (!backendType) return 5; // unknown
-  
-  const typeNormalized = backendType.toLowerCase().trim();
-  
-  // "cabane ouverte" -> 0 -> noGuarded
-  if (typeNormalized.includes('cabane ouverte') && !typeNormalized.includes('berger')) {
     return 0;
   }
   
-  // "cabane ouverte mais ocupee par le berger l ete" -> 1 -> occupiedInSummer
-  if (typeNormalized.includes('berger')) {
-    return 1;
-  }
-  
-  // "Fermée" or "cabane fermee" -> 2 -> closed
-  if (typeNormalized.includes('fermée') || typeNormalized.includes('fermee')) {
-    return 2;
-  }
-  
-  // "orri toue abri en pierre" -> 3 -> shelter
-  if (typeNormalized.includes('orri') || typeNormalized.includes('abri en pierre')) {
-    return 3;
-  }
-  
-  // "emergence" or "urgence" -> 4 -> emergency
-  if (typeNormalized.includes('emergence') || typeNormalized.includes('urgence')) {
-    return 4;
-  }
-  
-  // null or unknown -> 5 -> unknown
-  return 5;
+  // Determinem la condició segons les comoditats
+  if (amenities >= 8) return 3;
+  if (amenities >= 5) return 2;
+  if (amenities >= 3) return 1;
+  return 0;
 }
 
 /**
@@ -94,7 +56,7 @@ function mapTypeFromBackend(backendType: string | undefined): number {
  */
 export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
   return {
-    id: Number.parseInt(refugiDTO.id, 10),
+    id: refugiDTO.id,
     name: refugiDTO.name,
     surname: refugiDTO.surname || undefined,
     coord: mapCoordFromDTO(refugiDTO.coord),
@@ -102,11 +64,11 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     places: refugiDTO.places,
     description: refugiDTO.description,
     links: refugiDTO.links,
-    type: mapTypeFromBackend(refugiDTO.type),
+    type: refugiDTO.type,
     modified_at: refugiDTO.modified_at,
     region: refugiDTO.region,
     departement: refugiDTO.departement,
-    condition: determineCondition(refugiDTO),
+    condition: refugiDTO.condition || determineCondition(refugiDTO),
     
     // Propietats addicionals del frontend
     imageUrl: undefined, // No ve del backend
@@ -124,15 +86,14 @@ export function mapRefugisFromDTO(refugisDTO: RefugiDTO[]): Location[] {
 
 
 export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): Location {
-  // Handle both 'coordinates' (from user endpoints) and 'coord' (from refuge endpoints)
-  const coordData = userRefugiInfoDTO.coordinates || userRefugiInfoDTO.coord;
+  const coordData = userRefugiInfoDTO.coord;
   
   if (!coordData) {
     throw new Error('Missing coordinate data in UserRefugiInfoDTO');
   }
   
   return {
-    id: typeof userRefugiInfoDTO.id === 'string' ? parseInt(userRefugiInfoDTO.id, 10) : userRefugiInfoDTO.id,
+    id: userRefugiInfoDTO.id,
     name: userRefugiInfoDTO.name,
     coord: mapCoordFromDTO(coordData),
     places: userRefugiInfoDTO.places,

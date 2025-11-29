@@ -61,7 +61,7 @@ jest.mock('../../../assets/icons/compass3.png', () => 'CompassIcon');
 jest.mock('../../../assets/icons/target.png', () => 'TargetIcon');
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -76,7 +76,7 @@ jest.mock('../../../utils/useTranslation', () => ({
 }));
 
 // Mock de useCustomAlert
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,

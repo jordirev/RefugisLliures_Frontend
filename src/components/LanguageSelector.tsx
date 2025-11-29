@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LANGUAGES, LanguageCode, getCurrentLanguage, changeLanguage } from '../i18n';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { UsersService } from '../services/UsersService';
 import { CustomAlert } from './CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 interface LanguageSelectorProps {
   visible: boolean;

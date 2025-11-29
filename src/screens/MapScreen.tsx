@@ -6,9 +6,9 @@ import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../models';
 import { RefugisService } from '../services/RefugisService';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -137,7 +137,7 @@ export function MapScreen({
     setSearchQuery(name);
     // Trobar el refugi seleccionat i obtenir detall (des de la cache si s'hi troba)
     const selectedRefuge = allLocations.find(loc => loc.name === name);
-    const fetchAndSelect = async (id: number) => {
+    const fetchAndSelect = async (id: string) => {
       try {
         const detailed = await RefugisService.getRefugiById(id);
         if (detailed) onLocationSelect(detailed);
@@ -173,7 +173,7 @@ export function MapScreen({
         locations={locations}
         onLocationSelect={async (payload: any) => {
           try {
-            if (typeof payload === 'number') {
+            if (typeof payload === 'string') {
               const detailed = await RefugisService.getRefugiById(payload);
               if (detailed) onLocationSelect(detailed);
             } else if (payload && payload.id) {

@@ -69,7 +69,7 @@ describe('Models de Refugis', () => {
 
     it('hauria de crear una ubicació completa amb tots els camps', () => {
       const location: Location = {
-        id: 1,
+        id: "1",
         name: 'Refugi Test',
         surname: 'Refugi de Muntanya',
         coord: { long: 1.5, lat: 42.5 },
@@ -77,7 +77,7 @@ describe('Models de Refugis', () => {
         places: 20,
         description: 'Un refugi de test',
         links: ['https://example.com'],
-        type: 0,
+        type: "0",
         modified_at: '2023-01-01T00:00:00Z',
         region: 'Pirineus',
         departement: 'Lleida',
@@ -85,11 +85,11 @@ describe('Models de Refugis', () => {
         imageUrl: 'https://example.com/image.jpg',
       };
 
-      expect(location.id).toBe(1);
+      expect(location.id).toBe("1");
       expect(location.surname).toBe('Refugi de Muntanya');
       expect(location.altitude).toBe(2000);
       expect(location.places).toBe(20);
-      expect(location.type).toBe(0);
+      expect(location.type).toBe("0");
       expect(location.condition).toBe('bé');
     });
 
@@ -157,13 +157,13 @@ describe('Models de Refugis', () => {
   describe('Filters Model', () => {
     it('hauria de crear filtres amb tots els camps', () => {
       const filters: Filters = {
-        types: [0, 1, 2],
+        types: ["0", "1", "2"],
         altitude: [1000, 3000],
         places: [10, 50],
         condition: ['normal', 'bé'],
       };
 
-      expect(filters.types).toEqual([0, 1, 2]);
+      expect(filters.types).toEqual(["0", "1", "2"]);
       expect(filters.altitude).toEqual([1000, 3000]);
       expect(filters.places).toEqual([10, 50]);
       expect(filters.condition).toEqual(['normal', 'bé']);

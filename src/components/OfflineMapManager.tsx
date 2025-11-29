@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { MapCacheService } from '../services/MapCacheService';
 import { CustomAlert } from './CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 interface OfflineMapManagerProps {
   visible: boolean;
