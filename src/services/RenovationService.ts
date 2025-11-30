@@ -66,7 +66,7 @@ export class RenovationService {
    */
   static async getRenovationById(id: string): Promise<RenovationDTO | null> {
     try {
-      const url = `${API_BASE_URL}/renovations/${id}/?id=${id}`;
+      const url = `${API_BASE_URL}/renovations/${id}/`;
       const response = await apiGet(url);
       
       if (response.status === 404) {

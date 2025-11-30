@@ -15,6 +15,7 @@ import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { CreateRenovationScreen } from '../screens/CreateRenovationScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
+import { RefromDetailScreen } from '../screens/RefromDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../models';
@@ -234,6 +235,16 @@ export function AppNavigator() {
         <Tab.Screen
           name="CreateRenovation"
           component={CreateRenovationScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden RefromDetail screen: accessible by navigation.navigate('RefromDetail') but not shown in the tab bar */}
+        <Tab.Screen
+          name="RefromDetail"
+          component={RefromDetailScreen}
           options={{ 
             tabBarButton: () => null,
             tabBarStyle: { display: 'none' }

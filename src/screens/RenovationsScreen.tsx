@@ -107,13 +107,18 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   };
 
   const handleMoreInfo = (renovation: Renovation) => {
-    // TODO: Implementar veure participants
-    console.log('More info:', renovation.id);
+    navigation.navigate('RefromDetail', { renovationId: renovation.id });
   };
 
-  const handleJoin = (renovation: Renovation) => {
-    // TODO: Implementar unir-se
-    console.log('Join:', renovation.id);
+  const handleJoin = async (renovation: Renovation) => {
+    try {
+      await RenovationService.joinRenovation(renovation.id);
+      // Reload renovations to reflect the change
+      await loadRenovations();
+    } catch (error: any) {
+      console.error('Error joining renovation:', error);
+      alert(error.message || 'Error joining renovation');
+    }
   };
 
   const handleCreateNew = () => {

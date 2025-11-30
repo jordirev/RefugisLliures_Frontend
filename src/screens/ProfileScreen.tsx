@@ -103,7 +103,7 @@ export function ProfileScreen() {
                 <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? backendUser?.renovations?.length ?? 0}</Text>
+                <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? 0}</Text>
                 <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
               </View>
             </View>
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 100,
     backgroundColor: '#f9fafb',
-    borderRadius: 12,
+    borderRadius: 18,
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',

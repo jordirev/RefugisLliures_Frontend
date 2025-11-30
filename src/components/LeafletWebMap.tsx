@@ -62,14 +62,35 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   // Actualitzar el marker seleccionat
   useEffect(() => {
     if (mapInitialized && webViewRef.current) {
+      console.log('Updating selected marker:', selectedLocation?.id);
       const js = `
-        if (typeof updateSelectedMarker === 'function') {
-          updateSelectedMarker(${selectedLocation?.id || null});
-        }
+        (function() {
+          try {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'updateSelectedMarker called with ID: ' + ${selectedLocation?.id || null}
+            }));
+            
+            if (typeof updateSelectedMarker === 'function') {
+              updateSelectedMarker(${selectedLocation?.id || null});
+            } else {
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'debug',
+                message: 'updateSelectedMarker is not a function!'
+              }));
+            }
+          } catch(e) {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'Error in updateSelectedMarker: ' + e.message
+            }));
+          }
+        })();
+        true;
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [selectedLocation, mapInitialized]);
+  }, [selectedLocation?.id, mapInitialized]);
 
   // Centrar el mapa quan userLocation canvia
   useEffect(() => {
@@ -249,22 +270,55 @@ export const LeafletWebMap = memo(function LeafletWebMap({
 
         // Funció per actualitzar només el marker seleccionat (més eficient)
         window.updateSelectedMarker = function(selectedId) {
-          markers.forEach(function(marker) {
-            var isSelected = marker.locationData && marker.locationData.id === selectedId;
-            marker.setIcon(isSelected ? selectedIcon : refugeIcon);
-          });
-          
-          // Centrar mapa al refugi seleccionat
-          if (selectedId) {
-            var selectedMarker = markers.find(function(m) { 
-              return m.locationData && m.locationData.id === selectedId; 
+          try {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'updateSelectedMarker executing with ID: ' + selectedId
+            }));
+            
+            markers.forEach(function(marker) {
+              var isSelected = marker.locationData && marker.locationData.id === selectedId;
+              marker.setIcon(isSelected ? selectedIcon : refugeIcon);
             });
-            if (selectedMarker) {
-              map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14, {
-                animate: true,
-                duration: 0.5
+            
+            // Centrar mapa al refugi seleccionat
+            if (selectedId) {
+              var selectedMarker = markers.find(function(m) { 
+                return m.locationData && m.locationData.id === selectedId; 
               });
+              
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'debug',
+                message: 'Found marker: ' + (selectedMarker ? 'yes' : 'no')
+              }));
+              
+              if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
+                var lat = selectedMarker.locationData.coord.lat;
+                var lng = selectedMarker.locationData.coord.long;
+                
+                window.ReactNativeWebView?.postMessage(JSON.stringify({
+                  type: 'debug',
+                  message: 'Coordinates: lat=' + lat + ', lng=' + lng
+                }));
+                
+                if (lat !== undefined && lng !== undefined) {
+                  map.setView([lat, lng], 16, {
+                    animate: true,
+                    duration: 0.5
+                  });
+                  
+                  window.ReactNativeWebView?.postMessage(JSON.stringify({
+                    type: 'debug',
+                    message: 'Zoom executed!'
+                  }));
+                }
+              }
             }
+          } catch(e) {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'Error in updateSelectedMarker: ' + e.message
+            }));
           }
         };
 
@@ -302,8 +356,12 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           var selectedMarker = markers.find(function(m) { 
             return m.locationData && m.locationData.id === selectedLocationId; 
           });
-          if (selectedMarker) {
-            map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14);
+          if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
+            var lat = selectedMarker.locationData.coord.lat;
+            var lng = selectedMarker.locationData.coord.long;
+            if (lat !== undefined && lng !== undefined) {
+              map.setView([lat, lng], 16);
+            }
           }
         }
 
@@ -331,6 +389,8 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         }
       } else if (data.type === 'mapInitialized') {
         setMapInitialized(true);
+      } else if (data.type === 'debug') {
+        console.log('[WebView]', data.message);
       }
     } catch (error) {
       console.error('Error parsing message from WebView:', error);
