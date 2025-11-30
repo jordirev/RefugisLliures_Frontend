@@ -360,5 +360,39 @@
       "googleLoginFailed": "Erreur lors de l'authentification avec Google",
       "googleSigninNotAvailable": "Google Sign In n'est pas disponible dans Expo Go. Utilisez une version native pour activer cette fonctionnalité."
     }
+  },
+  "createRenovation": {
+    "title": "Créer une Rénovation",
+    "refugeLabel": "Refuge",
+    "refugeHelper": "Appuyez pour changer de refuge",
+    "datesLabel": "Dates",
+    "iniDateLabel": "Date de début",
+    "finDateLabel": "Date de fin",
+    "selectDate": "Sélectionnez une date",
+    "selectIniDate": "Sélectionnez la date de début",
+    "selectFinDate": "Sélectionnez la date de fin",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Décrivez les tâches de rénovation ou d'amélioration...",
+    "materialsLabel": "Matériaux nécessaires",
+    "materialsPlaceholder": "Liste des matériaux nécessaires (facultatif)...",
+    "groupLinkLabel": "Lien du groupe",
+    "groupLinkPlaceholder": "https://chat.whatsapp.com/... ou https://t.me/...",
+    "groupLinkInfo": "Collez ici le lien d'invitation du groupe WhatsApp ou Telegram où la rénovation sera coordonnée.",
+    "submit": "Créer Rénovation",
+    "viewOverlappingRenovation": "Voir rénovation",
+    "errors": {
+      "refugeRequired": "Vous devez sélectionner un refuge",
+      "refugeNotFound": "Le refuge sélectionné n'existe pas",
+      "iniDateRequired": "Vous devez sélectionner la date de début",
+      "finDateRequired": "Vous devez sélectionner la date de fin",
+      "finDateBeforeIniDate": "La date de fin doit être postérieure à la date de début",
+      "invalidDate": "Format de date invalide",
+      "descriptionRequired": "Vous devez écrire une description",
+      "descriptionTooLong": "La description ne peut pas dépasser 1000 caractères",
+      "groupLinkRequired": "Vous devez ajouter un lien de groupe",
+      "groupLinkInvalid": "Le lien doit être de WhatsApp ou Telegram",
+      "overlapMessage": "Une rénovation est déjà planifiée pour ce refuge à ces dates.",
+      "generic": "Impossible de créer la rénovation. Veuillez réessayer."
+    }
   }
 }

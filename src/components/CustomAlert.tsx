@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { 
   View, 
   Text, 
@@ -7,11 +7,13 @@ import {
   TouchableOpacity, 
   ScrollView 
 } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 
 interface AlertButton {
   text: string;
   onPress?: () => void;
   style?: 'default' | 'cancel' | 'destructive';
+  icon?: FC<SvgProps>;
 }
 
 interface CustomAlertProps {
@@ -77,6 +79,14 @@ export function CustomAlert({
                   onPress={() => handleButtonPress(button)}
                 >
                   <View style={styles.modalButtonContent}>
+                    {button.icon && (
+                      <button.icon
+                        width={16}
+                        height={16}
+                        color={isPrimary || isDestructive ? '#ffffff' : '#111827'}
+                        style={{ marginRight: 6 }}
+                      />
+                    )}
                     <Text style={[
                       styles.modalButtonText,
                       isPrimary && !isDestructive && styles.modalPrimaryText,

@@ -74,7 +74,11 @@ export function RenovationCard({
           
           <View style={styles.infoRow}>
             <CalendarIcon width={16} height={16} style={styles.icon} />
-            <Text style={styles.infoText}>{formatDate(renovation.ini_date)} - {formatDate(renovation.fin_date)}</Text>
+            <Text style={styles.infoText}>
+              {renovation.fin_date && formatDate(renovation.ini_date) !== formatDate(renovation.fin_date)
+                ? `${formatDate(renovation.ini_date)} - ${formatDate(renovation.fin_date)}`
+                : formatDate(renovation.ini_date)}
+            </Text>
           </View>
         </View>
         

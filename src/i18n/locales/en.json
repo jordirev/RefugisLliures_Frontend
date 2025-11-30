@@ -381,6 +381,7 @@
     "groupLinkPlaceholder": "https://chat.whatsapp.com/... or https://t.me/...",
     "groupLinkInfo": "Paste here the invitation link of the WhatsApp or Telegram group where the renovation will be coordinated.",
     "submit": "Create Renovation",
+    "viewOverlappingRenovation": "View renovation",
     "errors": {
       "refugeRequired": "You must select a shelter",
       "refugeNotFound": "The selected shelter does not exist",
@@ -392,6 +393,7 @@
       "descriptionTooLong": "Description cannot exceed 1000 characters",
       "groupLinkRequired": "You must add a group link",
       "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
+      "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
       "generic": "Could not create renovation. Please try again."
     }
   }

@@ -15,8 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import { SearchBar } from '../components/SearchBar';
 import { RefugeCard } from '../components/RefugeCard';
+import { CustomAlert } from '../components/CustomAlert';
 import { Location } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { RenovationService } from '../services/RenovationService';
@@ -24,10 +26,12 @@ import { RenovationService } from '../services/RenovationService';
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
 import InformationIcon from '../assets/icons/information-circle.svg';
+import NavigationIcon from '../assets/icons/navigation.svg';
 
 export function CreateRenovationScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
   // Form state
   const [selectedRefuge, setSelectedRefuge] = useState<Location | null>(null);
@@ -235,8 +239,37 @@ export function CreateRenovationScreen() {
       navigation.goBack();
     } catch (error: any) {
       console.error('Error creating renovation:', error);
+      
+      // Handle conflict (409) - overlapping renovation
+      if (error.overlappingRenovation) {
+        const overlappingRenovation = error.overlappingRenovation;
+        showAlert(
+          undefined,
+          t('createRenovation.errors.overlapMessage'),
+          [
+            {
+              text: t('common.ok'),
+              style: 'cancel',
+              onPress: () => {
+                hideAlert();
+                navigation.navigate('Renovations');
+              },
+            },
+            {
+              text: t('createRenovation.viewOverlappingRenovation'),
+              style: 'default',
+              onPress: () => {
+                hideAlert();
+                navigation.navigate('RenovationDetail', { 
+                  renovationId: overlappingRenovation.id 
+                });
+              },
+            },
+          ]
+        );
+      }
       // Handle specific errors
-      if (error.message.includes('refugi')) {
+      else if (error.message.includes('refugi')) {
         setRefugeError(t('createRenovation.errors.refugeNotFound'));
       } else if (error.message.includes('data')) {
         setIniDateError(t('createRenovation.errors.invalidDate'));
@@ -499,6 +532,22 @@ export function CreateRenovationScreen() {
           </View>
         </Pressable>
       </Modal>
+
+      {/* Custom Alert */}
+      {alertVisible && alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons?.map((button) => ({
+            ...button,
+            icon: button.text === t('createRenovation.viewOverlappingRenovation') 
+              ? NavigationIcon 
+              : undefined,
+          }))}
+          onDismiss={hideAlert}
+        />
+      )}
     </View>
   );
 }

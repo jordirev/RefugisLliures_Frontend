@@ -26,6 +26,7 @@ import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
 // Icons
 import CalendarIcon from '../assets/icons/calendar2.svg';
 import ToolsIcon from '../assets/icons/reform.svg';
+import DescriptionIcon from '../assets/icons/description.svg';
 import WhatsAppIcon from '../assets/icons/whatsapp.svg';
 import TelegramIcon from '../assets/icons/telegram.png';
 import PeopleIcon from '../assets/icons/user.svg';
@@ -55,6 +56,7 @@ export function RefromDetailScreen() {
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const renovationId = route.params?.renovationId;
 
@@ -335,16 +337,33 @@ export function RefromDetailScreen() {
           {/* Description Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <ToolsIcon width={20} height={20} style={styles.sectionIcon} />
+              <DescriptionIcon width={20} height={20} style={styles.sectionIcon} />
               <Text style={styles.sectionTitle}>{t('renovations.description')}</Text>
             </View>
-            <Text style={styles.descriptionText}>{renovation.description}</Text>
+            <Text 
+              style={styles.descriptionText}
+              numberOfLines={descriptionExpanded ? undefined : 4}
+            >
+              {renovation.description}
+            </Text>
+            {renovation.description && renovation.description.length > 200 && (
+              <TouchableOpacity 
+                onPress={() => setDescriptionExpanded(!descriptionExpanded)} 
+                style={styles.readMoreButton}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.readMoreText}>
+                  {descriptionExpanded ? t('common.showLess') : t('common.readMore')}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Materials Needed Section */}
           {renovation.materials_needed && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
+                <ToolsIcon width={20} height={20} style={styles.sectionIcon} />
                 <Text style={styles.sectionTitle}>{t('renovations.materialsNeeded')}</Text>
               </View>
               <Text style={styles.materialsText}>{renovation.materials_needed}</Text>
@@ -369,8 +388,42 @@ export function RefromDetailScreen() {
             </View>
           )}
 
+          {/* Participants List */}
+          {canSeeParticipants && participants.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <PeopleIcon width={20} height={20} style={styles.sectionIcon} />
+                <Text style={styles.sectionTitle}>
+                  {t('renovations.participants')} ({participants.length})
+                </Text>
+              </View>
+              <View style={styles.participantsList}>
+                {participants.map((participant) => (
+                  <View key={participant.uid} style={styles.participantItem}>
+                    <View style={styles.participantInfo}>
+                      <View style={styles.participantAvatar}>
+                        <Text style={styles.participantAvatarText}>
+                          {participant.username?.charAt(0).toUpperCase() || 'U'}
+                        </Text>
+                      </View>
+                      <Text style={styles.participantName}>{participant.username}</Text>
+                    </View>
+                    {isUserCreator && (
+                      <TouchableOpacity
+                        style={styles.removeParticipantButton}
+                        onPress={() => handleRemoveParticipant(participant.uid, participant.username)}
+                      >
+                        <RemoveIcon width={20} height={20} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
           {/* Group Link Section - Only show if user is creator */}
-          {isUserCreator && renovation.group_link && (
+          {canSeeParticipants && renovation.group_link && (
             <View style={styles.section}>
               <TouchableOpacity
                 style={[
@@ -424,40 +477,6 @@ export function RefromDetailScreen() {
                   </LinearGradient>
                 </TouchableOpacity>
               )}
-            </View>
-          )}
-
-          {/* Participants List */}
-          {canSeeParticipants && participants.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <PeopleIcon width={20} height={20} style={styles.sectionIcon} />
-                <Text style={styles.sectionTitle}>
-                  {t('renovations.participants')} ({participants.length})
-                </Text>
-              </View>
-              <View style={styles.participantsList}>
-                {participants.map((participant) => (
-                  <View key={participant.uid} style={styles.participantItem}>
-                    <View style={styles.participantInfo}>
-                      <View style={styles.participantAvatar}>
-                        <Text style={styles.participantAvatarText}>
-                          {participant.username?.charAt(0).toUpperCase() || 'U'}
-                        </Text>
-                      </View>
-                      <Text style={styles.participantName}>{participant.username}</Text>
-                    </View>
-                    {isUserCreator && (
-                      <TouchableOpacity
-                        style={styles.removeParticipantButton}
-                        onPress={() => handleRemoveParticipant(participant.uid, participant.username)}
-                      >
-                        <RemoveIcon width={20} height={20} />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ))}
-              </View>
             </View>
           )}
 
@@ -606,6 +625,15 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: '#374151',
     fontFamily: 'Arimo',
+  },
+  readMoreButton: {
+    marginTop: 2,
+    paddingVertical: 4,
+  },
+  readMoreText: {
+    color: '#2563eb',
+    fontSize: 14,
+    fontWeight: '600',
   },
   materialsText: {
     fontSize: 15,

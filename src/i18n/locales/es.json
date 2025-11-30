@@ -381,6 +381,7 @@
     "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
     "groupLinkInfo": "Pega aquí el enlace de invitación del grupo de WhatsApp o Telegram donde se coordinará la reforma.",
     "submit": "Crear Reforma",
+    "viewOverlappingRenovation": "Ver renovación",
     "errors": {
       "refugeRequired": "Debes seleccionar un refugio",
       "refugeNotFound": "El refugio seleccionado no existe",
@@ -392,6 +393,7 @@
       "descriptionTooLong": "La descripción no puede superar los 1000 caracteres",
       "groupLinkRequired": "Debes añadir un enlace del grupo",
       "groupLinkInvalid": "El enlace debe ser de WhatsApp o Telegram",
+      "overlapMessage": "Ya existe una reforma planificada para este refugio en estas fechas.",
       "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
     }
   }
