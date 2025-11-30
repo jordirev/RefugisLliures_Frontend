@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
     marginBottom: 4,
+    marginRight: 60,
   },
   detailsRow: {
     flexDirection: 'row',

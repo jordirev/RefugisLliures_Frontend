@@ -51,18 +51,10 @@
     "title": "Améliorations et Rénovations",
     "count": "{{count}} amélioration",
     "count_plural": "{{count}} améliorations",
-    "priority": {
-      "high": "Haute",
-      "medium": "Moyenne",
-      "low": "Basse"
-    },
-    "status": {
-      "pending": "En attente",
-      "inProgress": "En cours",
-      "completed": "Terminée"
-    },
-    "contributeButton": "Contribuer",
-    "moreInfo": "Plus d'infos",
+    "join_whatapp_link": "Rejoignez le groupe WhatsApp",
+    "join_telegram_link": "Rejoignez le groupe Telegram",
+    "join": "Rejoindre",
+    "moreInfo": "Information",
     "empty": {
       "title": "Aucune amélioration en attente",
       "message": "Toutes les améliorations sont terminées"

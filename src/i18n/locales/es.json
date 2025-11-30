@@ -21,7 +21,9 @@
     "edit": "Editar",
     "info": "Info",
     "unknown": "Desconocido",
-    "pyrenees": "Pirineos"
+    "pyrenees": "Pirineos",
+    "optional": "opcional",
+    "locale": "es"
   },
   "navigation": {
     "map": "Mapa",
@@ -51,18 +53,10 @@
     "title": "Reformas y Mejoras",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformas",
-    "priority": {
-      "high": "Alta",
-      "medium": "Media",
-      "low": "Baja"
-    },
-    "status": {
-      "pending": "Pendiente",
-      "inProgress": "En curso",
-      "completed": "Completada"
-    },
-    "contributeButton": "Contribuir",
-    "moreInfo": "Más información",
+    "join_whatapp_link": "Únete al grupo de WhatsApp",
+    "join_telegram_link": "Únete al grupo de Telegram",
+    "join": "Únete",
+    "moreInfo": "Información",
     "empty": {
       "title": "No hay reformas pendientes",
       "message": "Todas las reformas están completadas"
@@ -339,6 +333,38 @@
       "generic": "Se ha producido un error. Por favor, inténtalo de nuevo",
       "googleLoginFailed": "Error durante la autenticación con Google",
       "googleSigninNotAvailable": "Google Sign In no está disponible en Expo Go. Utiliza un build nativo para activar esta funcionalidad."
+    }
+  },
+  "createRenovation": {
+    "title": "Crear Reforma",
+    "refugeLabel": "Refugio",
+    "refugeHelper": "Pulsa para cambiar de refugio",
+    "datesLabel": "Fechas",
+    "iniDateLabel": "Fecha de inicio",
+    "finDateLabel": "Fecha de finalización",
+    "selectDate": "Selecciona una fecha",
+    "selectIniDate": "Selecciona la fecha de inicio",
+    "selectFinDate": "Selecciona la fecha de finalización",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Describe las tareas de reforma o mejora...",
+    "materialsLabel": "Materiales necesarios",
+    "materialsPlaceholder": "Lista de materiales necesarios (opcional)...",
+    "groupLinkLabel": "Enlace del grupo",
+    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
+    "groupLinkInfo": "Pega aquí el enlace de invitación del grupo de WhatsApp o Telegram donde se coordinará la reforma.",
+    "submit": "Crear Reforma",
+    "errors": {
+      "refugeRequired": "Debes seleccionar un refugio",
+      "refugeNotFound": "El refugio seleccionado no existe",
+      "iniDateRequired": "Debes seleccionar la fecha de inicio",
+      "finDateRequired": "Debes seleccionar la fecha de finalización",
+      "finDateBeforeIniDate": "La fecha de finalización debe ser posterior a la de inicio",
+      "invalidDate": "Formato de fecha no válido",
+      "descriptionRequired": "Debes escribir una descripción",
+      "descriptionTooLong": "La descripción no puede superar los 1000 caracteres",
+      "groupLinkRequired": "Debes añadir un enlace del grupo",
+      "groupLinkInvalid": "El enlace debe ser de WhatsApp o Telegram",
+      "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
     }
   }
 }

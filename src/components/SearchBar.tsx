@@ -10,14 +10,25 @@ import PlusIcon from '../assets/icons/plus.svg';
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onOpenFilters: () => void;
+  onOpenFilters?: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
   topInset?: number;
+  showFilterButton?: boolean;
+  showAddButton?: boolean;
 }
 
 // Memoritzem el component per evitar re-renders innecessaris
-export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect, topInset = 0 }: SearchBarProps) {
+export const SearchBar = memo(function SearchBar({ 
+  searchQuery, 
+  onSearchChange, 
+  onOpenFilters, 
+  suggestions = [], 
+  onSuggestionSelect, 
+  topInset = 0,
+  showFilterButton = true,
+  showAddButton = true
+}: SearchBarProps) {
   const { t } = useTranslation();
   
   return (
@@ -56,6 +67,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
             </TouchableOpacity>
           )}
         </View>
+        {showFilterButton && onOpenFilters && (
         <TouchableOpacity
           style={styles.filterButton}
           onPress={() => {
@@ -65,6 +77,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
         >
           <FilterIcon width={18} height={18} color="#6B7280" />
         </TouchableOpacity>
+        )}
       </View>
       {/* Llista de suggeriments d'autocomplete */}
       {suggestions.length > 0 && (
@@ -84,7 +97,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
         </View>
       )}
       {/* Botó afegeix: només mostrar si la cerca està buida */}
-      {(!searchQuery || searchQuery.trim().length === 0) && (
+      {showAddButton && (!searchQuery || searchQuery.trim().length === 0) && (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {

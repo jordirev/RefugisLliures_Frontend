@@ -21,7 +21,9 @@
     "edit": "Editar",
     "info": "Info",
     "unknown": "Desconegut",
-    "pyrenees": "Pirineus"
+    "pyrenees": "Pirineus",
+    "optional": "opcional",
+    "locale": "ca"
   },
   "navigation": {
     "map": "Mapa",
@@ -51,18 +53,10 @@
     "title": "Reformes i Millores",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformes",
-    "priority": {
-      "high": "Alta",
-      "medium": "Mitjana",
-      "low": "Baixa"
-    },
-    "status": {
-      "pending": "Pendent",
-      "inProgress": "En curs",
-      "completed": "Completada"
-    },
-    "contributeButton": "Contribuir",
-    "moreInfo": "Més informació",
+    "join_whatapp_link": "Uneix-te al grup de WhatsApp",
+    "join_telegram_link": "Uneix-te al grup de Telegram",
+    "join": "Uneix-me",
+    "moreInfo": "Informació",
     "empty": {
       "title": "No hi ha reformes pendents",
       "message": "Totes les reformes estan completades"
@@ -190,7 +184,7 @@
       "navigate": "Navegar",
       "viewDetails": "Veure detalls",
       "favorite": "Favorit",
-      "viewOnMap": "Veure al mapa",
+      "viewOnMap": "Veure en el mapa",
       "add": "Afegeix"
     }
   },
@@ -340,6 +334,38 @@
       "generic": "S'ha produït un error. Si us plau, torna-ho a intentar",
       "googleLoginFailed": "Error durant l'autenticació amb Google",
       "googleSigninNotAvailable": "Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat."
+    }
+  },
+  "createRenovation": {
+    "title": "Crear Reforma",
+    "refugeLabel": "Refugi",
+    "refugeHelper": "Prem per canviar de refugi",
+    "datesLabel": "Dates",
+    "iniDateLabel": "Data d'inici",
+    "finDateLabel": "Data de finalització",
+    "selectDate": "Selecciona una data",
+    "selectIniDate": "Selecciona la data d'inici",
+    "selectFinDate": "Selecciona la data de finalització",
+    "descriptionLabel": "Descripció",
+    "descriptionPlaceholder": "Descriu les tasques de reforma o millora...",
+    "materialsLabel": "Materials necessaris",
+    "materialsPlaceholder": "Llista els materials necessaris (opcional)...",
+    "groupLinkLabel": "Enllaç del grup",
+    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
+    "groupLinkInfo": "Enganxa aquí l'enllaç d'invitació del grup de WhatsApp o Telegram on es coordinarà la reforma.",
+    "submit": "Crear Reforma",
+    "errors": {
+      "refugeRequired": "Has de seleccionar un refugi",
+      "refugeNotFound": "El refugi seleccionat no existeix",
+      "iniDateRequired": "Has de seleccionar la data d'inici",
+      "finDateRequired": "Has de seleccionar la data de finalització",
+      "finDateBeforeIniDate": "La data de finalització ha de ser posterior a la d'inici",
+      "invalidDate": "Format de data no vàlid",
+      "descriptionRequired": "Has d'escriure una descripció",
+      "descriptionTooLong": "La descripció no pot superar els 1000 caràcters",
+      "groupLinkRequired": "Has d'afegir un enllaç del grup",
+      "groupLinkInvalid": "L'enllaç ha de ser de WhatsApp o Telegram",
+      "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
     }
   }
 }

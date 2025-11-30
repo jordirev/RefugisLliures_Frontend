@@ -12,6 +12,7 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
 import { EditProfileScreen } from '../screens/EditProfileScreen';
+import { CreateRenovationScreen } from '../screens/CreateRenovationScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 
@@ -168,8 +169,11 @@ export function AppNavigator() {
               </View>
             ),
           }}
-          component={RenovationsScreen}
-        />
+        >
+          {() => (
+            <RenovationsScreen onViewMap={handleShowRefugeBottomSheet} />
+          )}
+        </Tab.Screen>
 
         <Tab.Screen 
           name={t('navigation.profile')}
@@ -220,6 +224,16 @@ export function AppNavigator() {
         <Tab.Screen
           name="EditProfile"
           component={EditProfileScreen}
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        />
+        
+        {/* Hidden CreateRenovation screen: accessible by navigation.navigate('CreateRenovation') but not shown in the tab bar */}
+        <Tab.Screen
+          name="CreateRenovation"
+          component={CreateRenovationScreen}
           options={{ 
             tabBarButton: () => null,
             tabBarStyle: { display: 'none' }

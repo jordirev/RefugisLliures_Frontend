@@ -21,7 +21,9 @@
     "edit": "Edit",
     "info": "Info",
     "unknown": "Unknown",
-    "pyrenees": "Pyrenees"
+    "pyrenees": "Pyrenees",
+    "optional": "optional",
+    "locale": "en"
   },
   "navigation": {
     "map": "Map",
@@ -51,18 +53,10 @@
     "title": "Improvements & Repairs",
     "count": "{{count}} improvement",
     "count_plural": "{{count}} improvements",
-    "priority": {
-      "high": "High",
-      "medium": "Medium",
-      "low": "Low"
-    },
-    "status": {
-      "pending": "Pending",
-      "inProgress": "In progress",
-      "completed": "Completed"
-    },
-    "contributeButton": "Contribute",
-    "moreInfo": "More info",
+    "join_whatapp_link": "Join WhatsApp group",
+    "join_telegram_link": "Join Telegram group",
+    "join": "Join",
+    "moreInfo": "Information",
     "empty": {
       "title": "No pending improvements",
       "message": "All improvements are completed"
@@ -339,6 +333,38 @@
       "generic": "An error occurred. Please try again",
       "googleLoginFailed": "Error during Google authentication",
       "googleSigninNotAvailable": "Google Sign In is not available in Expo Go. Use a native build to enable this feature."
+    }
+  },
+  "createRenovation": {
+    "title": "Create Renovation",
+    "refugeLabel": "Shelter",
+    "refugeHelper": "Tap to change shelter",
+    "datesLabel": "Dates",
+    "iniDateLabel": "Start date",
+    "finDateLabel": "End date",
+    "selectDate": "Select a date",
+    "selectIniDate": "Select start date",
+    "selectFinDate": "Select end date",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe the renovation or improvement tasks...",
+    "materialsLabel": "Materials needed",
+    "materialsPlaceholder": "List the materials needed (optional)...",
+    "groupLinkLabel": "Group link",
+    "groupLinkPlaceholder": "https://chat.whatsapp.com/... or https://t.me/...",
+    "groupLinkInfo": "Paste here the invitation link of the WhatsApp or Telegram group where the renovation will be coordinated.",
+    "submit": "Create Renovation",
+    "errors": {
+      "refugeRequired": "You must select a shelter",
+      "refugeNotFound": "The selected shelter does not exist",
+      "iniDateRequired": "You must select the start date",
+      "finDateRequired": "You must select the end date",
+      "finDateBeforeIniDate": "The end date must be after the start date",
+      "invalidDate": "Invalid date format",
+      "descriptionRequired": "You must write a description",
+      "descriptionTooLong": "Description cannot exceed 1000 characters",
+      "groupLinkRequired": "You must add a group link",
+      "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
+      "generic": "Could not create renovation. Please try again."
     }
   }
 }
