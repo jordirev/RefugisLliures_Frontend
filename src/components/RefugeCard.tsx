@@ -92,7 +92,7 @@ export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: Ref
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
     position: 'relative',
     marginHorizontal: 16,
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 5,
+    marginRight: -4,
   },
   mapButtonText: {
     fontSize: 20,

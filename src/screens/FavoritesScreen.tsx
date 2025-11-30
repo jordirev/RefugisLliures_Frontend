@@ -130,7 +130,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#F9FAFB',
   },
   root: {
     flex: 1,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
     paddingHorizontal: 6,
   },
   safeArea: {

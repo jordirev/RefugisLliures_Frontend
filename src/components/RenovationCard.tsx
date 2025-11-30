@@ -145,7 +145,7 @@ export function RenovationCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 18,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -157,8 +157,9 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: 16,
     paddingBottom: 8,
+    paddingTop: 20,
   },
   headerLeft: {
     flex: 1,
@@ -198,6 +199,7 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 16,
     paddingTop: 0,
+    paddingBottom: 24,
   },
   description: {
     fontSize: 13,
@@ -239,7 +241,6 @@ const styles = StyleSheet.create({
   bottomButtonsContainer: {
     flexDirection: 'column',
     gap: 10,
-    marginBottom: 8,
   },
   buttonContainer: {
     flexDirection: 'row',

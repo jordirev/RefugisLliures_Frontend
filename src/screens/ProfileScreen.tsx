@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   sectionStatics: {
-    borderRadius: 12,
+    borderRadius: 18,
     borderColor: '#e5e7eb',
     borderWidth: 1,
   },
