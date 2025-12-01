@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RenovationCard } from '../components/RenovationCard';
+import { CustomAlert } from '../components/CustomAlert';
 import { Renovation, Location } from '../models';
 import { RenovationService } from '../services/RenovationService';
 import { RefugisService } from '../services/RefugisService';
 import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
 import { useAuth } from '../contexts/AuthContext';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // import icons
 import RenovationsIcon from '../assets/icons/reform.svg';
 import InformationIcon from '../assets/icons/information-circle.svg';
 import PlusIcon from '../assets/icons/plus2.svg';
+
 
 interface RenovationsScreenProps {
   onViewMap?: (location: Location) => void;
@@ -23,8 +26,10 @@ interface RenovationsScreenProps {
 export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const HEADER_HEIGHT = 96;
   const navigation = useNavigation<any>();
   const { firebaseUser } = useAuth();
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   const [renovations, setRenovations] = useState<Renovation[]>([]);
   const [refuges, setRefuges] = useState<Map<string, Location>>(new Map());
@@ -134,20 +139,33 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.headerFixed}>
+        <SafeAreaView edges={["top"]} style={styles.safeArea}>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <RenovationsIcon width={20} height={20} style={styles.icon} />
+              <Text style={styles.title}>Reformes i Millores</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.infoButton}
+              onPress={() => showAlert(
+                t('renovations.alerts.infoTitle'),
+                t('renovations.alerts.infoMessage'),
+                [{ text: t('common.close'), onPress: hideAlert }]
+              )}
+              activeOpacity={0.8}>
+              <InformationIcon width={24} height={24} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </View>
+
       <ScrollView 
         style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 16 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) }]}
       >
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <RenovationsIcon width={20} height={20} style={styles.icon} />
-            <Text style={styles.title}>Reformes i Millores</Text>
-          </View>
-          <TouchableOpacity style={styles.infoButton}>
-            <InformationIcon width={24} height={24} style={styles.icon} />
-          </TouchableOpacity>
-        </View>
         
         {/* Les meves reformes */}
         {myRenovations.length > 0 && (
@@ -216,14 +234,44 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
           <PlusIcon width={24} height={24} style={styles.plusIcon} />
         </LinearGradient>
       </TouchableOpacity>
+
+      <CustomAlert
+        visible={alertVisible}
+        title={alertConfig?.title}
+        message={alertConfig?.message || ''}
+        buttons={alertConfig?.buttons}
+        onDismiss={hideAlert}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#F9FAFB',
+    paddingHorizontal: 6,
+  },
+  safeArea: {
+    backgroundColor: '#F9FAFB',
+  },
+  header: {
+    padding: 16,
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   centerContent: {
     justifyContent: 'center',
@@ -240,17 +288,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: '#F9FAFB',
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 32,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-    paddingTop: 8,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -261,10 +302,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginRight: 8,
+    color: '#101828', 
+    fontSize: 16, 
+    fontFamily: 'Arimo', 
+    fontWeight: '400', 
+    lineHeight: 24, 
+    flexWrap: 'wrap',
+    textAlign: 'center',
+    alignItems: 'center',
   },
   count: {
     fontSize: 14,
@@ -277,10 +322,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
+    fontSize: 14,
+    fontFamily: 'Arimo',
+    fontWeight: '400',
+    lineHeight: 24,
+    color: '#717182',
     marginBottom: 16,
+    marginLeft: 12,
   },
   separator: {
     height: 1,

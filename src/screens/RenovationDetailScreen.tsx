@@ -9,7 +9,7 @@ import {
   Linking,
   Image
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
@@ -35,16 +35,17 @@ import EditIcon from '../assets/icons/edit.svg';
 import TrashIcon from '../assets/icons/x.svg';
 import RemoveIcon from '../assets/icons/x.svg';
 
-type RefromDetailScreenRouteProp = RouteProp<
-  { RefromDetail: { renovationId: string } },
-  'RefromDetail'
+type RenovationDetailScreenRouteProp = RouteProp<
+  { RenovationDetail: { renovationId: string } },
+  'RenovationDetail'
 >;
 
-export function RefromDetailScreen() {
+export function RenovationDetailScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const HEADER_HEIGHT = 40 + insets.top;
   const navigation = useNavigation<any>();
-  const route = useRoute<RefromDetailScreenRouteProp>();
+  const route = useRoute<RenovationDetailScreenRouteProp>();
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
@@ -249,7 +250,7 @@ export function RefromDetailScreen() {
               setIsDeleting(true);
               await RenovationService.deleteRenovation(renovation.id);
               showAlert(undefined, t('renovations.deletedSuccessfully'));
-              navigation.goBack();
+              navigation.navigate('Renovations');
             } catch (error: any) {
               showAlert(t('common.error'), error.message || t('renovations.errorDeleting'));
               setIsDeleting(false);
@@ -288,25 +289,30 @@ export function RefromDetailScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 8 }]}
-      >
-        {/* Header with back button */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backIconButton}>
-            <BackIcon width={24} height={24} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('renovations.details')}</Text>
-          <View style={{ width: 24 }} />
+      <View style={styles.root}>
+        {/* Fixed header */}
+        <View style={styles.headerFixed}>
+          <SafeAreaView edges={['top']} style={styles.safeArea} />
+          {/* Header with back button */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.navigate('Renovations')} style={styles.backIconButton}>
+              <BackIcon width={24} height={24} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{t('renovations.details')}</Text>
+            <View style={{ width: 24 }} />
+          </View>
         </View>
+
+        <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: HEADER_HEIGHT + 16, paddingBottom: Math.max(insets.bottom + 16, 32) }]}
+        >
 
         {/* Refuge Card */}
         <View style={styles.refugeCardContainer}>
           <RefugeCard
             refuge={refuge}
-            onPress={() => navigation.navigate('RefugeDetail', { refuge })}
+            onPress={() => navigation.navigate('RefugeDetail', { refuge, from: 'RenovationDetail' })}
             onViewMap={handleViewOnMap}
           />
         </View>
@@ -517,6 +523,11 @@ export function RefromDetailScreen() {
         buttons={alertConfig?.buttons}
         onDismiss={hideAlert}
       />
+
+      {/* Bottom safe-area filler to ensure a visible (non-transparent) area behind home indicator */}
+        {insets.bottom > 0 && (
+          <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
+      )}
     </View>
   );
 }
@@ -534,20 +545,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 32,
+    paddingHorizontal: 0,
+  },
+  root: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#F9FAFB',
+  },
+  safeArea: {
+    backgroundColor: '#F9FAFB',
   },
   header: {
+    height: 60,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
   backIconButton: {
     padding: 4,
+    marginRight: 12,
   },
   headerTitle: {
     fontSize: 18,
@@ -817,5 +843,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
     fontFamily: 'Arimo',
+  },
+  bottomSafeArea: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    zIndex: 5,
   },
 });

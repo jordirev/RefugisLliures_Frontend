@@ -88,6 +88,12 @@
     "empty": {
       "title": "No hi ha reformes pendents",
       "message": "Totes les reformes estan completades"
+    },
+    "alerts": {
+      "infoTitle": "Informació de les reformes",
+      "infoMessage": "Aquí es mostren les reformes a fer a refugis lliures que els usuaris pengen. Si vols col·laborar per a mantenir els refugis lliures, pots unir-te a qualsevol reforma i comunicar-te amb els participants mitjançant el grup de Whatsapp o Telegram que el creador hagi establert.",
+      "infoCreationTittle": "⚠️Abans de crear una reforma...",
+      "infoCreationMessage": "Abans de crear una reforma, assegure't de consultar la normativa vigent i de preguntar al parc natural o ajuntament si és viable."
     }
   },
   "profile": {

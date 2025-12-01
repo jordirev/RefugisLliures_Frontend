@@ -86,6 +86,12 @@
     "empty": {
       "title": "Aucune amélioration en attente",
       "message": "Toutes les améliorations sont terminées"
+    },
+    "alerts": {
+      "infoTitle": "Informations sur les rénovations",
+      "infoMessage": "Ici sont affichées les rénovations à réaliser dans les refuges libres que les utilisateurs publient. Si vous souhaitez collaborer pour entretenir les refuges libres, vous pouvez rejoindre n'importe quelle rénovation et communiquer avec les participants via le groupe WhatsApp ou Telegram établi par le créateur.",
+      "infoCreationTittle": "⚠️ Avant de créer une rénovation",
+      "infoCreationMessage": "Avant d'entreprendre des travaux de rénovation, assurez-vous de vérifier la réglementation en vigueur et de vous renseigner auprès du parc naturel ou de la mairie pour savoir si le projet est réalisable."
     }
   },
   "profile": {

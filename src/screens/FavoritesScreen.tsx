@@ -143,16 +143,22 @@ const styles = StyleSheet.create({
     zIndex: 10,
     backgroundColor: '#F9FAFB',
     paddingHorizontal: 6,
+    //shadowColor: '#2b2b2bff',
+    //shadowOffset: { width: 0, height: 2 },
+    //shadowOpacity: 0,
+    //shadowRadius: 8,
+    //elevation: 2,
   },
   safeArea: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
   },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#F9FAFB',
     alignItems: 'center',
     flexDirection: 'row',
     gap: 8,
+
   },
   title: {
     color: '#101828', 
@@ -178,7 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'transparent',
   },
   emptyIcon: {
     fontSize: 64,

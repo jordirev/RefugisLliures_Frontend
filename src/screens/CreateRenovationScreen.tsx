@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,9 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect} from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { SearchBar } from '../components/SearchBar';
@@ -61,10 +61,24 @@ export function CreateRenovationScreen() {
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
   const [groupLinkError, setGroupLinkError] = useState<string | null>(null);
 
+  // Insets for adaptive safe area padding (bottom on devices with home indicator)
+  const insets = useSafeAreaInsets();
+
   // Load all refuges on mount
   useEffect(() => {
     loadRefuges();
   }, []);
+
+  // Show info alert on screen every time it is opened
+  useFocusEffect(
+    useCallback(() => {
+      showAlert(
+        t('renovations.alerts.infoCreationTittle'),
+        t('renovations.alerts.infoCreationMessage'),
+        [{ text: t('common.close'), onPress: hideAlert }]
+      );
+    }, [])
+  );
 
   const loadRefuges = async () => {
     try {
@@ -236,7 +250,7 @@ export function CreateRenovationScreen() {
       });
 
       // Success - navigate back
-      navigation.goBack();
+      navigation.navigate('Renovations');
     } catch (error: any) {
       console.error('Error creating renovation:', error);
       
@@ -309,7 +323,7 @@ export function CreateRenovationScreen() {
       <View style={styles.headerFixed}>
         <SafeAreaView edges={['top']} style={styles.safeArea} />
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Renovations')}>
             <BackIcon />
           </TouchableOpacity>
           <Text style={styles.title}>{t('createRenovation.title')}</Text>
@@ -548,6 +562,10 @@ export function CreateRenovationScreen() {
           onDismiss={hideAlert}
         />
       )}
+      {/* Bottom safe-area filler to ensure a visible (non-transparent) area behind home indicator */}
+        {insets.bottom > 0 && (
+          <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
+      )}
     </View>
   );
 }
@@ -742,6 +760,7 @@ const datePickerStyles = StyleSheet.create({
 });
 
 const HEADER_HEIGHT = 96;
+const BOTTOM_SAFE_AREA_HEIGHT = 34;
 
 const styles = StyleSheet.create({
   root: {
@@ -782,7 +801,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: HEADER_HEIGHT,
-    paddingBottom: 32,
+    paddingBottom: BOTTOM_SAFE_AREA_HEIGHT + 32,
     paddingHorizontal: 16,
   },
   section: {
@@ -965,5 +984,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
+  },
+  bottomSafeArea: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    zIndex: 5,
   },
 });

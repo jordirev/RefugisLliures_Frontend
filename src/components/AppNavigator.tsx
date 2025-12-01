@@ -15,7 +15,7 @@ import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { CreateRenovationScreen } from '../screens/CreateRenovationScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
-import { RefromDetailScreen } from '../screens/RefromDetailScreen';
+import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
 
 import { RefugisService } from '../services/RefugisService';
 import { Location } from '../models';
@@ -117,7 +117,7 @@ export function AppNavigator() {
         }}
       >
         <Tab.Screen 
-          name={t('navigation.map')}
+          name="Map"
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
@@ -129,16 +129,19 @@ export function AppNavigator() {
             ),
           }}
         >
-          {() => (
-            <MapScreen
-              onLocationSelect={handleShowRefugeBottomSheet}
-              selectedLocation={selectedLocation}
-            />
-          )}
+          {({ route }: any) => {
+            const { selectedRefuge } = route.params || {};
+            return (
+              <MapScreen
+                onLocationSelect={handleShowRefugeBottomSheet}
+                selectedLocation={selectedRefuge || selectedLocation}
+              />
+            );
+          }}
         </Tab.Screen>
 
         <Tab.Screen 
-          name={t('navigation.favorites')}
+          name="Favorites"
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
@@ -159,7 +162,7 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name={t('navigation.renovations')}
+          name="Renovations"
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
@@ -177,7 +180,7 @@ export function AppNavigator() {
         </Tab.Screen>
 
         <Tab.Screen 
-          name={t('navigation.profile')}
+          name="Profile"
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
@@ -244,12 +247,33 @@ export function AppNavigator() {
         {/* Hidden RefromDetail screen: accessible by navigation.navigate('RefromDetail') but not shown in the tab bar */}
         <Tab.Screen
           name="RefromDetail"
-          component={RefromDetailScreen}
+          component={RenovationDetailScreen}
           options={{ 
             tabBarButton: () => null,
             tabBarStyle: { display: 'none' }
           }}
         />
+        
+        {/* Hidden RefugeDetail screen: accessible by navigation.navigate('RefugeDetail') but not shown in the tab bar */}
+        <Tab.Screen
+          name="RefugeDetail"
+          options={{ 
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' }
+          }}
+        >
+          {({ route, navigation: nav }: any) => {
+            const { refuge } = route.params || {};
+            return (
+              <RefugeDetailScreen
+                refuge={refuge}
+                onBack={() => nav.goBack()}
+                onToggleFavorite={handleToggleFavorite}
+                onNavigate={handleNavigate}
+              />
+            );
+          }}
+        </Tab.Screen>
       </Tab.Navigator>
 
       {/* Bottom Sheet del refugi */}

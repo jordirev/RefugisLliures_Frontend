@@ -88,6 +88,12 @@
     "empty": {
       "title": "No hay reformas pendientes",
       "message": "Todas las reformas están completadas"
+    },
+    "alerts": {
+      "infoTitle": "Información sobre las reformas",
+      "infoMessage": "Aquí se muestran las reformas que los usuarios publican para los refugios libres. Si quieres colaborar para mantener los refugios libres, puedes unirte a cualquier reforma y comunicarte con los participantes a través del grupo de WhatsApp o Telegram que ha establecido el creador.",
+      "infoCreationTittle": "⚠️Antes de crear una reforma",
+      "infoCreationMessage": "Antes de crear una reforma, asegúrate de consultar la normativa vigente y preguntar al parque natural o ayuntamiento si es viable."
     }
   },
   "profile": {

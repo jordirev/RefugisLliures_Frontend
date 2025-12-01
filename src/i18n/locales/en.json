@@ -88,6 +88,12 @@
     "empty": {
       "title": "No pending improvements",
       "message": "All improvements are completed"
+    },
+    "alerts": {
+      "infoTitle": "Renovation information",
+      "infoMessage": "Here are displayed the renovations to be carried out in free shelters that users publish. If you want to collaborate to maintain free shelters, you can join any renovation and communicate with the participants through the WhatsApp or Telegram group established by the creator.",
+      "infoCreationTittle": "⚠️Before creating a renovation",
+      "infoCreationMessage": "Before creating a renovation, make sure to check current regulations and ask the natural park or town hall if it is viable."
     }
   },
   "profile": {
