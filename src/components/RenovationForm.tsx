@@ -723,7 +723,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: HEADER_HEIGHT,
-    paddingBottom: BOTTOM_SAFE_AREA_HEIGHT,
+    paddingBottom: BOTTOM_SAFE_AREA_HEIGHT + 32,
     paddingHorizontal: 16,
   },
   section: {

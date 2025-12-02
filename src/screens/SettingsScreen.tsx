@@ -44,34 +44,22 @@ export function SettingsScreen() {
   }, []);
   
   const handleGoBack = () => {
-    // Navigate to the Profile tab instead of just going back
-    navigation.navigate(t('navigation.profile'));
+    // Navigate to the Profile tab
+    navigation.navigate('Profile');
   };
 
-  // Ensure any removal (including Android hardware back) leads to Settings
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
-      if (Platform.OS === 'android') {
-        e.preventDefault();
-        navigation.navigate('Profile');
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-  
   // Handle Android hardware back button
   useEffect(() => {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
-      handleGoBack();
+      navigation.navigate('Profile');
       return true; // Prevent default behavior
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => subscription.remove();
-  }, [handleGoBack]);
+  }, [navigation]);
   
   return (
     <View style={styles.root}>

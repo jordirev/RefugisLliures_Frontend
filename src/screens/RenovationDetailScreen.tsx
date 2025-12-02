@@ -7,7 +7,9 @@ import {
   TouchableOpacity, 
   ActivityIndicator,
   Linking,
-  Image
+  Image,
+  Platform,
+  BackHandler
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
@@ -142,6 +144,25 @@ export function RenovationDetailScreen() {
     }
   };
 
+  const handleGoBack = () => {
+    navigation.navigate('Renovations')
+  };
+
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      navigation.navigate('Renovations', { 
+        renovationId: renovationId
+      });
+      return true; // Prevent default behavior
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [navigation, renovationId]);
+
   const handleJoinRenovation = async () => {
     if (!renovation) return;
 
@@ -245,7 +266,7 @@ export function RenovationDetailScreen() {
             try {
               setIsDeleting(true);
               await RenovationService.deleteRenovation(renovation.id);
-              navigation.navigate('Renovations');
+              handleGoBack();
               setIsDeleting(false);
             } catch (error: any) {
               showAlert(t('common.error'), error.message || t('renovations.errorDeleting'));
@@ -277,7 +298,7 @@ export function RenovationDetailScreen() {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text style={styles.errorText}>{t('renovations.notFound')}</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>{t('common.goBack')}</Text>
         </TouchableOpacity>
       </View>
@@ -291,7 +312,7 @@ export function RenovationDetailScreen() {
           <SafeAreaView edges={['top']} style={styles.safeArea} />
           {/* Header with back button */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.navigate('Renovations')} style={styles.backIconButton}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.backIconButton}>
               <BackIcon width={24} height={24} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>{t('renovations.details')}</Text>

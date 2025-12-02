@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -89,10 +91,16 @@ export function EditRenovationScreen() {
     }
   };
 
+  const handleCancel = () => {
+    navigation.navigate('RefromDetail', { 
+      renovationId: renovationId
+    });
+  };
+  
   const handleSubmit = async (formData: RenovationFormData, hasChanges: boolean, changedFields: Partial<RenovationFormData>) => {
     // If no changes, just navigate back
     if (!hasChanges) {
-      navigation.goBack();
+      handleCancel();
       return;
     }
 
@@ -127,9 +135,7 @@ export function EditRenovationScreen() {
               style: 'default',
               onPress: () => {
                 hideAlert();
-                navigation.navigate('RefromDetail', { 
-                  renovationId: overlappingRenovation.id 
-                });
+                handleCancel();
               },
             },
           ]
@@ -141,10 +147,22 @@ export function EditRenovationScreen() {
       setIsLoading(false);
     }
   };
+    
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
 
-  const handleCancel = () => {
-    navigation.goBack();
-  };
+    const onBackPress = () => {
+      navigation.navigate('RefromDetail', { 
+        renovationId: renovationId
+      });
+      return true; // Prevent default behavior
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [navigation, renovationId]);
+  
 
   if (isLoadingData) {
     return (

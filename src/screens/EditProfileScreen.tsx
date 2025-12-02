@@ -83,32 +83,20 @@ export function EditProfileScreen() {
     navigation.navigate('Settings');
   };
 
-  // Ensure any removal (including Android hardware back) leads to Settings
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
-      if (Platform.OS === 'android') {
-        e.preventDefault();
-        // clear fields and go to Settings
-        setUsername('');
-        setUsernameError(null);
-        navigation.navigate('Settings');
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-  
+  // Handle Android hardware back button
   useEffect(() => {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
-      handleGoBack();
+      setUsername('');
+      setUsernameError(null);
+      navigation.navigate('Settings');
       return true;
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => subscription.remove();
-  }, []);
+  }, [navigation]);
 
   // Populate username with current value from backend or firebase when available
   useEffect(() => {
