@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { CustomAlert } from '../components/CustomAlert';
@@ -14,68 +15,100 @@ import { RenovationForm, RenovationFormData } from '../components/RenovationForm
 import { Location } from '../models';
 import { RefugisService } from '../services/RefugisService';
 import { RenovationService } from '../services/RenovationService';
+import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
 
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
 import NavigationIcon from '../assets/icons/navigation.svg';
 
+type EditRenovationScreenRouteProp = RouteProp<
+  { EditRenovation: { renovationId: string } },
+  'EditRenovation'
+>;
 
-export function CreateRenovationScreen() {
+export function EditRenovationScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const route = useRoute<EditRenovationScreenRouteProp>();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const insets = useSafeAreaInsets();
 
   const [allRefuges, setAllRefuges] = useState<Location[]>([]);
+  const [initialRefuge, setInitialRefuge] = useState<Location | null>(null);
+  const [initialData, setInitialData] = useState<RenovationFormData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [formResetKey, setFormResetKey] = useState(0);
 
-  // Load all refuges on mount
+  const renovationId = route.params?.renovationId;
+
   useEffect(() => {
-    loadRefuges();
-  }, []);
+    loadData();
+  }, [renovationId]);
 
-  // Show info alert and reset form every time screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      setFormResetKey(prev => prev + 1); // Reset form
-      showAlert(
-        t('renovations.alerts.infoCreationTittle'),
-        t('renovations.alerts.infoCreationMessage'),
-        [{ text: t('common.close'), onPress: hideAlert }]
-      );
-    }, [])
-  );
-
-  const loadRefuges = async () => {
+  const loadData = async () => {
     try {
+      setIsLoadingData(true);
+      
+      // Load refuges
       const refuges = await RefugisService.getRefugis();
       setAllRefuges(refuges);
+
+      // Load renovation data
+      const renovationDTO = await RenovationService.getRenovationById(renovationId);
+      if (!renovationDTO) {
+        showAlert(t('common.error'), t('renovations.notFound'));
+        navigation.goBack();
+        return;
+      }
+
+      const renovation = mapRenovationFromDTO(renovationDTO);
+      
+      // Load refuge
+      const refuge = await RefugisService.getRefugiById(renovation.refuge_id);
+      setInitialRefuge(refuge);
+
+      // Set initial form data
+      setInitialData({
+        refuge_id: renovation.refuge_id,
+        ini_date: renovation.ini_date,
+        fin_date: renovation.fin_date,
+        description: renovation.description,
+        materials_needed: renovation.materials_needed,
+        group_link: renovation.group_link,
+      });
+      
+      // Increment reset key to force form reset
+      setFormResetKey(prev => prev + 1);
     } catch (error) {
-      console.error('Error loading refuges:', error);
+      console.error('Error loading renovation data:', error);
+      showAlert(t('common.error'), t('renovations.errorLoadingDetails'));
+      navigation.goBack();
+    } finally {
+      setIsLoadingData(false);
     }
   };
 
   const handleSubmit = async (formData: RenovationFormData, hasChanges: boolean, changedFields: Partial<RenovationFormData>) => {
+    // If no changes, just navigate back
+    if (!hasChanges) {
+      navigation.goBack();
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const createdRenovation = await RenovationService.createRenovation({
-        refuge_id: formData.refuge_id!,
-        ini_date: formData.ini_date,
-        fin_date: formData.fin_date,
-        description: formData.description,
-        materials_needed: formData.materials_needed,
-        group_link: formData.group_link,
+      const editedRenovation = await RenovationService.updateRenovation(renovationId, changedFields);
+
+      // Success - navigate to renovations detail
+      navigation.navigate('RefromDetail', { 
+        renovationId: editedRenovation.id,
+        renovation: editedRenovation
       });
 
-      // Success - navigate to renovations detail with the created renovation
-      navigation.navigate('RefromDetail', { 
-        renovationId: createdRenovation.id,
-        renovation: createdRenovation
-      });
     } catch (error: any) {
-      console.error('Error creating renovation:', error);
+      console.error('Error updating renovation:', error);
       
       // Handle conflict (409) - overlapping renovation
       if (error.overlappingRenovation) {
@@ -87,10 +120,7 @@ export function CreateRenovationScreen() {
             {
               text: t('common.ok'),
               style: 'cancel',
-              onPress: () => {
-                hideAlert();
-                navigation.navigate('Renovations');
-              },
+              onPress: hideAlert,
             },
             {
               text: t('createRenovation.viewOverlappingRenovation'),
@@ -105,7 +135,7 @@ export function CreateRenovationScreen() {
           ]
         );
       } else {
-        showAlert(t('common.error'), error.message || t('createRenovation.errors.generic'));
+        showAlert(t('common.error'), error.message || t('renovations.errorUpdating'));
       }
     } finally {
       setIsLoading(false);
@@ -113,8 +143,16 @@ export function CreateRenovationScreen() {
   };
 
   const handleCancel = () => {
-    navigation.navigate('Renovations');
+    navigation.goBack();
   };
+
+  if (isLoadingData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#F97316" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -125,18 +163,22 @@ export function CreateRenovationScreen() {
           <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('createRenovation.title')}</Text>
+          <Text style={styles.title}>{t('renovations.editRenovation')}</Text>
         </View>
       </View>
 
-      <RenovationForm
-        mode="create"
-        allRefuges={allRefuges}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        isLoading={isLoading}
-        resetKey={formResetKey}
-      />
+      {initialData && (
+        <RenovationForm
+          mode="edit"
+          initialData={initialData}
+          initialRefuge={initialRefuge}
+          allRefuges={allRefuges}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          isLoading={isLoading}
+          resetKey={formResetKey}
+        />
+      )}
 
       {/* Custom Alert */}
       {alertVisible && alertConfig && (
@@ -153,9 +195,10 @@ export function CreateRenovationScreen() {
           onDismiss={hideAlert}
         />
       )}
-      {insets.bottom > 0 && (
-        <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
-      )}
+
+        {insets.bottom > 0 && (
+            <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
+        )}
     </View>
   );
 }
@@ -163,6 +206,12 @@ export function CreateRenovationScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#F9FAFB',
   },
   headerFixed: {
@@ -203,4 +252,3 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 });
-

@@ -26,7 +26,8 @@
     "unknown": "Desconocido",
     "pyrenees": "Pirineos",
     "optional": "opcional",
-    "locale": "es"
+    "locale": "es",
+    "you": "Tú"
   },
   "navigation": {
     "map": "Mapa",
@@ -69,6 +70,9 @@
     "organizer": "Organizador",
     "participants": "Participantes",
     "leave": "Salir",
+    "editRenovation": "Editar reforma",
+    "updatedSuccessfully": "Reforma actualizada correctamente",
+    "errorUpdating": "No se ha podido actualizar la reforma",
     "leaveRenovation": "Salir de la reforma",
     "confirmLeave": "¿Estás seguro/a de que quieres salir de esta reforma?",
     "leftSuccessfully": "Has salido de la reforma correctamente",
@@ -76,7 +80,7 @@
     "joinedSuccessfully": "Te has unido a la reforma correctamente",
     "errorJoining": "No se pudo unir a la reforma",
     "removeParticipant": "Eliminar participante",
-    "confirmRemoveParticipant": "¿Estás seguro/a de que quieres eliminar a",
+    "confirmRemoveParticipant": "¿Estás seguro/a de que quieres eliminar a {{name}}?",
     "participantRemovedSuccessfully": "Participante eliminado correctamente",
     "errorRemovingParticipant": "No se pudo eliminar el participante",
     "deleteRenovation": "Eliminar reforma",
@@ -376,7 +380,7 @@
     "datesLabel": "Fechas",
     "iniDateLabel": "Fecha de inicio",
     "finDateLabel": "Fecha de finalización",
-    "selectDate": "Selecciona una fecha",
+    "selectDate": "Selecciona fecha",
     "selectIniDate": "Selecciona la fecha de inicio",
     "selectFinDate": "Selecciona la fecha de finalización",
     "descriptionLabel": "Descripción",

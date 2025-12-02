@@ -36,6 +36,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [myRenovations, setMyRenovations] = useState<Renovation[]>([]);
   const [otherRenovations, setOtherRenovations] = useState<Renovation[]>([]);
+  const [joiningRenovationId, setJoiningRenovationId] = useState<string | null>(null);
 
   // Refrescar la llista cada cop que la pantalla recupera el focus
   useFocusEffect(
@@ -115,14 +116,17 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
     navigation.navigate('RefromDetail', { renovationId: renovation.id });
   };
 
-  const handleJoin = async (renovation: Renovation) => {
+  const handleJoinRenovation = async (renovation: Renovation) => {
     try {
+      setJoiningRenovationId(renovation.id);
       await RenovationService.joinRenovation(renovation.id);
       // Reload renovations to reflect the change
       await loadRenovations();
     } catch (error: any) {
       console.error('Error joining renovation:', error);
-      alert(error.message || 'Error joining renovation');
+      showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
+    } finally {
+      setJoiningRenovationId(null);
     }
   };
 
@@ -205,7 +209,9 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
                   refuge={refuge}
                   isUserRenovation={false}
                   onViewOnMap={() => handleViewOnMap(renovation)}
-                  onJoin={() => handleJoin(renovation)}
+                  onMoreInfo={() => handleMoreInfo(renovation)}
+                  onJoin={() => handleJoinRenovation(renovation) }
+                  isJoining={joiningRenovationId === renovation.id}
                 />
               );
             })}

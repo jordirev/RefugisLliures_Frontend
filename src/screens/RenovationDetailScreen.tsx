@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -10,7 +10,7 @@ import {
   Image
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
@@ -27,13 +27,13 @@ import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
 import CalendarIcon from '../assets/icons/calendar2.svg';
 import ToolsIcon from '../assets/icons/reform.svg';
 import DescriptionIcon from '../assets/icons/description.svg';
-import WhatsAppIcon from '../assets/icons/whatsapp.svg';
-import TelegramIcon from '../assets/icons/telegram.png';
+import WhatsAppIcon from '../assets/icons/whatsapp-white.png';
+import TelegramIcon from '../assets/icons/telegram-white.png';
 import PeopleIcon from '../assets/icons/user.svg';
 import BackIcon from '../assets/icons/arrow-left.svg';
 import EditIcon from '../assets/icons/edit.svg';
-import TrashIcon from '../assets/icons/x.svg';
-import RemoveIcon from '../assets/icons/x.svg';
+import CrossIcon from '../assets/icons/x.svg';
+import TrashIcon from '../assets/icons/trash.svg';
 
 type RenovationDetailScreenRouteProp = RouteProp<
   { RenovationDetail: { renovationId: string } },
@@ -61,11 +61,13 @@ export function RenovationDetailScreen() {
 
   const renovationId = route.params?.renovationId;
 
-  useEffect(() => {
-    if (renovationId) {
-      loadRenovationDetails();
-    }
-  }, [renovationId]);
+  useFocusEffect(
+    useCallback(() => {
+      if (renovationId) {
+        loadRenovationDetails();
+      }
+    }, [renovationId])
+  );
 
   const loadRenovationDetails = async () => {
     try {
@@ -151,8 +153,6 @@ export function RenovationDetailScreen() {
       
       // Reload participants
       await loadParticipants(updatedRenovation.participants_uids || []);
-      
-      showAlert(undefined, t('renovations.joinedSuccessfully'));
     } catch (error: any) {
       showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
     } finally {
@@ -183,8 +183,6 @@ export function RenovationDetailScreen() {
               
               // Reload participants
               await loadParticipants(updatedRenovation.participants_uids || []);
-              
-              showAlert(undefined, t('renovations.leftSuccessfully'));
             } catch (error: any) {
               showAlert(t('common.error'), error.message || t('renovations.errorLeaving'));
             } finally {
@@ -201,7 +199,7 @@ export function RenovationDetailScreen() {
 
     showAlert(
       t('renovations.removeParticipant'),
-      `${t('renovations.confirmRemoveParticipant')} ${participantName}?`,
+      t('renovations.confirmRemoveParticipant', { name: participantName }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -218,8 +216,6 @@ export function RenovationDetailScreen() {
               
               // Reload participants
               await loadParticipants(updatedRenovation.participants_uids || []);
-              
-              showAlert(undefined, t('renovations.participantRemovedSuccessfully'));
             } catch (error: any) {
               showAlert(t('common.error'), error.message || t('renovations.errorRemovingParticipant'));
             }
@@ -249,8 +245,8 @@ export function RenovationDetailScreen() {
             try {
               setIsDeleting(true);
               await RenovationService.deleteRenovation(renovation.id);
-              showAlert(undefined, t('renovations.deletedSuccessfully'));
               navigation.navigate('Renovations');
+              setIsDeleting(false);
             } catch (error: any) {
               showAlert(t('common.error'), error.message || t('renovations.errorDeleting'));
               setIsDeleting(false);
@@ -271,7 +267,7 @@ export function RenovationDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#F97316" />
       </View>
     );
@@ -376,6 +372,30 @@ export function RenovationDetailScreen() {
             </View>
           )}
 
+          {/* Group Link Section - Only show if user is creator */}
+          {canSeeParticipants && renovation.group_link && (
+            <View style={styles.section}>
+              <TouchableOpacity
+                style={[
+                  styles.groupLinkButton,
+                  groupType === 'telegram' ? styles.telegramButton : styles.whatsappButton
+                ]}
+                onPress={handleOpenLink}
+              >
+                {groupType === 'telegram' ? (
+                  <Image source={TelegramIcon} style={[styles.groupIcon, { width: 20, height: 20 }]} />
+                ) : (
+                  <Image source={WhatsAppIcon} style={[styles.groupIcon, { width: 24, height: 24 }]} />
+                )}
+                <Text style={styles.groupLinkText}>
+                  {groupType === 'telegram' 
+                    ? t('renovations.join_telegram_link') 
+                    : t('renovations.join_whatapp_link')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Creator Section */}
           {creator && (
             <View style={styles.section}>
@@ -389,7 +409,11 @@ export function RenovationDetailScreen() {
                     {creator.username?.charAt(0).toUpperCase() || 'U'}
                   </Text>
                 </View>
-                <Text style={styles.creatorName}>{creator.username}</Text>
+                {isUserCreator ? (
+                  <Text style={styles.creatorName}>{t('common.you')}</Text>
+                ) : (
+                  <Text style={styles.creatorName}>{creator.username}</Text>
+                )}
               </View>
             </View>
           )}
@@ -419,36 +443,12 @@ export function RenovationDetailScreen() {
                         style={styles.removeParticipantButton}
                         onPress={() => handleRemoveParticipant(participant.uid, participant.username)}
                       >
-                        <RemoveIcon width={20} height={20} />
+                        <CrossIcon width={18} height={18} color={'red'} />
                       </TouchableOpacity>
                     )}
                   </View>
                 ))}
               </View>
-            </View>
-          )}
-
-          {/* Group Link Section - Only show if user is creator */}
-          {canSeeParticipants && renovation.group_link && (
-            <View style={styles.section}>
-              <TouchableOpacity
-                style={[
-                  styles.groupLinkButton,
-                  groupType === 'telegram' ? styles.telegramButton : styles.whatsappButton
-                ]}
-                onPress={handleOpenLink}
-              >
-                {groupType === 'telegram' ? (
-                  <Image source={TelegramIcon} style={styles.groupIcon} />
-                ) : (
-                  <WhatsAppIcon width={20} height={20} style={styles.groupIcon} />
-                )}
-                <Text style={styles.groupLinkText}>
-                  {groupType === 'telegram' 
-                    ? t('renovations.join_telegram_link') 
-                    : t('renovations.join_whatapp_link')}
-                </Text>
-              </TouchableOpacity>
             </View>
           )}
 
@@ -540,6 +540,12 @@ const styles = StyleSheet.create({
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   scrollView: {
     flex: 1,
@@ -813,16 +819,16 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: '#FEE2E2',
     borderWidth: 1,
-    borderColor: '#DC2626',
+    borderColor: '#FF0000',
   },
   deleteIcon: {
     marginRight: 8,
-    color: '#DC2626',
+    color: '#FF0000',
   },
   deleteButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#DC2626',
+    color: '#FF0000',
     fontFamily: 'Arimo',
   },
   errorText: {

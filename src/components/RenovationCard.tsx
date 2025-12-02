@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Renovation, Location } from '../models';
 
@@ -18,6 +18,7 @@ interface RenovationCardProps {
   onViewOnMap?: () => void;
   onMoreInfo?: () => void;
   onJoin?: () => void;
+  isJoining?: boolean;
 }
 
 export function RenovationCard({ 
@@ -26,7 +27,8 @@ export function RenovationCard({
   isUserRenovation = false,
   onViewOnMap,
   onMoreInfo,
-  onJoin 
+  onJoin,
+  isJoining = false
 }: RenovationCardProps) {
 
   const { t } = useTranslation();
@@ -129,14 +131,18 @@ export function RenovationCard({
           </View>
 
           {!isUserRenovation && (
-            <TouchableOpacity onPress={onJoin} activeOpacity={0.9}>
+            <TouchableOpacity onPress={onJoin} activeOpacity={0.9} disabled={isJoining}>
               <LinearGradient
                 colors={['#FF8904', '#F54900']}
                 start={[0, 0]}
                 end={[1, 1]}
                 style={[styles.button, styles.buttonPrimaryGradient]}
               >
-                <Text style={styles.buttonPrimaryText}>{t('renovations.join')}</Text>
+                {isJoining ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.buttonPrimaryText}>{t('renovations.join')}</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
           )}

@@ -26,7 +26,8 @@
     "unknown": "Unknown",
     "pyrenees": "Pyrenees",
     "optional": "optional",
-    "locale": "en"
+    "locale": "en",
+    "you": "You"
   },
   "navigation": {
     "map": "Map",
@@ -69,6 +70,9 @@
     "organizer": "Organizer",
     "participants": "Participants",
     "leave": "Leave",
+    "editRenovation": "Edit renovation",
+    "updatedSuccessfully": "Renovation updated successfully",
+    "errorUpdating": "Could not update the renovation",
     "leaveRenovation": "Leave renovation",
     "confirmLeave": "Are you sure you want to leave this renovation?",
     "leftSuccessfully": "You have successfully left the renovation",
@@ -76,7 +80,7 @@
     "joinedSuccessfully": "You have successfully joined the renovation",
     "errorJoining": "Could not join the renovation",
     "removeParticipant": "Remove participant",
-    "confirmRemoveParticipant": "Are you sure you want to remove",
+    "confirmRemoveParticipant": "Are you sure you want to remove {{name}}?",
     "participantRemovedSuccessfully": "Participant removed successfully",
     "errorRemovingParticipant": "Could not remove participant",
     "deleteRenovation": "Delete renovation",
@@ -376,7 +380,7 @@
     "datesLabel": "Dates",
     "iniDateLabel": "Start date",
     "finDateLabel": "End date",
-    "selectDate": "Select a date",
+    "selectDate": "Select date",
     "selectIniDate": "Select start date",
     "selectFinDate": "Select end date",
     "descriptionLabel": "Description",
