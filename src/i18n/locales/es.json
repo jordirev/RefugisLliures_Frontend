@@ -210,12 +210,27 @@
       "occupation": "Ocupación",
       "seeOccupation": "Ver\n ocupación",
       "description": "Descripción",
+      "amenities": "Equipamiento",
       "localisation": "Localización",
       "services": "Servicios",
       "prepareRoute": "Prepara tu salida",
       "moreInformation": "Para más información:",
       "weather": "Meteo",
       "nearbyRoutes": "Rutas cercanas"
+    },
+    "amenities": {
+      "manque_un_mur": "Falta un muro",
+      "cheminee": "Chimenea",
+      "poele": "Vajilla",
+      "couvertures": "Mantas",
+      "latrines": "Letrinas",
+      "bois": "Madera cerca",
+      "eau": "Agua cerca",
+      "matelas": "Colchones",
+      "couchage": "Zona para dormir",
+      "bas_flancs": "Literas",
+      "lits": "Camas",
+      "mezzanine_etage": "Altillo"
     },
     "actions": {
       "navigate": "Navegar",

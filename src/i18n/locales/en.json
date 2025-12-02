@@ -210,12 +210,27 @@
       "occupation": "Occupation",
       "seeOccupation": "See\n occupation",
       "description": "Description",
+      "amenities": "Amenities",
       "localisation": "Localisation",
       "services": "Services",
       "prepareRoute": "Prepare your route",
       "moreInformation": "For more information:",
       "weather": "Weather",
       "nearbyRoutes": "Nearby routes"
+    },
+    "amenities": {
+      "manque_un_mur": "One wall missing",
+      "cheminee": "Fireplace",
+      "poele": "Crockery",
+      "couvertures": "Blankets",
+      "latrines": "Latrines",
+      "bois": "Firewood near",
+      "eau": "Water near",
+      "matelas": "Mattresses",
+      "couchage": "Sleeping area",
+      "bas_flancs": "Bunk beds",
+      "lits": "Beds",
+      "mezzanine_etage": "Upper floor"
     },
     "actions": {
       "navigate": "Navigate",

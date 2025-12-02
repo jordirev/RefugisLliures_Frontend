@@ -3,6 +3,24 @@ export interface Coord {
   lat: number;
 }
 
+/**
+ * Informació complementària del refugi
+ */
+export interface InfoComp {
+  manque_un_mur: boolean;
+  cheminee: boolean;
+  poele: boolean;
+  couvertures: boolean;
+  latrines: boolean;
+  bois: boolean;
+  eau: boolean;
+  matelas: boolean;
+  couchage: boolean;
+  bas_flancs: boolean;
+  lits: boolean;
+  mezzanine_etage: boolean;
+}
+
 export interface Location {
   id: string;
   name: string;
@@ -19,6 +37,7 @@ export interface Location {
   condition?: number; // 0: pobre, 1: normal, 2: bé, 3: excel·lent
   imageUrl?: string;
   visitors?: string[] | null;
+  info_comp?: InfoComp;
 }
 
 export interface Filters {

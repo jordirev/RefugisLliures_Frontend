@@ -211,12 +211,27 @@
       "occupation": "Ocupació",
       "seeOccupation": "Veure\n ocupació",
       "description": "Descripció",
+      "amenities": "Equipament",
       "localisation": "Localització",
       "services": "Serveis",
       "prepareRoute": "Prepara la teva sortida",
       "moreInformation": "Per a més informació:",
       "weather": "Meteo",
       "nearbyRoutes": "Rutes a prop"
+    },
+    "amenities": {
+      "manque_un_mur": "Falta un mur",
+      "cheminee": "Xemeneia",
+      "poele": "Vaixella",
+      "couvertures": "Mantes",
+      "latrines": "Latrines",
+      "bois": "Fusta a prop",
+      "eau": "Aigua a prop",
+      "matelas": "Matalassos",
+      "couchage": "Zona per dormir",
+      "bas_flancs": "Lliteres",
+      "lits": "Llits",
+      "mezzanine_etage": "Altell"
     },
     "actions": {
       "navigate": "Navegar",

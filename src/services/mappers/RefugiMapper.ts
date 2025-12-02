@@ -15,6 +15,24 @@ export function mapCoordFromDTO(coordDTO: CoordDTO): Coord {
   };
 }
 
+export function mapInfoCompFromDTO(infoCompDTO: any | undefined): any | undefined {
+  if (!infoCompDTO) return undefined;
+  return {
+    manque_un_mur: infoCompDTO.manque_un_mur === 1 ? true : false,
+    cheminee: infoCompDTO.cheminee === 1 ? true : false,
+    poele: infoCompDTO.poele === 1 ? true : false,
+    couvertures: infoCompDTO.couvertures === 1 ? true : false,
+    latrines: infoCompDTO.latrines === 1 ? true : false,
+    bois: infoCompDTO.bois === 1 ? true : false,
+    eau: infoCompDTO.eau === 1 ? true : false,
+    matelas: infoCompDTO.matelas === 1 ? true : false,
+    couchage: infoCompDTO.couchage === 1 ? true : false,
+    bas_flancs: infoCompDTO.bas_flancs === 1 ? true : false,
+    lits: infoCompDTO.lits === 1 ? true : false,
+    mezzanine_etage: infoCompDTO.mezzanine_etage === 1 ? true : false,
+  };
+}
+
 /**
  * Determina la condició del refugi basant-se en info_comp
  * Aquesta és una lògica provisional - es pot millorar segons criteris reals
@@ -69,7 +87,8 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     region: refugiDTO.region,
     departement: refugiDTO.departement,
     condition: refugiDTO.condition || determineCondition(refugiDTO),
-    
+    info_comp: mapInfoCompFromDTO(refugiDTO.info_comp),
+
     // Propietats addicionals del frontend
     imageUrl: undefined, // No ve del backend
 

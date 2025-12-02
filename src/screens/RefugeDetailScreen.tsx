@@ -79,6 +79,37 @@ export function RefugeDetailScreen({
     return `(${latStr}, ${longStr})`;
   };
 
+  const renderAmenities = () => {
+    if (!refuge.info_comp) return null;
+
+    // Icon mapping for each amenity
+    const amenityIcons: { [key: string]: string } = {
+      manque_un_mur: '🏚️',
+      cheminee: '🔥',
+      poele: '🍳',
+      couvertures: '🛏️',
+      latrines: '🚽',
+      bois: '🪵',
+      eau: '💧',
+      matelas: '🛌',
+      couchage: '😴',
+      bas_flancs: '🪜',
+      lits: '🛏️',
+      mezzanine_etage: '⬆️',
+    };
+
+    const amenities = [];
+    for (const [key, value] of Object.entries(refuge.info_comp)) {
+      if (value) {
+        amenities.push({
+          key,
+          label: t(`refuge.amenities.${key}`),
+          icon: amenityIcons[key] || '✨',
+        });
+      }
+    }
+    return amenities;
+  };
 
   // Static header image - will scroll together with the content
 
@@ -429,6 +460,25 @@ export function RefugeDetailScreen({
             </View>
           )}
         </View>
+        
+        {/* Amenities (Equipament) */}
+        {(() => {
+          const amenities = renderAmenities();
+          if (!amenities || amenities.length === 0) return null;
+          return (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
+              <View style={styles.amenitiesGrid}>
+                {amenities.map((amenity, index) => (
+                  <View key={index} style={styles.amenityChip}>
+                    <Text style={styles.amenityIcon}>{amenity.icon}</Text>
+                    <Text style={styles.amenityLabel}>{amenity.label}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          );
+        })()}
         
         {/* Informació de localització */}
         <View style={styles.section}>
@@ -925,5 +975,29 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     // nudge the icon down a couple pixels so it visually aligns with the text baseline
     transform: [{ translateY: 2 }],
+  },
+  amenitiesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  amenityChip: {
+    backgroundColor: '#FFF5ED',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: '#ffd8bcff',
+  },
+  amenityIcon: {
+    fontSize: 14,
+  },
+  amenityLabel: {
+    fontSize: 12,
+    color: '#111827',
+    fontWeight: '500',
   },
 });
