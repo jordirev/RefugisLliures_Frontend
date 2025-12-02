@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, BackHandler, Platform, Text } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StyleSheet, View, BackHandler, Platform } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { MapScreen } from '../screens/MapScreen';
-import { FavoritesScreen } from '../screens/FavoritesScreen';
-import { RenovationsScreen } from '../screens/RenovationsScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { TabsNavigator } from './TabsNavigator';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
@@ -18,22 +13,15 @@ import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
 
-import { RefugisService } from '../services/RefugisService';
 import { Location } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 
-import MapIcon from '../assets/icons/map2.svg';
-import FavIcon from '../assets/icons/fav.svg';
-import ReformIcon from '../assets/icons/reform.svg';
-import UserIcon from '../assets/icons/user.svg';
-
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export function AppNavigator() {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
   // Només estats globals (compartits entre pantalles)
@@ -103,176 +91,29 @@ export function AppNavigator() {
 
   return (
     <View style={styles.container}>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarStyle: {
-            height: 60 + insets.bottom,
-            paddingBottom: insets.bottom,
-            backgroundColor: '#ffffff',
-            borderTopWidth: 0,
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-        }}
-      >
-        <Tab.Screen 
-          name="Map"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
-                <MapIcon width={20} height={20} color="#4A5565" />
-                <Text style={styles.tabLabel}>
-                  {t('navigation.map')}
-                </Text>
-              </View>
-            ),
-          }}
-        >
-          {({ route }: any) => {
-            const { selectedRefuge } = route.params || {};
-            return (
-              <MapScreen
-                onLocationSelect={handleShowRefugeBottomSheet}
-                selectedLocation={selectedRefuge || selectedLocation}
-              />
-            );
-          }}
-        </Tab.Screen>
-
-        <Tab.Screen 
-          name="Favorites"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
-                <FavIcon width={20} height={20} />
-                <Text style={styles.tabLabel}>
-                  {t('navigation.favorites')}
-                </Text>
-              </View>
-            ),
-          }}
-        >
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* Pantalla principal amb tabs */}
+        <Stack.Screen name="MainTabs">
           {() => (
-            <FavoritesScreen
+            <TabsNavigator
+              onLocationSelect={handleShowRefugeBottomSheet}
               onViewDetail={handleViewDetail}
               onViewMap={handleShowRefugeBottomSheet}
+              selectedLocation={selectedLocation}
             />
           )}
-        </Tab.Screen>
+        </Stack.Screen>
 
-        <Tab.Screen 
-          name="Renovations"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
-                <ReformIcon width={20} height={20} color="#4A5565" />
-                <Text style={styles.tabLabel}>
-                  {t('navigation.renovations')}
-                </Text>
-              </View>
-            ),
-          }}
-        >
-          {() => (
-            <RenovationsScreen onViewMap={handleShowRefugeBottomSheet} />
-          )}
-        </Tab.Screen>
-
-        <Tab.Screen 
-          name="Profile"
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
-                <UserIcon width={20} height={20} color="#4A5565" />
-                <Text style={styles.tabLabel}>
-                  {t('navigation.profile')}
-                </Text>
-              </View>
-            ),
-          }}
-          component={ProfileScreen}
-        />
-      
-        {/* Hidden Settings screen: accessible by navigation.navigate('Settings') but not shown in the tab bar */}
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
+        {/* Pantalles fora del tab bar */}
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+        <Stack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="CreateRenovation" component={CreateRenovationScreen} />
+        <Stack.Screen name="EditRenovation" component={EditRenovationScreen} />
+        <Stack.Screen name="RefromDetail" component={RenovationDetailScreen} />
         
-        {/* Hidden ChangePassword screen: accessible by navigation.navigate('ChangePassword') but not shown in the tab bar */}
-        <Tab.Screen
-          name="ChangePassword"
-          component={ChangePasswordScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-        
-        {/* Hidden ChangeEmail screen: accessible by navigation.navigate('ChangeEmail') but not shown in the tab bar */}
-        <Tab.Screen
-          name="ChangeEmail"
-          component={ChangeEmailScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-  
-      {/* Hidden EditProfile screen: accessible by navigation.navigate('EditProfile') but not shown in the tab bar */}
-        <Tab.Screen
-          name="EditProfile"
-          component={EditProfileScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-        
-        {/* Hidden CreateRenovation screen: accessible by navigation.navigate('CreateRenovation') but not shown in the tab bar */}
-        <Tab.Screen
-          name="CreateRenovation"
-          component={CreateRenovationScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-        
-        {/* Hidden EditRenovation screen: accessible by navigation.navigate('EditRenovation') but not shown in the tab bar */}
-        <Tab.Screen
-          name="EditRenovation"
-          component={EditRenovationScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-        
-        {/* Hidden RefromDetail screen: accessible by navigation.navigate('RefromDetail') but not shown in the tab bar */}
-        <Tab.Screen
-          name="RefromDetail"
-          component={RenovationDetailScreen}
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        />
-        
-        {/* Hidden RefugeDetail screen: accessible by navigation.navigate('RefugeDetail') but not shown in the tab bar */}
-        <Tab.Screen
-          name="RefugeDetail"
-          options={{ 
-            tabBarButton: () => null,
-            tabBarStyle: { display: 'none' }
-          }}
-        >
+        <Stack.Screen name="RefugeDetail">
           {({ route, navigation: nav }: any) => {
             const { refuge } = route.params || {};
             return (
@@ -284,8 +125,8 @@ export function AppNavigator() {
               />
             );
           }}
-        </Tab.Screen>
-      </Tab.Navigator>
+        </Stack.Screen>
+      </Stack.Navigator>
 
       {/* Bottom Sheet del refugi */}
       {selectedLocation && (
@@ -328,24 +169,6 @@ export function AppNavigator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  tabIconContainer: {
-    backgroundColor: 'transparent',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabIconActive: {
-    backgroundColor: '#f3f4f6',
-  },
-  tabLabel: {
-    fontSize: 10,
-    color: '#4A5565',
-    marginTop: 4,
-  },
-  tabLabelActive: {
-    color: '#9CA3AF',
   },
   detailScreenOverlay: {
     position: 'absolute',

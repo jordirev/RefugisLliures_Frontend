@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -13,6 +14,8 @@ import './src/i18n'; // Initialize i18n
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [showSignUp, setShowSignUp] = useState(false);
+
+  const stack = createNativeStackNavigator();
 
   const handleNavigateToSignUp = () => {
     setShowSignUp(true);

@@ -5,8 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  BackHandler,
-  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -147,22 +145,6 @@ export function EditRenovationScreen() {
       setIsLoading(false);
     }
   };
-    
-  // Handle Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const onBackPress = () => {
-      navigation.navigate('RefromDetail', { 
-        renovationId: renovationId
-      });
-      return true; // Prevent default behavior
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [navigation, renovationId]);
-  
 
   if (isLoadingData) {
     return (

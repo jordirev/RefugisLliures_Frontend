@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, BackHandler, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
@@ -8,8 +8,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import BackIcon from '../assets/icons/arrow-left.svg';
-import VisibleIcon from '../assets/icons/visible.svg';
-import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 
 export function EditProfileScreen() {
   const { t } = useTranslation();
@@ -18,6 +16,7 @@ export function EditProfileScreen() {
   const { updateUsername, firebaseUser, backendUser } = useAuth();
   
   const [username, setUsername] = useState('');
+  const [originalUsername, setOriginalUsername] = useState('');
   const [usernameError, setUsernameError] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -54,10 +53,18 @@ export function EditProfileScreen() {
       return;
     }
     
+    // Check if username has actually changed
+    if (username.trim() === originalUsername.trim()) {
+      // No changes, just navigate back
+      navigation.navigate('Profile');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
       await updateUsername(username);
+      navigation.navigate('Profile');
     } catch (error: any) {
       console.error('Error actualitzant nom d\'usuari:', error);
       
@@ -83,21 +90,6 @@ export function EditProfileScreen() {
     navigation.navigate('Settings');
   };
 
-  // Handle Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const onBackPress = () => {
-      setUsername('');
-      setUsernameError(null);
-      navigation.navigate('Settings');
-      return true;
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [navigation]);
-
   // Populate username with current value from backend or firebase when available
   useEffect(() => {
     // Try several common property names in case backend shape differs
@@ -121,6 +113,7 @@ export function EditProfileScreen() {
     console.log('EditProfileScreen: resolved username ->', current);
 
     setUsername(current);
+    setOriginalUsername(current);
     setUsernameError(null);
   }, [backendUser, firebaseUser]);
   

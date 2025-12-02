@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../hooks/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
@@ -47,19 +47,6 @@ export function SettingsScreen() {
     // Navigate to the Profile tab
     navigation.navigate('Profile');
   };
-
-  // Handle Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const onBackPress = () => {
-      navigation.navigate('Profile');
-      return true; // Prevent default behavior
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [navigation]);
   
   return (
     <View style={styles.root}>

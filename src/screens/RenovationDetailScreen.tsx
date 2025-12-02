@@ -9,7 +9,6 @@ import {
   Linking,
   Image,
   Platform,
-  BackHandler
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
@@ -147,21 +146,6 @@ export function RenovationDetailScreen() {
   const handleGoBack = () => {
     navigation.navigate('Renovations')
   };
-
-  // Handle Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const onBackPress = () => {
-      navigation.navigate('Renovations', { 
-        renovationId: renovationId
-      });
-      return true; // Prevent default behavior
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [navigation, renovationId]);
 
   const handleJoinRenovation = async () => {
     if (!renovation) return;
@@ -329,7 +313,7 @@ export function RenovationDetailScreen() {
         <View style={styles.refugeCardContainer}>
           <RefugeCard
             refuge={refuge}
-            onPress={() => navigation.navigate('RefugeDetail', { refuge, from: 'RenovationDetail' })}
+            onPress={() => navigation.navigate('RefugeDetail', { refuge })}
             onViewMap={handleViewOnMap}
           />
         </View>
@@ -637,9 +621,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Arimo',
-    color: '#111827',
+    fontWeight: '500',
+    color: '#727180',
   },
   datesContainer: {
     flexDirection: 'row',
