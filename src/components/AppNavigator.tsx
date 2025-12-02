@@ -60,7 +60,7 @@ export function AppNavigator() {
 
   const handleCloseBottomSheet = () => {
     setShowBottomSheet(false);
-    setTimeout(() => setSelectedLocation(undefined), 300);
+    setSelectedLocation(undefined);
   };
 
   const handleCloseDetailScreen = () => {
@@ -111,7 +111,18 @@ export function AppNavigator() {
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="CreateRenovation" component={CreateRenovationScreen} />
         <Stack.Screen name="EditRenovation" component={EditRenovationScreen} />
-        <Stack.Screen name="RefromDetail" component={RenovationDetailScreen} />
+        <Stack.Screen name="RefromDetail">
+          {({ navigation: nav }: any) => (
+            <RenovationDetailScreen
+              onViewMap={(location: Location) => {
+                // Set selected location & show bottom sheet in AppNavigator
+                handleShowRefugeBottomSheet(location);
+                // Navigate to the tabs and open Map tab with param
+                nav.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
+              }}
+            />
+          )}
+        </Stack.Screen>
         
         <Stack.Screen name="RefugeDetail">
           {({ route, navigation: nav }: any) => {

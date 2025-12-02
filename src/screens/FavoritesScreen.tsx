@@ -44,15 +44,15 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         if (fullRefuge) {
           // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
           onViewMap(fullRefuge);
-          // Navigate to Map tab
-          navigation.navigate(t('navigation.map') as never);
+          // Navigate to Map tab using the navigator route name and pass the selected refuge
+          (navigation as any).navigate('Map', { selectedRefuge: fullRefuge });
         }
       }
     } catch (error) {
       console.error('Error loading refuge for map:', error);
-      // Fallback to showing with current data
+      // Fallback to showing with current data and navigate to Map tab
       onViewMap(refuge);
-      navigation.navigate(t('navigation.map') as never);
+      (navigation as any).navigate('Map', { selectedRefuge: refuge });
     }
   };
 

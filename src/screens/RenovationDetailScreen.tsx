@@ -41,7 +41,11 @@ type RenovationDetailScreenRouteProp = RouteProp<
   'RenovationDetail'
 >;
 
-export function RenovationDetailScreen() {
+interface RenovationDetailScreenProps {
+  onViewMap?: (location: Location) => void;
+}
+
+export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const HEADER_HEIGHT = 40 + insets.top;
@@ -263,9 +267,18 @@ export function RenovationDetailScreen() {
   };
 
   const handleViewOnMap = () => {
-    if (refuge) {
-      navigation.navigate('Map', { selectedRefuge: refuge });
+    if (!refuge) return;
+
+    // If parent provided an onViewMap handler (AppNavigator), call it so the
+    // AppNavigator can set the selectedLocation and show the RefugeBottomSheet.
+    if (onViewMap) {
+      onViewMap(refuge);
+      return;
     }
+
+    // Fallback: navigate to the MainTabs -> Map and pass selectedRefuge param.
+    // Using MainTabs ensures we navigate into the nested Tab navigator.
+    navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: refuge } });
   };
 
   const groupType = getGroupType(renovation?.group_link);

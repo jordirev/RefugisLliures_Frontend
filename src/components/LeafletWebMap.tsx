@@ -50,7 +50,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
       if (locationsChanged) {
         const js = `
           if (typeof updateMarkers === 'function') {
-            updateMarkers(${JSON.stringify(locations)}, ${selectedLocation?.id || null});
+            updateMarkers(${JSON.stringify(locations)}, ${JSON.stringify(selectedLocation?.id || null)});
           }
         `;
         webViewRef.current.injectJavaScript(js);
@@ -62,22 +62,19 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   // Actualitzar el marker seleccionat
   useEffect(() => {
     if (mapInitialized && webViewRef.current) {
-      console.log('Updating selected marker:', selectedLocation?.id);
+      const lat = selectedLocation?.coord?.lat;
+      const lng = selectedLocation?.coord?.long;
+      const id = selectedLocation?.id;
+
       const js = `
         (function() {
           try {
-            window.ReactNativeWebView?.postMessage(JSON.stringify({
-              type: 'debug',
-              message: 'updateSelectedMarker called with ID: ' + ${selectedLocation?.id || null}
-            }));
-            
             if (typeof updateSelectedMarker === 'function') {
-              updateSelectedMarker(${selectedLocation?.id || null});
-            } else {
-              window.ReactNativeWebView?.postMessage(JSON.stringify({
-                type: 'debug',
-                message: 'updateSelectedMarker is not a function!'
-              }));
+              updateSelectedMarker(
+                ${JSON.stringify(id || null)}, 
+                ${JSON.stringify(lat || null)}, 
+                ${JSON.stringify(lng || null)}
+              );
             }
           } catch(e) {
             window.ReactNativeWebView?.postMessage(JSON.stringify({
@@ -90,7 +87,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [selectedLocation?.id, mapInitialized]);
+  }, [selectedLocation?.id, selectedLocation?.coord?.lat, selectedLocation?.coord?.long, mapInitialized]);
 
   // Centrar el mapa quan userLocation canvia
   useEffect(() => {
@@ -110,7 +107,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
               // Add a round blue marker with white border and shadow
               window.userMarker = L.marker([ul.latitude, ul.longitude], { icon: userLocationIcon }).addTo(map);
               // Center map to the user location
-              map.setView([ul.latitude, ul.longitude], 15);
+              map.setView([ul.latitude, ul.longitude], 8);
             }
           } catch(err) {
             // swallow errors coming from injected code
@@ -269,13 +266,9 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         };
 
         // Funció per actualitzar només el marker seleccionat (més eficient)
-        window.updateSelectedMarker = function(selectedId) {
+        window.updateSelectedMarker = function(selectedId, lat, lng) {
           try {
-            window.ReactNativeWebView?.postMessage(JSON.stringify({
-              type: 'debug',
-              message: 'updateSelectedMarker executing with ID: ' + selectedId
-            }));
-            
+            // Actualitzar icones de tots els marcadors
             markers.forEach(function(marker) {
               var isSelected = marker.locationData && marker.locationData.id === selectedId;
               marker.setIcon(isSelected ? selectedIcon : refugeIcon);
@@ -283,35 +276,27 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             
             // Centrar mapa al refugi seleccionat
             if (selectedId) {
-              var selectedMarker = markers.find(function(m) { 
-                return m.locationData && m.locationData.id === selectedId; 
-              });
+              var targetLat = lat;
+              var targetLng = lng;
               
-              window.ReactNativeWebView?.postMessage(JSON.stringify({
-                type: 'debug',
-                message: 'Found marker: ' + (selectedMarker ? 'yes' : 'no')
-              }));
-              
-              if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
-                var lat = selectedMarker.locationData.coord.lat;
-                var lng = selectedMarker.locationData.coord.long;
+              // Si no tenim coordenades passades, buscar-les al marcador
+              if (targetLat === null || targetLat === undefined || targetLng === null || targetLng === undefined) {
+                var selectedMarker = markers.find(function(m) { 
+                  return m.locationData && m.locationData.id === selectedId; 
+                });
                 
-                window.ReactNativeWebView?.postMessage(JSON.stringify({
-                  type: 'debug',
-                  message: 'Coordinates: lat=' + lat + ', lng=' + lng
-                }));
-                
-                if (lat !== undefined && lng !== undefined) {
-                  map.setView([lat, lng], 16, {
-                    animate: true,
-                    duration: 0.5
-                  });
-                  
-                  window.ReactNativeWebView?.postMessage(JSON.stringify({
-                    type: 'debug',
-                    message: 'Zoom executed!'
-                  }));
+                if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
+                  targetLat = selectedMarker.locationData.coord.lat;
+                  targetLng = selectedMarker.locationData.coord.long;
                 }
+              }
+              
+              // Fer zoom si tenim coordenades
+              if (targetLat !== null && targetLat !== undefined && targetLng !== null && targetLng !== undefined) {
+                map.setView([targetLat, targetLng], 14, {
+                  animate: true,
+                  duration: 0.5
+                });
               }
             }
           } catch(e) {
@@ -324,7 +309,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
 
         // Inicialitzar marcadors
         var initialLocations = ${JSON.stringify(locations)};
-        var selectedLocationId = ${selectedLocation?.id || null};
+        var selectedLocationId = ${JSON.stringify(selectedLocation?.id || null)};
         addMarkers(initialLocations, selectedLocationId);
 
         // Dibuixa la bola blava si tenim userLocation (assignada a window.userMarker per evitar duplicats)
@@ -360,7 +345,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             var lat = selectedMarker.locationData.coord.lat;
             var lng = selectedMarker.locationData.coord.long;
             if (lat !== undefined && lng !== undefined) {
-              map.setView([lat, lng], 16);
+              map.setView([lat, lng], 14);
             }
           }
         }

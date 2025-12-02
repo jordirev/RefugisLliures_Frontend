@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
