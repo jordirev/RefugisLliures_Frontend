@@ -20,6 +20,7 @@ interface AuthContextType {
   deleteAccount: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
   reloadUser: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   changeEmail: (password: string, newEmail: string) => Promise<void>;
   updateUsername: (newUsername: string) => Promise<void>;
@@ -172,6 +173,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Recarrega només les dades de l'usuari (sense refugis favorits/visitats)
+  // Usada per a actualitzacions rápides de perfil sense fer múltiples crides API
+  const refreshUserData = async () => {
+    if (firebaseUser && authToken) {
+      try {
+        const userData = await UsersService.getUserByUid(firebaseUser.uid, authToken);
+        if (userData) {
+          setBackendUser(userData);
+        }
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
+    }
+  };
+
   const changePassword = async (currentPassword: string, newPassword: string) => {
     await AuthService.changePassword(currentPassword, newPassword);
   };
@@ -287,6 +303,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     deleteAccount,
     refreshToken,
     reloadUser,
+    refreshUserData,
     changePassword,
     changeEmail,
     updateUsername,

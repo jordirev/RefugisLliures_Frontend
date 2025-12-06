@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
@@ -27,6 +27,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const HEADER_HEIGHT = 96;
+  const windowHeight = Dimensions.get('window').height;
   const navigation = useNavigation<any>();
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
@@ -150,7 +151,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <RenovationsIcon width={20} height={20} style={styles.icon} />
-              <Text style={styles.title}>Reformes i Millores</Text>
+              <Text style={styles.title}>{t('renovations.title')}</Text>
             </View>
             <TouchableOpacity 
               style={styles.infoButton}
@@ -174,7 +175,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
         {/* Les meves reformes */}
         {myRenovations.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Les meves reformes</Text>
+            <Text style={styles.sectionTitle}>{t('renovations.my_renovations')}</Text>
             {myRenovations.map((renovation) => {
               const refuge = refuges.get(renovation.refuge_id);
               return (
@@ -199,7 +200,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
         {/* Altres reformes */}
         {otherRenovations.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Altres reformes</Text>
+            <Text style={styles.sectionTitle}>{t('renovations.other_renovations')}</Text>
             {otherRenovations.map((renovation) => {
               const refuge = refuges.get(renovation.refuge_id);
               return (
@@ -219,9 +220,17 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
         )}
 
         {renovations.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No hi ha reformes disponibles</Text>
-          </View>
+          (() => {
+            const availableHeight = windowHeight - HEADER_HEIGHT - Math.max(insets.bottom, 16) - 2*insets.top;
+            const minHeight = Math.max(availableHeight, 240);
+            return (
+              <View style={[styles.emptyState, { minHeight }]}>
+                <RenovationsIcon width={56} height={56} fill='transparent' style={styles.emptyStateIcon} />
+                <Text style={styles.emptyTitle}>{t('renovations.empty.title')}</Text>
+                <Text style={styles.emptyText}>{t('renovations.empty.message')}</Text>
+              </View>
+            );
+          })()
         )}
       </ScrollView>
 
@@ -286,11 +295,23 @@ const styles = StyleSheet.create({
   emptyState: {
     padding: 32,
     alignItems: 'center',
+    justifyContent: 'center',
+    
   },
-  emptyStateText: {
-    fontSize: 16,
-    color: '#6B7280',
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#6b7280',
     textAlign: 'center',
+    lineHeight: 24,
+  },
+  emptyStateIcon: {
+    marginBottom: 12,
   },
   scrollView: {
     flex: 1,

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
@@ -30,6 +30,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
   const insets = useSafeAreaInsets();
+  const windowHeight = Dimensions.get('window').height;
 
   // Obtenir favorits amb la propietat isFavorite (prové del context)
   const favoriteLocations = useMemo(() => {
@@ -102,13 +103,17 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
           styles.listContent,
           { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) },
         ]}
-        ListEmptyComponent={() => (
-          <View style={[styles.emptyContainer, { paddingTop: HEADER_HEIGHT + 140 }]}> 
-            <FavouriteFilledIcon width={64} height={64} style={styles.emptyIcon} />
-            <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
-            <Text style={styles.emptyText}>{t('favorites.empty.message')}</Text>
-          </View>
-        )}
+        ListEmptyComponent={() => {
+          const availableHeight = windowHeight - HEADER_HEIGHT - Math.max(insets.bottom, 16) - 2*insets.top;
+            const minHeight = Math.max(availableHeight, 240);
+          return (
+            <View style={[styles.emptyContainer, { minHeight }]}> 
+              <FavouriteFilledIcon width={64} height={64} style={styles.emptyIcon} />
+              <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
+              <Text style={styles.emptyText}>{t('favorites.empty.message')}</Text>
+            </View>
+          );
+        }}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => (item.id ? String(item.id) : String(index))}
       />
@@ -180,7 +185,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   emptyContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,

@@ -561,8 +561,12 @@ export function RefugeDetailScreen({
           </View>
         )}
 
+        <View style={styles.informationNotPreciseContainer}>
+          <Text style={styles.informationNotPreciseText}>{t('refuge.details.information_not_precise')}</Text>
+        </View>
+
         {/* Espai addicional per permetre scroll complet */}
-        <View style={{ height: 100 }} />
+        <View style={{ height: 10 }} />
       </ScrollView>
 
       {/* Action buttons overlay (fixed) */}
@@ -999,5 +1003,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#111827',
     fontWeight: '500',
+  },
+  informationNotPreciseContainer: {
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 12,
+  },
+  informationNotPreciseText: {
+    fontSize: 10,
+    color: '#f04b2eff',
+    fontWeight: '500',
+    textAlign: 'center',
+    justifyContent: 'center',
   },
 });

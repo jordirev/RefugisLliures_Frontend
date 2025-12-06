@@ -55,6 +55,8 @@
   },
   "renovations": {
     "title": "Improvements & Repairs",
+    "my_renovations": "My renovations",
+    "other_renovations": "Other renovations",
     "count": "{{count}} improvement",
     "count_plural": "{{count}} improvements",
     "join_whatapp_link": "Join WhatsApp group",
@@ -90,8 +92,8 @@
     "notFound": "Renovation not found",
     "errorLoadingDetails": "Could not load renovation details",
     "empty": {
-      "title": "No pending improvements",
-      "message": "All improvements are completed"
+      "title": "No renovations available",
+      "message": "Create a renovation to help maintain free shelters"
     },
     "alerts": {
       "infoTitle": "Renovation information",
@@ -216,7 +218,8 @@
       "prepareRoute": "Prepare your route",
       "moreInformation": "For more information:",
       "weather": "Weather",
-      "nearbyRoutes": "Nearby routes"
+      "nearbyRoutes": "Nearby routes",
+      "information_not_precise": "Information may not be accurate or up to date. The app administrators are not responsible for its use. \nIf you are going to the mountains, take the necessary precautions."
     },
     "amenities": {
       "manque_un_mur": "One wall missing",

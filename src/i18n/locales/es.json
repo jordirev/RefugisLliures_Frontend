@@ -55,6 +55,8 @@
   },
   "renovations": {
     "title": "Reformas y Mejoras",
+    "my_renovations": "Mis reformas",
+    "other_renovations": "Otras reformas",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformas",
     "join_whatapp_link": "Únete al grupo de WhatsApp",
@@ -90,8 +92,8 @@
     "notFound": "Reforma no encontrada",
     "errorLoadingDetails": "No se pudieron cargar los detalles de la reforma",
     "empty": {
-      "title": "No hay reformas pendientes",
-      "message": "Todas las reformas están completadas"
+      "title": "No hay reformas disponibles",
+      "message": "Crea una reforma para ayudar a mantener los refugios libres"
     },
     "alerts": {
       "infoTitle": "Información sobre las reformas",
@@ -216,7 +218,8 @@
       "prepareRoute": "Prepara tu salida",
       "moreInformation": "Para más información:",
       "weather": "Meteo",
-      "nearbyRoutes": "Rutas cercanas"
+      "nearbyRoutes": "Rutas cercanas",
+      "information_not_precise": "La información puede no ser precisa o estar desactualizada. Los administradores de la aplicación no se hacen responsables del uso que se pueda hacer. \nSi vas a la montaña, toma las precauciones necesarias."
     },
     "amenities": {
       "manque_un_mur": "Falta un muro",

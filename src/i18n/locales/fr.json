@@ -55,6 +55,8 @@
   },
   "renovations": {
     "title": "Améliorations et Rénovations",
+    "my_renovations": "Mes rénovations",
+    "other_renovations": "Autres rénovations",
     "count": "{{count}} amélioration",
     "count_plural": "{{count}} améliorations",
     "join_whatapp_link": "Rejoignez le groupe WhatsApp",
@@ -90,8 +92,8 @@
     "notFound": "Rénovation introuvable",
     "errorLoadingDetails": "Impossible de charger les détails de la rénovation",
     "empty": {
-      "title": "Aucune amélioration en attente",
-      "message": "Toutes les améliorations sont terminées"
+      "title": "Aucune rénovation disponible",
+      "message": "Créez une rénovation pour aider à entretenir les refuges non gardés"
     },
     "alerts": {
       "infoTitle": "Informations sur les rénovations",
@@ -216,7 +218,8 @@
       "prepareRoute": "Préparez votre sortie",
       "moreInformation": "Pour plus d'informations:",
       "weather": "Météo",
-      "nearbyRoutes": "Itinéraires à proximité"
+      "nearbyRoutes": "Itinéraires à proximité",
+      "information_not_precise": "Les informations peuvent ne pas être précises ou à jour. Les administrateurs de l'application ne sont pas responsables de leur utilisation. \nSi vous allez en montagne, prenez les précautions nécessaires."
     },
     "amenities": {
       "manque_un_mur": "Manque un mur",

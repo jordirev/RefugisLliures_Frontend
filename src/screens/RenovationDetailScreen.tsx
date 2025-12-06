@@ -596,14 +596,13 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
   },
   backIconButton: {
-    padding: 4,
+    padding: 8,
     marginRight: 12,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
-    fontFamily: 'Arimo',
-    color: '#111827',
+    color: '#1F2937',
   },
   refugeCardContainer: {
     marginTop: 16,

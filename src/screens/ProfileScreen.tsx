@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
@@ -19,7 +20,26 @@ export function ProfileScreen() {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, isLoading } = useAuth();
+  const { firebaseUser, backendUser, isLoading, refreshUserData } = useAuth();
+
+  // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      
+      const loadUserData = async () => {
+        if (isActive) {
+          await refreshUserData();
+        }
+      };
+      
+      loadUserData();
+      
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
   
   return (
     <ScrollView style={styles.container}>

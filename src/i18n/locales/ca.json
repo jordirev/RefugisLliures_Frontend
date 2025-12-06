@@ -55,6 +55,8 @@
   },
   "renovations": {
     "title": "Reformes i Millores",
+    "my_renovations": "Les meves reformes",
+    "other_renovations": "Altres reformes",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformes",
     "join_whatapp_link": "Uneix-te al grup de WhatsApp",
@@ -90,8 +92,8 @@
     "notFound": "Reforma no trobada",
     "errorLoadingDetails": "No s'han pogut carregar els detalls de la reforma",
     "empty": {
-      "title": "No hi ha reformes pendents",
-      "message": "Totes les reformes estan completades"
+      "title": "No hi ha reformes disponibles",
+      "message": "Crea una reforma per ajudar a mantenir els refugis lliures"
     },
     "alerts": {
       "infoTitle": "Informació de les reformes",
@@ -217,7 +219,8 @@
       "prepareRoute": "Prepara la teva sortida",
       "moreInformation": "Per a més informació:",
       "weather": "Meteo",
-      "nearbyRoutes": "Rutes a prop"
+      "nearbyRoutes": "Rutes a prop",
+      "information_not_precise": "La informació pot no ser precisa o estar desactualitzada. Els administradors de l'aplicació no es fan responsables de l'ús que se'n pugui fer. \nSi vas a la muntanya, pren les precaucions necessaries."
     },
     "amenities": {
       "manque_un_mur": "Falta un mur",
