@@ -124,8 +124,11 @@ export function TabsNavigator({
             </View>
           ),
         }}
-        component={ProfileScreen}
-      />
+      >
+        {() => (
+          <ProfileScreen onViewDetail={onViewDetail} onViewMap={onViewMap} />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

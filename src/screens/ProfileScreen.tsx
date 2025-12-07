@@ -20,7 +20,12 @@ const VisitedIcon = require('../assets/icons/visited2.png');
 // Imatge de fons del header
 import DefaultProfileBackgroundImage from '../assets/images/profileDefaultBackground.png';
 
-export function ProfileScreen() {
+interface ProfileScreenProps {
+  onViewDetail: (refuge: Location) => void;
+  onViewMap: (refuge: Location) => void;
+}
+
+export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
@@ -49,30 +54,37 @@ export function ProfileScreen() {
   // Navigation handlers
   const handleViewMap = async (refuge: Location) => {
     try {
+      // Fetch full refuge details before navigating
       if (refuge.id) {
         const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
         if (fullRefuge) {
+          // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
+          onViewMap(fullRefuge);
+          // Navigate to Map tab using the navigator route name and pass the selected refuge
           navigation.navigate('Map', { selectedRefuge: fullRefuge });
         }
       }
     } catch (error) {
       console.error('Error loading refuge for map:', error);
+      // Fallback to showing with current data and navigate to Map tab
+      onViewMap(refuge);
       navigation.navigate('Map', { selectedRefuge: refuge });
     }
   };
 
   const handleViewDetail = async (refuge: Location) => {
     try {
+      // Fetch full refuge details before showing detail
       if (refuge.id) {
         const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
         if (fullRefuge) {
-          // Navigate to map tab and show detail
-          navigation.navigate('Map', { selectedRefuge: fullRefuge, showDetail: true });
+          onViewDetail(fullRefuge);
         }
       }
     } catch (error) {
       console.error('Error loading refuge details:', error);
-      navigation.navigate('Map', { selectedRefuge: refuge, showDetail: true });
+      // Fallback to showing with current data
+      onViewDetail(refuge);
     }
   };
   
@@ -188,8 +200,8 @@ export function ProfileScreen() {
             </View>
           </View>
 
-          <View style={styles.section}>
-            <View style={styles.sectionTitle}>
+          <View style={[styles.section, styles.sectionVisited]}>
+            <View style={[styles.sectionTitle, { paddingLeft: 32, marginTop: 12 }]}>
               <AltitudeIcon width={20} height={20} />
               <Text style={styles.title}>{t('visited.title')}</Text>
               <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
@@ -389,6 +401,12 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     borderWidth: 1,
   },
+  sectionVisited: {
+    padding: 0,
+    marginHorizontal: -20,
+    marginRight: -32,
+    marginLeft: -32,
+  },
   sectionTitle: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -448,6 +466,8 @@ const styles = StyleSheet.create({
   },
   visitedList: {
     gap: 12,
+    width: '100%',
+    paddingHorizontal: 16,
   },
   emptyVisitedContainer: {
     flex: 1,
