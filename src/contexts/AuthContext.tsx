@@ -28,8 +28,8 @@ interface AuthContextType {
   addFavouriteRefuge: (refugeId: string) => Promise<Location[] | null>;
   removeFavouriteRefuge: (refugeId: string) => Promise<Location[] | null>;
   getVisitedRefuges: () => Promise<Location[] | null>;
-  addVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
-  removeVisitedRefuge: (refugeId: number) => Promise<Location[] | null>;
+  addVisitedRefuge: (refugeId: string) => Promise<Location[] | null>;
+  removeVisitedRefuge: (refugeId: string) => Promise<Location[] | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -262,7 +262,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return await UsersService.getVisitedRefuges(firebaseUser.uid, authToken || undefined);
   };
 
-  const addVisitedRefuge = async (refugeId: number): Promise<Location[] | null> => {
+  const addVisitedRefuge = async (refugeId: string): Promise<Location[] | null> => {
     if (!firebaseUser) {
       throw new Error('No user is logged in');
     }
@@ -275,7 +275,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return result;
   };
 
-  const removeVisitedRefuge = async (refugeId: number): Promise<Location[] | null> => {
+  const removeVisitedRefuge = async (refugeId: string): Promise<Location[] | null> => {
     if (!firebaseUser) {
       throw new Error('No user is logged in');
     }

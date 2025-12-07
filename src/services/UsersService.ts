@@ -312,7 +312,7 @@ export class UsersService {
    * @param authToken - Token d'autenticació de Firebase (opcional)
    * @returns Un llistat amb els refugis visitats actualitzats o null si hi ha error
    */
-  static async addVisitedRefuge(uid: string, refuge_id: number, authToken?: string): Promise<Location[] | null> {
+  static async addVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/visited-refuges/`;
       
@@ -350,7 +350,7 @@ export class UsersService {
    * @param authToken - Token d'autenticació de Firebase (opcional)
    * @returns Un llistat amb els refugis visitats actualitzats o null si hi ha error
    */
-  static async removeVisitedRefuge(uid: string, refuge_id: number, authToken?: string): Promise<Location[] | null> {
+  static async removeVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/visited-refuges/${refuge_id}/`;
       

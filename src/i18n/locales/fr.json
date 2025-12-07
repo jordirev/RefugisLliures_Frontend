@@ -54,6 +54,16 @@
     "removed": "Refuge supprimé des favoris",
     "error": "Impossible de charger les favoris"
   },
+  "visited": {
+    "title": "Refuges visités",
+    "empty": {
+      "title": "Vous n'avez pas encore visité de refuge",
+      "message": "Marquez les refuges que vous avez visités pour les voir ici"
+    },
+    "added": "Refuge marqué comme visité",
+    "removed": "Refuge retiré des visités",
+    "error": "Impossible de charger les refuges visités"
+  },
   "renovations": {
     "title": "Améliorations et Rénovations",
     "my_renovations": "Mes rénovations",

@@ -54,6 +54,16 @@
     "removed": "Refugi eliminat dels preferits",
     "error": "No s'han pogut carregar els preferits"
   },
+  "visited": {
+    "title": "Refugis visitats",
+    "empty": {
+      "title": "Encara no has visitat cap refugi",
+      "message": "Marca els refugis que has visitat per veure'ls aquí"
+    },
+    "added": "Refugi marcat com a visitat",
+    "removed": "Refugi eliminat de visitats",
+    "error": "No s'han pogut carregar els refugis visitats"
+  },
   "renovations": {
     "title": "Reformes i Millores",
     "my_renovations": "Les meves reformes",

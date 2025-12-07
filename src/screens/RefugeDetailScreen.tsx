@@ -38,7 +38,7 @@ import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
 import AltitudeIcon from '../assets/icons/altitude2.svg';
 import UsersIcon from '../assets/icons/users.svg';
 import MapPinIcon from '../assets/icons/map-pin.svg';
-import EditIcon from '../assets/icons/edit.svg';
+import ArrowIcon from '../assets/icons/right-arrow.png';
 import DownloadIcon from '../assets/icons/download.svg';
 import MenuIcon from '../assets/icons/menu.svg';
 import { BadgeType } from '../components/BadgeType';
@@ -407,16 +407,22 @@ export function RefugeDetailScreen({
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
       {/* Edge drag zone for opening menu from right edge */}
-      <View
-        style={styles.edgeDragZone}
-        {...panResponder.panHandlers}
-      />
+      {!menuOpen && (
+        <View
+          style={styles.edgeDragZone}
+          {...panResponder.panHandlers}
+        >
+          <View style={styles.dragIndicator}>
+            <Image source={ArrowIcon} style={styles.dragIndicatorImage} />
+          </View>
+        </View>
+      )}
       
       {/* Contingut principal amb ScrollView */}
       <ScrollView
         style={styles.scrollContent}
         contentContainerStyle={styles.scrollContentContainer}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
       >
         {/* Header amb imatge (ara dins del ScrollView) */}
         <View style={styles.header}>
@@ -1073,7 +1079,30 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: 50,
-    zIndex: 2500,
+    zIndex: 1500,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  dragIndicator: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: -2, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    marginRight: -15,
+  },
+  dragIndicatorImage: {
+    width: 10, 
+    height: 10, 
+    tintColor: '#A0AEC0',
+    marginRight: 10, 
+    transform: [{ rotate: '180deg' }],
   },
 });
 

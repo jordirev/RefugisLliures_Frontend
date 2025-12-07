@@ -1,17 +1,21 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
+import { RefugeCard } from '../components/RefugeCard';
+import { RefugisService } from '../services/RefugisService';
+import { Location } from '../models';
 
 // Icones
 import StatsIcon from '../assets/icons/stats.svg';
 import SettingsIcon from '../assets/icons/settings.svg';
 import AltitudeIcon from '../assets/icons/altitude2.svg';
+const VisitedIcon = require('../assets/icons/visited2.png');
 
 // Imatge de fons del header
 import DefaultProfileBackgroundImage from '../assets/images/profileDefaultBackground.png';
@@ -20,7 +24,8 @@ export function ProfileScreen() {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, isLoading, refreshUserData } = useAuth();
+  const { firebaseUser, backendUser, isLoading, refreshUserData, visitedRefuges } = useAuth();
+  const insets = useSafeAreaInsets();
 
   // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
   useFocusEffect(
@@ -40,11 +45,55 @@ export function ProfileScreen() {
       };
     }, [])
   );
+
+  // Navigation handlers
+  const handleViewMap = async (refuge: Location) => {
+    try {
+      if (refuge.id) {
+        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
+        if (fullRefuge) {
+          navigation.navigate('Map', { selectedRefuge: fullRefuge });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading refuge for map:', error);
+      navigation.navigate('Map', { selectedRefuge: refuge });
+    }
+  };
+
+  const handleViewDetail = async (refuge: Location) => {
+    try {
+      if (refuge.id) {
+        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
+        if (fullRefuge) {
+          // Navigate to map tab and show detail
+          navigation.navigate('Map', { selectedRefuge: fullRefuge, showDetail: true });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading refuge details:', error);
+      navigation.navigate('Map', { selectedRefuge: refuge, showDetail: true });
+    }
+  };
+  
+  // Empty component for visited refuges
+  const EmptyVisitedComponent = () => (
+    <View style={styles.emptyVisitedContainer}>
+      <Image source={VisitedIcon} style={styles.emptyVisitedIcon} />
+      <Text style={styles.emptyVisitedTitle}>{t('visited.empty.title')}</Text>
+      <Text style={styles.emptyVisitedText}>{t('visited.empty.message')}</Text>
+    </View>
+  );
+  
   
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView edges={["top"]} style={styles.safeArea} testID="profile-safe-area">
-        <View style={styles.header}>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.headerFixed}>
+        <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
+      </View>
+      <ScrollView style={styles.container}>
+        <View style={[styles.header, { marginTop: insets.top }]}>
           {/* Background block with real horizontal gradient and image overlay */}
           <LinearGradient
             colors={["#FF8904", "#F54900"]}
@@ -108,51 +157,77 @@ export function ProfileScreen() {
             </Text>
           </View>
         </View>
-      </SafeAreaView>
-      
-      <View style={styles.content}>
-        <View style={[styles.section, styles.sectionStatics]}>
-          <View style={styles.sectionTitle}>
-            <StatsIcon />
-            <Text style={styles.title}>{t('profile.stats.title')}</Text>
-          </View>
-          <View style={styles.statsGrid}>
-            <View style={styles.statsRow}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.visited_refuges?.length ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
+        
+        <View style={styles.content}>
+          <View style={[styles.section, styles.sectionStatics]}>
+            <View style={styles.sectionTitle}>
+              <StatsIcon />
+              <Text style={styles.title}>{t('profile.stats.title')}</Text>
+            </View>
+            <View style={styles.statsGrid}>
+              <View style={styles.statsRow}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{backendUser?.visited_refuges?.length ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
+                </View>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
+              <View style={styles.statsRow}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{backendUser?.num_shared_experiences ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{backendUser?.num_uploaded_photos ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.statsRow}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_shared_experiences ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_uploaded_photos ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
-              </View>
-            </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionTitle}>
-            <AltitudeIcon width={20} height={20} />
-            <Text style={styles.title}>{t('profile.stats.visited')}</Text>
-            <Text style={styles.titleValue}>({backendUser?.visited_refuges?.length ?? 0})</Text>
+          <View style={styles.section}>
+            <View style={styles.sectionTitle}>
+              <AltitudeIcon width={20} height={20} />
+              <Text style={styles.title}>{t('visited.title')}</Text>
+              <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
+            </View>
+            {visitedRefuges && visitedRefuges.length > 0 ? (
+              <View style={styles.visitedList}>
+                {visitedRefuges.map((refuge, index) => (
+                  <RefugeCard
+                    key={refuge.id ? String(refuge.id) : String(index)}
+                    refuge={refuge}
+                    onPress={() => handleViewDetail(refuge)}
+                    onViewMap={() => handleViewMap(refuge)}
+                  />
+                ))}
+              </View>
+            ) : (
+              <EmptyVisitedComponent />
+            )}
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#ffffffff',
+    paddingHorizontal: 6,
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffffff',
@@ -370,6 +445,36 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'stretch',
     flexShrink: 1,
+  },
+  visitedList: {
+    gap: 12,
+  },
+  emptyVisitedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 16,
+    minHeight: 200,
+  },
+  emptyVisitedIcon: {
+    width: 48,
+    height: 48,
+    marginBottom: 16,
+    opacity: 0.8,
+  },
+  emptyVisitedTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyVisitedText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   menuItem: {
     flexDirection: 'row',

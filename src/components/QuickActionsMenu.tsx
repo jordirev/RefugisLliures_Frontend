@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
+import useVisited from '../hooks/useVisited';
 
 // Icons
 import HeartIcon from '../assets/icons/fav-white.svg';
@@ -47,7 +48,7 @@ export function QuickActionsMenu({
 }: QuickActionsMenuProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const [hasVisited, setHasVisited] = React.useState(false);
+  const { isVisited, toggleVisited, isProcessing } = useVisited(refuge.id);
 
   const screenWidth = Dimensions.get('window').width;
   const sideMenuWidth = Math.min(120, screenWidth * 0.40);
@@ -113,8 +114,12 @@ export function QuickActionsMenu({
     return `(${latStr}, ${longStr})`;
   };
 
-  const handleToggleVisited = () => {
-    setHasVisited(!hasVisited);
+  const handleToggleVisited = async () => {
+    try {
+      await toggleVisited();
+    } catch (err) {
+      console.error('Error toggling visited:', err);
+    }
   };
 
   const handleShareExperience = () => {
@@ -205,10 +210,11 @@ export function QuickActionsMenu({
                   style={styles.menuItem}
                   onPress={handleToggleVisited}
                   testID="menu-visited"
+                  disabled={isProcessing}
                 >
                   <View style={styles.menuItemIconContainer}>
                     <Image
-                      source={hasVisited ? VisitedIcon : NonVisitedIcon}
+                      source={isVisited ? VisitedIcon : NonVisitedIcon}
                       style={{ width: 24, height: 24 }}
                     />
                   </View>
