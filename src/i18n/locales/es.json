@@ -27,7 +27,8 @@
     "pyrenees": "Pirineos",
     "optional": "opcional",
     "locale": "es",
-    "you": "Tú"
+    "you": "Tú",
+    "share": "Compartir"
   },
   "navigation": {
     "map": "Mapa",
@@ -219,7 +220,8 @@
       "moreInformation": "Para más información:",
       "weather": "Meteo",
       "nearbyRoutes": "Rutas cercanas",
-      "information_not_precise": "La información puede no ser precisa o estar desactualizada. Los administradores de la aplicación no se hacen responsables del uso que se pueda hacer. \nSi vas a la montaña, toma las precauciones necesarias."
+      "information_not_precise": "La información puede no ser precisa o estar desactualizada. Los administradores de la aplicación no se hacen responsables del uso que se pueda hacer. \nSi vas a la montaña, toma las precauciones necesarias.",
+      "coordinates": "Coordenadas"
     },
     "amenities": {
       "manque_un_mur": "Falta un muro",
@@ -240,7 +242,22 @@
       "viewDetails": "Ver detalles",
       "favorite": "Favorito",
       "viewOnMap": "Ver en el mapa",
-      "add": "Añadir"
+      "add": "Añadir",
+      "visited": "Visitado",
+      "ask": "Preguntar \nduda",
+      "shareExperience": "Compartir\nexperiencia",
+      "addPhoto": "Añadir foto",
+      "editRefuge": "Editar refugio"
+    },
+    "descriptions": {
+      "addToFavorites": "Guarda este refugio en tus favoritos",
+      "removeFromFavorites": "Elimina este refugio de favoritos",
+      "markAsVisited": "Marca como refugio visitado",
+      "markedAsVisited": "Refugio marcado como visitado",
+      "shareRefuge": "Comparte la información del refugio",
+      "shareYourExperience": "Comparte tu experiencia",
+      "askAboutRefuge": "Pregunta dudas sobre el refugio",
+      "uploadPhoto": "Sube una foto del refugio"
     }
   },
   "filters": {
@@ -293,9 +310,23 @@
     "cannotOpenLink": "No se puede abrir el enlace",
     "linkError": "No se pudo abrir el enlace",
     "redirectTo": "Se te redirigirá a:",
-    "windyMessage": "https://www.windy.com.\n\nEsta es una web de meteorología que ofrece varias previsiones. Las más recomendadas son Meteoblue (MBLUE) y Arome-HD.",
+    "windyMessage": "https://www.windy.com.\n\nEste es un sitio web de meteorología que ofrece varias previsiones. Las más recomendadas son Meteoblue (MBLUE) y Arome-HD.",
     "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Puede que no haya rutas que pasen por el refugio. Asegúrate de que la ruta pasa por el refugio. ⚠️",
-    "editRefuge": "Editar {{name}}"
+    "editRefuge": "Editar {{name}}",
+    "markedAsVisited": "Has marcado {{name}} como visitado",
+    "unmarkedAsVisited": "Has eliminado {{name}} de visitados",
+    "shareExperience": {
+      "title": "Compartir experiencia",
+      "message": "Funcionalidad para compartir tu experiencia en el refugio. ¡Próximamente disponible!"
+    },
+    "askQuestion": {
+      "title": "Preguntar duda",
+      "message": "Funcionalidad para preguntar dudas sobre el refugio. ¡Próximamente disponible!"
+    },
+    "addPhoto": {
+      "title": "Añadir foto",
+      "message": "Funcionalidad para añadir fotos del refugio. ¡Próximamente disponible!"
+    }
   },
   "permissions": {
     "location": {

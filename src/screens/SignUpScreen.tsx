@@ -26,7 +26,7 @@ import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Logo provisional
-const AppLogo = require('../assets/images/profileDefaultBackground.png');
+const AppLogo = require('../assets/images/logo.png');
 
 // Configuració de banderes: imatges reals a `src/assets/images`
 const flags = {

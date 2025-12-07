@@ -25,7 +25,7 @@ import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
-const AppLogo = require('../assets/images/profileDefaultBackground.png');
+const AppLogo = require('../assets/images/logo.png');
  
 interface LoginScreenProps {
   onNavigateToSignUp?: () => void;
@@ -280,6 +280,8 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           >
             <Image 
               source={AppLogo} 
+              width={120}
+              height={120}
               style={styles.logo}
               resizeMode="contain"
             />

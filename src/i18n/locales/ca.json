@@ -27,7 +27,8 @@
     "pyrenees": "Pirineus",
     "optional": "opcional",
     "locale": "ca",
-    "you": "Tu"
+    "you": "Tu",
+    "share": "Compartir"
   },
   "navigation": {
     "map": "Mapa",
@@ -190,6 +191,9 @@
   },
   "refuge": {
     "title": "Refugi no guardat",
+    "quickActions": "Accions ràpides",
+    "mainActions": "Accions principals",
+    "secondaryActions": "Més accions",
     "type": {
       "shelter": "Orri",
       "noGuarded": "No guardat",
@@ -220,7 +224,8 @@
       "moreInformation": "Per a més informació:",
       "weather": "Meteo",
       "nearbyRoutes": "Rutes a prop",
-      "information_not_precise": "La informació pot no ser precisa o estar desactualitzada. Els administradors de l'aplicació no es fan responsables de l'ús que se'n pugui fer. \nSi vas a la muntanya, pren les precaucions necessaries."
+      "information_not_precise": "La informació pot no ser precisa o estar desactualitzada. Els administradors de l'aplicació no es fan responsables de l'ús que se'n pugui fer. \nSi vas a la muntanya, pren les precaucions necessaries.",
+      "coordinates": "Coordenades"
     },
     "amenities": {
       "manque_un_mur": "Falta un mur",
@@ -241,7 +246,22 @@
       "viewDetails": "Veure detalls",
       "favorite": "Favorit",
       "viewOnMap": "Veure en el mapa",
-      "add": "Afegeix"
+      "add": "Afegeix",
+      "visited": "Visitat",
+      "ask": "Preguntar \ndubte",
+      "shareExperience": "Compartir\nexperiència",
+      "addPhoto": "Afegir foto",
+      "editRefuge": "Editar refugi"
+    },
+    "descriptions": {
+      "addToFavorites": "Desa aquest refugi als teus preferits",
+      "removeFromFavorites": "Elimina aquest refugi dels preferits",
+      "markAsVisited": "Marca com a refugi visitat",
+      "markedAsVisited": "Refugi marcat com a visitat",
+      "shareRefuge": "Comparteix la informació del refugi",
+      "shareYourExperience": "Comparteix la teva experiència",
+      "askAboutRefuge": "Pregunta dubtes sobre el refugi",
+      "uploadPhoto": "Puja una foto del refugi"
     }
   },
   "filters": {
@@ -296,7 +316,21 @@
     "redirectTo": "Se't redirigirà cap a:",
     "windyMessage": "https://www.windy.com.\n\nAquesta és una web de meteorologia que ofereix varies previsions. Les més recomanades són Meteoblue (MBLUE) i Arome-HD.",
     "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Pot ser que no hi hagi rutes que passin pel refugi. Assegura't que la ruta passa pel refugi. ⚠️",
-    "editRefuge": "Editar {{name}}"
+    "editRefuge": "Editar {{name}}",
+    "markedAsVisited": "Has marcat {{name}} com a visitat",
+    "unmarkedAsVisited": "Has eliminat {{name}} de visitats",
+    "shareExperience": {
+      "title": "Compartir experiència",
+      "message": "Funcionalitat per compartir la teva experiència al refugi. Properament disponible!"
+    },
+    "askQuestion": {
+      "title": "Preguntar dubte",
+      "message": "Funcionalitat per preguntar dubtes sobre el refugi. Properament disponible!"
+    },
+    "addPhoto": {
+      "title": "Afegir foto",
+      "message": "Funcionalitat per afegir fotos del refugi. Properament disponible!"
+    }
   },
   "permissions": {
     "location": {

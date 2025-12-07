@@ -27,7 +27,8 @@
     "pyrenees": "Pyrénées",
     "optional": "optionnel",
     "locale": "fr",
-    "you": "Tu"
+    "you": "Vous",
+    "share": "Partager"
   },
   "navigation": {
     "map": "Carte",
@@ -189,6 +190,9 @@
   },
   "refuge": {
     "title": "Refuge non gardé",
+    "quickActions": "Actions rapides",
+    "mainActions": "Actions principales",
+    "secondaryActions": "Plus d'actions",
     "type": {
       "shelter": "Orri",
       "noGuarded": "Non gardé",
@@ -219,7 +223,8 @@
       "moreInformation": "Pour plus d'informations:",
       "weather": "Météo",
       "nearbyRoutes": "Itinéraires à proximité",
-      "information_not_precise": "Les informations peuvent ne pas être précises ou à jour. Les administrateurs de l'application ne sont pas responsables de leur utilisation. \nSi vous allez en montagne, prenez les précautions nécessaires."
+      "information_not_precise": "Les informations peuvent ne pas être exactes ou être obsolètes. Les administrateurs de l'application ne sont pas responsables de l'utilisation qui peut en être faite. \nSi vous allez en montagne, prenez les précautions nécessaires.",
+      "coordinates": "Coordonnées"
     },
     "amenities": {
       "manque_un_mur": "Manque un mur",
@@ -237,10 +242,25 @@
     },
     "actions": {
       "navigate": "Naviguer",
-      "viewDetails": "Voir détails",
+      "viewDetails": "Voir les détails",
       "favorite": "Favori",
       "viewOnMap": "Voir sur la carte",
-      "add": "Ajouter"
+      "add": "Ajouter",
+      "visited": "Visité",
+      "ask": "Demander \ndoute",
+      "shareExperience": "Partager\nl'expérience",
+      "addPhoto": "Ajouter photo",
+      "editRefuge": "Modifier \nrefuge"
+    },
+    "descriptions": {
+      "addToFavorites": "Enregistrez ce refuge dans vos favoris",
+      "removeFromFavorites": "Supprimer ce refuge des favoris",
+      "markAsVisited": "Marquer comme refuge visité",
+      "markedAsVisited": "Refuge marqué comme visité",
+      "shareRefuge": "Partager les informations du refuge",
+      "shareYourExperience": "Partagez votre expérience",
+      "askAboutRefuge": "Poser des questions sur le refuge",
+      "uploadPhoto": "Télécharger une photo du refuge"
     }
   },
   "filters": {
@@ -293,9 +313,23 @@
     "cannotOpenLink": "Impossible d'ouvrir le lien",
     "linkError": "Impossible d'ouvrir le lien",
     "redirectTo": "Vous serez redirigé vers :",
-    "windyMessage": "https://www.windy.com.\n\nCe site web de météorologie offre diverses prévisions. Les plus recommandées sont Meteoblue (MBLUE) et Arome-HD.",
+    "windyMessage": "https://www.windy.com.\n\nC'est un site web météorologique qui propose différentes prévisions. Les plus recommandées sont Meteoblue (MBLUE) et Arome-HD.",
     "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Il se peut qu'il n'y ait pas d'itinéraires passant par le refuge. Assurez-vous que l'itinéraire passe par le refuge. ⚠️",
-    "editRefuge": "Modifier {{name}}"
+    "editRefuge": "Modifier {{name}}",
+    "markedAsVisited": "Vous avez marqué {{name}} comme visité",
+    "unmarkedAsVisited": "Vous avez retiré {{name}} des visités",
+    "shareExperience": {
+      "title": "Partager l'expérience",
+      "message": "Fonctionnalité pour partager votre expérience au refuge. Bientôt disponible!"
+    },
+    "askQuestion": {
+      "title": "Poser une question",
+      "message": "Fonctionnalité pour poser des questions sur le refuge. Bientôt disponible!"
+    },
+    "addPhoto": {
+      "title": "Ajouter une photo",
+      "message": "Fonctionnalité pour ajouter des photos du refuge. Bientôt disponible!"
+    }
   },
   "permissions": {
     "location": {

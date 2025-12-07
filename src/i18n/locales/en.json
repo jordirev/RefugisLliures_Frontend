@@ -27,7 +27,8 @@
     "pyrenees": "Pyrenees",
     "optional": "optional",
     "locale": "en",
-    "you": "You"
+    "you": "You",
+    "share": "Share"
   },
   "navigation": {
     "map": "Map",
@@ -240,7 +241,22 @@
       "viewDetails": "View details",
       "favorite": "Favorite",
       "viewOnMap": "View on map",
-      "add": "Add"
+      "add": "Add",
+      "visited": "Visited",
+      "ask": "Ask doubt",
+      "shareExperience": "Share\nexperience",
+      "addPhoto": "Add Photo",
+      "editRefuge": "Edit refuge"
+    },
+    "descriptions": {
+      "addToFavorites": "Save this refuge to your favorites",
+      "removeFromFavorites": "Remove this refuge from favorites",
+      "markAsVisited": "Mark as visited refuge",
+      "markedAsVisited": "Refuge marked as visited",
+      "shareRefuge": "Share refuge information",
+      "shareYourExperience": "Share your experience",
+      "askAboutRefuge": "Ask questions about the refuge",
+      "uploadPhoto": "Upload a photo of the refuge"
     }
   },
   "filters": {
@@ -293,9 +309,23 @@
     "cannotOpenLink": "Cannot open link",
     "linkError": "Could not open link",
     "redirectTo": "You will be redirected to:",
-    "windyMessage": "https://www.windy.com.\n\nThis is a weather website that offers various forecasts. The most recommended ones are Meteoblue (MBLUE) and Arome-HD.",
-    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ There may not be routes passing through the shelter. Make sure the route goes through the shelter. ⚠️",
-    "editRefuge": "Edit {{name}}"
+    "windyMessage": "https://www.windy.com.\n\nThis is a weather website that offers various forecasts. The most recommended are Meteoblue (MBLUE) and Arome-HD.",
+    "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ There may not be routes that pass through the shelter. Make sure the route passes through the shelter. ⚠️",
+    "editRefuge": "Edit {{name}}",
+    "markedAsVisited": "You've marked {{name}} as visited",
+    "unmarkedAsVisited": "You've removed {{name}} from visited",
+    "shareExperience": {
+      "title": "Share Experience",
+      "message": "Feature to share your refuge experience. Coming soon!"
+    },
+    "askQuestion": {
+      "title": "Ask Question",
+      "message": "Feature to ask questions about the refuge. Coming soon!"
+    },
+    "addPhoto": {
+      "title": "Add Photo",
+      "message": "Feature to add photos of the refuge. Coming soon!"
+    }
   },
   "permissions": {
     "location": {

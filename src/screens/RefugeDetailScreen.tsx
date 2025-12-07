@@ -9,6 +9,8 @@ import {
   Linking,
   Platform,
   Modal,
+  PanResponder,
+  Dimensions,
 } from 'react-native';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import * as FileSystem from 'expo-file-system/legacy';
@@ -29,7 +31,7 @@ import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
 
-// Icons (assumint que tenim aquestes icones SVG)
+// Icons
 import HeartIcon from '../assets/icons/fav.svg';
 import HeartFilledIcon from '../assets/icons/favourite2.svg';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
@@ -38,13 +40,14 @@ import UsersIcon from '../assets/icons/users.svg';
 import MapPinIcon from '../assets/icons/map-pin.svg';
 import EditIcon from '../assets/icons/edit.svg';
 import DownloadIcon from '../assets/icons/download.svg';
+import MenuIcon from '../assets/icons/menu.svg';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
+import { QuickActionsMenu } from '../components/QuickActionsMenu';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
-import { FavoritesScreen } from './FavoritesScreen';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -71,7 +74,33 @@ export function RefugeDetailScreen({
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
   const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
-  
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  // Edge drag zone for opening menu
+  const screenWidth = Dimensions.get('window').width;
+  const edgeDragZone = 500;
+  const panResponder = React.useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (evt) => {
+        const { pageX } = evt.nativeEvent;
+        const isInEdge = screenWidth - pageX <= edgeDragZone;
+        return isInEdge && !menuOpen;
+      },
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        const { pageX } = evt.nativeEvent;
+        const isInEdge = screenWidth - pageX <= edgeDragZone;
+        return isInEdge && !menuOpen && gestureState.dx < -5;
+      },
+      onPanResponderMove: () => {
+        // Handle drag movement if needed
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (!menuOpen && gestureState.dx < -30) {
+          setMenuOpen(true);
+        }
+      },
+    })
+  ).current;
 
   // Helper to format coordinates: lat 4 decimals, long 5 decimals -> (lat, long)
   const formatCoord = (lat: number, long: number) => {
@@ -377,7 +406,11 @@ export function RefugeDetailScreen({
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
-      {/* Back button on top of everything */}
+      {/* Edge drag zone for opening menu from right edge */}
+      <View
+        style={styles.edgeDragZone}
+        {...panResponder.panHandlers}
+      />
       
       {/* Contingut principal amb ScrollView */}
       <ScrollView
@@ -395,30 +428,6 @@ export function RefugeDetailScreen({
             resizeMode="cover"
           />
         </View>
-
-        <ScrollView 
-          horizontal={true}   
-          showsHorizontalScrollIndicator={false} 
-          style={[styles.container, styles.easyAccessActions]}
-        >
-          <TouchableOpacity 
-            onPress={() => {
-            }} 
-            style={styles.circleButton}
-            activeOpacity={0.7}
-          >
-            <HeartIcon width={24} height={24} color="#FF6900" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            onPress={() => {
-            }} 
-            style={styles.circleButton}
-            activeOpacity={0.7}
-          >
-            <Text>1</Text>
-          </TouchableOpacity>
-        </ScrollView>
 
         {/* Títol i informació bàsica */}
         <View style={styles.section}>
@@ -596,36 +605,52 @@ export function RefugeDetailScreen({
       </ScrollView>
 
       {/* Action buttons overlay (fixed) */}
-      <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={handleToggleFavorite}
-          testID="favorite-button"
-          disabled={isProcessing}
-        >
-          {isFavourite ? (
-            <HeartFilledIcon width={20} height={20} color="#FF6900" />
-          ) : (
-            <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, { marginLeft: 8 }]} 
-          onPress={handleEdit}
-          testID="edit-button"
-        >
-          <EditIcon width={18} height={18} color="#4A5565" />
-        </TouchableOpacity>
-      </View>
+      {!menuOpen && (
+        <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={handleToggleFavorite}
+            testID="favorite-button"
+            disabled={isProcessing}
+          >
+            {isFavourite ? (
+              <HeartFilledIcon width={20} height={20} color="#FF6900" />
+            ) : (
+              <HeartIcon width={20} height={20} color={'#4A5565'} fill={'none'} />
+            )}
+          </TouchableOpacity>
+      
+          <TouchableOpacity
+            style={[styles.actionButton, { marginLeft: 8}]}
+            onPress={() => setMenuOpen(true)}
+            testID="menu-button"
+          >
+            <MenuIcon width={20} height={20} color="#4A5565" />
+          </TouchableOpacity>
+        </View>
+      )}
 
-      {/* Back button rendered last so it's visually on top */}
-      <TouchableOpacity 
-        style={[styles.backButton, { top: 16 + insets.top, zIndex: 1000 }]} 
-        onPress={onBack}
-        testID="back-button"
-      >
-        <ArrowLeftIcon width={20} height={20} color="#4A5565" />
-      </TouchableOpacity>
+      {/* Quick Actions Menu */}
+      <QuickActionsMenu
+        visible={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onOpen={() => setMenuOpen(true)}
+        refuge={refuge}
+        isFavourite={isFavourite}
+        onToggleFavorite={handleToggleFavorite}
+        onShowAlert={showAlert}
+      />
+
+      {/* Back button rendered last so it's visually on top - hide when menu is open */}
+      {!menuOpen && (
+        <TouchableOpacity 
+          style={[styles.backButton, { top: 16 + insets.top, zIndex: 3000 }]} 
+          onPress={onBack}
+          testID="back-button"
+        >
+          <ArrowLeftIcon width={20} height={20} color="#4A5565" />
+        </TouchableOpacity>
+      )}
       
       {/* Safe area */}
       <View style={{ paddingBottom: insets.bottom }}>
@@ -1042,17 +1067,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
   },
-  easyAccessActions: {
-    marginBottom: 16,
-    paddingLeft: 8,
-  },
-  circleButton: {
+  edgeDragZone: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
     width: 50,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: '#f9fafb',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+    zIndex: 2500,
   },
 });
+
