@@ -87,7 +87,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [selectedLocation?.id, selectedLocation?.coord?.lat, selectedLocation?.coord?.long, mapInitialized]);
+  }, [selectedLocation, mapInitialized]);
 
   // Centrar el mapa quan userLocation canvia
   useEffect(() => {

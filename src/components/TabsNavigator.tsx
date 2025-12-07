@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { MapScreen } from '../screens/MapScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
@@ -62,12 +63,25 @@ export function TabsNavigator({
           ),
         }}
       >
-        {({ route }: any) => {
+        {({ route, navigation: mapNavigation }: any) => {
           const { selectedRefuge } = route.params || {};
+          
+          // Hook per netejar selectedRefuge quan selectedLocation passa a undefined
+          useEffect(() => {
+            if (selectedLocation === undefined && selectedRefuge !== undefined) {
+              // selectedLocation ha passat a undefined però selectedRefuge encara existeix
+              // Netejar els paràmetres
+              mapNavigation.setParams({ selectedRefuge: undefined });
+            }
+          }, [selectedLocation, selectedRefuge, mapNavigation]);
+          
+          // Si selectedLocation no és undefined, utilitzar-lo; sinó utilitzar selectedRefuge
+          const effectiveLocation = selectedLocation !== undefined ? selectedLocation : selectedRefuge;
+          
           return (
             <MapScreen
               onLocationSelect={onLocationSelect}
-              selectedLocation={selectedRefuge || selectedLocation}
+              selectedLocation={effectiveLocation}
             />
           );
         }}

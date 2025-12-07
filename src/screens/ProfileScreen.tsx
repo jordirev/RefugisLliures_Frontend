@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 40,
-    paddingHorizontal: 16,
+    paddingHorizontal: 48,
     minHeight: 200,
   },
   emptyVisitedIcon: {
