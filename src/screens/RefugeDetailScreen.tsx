@@ -44,6 +44,7 @@ import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
+import { FavoritesScreen } from './FavoritesScreen';
 
 interface RefugeDetailScreenProps {
   refuge: Location;
@@ -394,6 +395,31 @@ export function RefugeDetailScreen({
             resizeMode="cover"
           />
         </View>
+
+        <ScrollView 
+          horizontal={true}   
+          showsHorizontalScrollIndicator={false} 
+          style={[styles.container, styles.easyAccessActions]}
+        >
+          <TouchableOpacity 
+            onPress={() => {
+            }} 
+            style={styles.circleButton}
+            activeOpacity={0.7}
+          >
+            <HeartIcon width={24} height={24} color="#FF6900" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => {
+            }} 
+            style={styles.circleButton}
+            activeOpacity={0.7}
+          >
+            <Text>1</Text>
+          </TouchableOpacity>
+        </ScrollView>
+
         {/* Títol i informació bàsica */}
         <View style={styles.section}>
           <View style={styles.titleContainer}>
@@ -1015,5 +1041,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     justifyContent: 'center',
+  },
+  easyAccessActions: {
+    marginBottom: 16,
+    paddingLeft: 8,
+  },
+  circleButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    backgroundColor: '#f9fafb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
 });
