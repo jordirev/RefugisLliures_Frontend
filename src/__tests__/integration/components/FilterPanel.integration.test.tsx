@@ -131,7 +131,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            types: [0],
+            types: ["non gardé"],
           })
         );
       });
@@ -159,7 +159,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            types: expect.arrayContaining([0, 3, 1]),
+            types: expect.arrayContaining(["non gardé", "cabane ouverte mais ocupee par le berger l ete", "orri"]),
           })
         );
       });
@@ -168,7 +168,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     it('hauria de permetre deseleccionar un tipus', async () => {
       const filtersWithType: Filters = {
         ...defaultFilters,
-        types: [0, 3],
+        types: ["non gardé", "cabane ouverte mais ocupee par le berger l ete"],
       };
 
       const { getByText } = renderWithProviders(
@@ -190,7 +190,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            types: [3],
+            types: ["cabane ouverte mais ocupee par le berger l ete"],
           })
         );
       });
@@ -218,7 +218,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            condition: ['bé'],
+            condition: [2],
           })
         );
       });
@@ -245,7 +245,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            condition: expect.arrayContaining(['pobre', 'normal']),
+            condition: expect.arrayContaining([0, 1]),
           })
         );
       });
@@ -254,7 +254,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     it('hauria de permetre deseleccionar una condició', async () => {
       const filtersWithCondition: Filters = {
         ...defaultFilters,
-        condition: ['bé', 'normal'],
+        condition: [2, 1],
       };
 
       const { getByText } = renderWithProviders(
@@ -276,7 +276,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            condition: ['normal'],
+            condition: [1],
           })
         );
       });
@@ -362,8 +362,8 @@ describe('FilterPanel - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
           expect.objectContaining({
-            types: [0],
-            condition: ['bé'],
+            types: ["non gardé"],
+            condition: [2],
           })
         );
         expect(mockOnClose).toHaveBeenCalled();

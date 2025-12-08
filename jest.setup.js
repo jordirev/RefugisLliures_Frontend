@@ -110,12 +110,46 @@ jest.mock('@react-navigation/bottom-tabs', () => {
 });
 
 // Mock react-native-safe-area-context
-jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaProvider: ({ children }) => children,
-  SafeAreaView: ({ children }) => children,
-  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-  useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
-}));
+jest.mock('react-native-safe-area-context', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  
+  const initialMetrics = {
+    frame: { x: 0, y: 0, width: 390, height: 844 },
+    insets: { top: 0, left: 0, right: 0, bottom: 0 },
+  };
+
+  const SafeAreaContext = React.createContext(initialMetrics);
+  const SafeAreaFrameContext = React.createContext(initialMetrics.frame);
+  const SafeAreaInsetsContext = React.createContext(initialMetrics.insets);
+
+  const SafeAreaProvider = ({ children, initialMetrics: customMetrics }) => {
+    const metrics = customMetrics || initialMetrics;
+    return React.createElement(
+      SafeAreaContext.Provider,
+      { value: metrics },
+      React.createElement(
+        SafeAreaFrameContext.Provider,
+        { value: metrics.frame },
+        React.createElement(
+          SafeAreaInsetsContext.Provider,
+          { value: metrics.insets },
+          children
+        )
+      )
+    );
+  };
+
+  return {
+    SafeAreaProvider,
+    SafeAreaView: ({ children }) => React.createElement(View, {}, children),
+    SafeAreaContext,
+    SafeAreaFrameContext,
+    SafeAreaInsetsContext,
+    useSafeAreaInsets: () => initialMetrics.insets,
+    useSafeAreaFrame: () => initialMetrics.frame,
+  };
+});
 
 // Silenciar advertències de console.warn i console.error en tests
 global.console = {

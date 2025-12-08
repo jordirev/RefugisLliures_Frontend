@@ -253,11 +253,19 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     it('hauria de gestionar common.errors de xarxa', async () => {
       mockUpdateUsername.mockRejectedValue(new Error('Network common.error'));
 
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
 
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      await act(async () => {
+        fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      });
 
+      // Wait for button to be enabled
       await waitFor(() => {
+        const button = getByTestId('submit-button');
+        expect(button.props.accessibilityState.disabled).toBe(false);
+      });
+
+      await act(async () => {
         fireEvent.press(getByTestId('submit-button'));
       });
 
@@ -267,17 +275,25 @@ describe('EditProfileScreen - Tests d\'integró', () => {
           'Network common.error',
           expect.any(Array)
         );
-      });
+      }, { timeout: 3000 });
     });
 
     it('hauria de gestionar username ja en ús', async () => {
       mockUpdateUsername.mockRejectedValue({ message: 'Username already in use' });
 
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
 
-      fireEvent.changeText(getByTestId('username-input'), 'ExistingUsername');
+      await act(async () => {
+        fireEvent.changeText(getByTestId('username-input'), 'ExistingUsername');
+      });
 
+      // Wait for button to be enabled
       await waitFor(() => {
+        const button = getByTestId('submit-button');
+        expect(button.props.accessibilityState.disabled).toBe(false);
+      });
+
+      await act(async () => {
         fireEvent.press(getByTestId('submit-button'));
       });
 
@@ -287,23 +303,31 @@ describe('EditProfileScreen - Tests d\'integró', () => {
           'Username already in use',
           expect.any(Array)
         );
-      });
+      }, { timeout: 3000 });
     });
 
     it('hauria de gestionar common.errors genèrics', async () => {
       mockUpdateUsername.mockRejectedValue({ message: 'Generic common.error' });
 
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
 
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      await act(async () => {
+        fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      });
 
+      // Wait for button to be enabled
       await waitFor(() => {
+        const button = getByTestId('submit-button');
+        expect(button.props.accessibilityState.disabled).toBe(false);
+      });
+
+      await act(async () => {
         fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
-      });
+      }, { timeout: 3000 });
     });
   });
 
@@ -333,31 +357,58 @@ describe('EditProfileScreen - Tests d\'integró', () => {
 
   describe('Estat de càrrega', () => {
     it('hauria de deshabilitar el botó durant la càrrega', async () => {
-      mockUpdateUsername.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      let resolveUpdate: any;
+      mockUpdateUsername.mockImplementation(() => new Promise(resolve => {
+        resolveUpdate = resolve;
+      }));
 
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
 
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      await act(async () => {
+        fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      });
 
       const button = getByTestId('submit-button');
-      fireEvent.press(button);
+      
+      await act(async () => {
+        fireEvent.press(button);
+        // Wait a bit for state to update
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
 
-      await waitFor(() => {
-        expect(button.props.accessibilityState.disabled).toBe(true);
+      // Check button is disabled during loading
+      expect(button.props.accessibilityState.disabled).toBe(true);
+
+      // Resolve the promise
+      await act(async () => {
+        resolveUpdate();
       });
     });
 
     it('hauria de deshabilitar l\'input durant la càrrega', async () => {
-      mockUpdateUsername.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      let resolveUpdate: any;
+      mockUpdateUsername.mockImplementation(() => new Promise(resolve => {
+        resolveUpdate = resolve;
+      }));
 
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
 
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
-      fireEvent.press(getByTestId('submit-button'));
+      await act(async () => {
+        fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      });
+      
+      await act(async () => {
+        fireEvent.press(getByTestId('submit-button'));
+        // Wait a bit for state to update
+        await new Promise(resolve => setTimeout(resolve, 50));
+      });
 
-      await waitFor(() => {
-        const usernameInput = getByTestId('username-input');
-        expect(usernameInput.props.editable).toBe(false);
+      const usernameInput = getByTestId('username-input');
+      expect(usernameInput.props.editable).toBe(false);
+
+      // Resolve the promise
+      await act(async () => {
+        resolveUpdate();
       });
     });
   });

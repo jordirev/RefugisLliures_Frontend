@@ -225,7 +225,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       });
 
       const mockShowAlert = jest.fn();
-      jest.spyOn(require('../../../utils/useCustomAlert'), 'useCustomAlert').mockReturnValue({
+      jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
         alertConfig: null,
         showAlert: mockShowAlert,
@@ -270,7 +270,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         }
       });
 
-      jest.spyOn(require('../../../utils/useCustomAlert'), 'useCustomAlert').mockReturnValue({
+      jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
         alertConfig: null,
         showAlert: mockShowAlert,
@@ -317,7 +317,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         }
       });
 
-      jest.spyOn(require('../../../utils/useCustomAlert'), 'useCustomAlert').mockReturnValue({
+      jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
         alertConfig: null,
         showAlert: mockShowAlert,
@@ -369,7 +369,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         }
       });
 
-      jest.spyOn(require('../../../utils/useCustomAlert'), 'useCustomAlert').mockReturnValue({
+      jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
         alertConfig: null,
         showAlert: mockShowAlert,

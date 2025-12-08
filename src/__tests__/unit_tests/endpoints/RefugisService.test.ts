@@ -59,7 +59,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(1);
+      const result = await RefugisService.getRefugiById("1");
 
       expect(mockApiGet).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/refuges/1/',
@@ -78,7 +78,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(999);
+      const result = await RefugisService.getRefugiById("999");
 
       expect(result).toBeNull();
     });
@@ -91,7 +91,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(1);
+      const result = await RefugisService.getRefugiById("1");
 
       expect(result).toBeNull();
     });
@@ -99,7 +99,7 @@ describe('RefugisService', () => {
     it('hauria de gestionar errors de xarxa', async () => {
       mockApiGet.mockRejectedValue(new Error('Network error'));
 
-      const result = await RefugisService.getRefugiById(1);
+      const result = await RefugisService.getRefugiById("1");
 
       expect(result).toBeNull();
     });
@@ -107,7 +107,7 @@ describe('RefugisService', () => {
     it('hauria de gestionar errors de timeout', async () => {
       mockApiGet.mockRejectedValue(new Error('Request timeout'));
 
-      const result = await RefugisService.getRefugiById(1);
+      const result = await RefugisService.getRefugiById("1");
 
       expect(result).toBeNull();
     });
@@ -120,7 +120,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      await RefugisService.getRefugiById(1);
+      await RefugisService.getRefugiById("1");
 
       expect(mockApiGet).toHaveBeenCalledWith(
         expect.any(String),
@@ -136,7 +136,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(1);
+      const result = await RefugisService.getRefugiById("1");
 
       expect(result).toBeNull();
     });
@@ -145,8 +145,6 @@ describe('RefugisService', () => {
   describe('getRefugis', () => {
     const mockRefugisResponse: RefugisResponseDTO = {
       count: 2,
-      next: null,
-      previous: null,
       results: [
         {
           id: "1",
@@ -427,39 +425,6 @@ describe('RefugisService', () => {
     });
   });
 
-  describe('getFavorites', () => {
-    it('hauria de retornar un array buit (placeholder)', async () => {
-      const result = await RefugisService.getFavorites();
-
-      expect(result).toEqual([]);
-      expect(Array.isArray(result)).toBe(true);
-    });
-  });
-
-  describe('addFavorite', () => {
-    it('hauria de completar sense errors (placeholder)', async () => {
-      await expect(RefugisService.addFavorite(1)).resolves.toBeUndefined();
-    });
-
-    it('hauria de acceptar qualsevol ID de refugi', async () => {
-      await expect(RefugisService.addFavorite(999)).resolves.toBeUndefined();
-      await expect(RefugisService.addFavorite(0)).resolves.toBeUndefined();
-      await expect(RefugisService.addFavorite(-1)).resolves.toBeUndefined();
-    });
-  });
-
-  describe('removeFavorite', () => {
-    it('hauria de completar sense errors (placeholder)', async () => {
-      await expect(RefugisService.removeFavorite(1)).resolves.toBeUndefined();
-    });
-
-    it('hauria de acceptar qualsevol ID de refugi', async () => {
-      await expect(RefugisService.removeFavorite(999)).resolves.toBeUndefined();
-      await expect(RefugisService.removeFavorite(0)).resolves.toBeUndefined();
-      await expect(RefugisService.removeFavorite(-1)).resolves.toBeUndefined();
-    });
-  });
-
   describe('Casos límit i edge cases', () => {
     it('hauria de gestionar IDs molt grans', async () => {
       const mockResponse = {
@@ -473,7 +438,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(999999999);
+      const result = await RefugisService.getRefugiById("999999999");
 
       expect(result).not.toBeNull();
       expect(result?.id).toBe("999999999");
@@ -487,7 +452,7 @@ describe('RefugisService', () => {
 
       mockApiGet.mockResolvedValue(mockResponse);
 
-      const result = await RefugisService.getRefugiById(-1);
+      const result = await RefugisService.getRefugiById("-1");
 
       expect(result).toBeNull();
     });

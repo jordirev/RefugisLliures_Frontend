@@ -67,36 +67,36 @@ const mockGetRefugiById = RefugisService.getRefugiById as jest.MockedFunction<ty
 describe('FavoritesScreen Component', () => {
   const mockFavouriteRefuges: Location[] = [
     {
-      id: "1",
+      id: 1,
       name: 'Refugi de Colomers',
       coord: { long: 0.9456, lat: 42.6497 },
       region: 'Val d\'Aran',
       places: 50,
       condition: 'bé',
       altitude: 2135,
-      type: "1",
+      type: 1,
       imageUrl: 'https://example.com/image1.jpg',
     },
     {
-      id: "2",
+      id: 2,
       name: 'Refugi d\'Amitges',
       coord: { long: 0.9876, lat: 42.5678 },
       region: 'Pallars Sobirà',
       places: 60,
       condition: 'excel·lent',
       altitude: 2380,
-      type: "1",
+      type: 1,
       imageUrl: 'https://example.com/image2.jpg',
     },
     {
-      id: "3",
+      id: 3,
       name: 'Refugi de Restanca',
       coord: { long: 0.7890, lat: 42.7890 },
       region: 'Val d\'Aran',
       places: 40,
       condition: 'normal',
       altitude: 2010,
-      type: "1",
+      type: 1,
     },
   ];
 
@@ -283,7 +283,7 @@ describe('FavoritesScreen Component', () => {
       await waitFor(() => {
         expect(mockGetRefugiById).toHaveBeenCalledWith(1);
         expect(mockOnViewMap).toHaveBeenCalledWith(fullRefuge);
-        expect(mockNavigate).toHaveBeenCalledWith('Mapa');
+        expect(mockNavigate).toHaveBeenCalledWith('Map', { selectedRefuge: fullRefuge });
       });
     });
 
@@ -302,7 +302,7 @@ describe('FavoritesScreen Component', () => {
         expect(mockGetRefugiById).toHaveBeenCalled();
         // Fallback: hauria de cridar onViewMap amb les dades parcials
         expect(mockOnViewMap).toHaveBeenCalledWith({ ...mockFavouriteRefuges[0], isFavorite: true });
-        expect(mockNavigate).toHaveBeenCalledWith('Mapa');
+        expect(mockNavigate).toHaveBeenCalledWith('Map', { selectedRefuge: { ...mockFavouriteRefuges[0], isFavorite: true } });
       });
 
       consoleErrorSpy.mockRestore();

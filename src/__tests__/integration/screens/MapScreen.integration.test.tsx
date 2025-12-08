@@ -328,7 +328,7 @@ describe('MapScreen - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnLocationSelect).toHaveBeenCalledWith(
           expect.objectContaining({
-            id: 1,
+            id: "1", // L'id es retorna com a string del backend
             name: 'Refugi de Colomers',
           })
         );

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb el snapshot amb favorit actiu 1`] = `
 <View
@@ -14,6 +14,71 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
     ]
   }
 >
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "alignItems": "flex-end",
+        "bottom": 0,
+        "justifyContent": "center",
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 50,
+        "zIndex": 1500,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "rgba(255, 255, 255, 0.85)",
+          "borderRadius": 20,
+          "elevation": 3,
+          "height": 30,
+          "justifyContent": "center",
+          "marginRight": -15,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 0,
+            "width": -2,
+          },
+          "shadowOpacity": 0.15,
+          "shadowRadius": 4,
+          "width": 30,
+        }
+      }
+    >
+      <Image
+        source="test-file-stub"
+        style={
+          {
+            "height": 10,
+            "marginRight": 10,
+            "tintColor": "#A0AEC0",
+            "transform": [
+              {
+                "rotate": "180deg",
+              },
+            ],
+            "width": 10,
+          }
+        }
+      />
+    </View>
+  </View>
   <RCTScrollView
     contentContainerStyle={
       {
@@ -21,7 +86,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "paddingVertical": 24,
       }
     }
-    showsVerticalScrollIndicator={true}
+    showsVerticalScrollIndicator={false}
     style={
       {
         "flex": 1,
@@ -101,8 +166,8 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#DBEAFE",
-                    "borderColor": "#60A5FA",
+                    "backgroundColor": "#D1FAE5",
+                    "borderColor": "#34D399",
                     "borderWidth": 1.25,
                   },
                   {
@@ -122,13 +187,13 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#1E40AF",
+                      "color": "#065F46",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.type.occupiedInSummer
+                refuge.type.noGuarded
               </Text>
             </View>
             <View
@@ -144,8 +209,8 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#A2FFC8",
-                    "borderColor": "#30D270",
+                    "backgroundColor": "#E5E7EB",
+                    "borderColor": "#9CA3AF",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -163,13 +228,13 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#007931",
+                      "color": "#374151",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.condition.label bé
+                refuge.condition.unknown
               </Text>
             </View>
           </View>
@@ -701,7 +766,30 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
       <View
         style={
           {
-            "height": 100,
+            "borderRadius": 8,
+            "marginVertical": 12,
+            "padding": 12,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#f04b2eff",
+              "fontSize": 10,
+              "fontWeight": "500",
+              "justifyContent": "center",
+              "textAlign": "center",
+            }
+          }
+        >
+          refuge.details.information_not_precise
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "height": 10,
           }
         }
       />
@@ -826,15 +914,39 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "width": 40,
         }
       }
-      testID="edit-button"
+      testID="menu-button"
     >
       <test-file-stub
         color="#4A5565"
-        height={18}
-        width={18}
+        height={20}
+        width={20}
       />
     </View>
   </View>
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "bottom": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 30,
+        "zIndex": 1000,
+      }
+    }
+  />
   <View
     accessibilityState={
       {
@@ -883,7 +995,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "shadowRadius": 8,
         "top": 16,
         "width": 40,
-        "zIndex": 1000,
+        "zIndex": 3000,
       }
     }
     testID="back-button"
@@ -918,6 +1030,71 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
     ]
   }
 >
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "alignItems": "flex-end",
+        "bottom": 0,
+        "justifyContent": "center",
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 50,
+        "zIndex": 1500,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "rgba(255, 255, 255, 0.85)",
+          "borderRadius": 20,
+          "elevation": 3,
+          "height": 30,
+          "justifyContent": "center",
+          "marginRight": -15,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 0,
+            "width": -2,
+          },
+          "shadowOpacity": 0.15,
+          "shadowRadius": 4,
+          "width": 30,
+        }
+      }
+    >
+      <Image
+        source="test-file-stub"
+        style={
+          {
+            "height": 10,
+            "marginRight": 10,
+            "tintColor": "#A0AEC0",
+            "transform": [
+              {
+                "rotate": "180deg",
+              },
+            ],
+            "width": 10,
+          }
+        }
+      />
+    </View>
+  </View>
   <RCTScrollView
     contentContainerStyle={
       {
@@ -925,7 +1102,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "paddingVertical": 24,
       }
     }
-    showsVerticalScrollIndicator={true}
+    showsVerticalScrollIndicator={false}
     style={
       {
         "flex": 1,
@@ -1005,8 +1182,8 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#DBEAFE",
-                    "borderColor": "#60A5FA",
+                    "backgroundColor": "#D1FAE5",
+                    "borderColor": "#34D399",
                     "borderWidth": 1.25,
                   },
                   {
@@ -1026,13 +1203,13 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#1E40AF",
+                      "color": "#065F46",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.type.occupiedInSummer
+                refuge.type.noGuarded
               </Text>
             </View>
             <View
@@ -1048,8 +1225,8 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#A2FFC8",
-                    "borderColor": "#30D270",
+                    "backgroundColor": "#E5E7EB",
+                    "borderColor": "#9CA3AF",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -1067,13 +1244,13 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#007931",
+                      "color": "#374151",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.condition.label bé
+                refuge.condition.unknown
               </Text>
             </View>
           </View>
@@ -1605,7 +1782,30 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
       <View
         style={
           {
-            "height": 100,
+            "borderRadius": 8,
+            "marginVertical": 12,
+            "padding": 12,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#f04b2eff",
+              "fontSize": 10,
+              "fontWeight": "500",
+              "justifyContent": "center",
+              "textAlign": "center",
+            }
+          }
+        >
+          refuge.details.information_not_precise
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "height": 10,
           }
         }
       />
@@ -1731,15 +1931,39 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "width": 40,
         }
       }
-      testID="edit-button"
+      testID="menu-button"
     >
       <test-file-stub
         color="#4A5565"
-        height={18}
-        width={18}
+        height={20}
+        width={20}
       />
     </View>
   </View>
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "bottom": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 30,
+        "zIndex": 1000,
+      }
+    }
+  />
   <View
     accessibilityState={
       {
@@ -1788,7 +2012,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "shadowRadius": 8,
         "top": 16,
         "width": 40,
-        "zIndex": 1000,
+        "zIndex": 3000,
       }
     }
     testID="back-button"
@@ -1823,6 +2047,71 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
     ]
   }
 >
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "alignItems": "flex-end",
+        "bottom": 0,
+        "justifyContent": "center",
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 50,
+        "zIndex": 1500,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "backgroundColor": "rgba(255, 255, 255, 0.85)",
+          "borderRadius": 20,
+          "elevation": 3,
+          "height": 30,
+          "justifyContent": "center",
+          "marginRight": -15,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 0,
+            "width": -2,
+          },
+          "shadowOpacity": 0.15,
+          "shadowRadius": 4,
+          "width": 30,
+        }
+      }
+    >
+      <Image
+        source="test-file-stub"
+        style={
+          {
+            "height": 10,
+            "marginRight": 10,
+            "tintColor": "#A0AEC0",
+            "transform": [
+              {
+                "rotate": "180deg",
+              },
+            ],
+            "width": 10,
+          }
+        }
+      />
+    </View>
+  </View>
   <RCTScrollView
     contentContainerStyle={
       {
@@ -1830,7 +2119,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "paddingVertical": 24,
       }
     }
-    showsVerticalScrollIndicator={true}
+    showsVerticalScrollIndicator={false}
     style={
       {
         "flex": 1,
@@ -1987,7 +2276,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
                 }
               }
             >
-              N/A
+              undefined
             </Text>
           </View>
           <View
@@ -2410,7 +2699,30 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
       <View
         style={
           {
-            "height": 100,
+            "borderRadius": 8,
+            "marginVertical": 12,
+            "padding": 12,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#f04b2eff",
+              "fontSize": 10,
+              "fontWeight": "500",
+              "justifyContent": "center",
+              "textAlign": "center",
+            }
+          }
+        >
+          refuge.details.information_not_precise
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "height": 10,
           }
         }
       />
@@ -2536,15 +2848,39 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "width": 40,
         }
       }
-      testID="edit-button"
+      testID="menu-button"
     >
       <test-file-stub
         color="#4A5565"
-        height={18}
-        width={18}
+        height={20}
+        width={20}
       />
     </View>
   </View>
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "bottom": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 30,
+        "zIndex": 1000,
+      }
+    }
+  />
   <View
     accessibilityState={
       {
@@ -2593,7 +2929,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         "shadowRadius": 8,
         "top": 16,
         "width": 40,
-        "zIndex": 1000,
+        "zIndex": 3000,
       }
     }
     testID="back-button"

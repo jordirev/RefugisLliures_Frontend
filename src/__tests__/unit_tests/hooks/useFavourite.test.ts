@@ -23,15 +23,17 @@ const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 
 describe('useFavourite Hook', () => {
   const mockBackendUser: User = {
-    id: 1,
-    uid: 'test-uid',
+    uid: "1",
     username: 'testuser',
     email: 'test@example.com',
     avatar: null,
     language: 'ca',
     favourite_refuges: ['10', '20', '30'],
     visited_refuges: [],
-    renovations: [],
+    num_uploaded_photos: 0,
+    num_shared_experiences: 0,
+    num_renovated_refuges: 0,
+    created_at: '2024-01-01T00:00:00Z',
   };
 
   const mockAddFavouriteRefuge = jest.fn();
@@ -154,7 +156,7 @@ describe('useFavourite Hook', () => {
     it('hauria d\'afegir un refugi als favorits amb optimistic update', async () => {
       mockAddFavouriteRefuge.mockResolvedValue([]);
       
-      const { result } = renderHook(() => useFavourite(99));
+      const { result } = renderHook(() => useFavourite("99"));
       
       expect(result.current.isFavourite).toBe(false);
       
@@ -174,7 +176,7 @@ describe('useFavourite Hook', () => {
       });
       mockAddFavouriteRefuge.mockReturnValue(promise);
       
-      const { result } = renderHook(() => useFavourite(99));
+      const { result } = renderHook(() => useFavourite("99"));
       
       act(() => {
         result.current.toggleFavourite();
@@ -198,7 +200,7 @@ describe('useFavourite Hook', () => {
     it('hauria d\'eliminar un refugi dels favorits amb optimistic update', async () => {
       mockRemoveFavouriteRefuge.mockResolvedValue([]);
       
-      const { result } = renderHook(() => useFavourite(10));
+      const { result } = renderHook(() => useFavourite("10"));
       
       expect(result.current.isFavourite).toBe(true);
       
@@ -218,7 +220,7 @@ describe('useFavourite Hook', () => {
       });
       mockRemoveFavouriteRefuge.mockReturnValue(promise);
       
-      const { result } = renderHook(() => useFavourite(10));
+      const { result } = renderHook(() => useFavourite("10"));
       
       act(() => {
         result.current.toggleFavourite();
@@ -243,7 +245,7 @@ describe('useFavourite Hook', () => {
       const error = new Error('Network error');
       mockAddFavouriteRefuge.mockRejectedValue(error);
       
-      const { result } = renderHook(() => useFavourite(99));
+      const { result } = renderHook(() => useFavourite("99"));
       
       expect(result.current.isFavourite).toBe(false);
       
@@ -265,7 +267,7 @@ describe('useFavourite Hook', () => {
       const error = new Error('Network error');
       mockRemoveFavouriteRefuge.mockRejectedValue(error);
       
-      const { result } = renderHook(() => useFavourite(10));
+      const { result } = renderHook(() => useFavourite("10"));
       
       expect(result.current.isFavourite).toBe(true);
       
@@ -287,7 +289,7 @@ describe('useFavourite Hook', () => {
       const error = new Error('API error');
       mockAddFavouriteRefuge.mockRejectedValue(error);
       
-      const { result } = renderHook(() => useFavourite(99));
+      const { result } = renderHook(() => useFavourite("99"));
       
       await expect(
         act(async () => {
@@ -317,7 +319,7 @@ describe('useFavourite Hook', () => {
       });
       mockAddFavouriteRefuge.mockReturnValue(promise);
       
-      const { result } = renderHook(() => useFavourite(99));
+      const { result } = renderHook(() => useFavourite("99"));
       
       // Primer toggle
       act(() => {
@@ -350,7 +352,7 @@ describe('useFavourite Hook', () => {
       
       mockRemoveFavouriteRefuge.mockResolvedValue([]);
       
-      const { result } = renderHook(() => useFavourite(0));
+      const { result } = renderHook(() => useFavourite("0"));
       
       expect(result.current.isFavourite).toBe(true);
       
@@ -370,13 +372,13 @@ describe('useFavourite Hook', () => {
         backendUser: { ...mockBackendUser, favourite_refuges: ['10', '20', '30'] },
       });
       
-      const { result } = renderHook(() => useFavourite(20));
+      const { result } = renderHook(() => useFavourite("20"));
       
       expect(result.current.isFavourite).toBe(true);
     });
 
     it('hauria de gestionar IDs grans correctament', () => {
-      const largeId = 999999;
+      const largeId = "999999";
       mockUseAuth.mockReturnValue({
         ...mockUseAuth(),
         backendUser: { ...mockBackendUser, favourite_refuges: ['999999'] },

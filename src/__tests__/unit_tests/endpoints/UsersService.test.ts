@@ -29,7 +29,6 @@ jest.mock('../../../services/mappers/UserMapper', () => ({
     language: dto.language,
     favourite_refuges: dto.favourite_refuges || [],
     visited_refuges: dto.visited_refuges || [],
-    renovations: dto.renovations || [],
     num_uploaded_photos: dto.num_uploaded_photos ?? null,
     num_shared_experiences: dto.num_shared_experiences ?? null,
     num_renovated_refuges: dto.num_renovated_refuges ?? null,
@@ -57,7 +56,6 @@ jest.mock('../../../services/mappers', () => ({
     language: dto.language,
     favourite_refuges: dto.favourite_refuges || [],
     visited_refuges: dto.visited_refuges || [],
-    renovations: dto.renovations || [],
     num_uploaded_photos: dto.num_uploaded_photos ?? null,
     num_shared_experiences: dto.num_shared_experiences ?? null,
     num_renovated_refuges: dto.num_renovated_refuges ?? null,
@@ -224,8 +222,8 @@ describe('UsersService', () => {
       username: 'testuser',
       email: 'test@example.com',
       language: 'CA',
-      favourite_refuges: [1, 2, 3],
-      visited_refuges: [1],
+      favourite_refuges: ["1", "2", "3"],
+      visited_refuges: ["1"],
       created_at: '2024-01-01T00:00:00Z',
     };
 
@@ -443,7 +441,6 @@ describe('UsersService', () => {
       const result = await UsersService.updateUser('user123', updateData);
 
       expect(result).not.toBeNull();
-      expect(result?.renovations).toEqual(['reforma1', 'reforma2']);
     });
 
     it('hauria de retornar null quan la resposta no és ok', async () => {
@@ -684,7 +681,6 @@ describe('UsersService', () => {
       expect(result).not.toBeNull();
       expect(result?.favourite_refuges).toEqual([]);
       expect(result?.visited_refuges).toEqual([]);
-      expect(result?.renovations).toEqual([]);
     });
 
     it('hauria de gestionar email invàlid en creació', async () => {
@@ -873,7 +869,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addFavouriteRefuge('user123', 2);
+      const result = await UsersService.addFavouriteRefuge('user123', "2");
 
       expect(mockApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/favorite-refuges/',
@@ -892,7 +888,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addFavouriteRefuge('user123', 1);
+      const result = await UsersService.addFavouriteRefuge('user123', "1");
 
       expect(result).toBeNull();
     });
@@ -906,7 +902,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addFavouriteRefuge('user123', 999);
+      const result = await UsersService.addFavouriteRefuge('user123', "999");
 
       expect(result).toBeNull();
     });
@@ -914,7 +910,7 @@ describe('UsersService', () => {
     it('hauria de gestionar errors de xarxa', async () => {
       mockApiPost.mockRejectedValue(new Error('Network error'));
 
-      const result = await UsersService.addFavouriteRefuge('user123', 1);
+      const result = await UsersService.addFavouriteRefuge('user123', "1");
 
       expect(result).toBeNull();
     });
@@ -927,7 +923,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addFavouriteRefuge('user123', 1);
+      const result = await UsersService.addFavouriteRefuge('user123', "1");
 
       expect(result).toEqual([]);
     });
@@ -953,7 +949,7 @@ describe('UsersService', () => {
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.removeFavouriteRefuge('user123', 2);
+      const result = await UsersService.removeFavouriteRefuge('user123', "2");
 
       expect(mockApiDelete).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/favorite-refuges/2/'
@@ -970,7 +966,7 @@ describe('UsersService', () => {
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.removeFavouriteRefuge('user123', 1);
+      const result = await UsersService.removeFavouriteRefuge('user123', "1");
 
       expect(result).toEqual([]);
     });
@@ -984,7 +980,7 @@ describe('UsersService', () => {
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.removeFavouriteRefuge('user123', 999);
+    const result = await UsersService.removeFavouriteRefuge('user123', "999");
 
       expect(result).toBeNull();
     });
@@ -992,7 +988,7 @@ describe('UsersService', () => {
     it('hauria de gestionar errors de xarxa', async () => {
       mockApiDelete.mockRejectedValue(new Error('Network error'));
 
-      const result = await UsersService.removeFavouriteRefuge('user123', 1);
+    const result = await UsersService.removeFavouriteRefuge('user123', "1");
 
       expect(result).toBeNull();
     });
@@ -1083,7 +1079,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addVisitedRefuge('user123', 2);
+    const result = await UsersService.addVisitedRefuge('user123', "2");
 
       expect(mockApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/visited-refuges/',
@@ -1102,7 +1098,7 @@ describe('UsersService', () => {
 
       mockApiPost.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.addVisitedRefuge('user123', 1);
+      const result = await UsersService.addVisitedRefuge('user123', "1");
 
       expect(result).toBeNull();
     });
@@ -1110,7 +1106,7 @@ describe('UsersService', () => {
     it('hauria de gestionar errors de xarxa', async () => {
       mockApiPost.mockRejectedValue(new Error('Network error'));
 
-      const result = await UsersService.addVisitedRefuge('user123', 1);
+      const result = await UsersService.addVisitedRefuge('user123', "1");
 
       expect(result).toBeNull();
     });
@@ -1136,7 +1132,7 @@ describe('UsersService', () => {
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.removeVisitedRefuge('user123', 2);
+      const result = await UsersService.removeVisitedRefuge('user123', "2");
 
       expect(mockApiDelete).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/visited-refuges/2/'
@@ -1153,7 +1149,7 @@ describe('UsersService', () => {
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
-      const result = await UsersService.removeVisitedRefuge('user123', 1);
+      const result = await UsersService.removeVisitedRefuge('user123', "1");
 
       expect(result).toEqual([]);
     });
@@ -1161,7 +1157,7 @@ describe('UsersService', () => {
     it('hauria de gestionar errors de xarxa', async () => {
       mockApiDelete.mockRejectedValue(new Error('Network error'));
 
-      const result = await UsersService.removeVisitedRefuge('user123', 1);
+      const result = await UsersService.removeVisitedRefuge('user123', "1");
 
       expect(result).toBeNull();
     });

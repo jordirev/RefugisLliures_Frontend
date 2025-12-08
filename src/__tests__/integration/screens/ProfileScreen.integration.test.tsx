@@ -85,7 +85,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -102,7 +102,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -121,7 +121,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -137,7 +137,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -156,7 +156,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -177,7 +177,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: null,
             firebaseUser: mockFirebaseUser as any,
@@ -198,7 +198,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: null,
             firebaseUser: firebaseUserWithoutName as any,
@@ -224,7 +224,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getAllByText } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithoutStats,
             firebaseUser: mockFirebaseUser as any,
@@ -248,7 +248,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getAllByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithReformes,
             firebaseUser: mockFirebaseUser as any,
@@ -273,7 +273,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithFullName,
             firebaseUser: mockFirebaseUser as any,
@@ -295,7 +295,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithSingleName,
             firebaseUser: mockFirebaseUser as any,
@@ -323,7 +323,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { queryByText } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithoutName,
             firebaseUser: firebaseUserWithoutName as any,
@@ -342,7 +342,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -364,7 +364,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithoutCreatedAt,
             firebaseUser: mockFirebaseUser as any,
@@ -385,7 +385,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByText, getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: userWithInvalidDate,
             firebaseUser: mockFirebaseUser as any,
@@ -404,7 +404,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { queryByText } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -424,7 +424,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -442,7 +442,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { getByTestId } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -462,7 +462,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       const { UNSAFE_root, getByText } = renderWithProviders(
         <ProfileScreen />,
         {
-          withNavigation: false,
+          withNavigation: true,
           mockAuthValue: {
             backendUser: mockBackendUser,
             firebaseUser: mockFirebaseUser as any,
@@ -474,6 +474,165 @@ describe('ProfileScreen - Tests d\'integració', () => {
       // Verificar que el component renderitza correctament amb SafeArea
       expect(UNSAFE_root).toBeTruthy();
       expect(getByText('Test User')).toBeTruthy();
+    });
+  });
+
+  describe('Refugis visitats', () => {
+    it('hauria de mostrar correctament el nombre de refugis visitats', () => {
+      const { getByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: mockBackendUser,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      // mockBackendUser té visited_refuges: [1, 2, 3]
+      expect(getByText('3')).toBeTruthy();
+      expect(getByText('Refugis visitats')).toBeTruthy();
+    });
+
+    it('hauria de mostrar 0 refugis visitats quan no n\'hi ha cap', () => {
+      const userWithoutVisited = {
+        ...mockBackendUser,
+        visited_refuges: [],
+      };
+
+      const { getByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithoutVisited,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      expect(getByText('0')).toBeTruthy();
+      expect(getByText('Refugis visitats')).toBeTruthy();
+    });
+
+    it('hauria de gestionar visited_refuges undefined correctament', () => {
+      const userWithoutVisitedField = {
+        ...mockBackendUser,
+        visited_refuges: undefined as any,
+      };
+
+      const { getByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithoutVisitedField,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      // Hauria de mostrar 0 si visited_refuges és undefined
+      expect(getByText('0')).toBeTruthy();
+    });
+
+    it('hauria de mostrar el nombre correcte amb múltiples refugis visitats', () => {
+      const userWithManyVisited = {
+        ...mockBackendUser,
+        visited_refuges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      };
+
+      const { getAllByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithManyVisited,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      // Hauria d'haver 10 refugis visitats (pot apareixer el "10" múltiples vegades)
+      const textElements = getAllByText('10');
+      expect(textElements.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('hauria de comptar visiteds amb IDs string correctament', () => {
+      const userWithStringIds = {
+        ...mockBackendUser,
+        visited_refuges: ['1', '2', '3', '4', '5'] as any,
+      };
+
+      const { getAllByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithStringIds,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      // Hauria d'haver 5 refugis visitats (pot apareixer el "5" múltiples vegades)
+      const textElements = getAllByText('5');
+      expect(textElements.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('Comparació refugis favorits vs visitats', () => {
+    it('hauria de mostrar diferent nombre de favorits i visitats', () => {
+      const userWithDifferentCounts = {
+        ...mockBackendUser,
+        favourite_refuges: [1, 2], // 2 favorits
+        visited_refuges: [1, 2, 3, 4, 5], // 5 visitats
+      };
+
+      const { getAllByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithDifferentCounts,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      // Hauria de mostrar els dos números diferents
+      expect(getAllByText('2').length).toBeGreaterThanOrEqual(1); // Favorits (i pot ser reformes)
+      expect(getAllByText('5').length).toBeGreaterThanOrEqual(1); // Visitats (i contribucions)
+    });
+
+    it('hauria de gestionar el cas on tots els refugis visitats també són favorits', () => {
+      const userWithOverlap = {
+        ...mockBackendUser,
+        favourite_refuges: [1, 2, 3, 4, 5],
+        visited_refuges: [1, 2, 3],
+      };
+
+      const { getAllByText } = renderWithProviders(
+        <ProfileScreen />,
+        {
+          withNavigation: true,
+          mockAuthValue: {
+            backendUser: userWithOverlap,
+            firebaseUser: mockFirebaseUser as any,
+            isAuthenticated: true,
+          },
+        }
+      );
+
+      expect(getAllByText('5').length).toBeGreaterThanOrEqual(1); // Favorits
+      expect(getAllByText('3').length).toBeGreaterThanOrEqual(1); // Visitats
     });
   });
 });
