@@ -174,9 +174,9 @@ export function QuickActionsMenu({
           >
             <LinearGradient
               colors={[
-                'rgba(61, 61, 61, 0.92)',
-                'rgba(61, 61, 61, 0.70)',
-                'rgba(61, 61, 61, 0.40)',
+                'rgba(88, 88, 88, 0.92)',
+                'rgba(88, 88, 88, 0.70)',
+                'rgba(88, 88, 88, 0.40)',
                 'transparent',
               ]}
               start={{ x: 1, y: 0 }}

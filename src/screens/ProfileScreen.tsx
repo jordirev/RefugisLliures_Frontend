@@ -104,7 +104,10 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
       <View style={styles.headerFixed}>
         <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
       </View>
-      <ScrollView style={styles.container}>
+      <ScrollView 
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+      >
         <View style={[styles.header, { marginTop: insets.top }]}>
           {/* Background block with real horizontal gradient and image overlay */}
           <LinearGradient
@@ -465,7 +468,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   visitedList: {
-    gap: 12,
     width: '100%',
     paddingHorizontal: 16,
   },
