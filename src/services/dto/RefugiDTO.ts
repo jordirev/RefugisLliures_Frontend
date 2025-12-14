@@ -3,6 +3,14 @@
  */
 
 /**
+ * Coordenades del refugi
+ */
+export interface CoordDTO {
+  long: number;
+  lat: number;
+}
+
+/**
  * Informació complementària del refugi
  */
 export interface InfoCompDTO {
@@ -21,12 +29,14 @@ export interface InfoCompDTO {
 }
 
 /**
- * Coordenades del refugi
+ * Metadades d'una imatge associada al refugi
  */
-export interface CoordDTO {
-  long: number;
-  lat: number;
-}
+export interface ImageMetadataDTO {
+  key: string;
+  url: string;
+  uploaded_at: string; // ISO date string
+  creator_uid: string;
+} 
 
 /**
  * DTO per a un refugi individual (resposta completa)
@@ -46,7 +56,25 @@ export interface RefugiDTO {
   region?: string | null;
   departement?: string | null;
   condition?: number | null;
-  images_urls?: string[];
+  visitors?: string[];
+  images_metadata?: ImageMetadataDTO[];
+}
+
+/**
+ * DTO per a la creació o actualització d'un refugi
+ */
+export interface RefugiBodyDTO {
+  name: string;
+  surname?: string | null;
+  coord: CoordDTO;
+  altitude?: number | null;
+  places?: number | null;
+  info_comp?: InfoCompDTO;
+  description?: string;
+  links?: string[];
+  type?: string;
+  region?: string | null;
+  departement?: string | null;
 }
 
 /**
@@ -76,6 +104,11 @@ export interface RefugisSimpleResponseDTO {
   results: RefugiSimpleDTO[];
 }
 
+
+/**
+ * DTO per a la informació bàsica d'un refugi per a usuaris.
+ * S'utilitza en la representació de refugis visitats i favorits.
+ */
 export interface UserRefugiInfoDTO {
   id: string;
   name: string;
@@ -84,6 +117,10 @@ export interface UserRefugiInfoDTO {
   region?: string | null;
 }
 
+/**
+ * DTO per a la resposta paginada amb informació bàsica de refugis per a usuaris
+ * S'utilitza en la representació de refugis visitats i favorits.
+ */
 export interface UserRefugiInfoResponseDTO {
   count: number;
   results: UserRefugiInfoDTO[];

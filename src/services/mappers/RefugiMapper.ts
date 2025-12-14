@@ -3,7 +3,7 @@
  */
 
 import { Location, Coord } from '../../models';
-import { RefugiDTO, CoordDTO, UserRefugiInfoDTO } from '../dto/RefugiDTO';
+import { RefugiDTO, RefugiBodyDTO, CoordDTO, UserRefugiInfoDTO } from '../dto/RefugiDTO';
 
 /**
  * Converteix les coordenades del DTO al format del frontend
@@ -80,6 +80,7 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     coord: mapCoordFromDTO(refugiDTO.coord),
     altitude: refugiDTO.altitude,
     places: refugiDTO.places,
+    info_comp: mapInfoCompFromDTO(refugiDTO.info_comp),
     description: refugiDTO.description,
     links: refugiDTO.links,
     type: refugiDTO.type,
@@ -87,11 +88,8 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
     region: refugiDTO.region,
     departement: refugiDTO.departement,
     condition: refugiDTO.condition || determineCondition(refugiDTO),
-    info_comp: mapInfoCompFromDTO(refugiDTO.info_comp),
-
-    // Propietats addicionals del frontend
-    imageUrl: undefined, // No ve del backend
-
+    visitors: refugiDTO.visitors,
+    images_metadata: refugiDTO.images_metadata,
   };
 }
 
@@ -103,7 +101,9 @@ export function mapRefugisFromDTO(refugisDTO: RefugiDTO[]): Location[] {
 }
 
 
-
+/**
+ * Converteix un UserRefugiInfoDTO al format Location del frontend 
+ */
 export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): Location {
   const coordData = userRefugiInfoDTO.coord;
   
@@ -120,8 +120,66 @@ export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): L
   };
 }
 
+/**
+ * Converteix un array de UserRefugiInfoDTO al format Location[]
+ */
 export function mapperUserRefugiInfoResponseDTO(userRefugiInfoDTOs: UserRefugiInfoDTO[]): Location[] {
   return userRefugiInfoDTOs.map(mapperUserRefugiInfoDTO);
 }
 
+/**
+ * Converteix les coordenades del frontend al format DTO
+ */
+export function mapCoordToDTO(coord: Coord): CoordDTO {
+  return {
+    long: coord.long,
+    lat: coord.lat,
+  };
+}
 
+/**
+ * Converteix la informació complementària del frontend al format DTO
+ */
+export function mapInfoCompToDTO(infoComp: any | undefined): any | undefined {
+  if (!infoComp) return undefined;
+  return {
+    manque_un_mur: infoComp.manque_un_mur ? 1 : 0,
+    cheminee: infoComp.cheminee ? 1 : 0,
+    poele: infoComp.poele ? 1 : 0,
+    couvertures: infoComp.couvertures ? 1 : 0,
+    latrines: infoComp.latrines ? 1 : 0,
+    bois: infoComp.bois ? 1 : 0,
+    eau: infoComp.eau ? 1 : 0,
+    matelas: infoComp.matelas ? 1 : 0,
+    couchage: infoComp.couchage ? 1 : 0,
+    bas_flancs: infoComp.bas_flancs ? 1 : 0,
+    lits: infoComp.lits ? 1 : 0,
+    mezzanine_etage: infoComp.mezzanine_etage ? 1 : 0,
+  };
+}
+
+/**
+ * Converteix un Partial<Location> del frontend al format Partial<RefugiDTO> per al backend
+ * Útil per a actualitzacions parcials (només els camps que es volen modificar)
+ */
+export function mapPartialRefugiToDTO(location: Partial<Location>): Partial<RefugiBodyDTO> {
+  const dto: Partial<RefugiBodyDTO> = {};
+
+  if (!location.name || !location.coord) {
+    throw new Error('Name and coordinate data is mandatory in UserRefugiInfoDTO');
+  }
+  
+  if (location.name !== undefined) dto.name = location.name;
+  if (location.surname !== undefined) dto.surname = location.surname || null;
+  if (location.coord !== undefined) dto.coord = mapCoordToDTO(location.coord);
+  if (location.altitude !== undefined) dto.altitude = location.altitude ?? null;
+  if (location.places !== undefined) dto.places = location.places ?? null;
+  if (location.info_comp !== undefined) dto.info_comp = mapInfoCompToDTO(location.info_comp);
+  if (location.description !== undefined) dto.description = location.description;
+  if (location.links !== undefined) dto.links = location.links;
+  if (location.type !== undefined) dto.type = location.type;
+  if (location.region !== undefined) dto.region = location.region ?? null;
+  if (location.departement !== undefined) dto.departement = location.departement ?? null;
+    
+  return dto;
+}

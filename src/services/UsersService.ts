@@ -1,7 +1,7 @@
-import { User, Location } from '../models';
+import { User, Location, AvatarMetadata } from '../models';
 import { UserRefugiInfoResponseDTO, UserDTO } from './dto';
 import { mapperUserRefugiInfoResponseDTO, mapUserFromDTO } from './mappers';
-import { apiGet, apiPost, apiPatch, apiDelete } from './apiClient';
+import { apiGet, apiPost, apiPatch, apiDelete, apiClient } from './apiClient';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -376,6 +376,109 @@ export class UsersService {
     } catch (err) {
       console.error('Error removing visited refuge:', err);
       return null;
+    }
+  }
+
+  /**
+   * Puja o actualitza l'avatar d'un usuari
+   * PATCH /users/{uid}/avatar/
+   * 
+   * Formats acceptats: JPEG, JPG, PNG, WebP, HEIC, HEIF
+   * 
+   * @param uid - UID de l'usuari
+   * @param file - Fitxer d'imatge de l'avatar (File object)
+   * @returns Metadades de l'avatar pujat o null si hi ha error
+   * @throws Error amb missatge descriptiu en cas d'error
+   */
+  static async uploadAvatar(uid: string, file: File): Promise<AvatarMetadata> {
+    try {
+      if (!file) {
+        throw new Error('No s\'ha proporcionat cap fitxer');
+      }
+
+      const url = `${API_BASE_URL}/users/${uid}/avatar/`;
+      
+      // Crear FormData per enviar el fitxer
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Fer la petició amb FormData (no afegir Content-Type, el navegador ho farà automàticament)
+      const response = await apiClient(url, {
+        method: 'PATCH',
+        body: formData
+        // No afegir headers Content-Type per deixar que el navegador estableixi el boundary correcte
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ 
+          error: `Error ${response.status}: ${response.statusText}` 
+        }));
+        
+        if (response.status === 400) {
+          throw new Error(errorData.error || 'Fitxer invàlid o format no acceptat');
+        } else if (response.status === 401) {
+          throw new Error('No estàs autenticat. Si us plau, inicia sessió.');
+        } else if (response.status === 403) {
+          throw new Error('No tens permisos per modificar aquest avatar. Només el mateix usuari pot fer-ho.');
+        } else if (response.status === 404) {
+          throw new Error('Usuari no trobat');
+        } else if (response.status === 500) {
+          throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
+        }
+        
+        throw new Error(errorData.error || 'No s\'ha pogut pujar l\'avatar');
+      }
+      
+      const avatarMetadata: AvatarMetadata = await response.json();
+      return avatarMetadata;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      console.error('Error uploading avatar:', error);
+      throw new Error('No s\'ha pogut pujar l\'avatar');
+    }
+  }
+
+  /**
+   * Elimina l'avatar d'un usuari
+   * DELETE /users/{uid}/avatar/
+   * 
+   * @param uid - UID de l'usuari
+   * @returns true si s'ha eliminat correctament
+   * @throws Error amb missatge descriptiu en cas d'error
+   */
+  static async deleteAvatar(uid: string): Promise<boolean> {
+    try {
+      const url = `${API_BASE_URL}/users/${uid}/avatar/`;
+      
+      const response = await apiDelete(url);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ 
+          error: `Error ${response.status}: ${response.statusText}` 
+        }));
+        
+        if (response.status === 401) {
+          throw new Error('No estàs autenticat. Si us plau, inicia sessió.');
+        } else if (response.status === 403) {
+          throw new Error('No tens permisos per eliminar aquest avatar. Només el mateix usuari pot fer-ho.');
+        } else if (response.status === 404) {
+          throw new Error('Avatar no trobat o l\'usuari no té cap avatar');
+        } else if (response.status === 500) {
+          throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
+        }
+        
+        throw new Error(errorData.error || 'No s\'ha pogut eliminar l\'avatar');
+      }
+      
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      console.error('Error deleting avatar:', error);
+      throw new Error('No s\'ha pogut eliminar l\'avatar');
     }
   }
 }

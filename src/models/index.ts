@@ -1,10 +1,13 @@
+
+/*******************************  Refuge Model  ***********************************/
+
 export interface Coord {
   long: number;
   lat: number;
 }
 
 /**
- * Informació complementària del refugi
+ * Informació complementària del refugi (comoditats)
  */
 export interface InfoComp {
   manque_un_mur: boolean;
@@ -21,6 +24,16 @@ export interface InfoComp {
   mezzanine_etage: boolean;
 }
 
+/**
+ * Metadades d'una imatge associada al refugi
+ */
+export interface ImageMetadata {
+  key: string;
+  url: string;
+  uploaded_at: string; // ISO date string
+  creator_uid: string;
+}
+
 export interface Location {
   id: string;
   name: string;
@@ -28,6 +41,7 @@ export interface Location {
   coord: Coord;
   altitude?: number | null;
   places?: number | null;
+  info_comp?: InfoComp;
   description?: string;
   links?: string[];
   type?: string; // "non gardé", "cabane ouverte mais ocupee par le berger l ete", "fermée", "orri", "emergence"
@@ -35,9 +49,8 @@ export interface Location {
   region?: string | null;
   departement?: string | null;
   condition?: number; // 0: pobre, 1: normal, 2: bé, 3: excel·lent
-  imageUrl?: string;
   visitors?: string[] | null;
-  info_comp?: InfoComp;
+  images_metadata?: ImageMetadata[];
 }
 
 export interface Filters {
@@ -47,11 +60,24 @@ export interface Filters {
   condition: number[]; // Array of condition numbers: 0-3 (0: pobre, 1: normal, 2: bé, 3: excel·lent)
 }
 
+
+/*******************************  User Model  ***********************************/
+
+
+/**
+ * Metadades d'un avatar d'usuari
+ */
+export interface AvatarMetadata {
+  key: string;
+  url: string;
+  uploaded_at: string; // ISO date string
+}
+
 export interface User {
   uid: string;
   username: string;
   email: string;
-  avatar?: string;
+  avatar_metadata?: AvatarMetadata | null;
   language: string;
   favourite_refuges?: string[];
   visited_refuges?: string[];
@@ -60,6 +86,9 @@ export interface User {
   num_renovated_refuges: number | null;
   created_at: string; // ISO date string
 }
+
+
+/*******************************  Renovation Model  ***********************************/
 
 export interface Renovation {
   id: string
@@ -71,4 +100,24 @@ export interface Renovation {
   materials_needed?: string | null
   group_link: string
   participants_uids?: string[] | null
+}
+
+
+/*******************************  Refuge Proposal Model  ***********************************/
+
+export type RefugeProposalAction = 'create' | 'update' | 'delete';
+export type RefugeProposalStatus = 'pending' | 'approved' | 'rejected';
+
+export interface RefugeProposal {
+  id: string;
+  refuge_id: string | null;
+  action: RefugeProposalAction;
+  payload: Location | null;
+  comment: string | null;
+  status: RefugeProposalStatus;
+  creator_uid: string;
+  created_at: string; // ISO date string
+  reviewer_uid: string | null;
+  reviewed_at: string | null;
+  rejection_reason?: string | null;
 }

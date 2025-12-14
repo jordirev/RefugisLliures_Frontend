@@ -469,5 +469,48 @@
       "overlapMessage": "Ja existeix una reforma planificada per aquest refugi en aquestes dates.",
       "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
     }
+  },
+  "createRefuge": {
+    "title": "Proposar Refugi",
+    "proposalInfo": "Aquesta és una proposta de creació de refugi que serà revisada i aprovada per un administrador",
+    "coordinates": "Coordenades",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "namePlaceholder": "Nom del refugi",
+    "regionPlaceholder": "Comunitat autònoma",
+    "departementPlaceholder": "Província",
+    "descriptionPlaceholder": "Descriu el refugi...",
+    "links": "Enllaços d'informació extra",
+    "linkPlaceholder": "https://exemple.com",
+    "addLink": "Afegir enllaç",
+    "adminComment": "Comentari pels administradors",
+    "adminCommentPlaceholder": "Informació extra que pot ser útil pels administradors per verificar aquest refugi",
+    "submit": "Enviar Proposta",
+    "photoAlert": {
+      "title": "Fotos del refugi",
+      "message": "Les fotos es podran penjar un cop acceptada la proposta de creació per un administrador"
+    },
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "error": {
+      "generic": "No s'ha pogut enviar la proposta. Torna-ho a intentar"
+    },
+    "errors": {
+      "nameRequired": "El nom del refugi és obligatori",
+      "nameTooLong": "El nom no pot superar els 100 caràcters",
+      "latitudeRequired": "La latitud és obligatòria",
+      "latitudeInvalid": "La latitud ha de ser un número vàlid",
+      "longitudeRequired": "La longitud és obligatòria",
+      "longitudeInvalid": "La longitud ha de ser un número vàlid",
+      "regionTooLong": "La regió no pot superar els 100 caràcters",
+      "departementTooLong": "La província no pot superar els 100 caràcters",
+      "altitudeInvalid": "L'altitud ha de ser un enter positiu",
+      "altitudeTooHigh": "L'altitud no pot superar els 8800m",
+      "placesInvalid": "Les places han de ser un enter positiu",
+      "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
+      "commentTooLong": "El comentari no pot superar els 3000 caràcters"
+    }
   }
 }

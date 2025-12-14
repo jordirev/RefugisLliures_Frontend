@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
@@ -23,6 +24,7 @@ export function MapScreen({
   selectedLocation 
 }: MapScreenProps) {
   const { t } = useTranslation();
+  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   
@@ -167,6 +169,10 @@ export function MapScreen({
     return () => sub.remove();
   }, [searchQuery]);
 
+  const handleAddPress = () => {
+    navigation.navigate('CreateRefuge');
+  };
+
   return (
     <View style={styles.container}>
       <MapViewComponent
@@ -200,6 +206,7 @@ export function MapScreen({
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           onOpenFilters={handleOpenFilters}
+          onAddPress={handleAddPress}
           suggestions={suggestions}
           onSuggestionSelect={handleSuggestionSelect}
           topInset={insets.top}

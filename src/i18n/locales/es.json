@@ -465,5 +465,48 @@
       "overlapMessage": "Ya existe una reforma planificada para este refugio en estas fechas.",
       "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
     }
+  },
+  "createRefuge": {
+    "title": "Proponer Refugio",
+    "proposalInfo": "Esta es una propuesta de creación de refugio que será revisada y aprobada por un administrador",
+    "coordinates": "Coordenadas",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "namePlaceholder": "Nombre del refugio",
+    "regionPlaceholder": "Comunidad autónoma",
+    "departementPlaceholder": "Provincia",
+    "descriptionPlaceholder": "Describe el refugio...",
+    "links": "Enlaces de información extra",
+    "linkPlaceholder": "https://ejemplo.com",
+    "addLink": "Añadir enlace",
+    "adminComment": "Comentario para los administradores",
+    "adminCommentPlaceholder": "Información extra que puede ser útil para los administradores para verificar este refugio",
+    "submit": "Enviar Propuesta",
+    "photoAlert": {
+      "title": "Fotos del refugio",
+      "message": "Las fotos se podrán subir una vez aceptada la propuesta de creación por un administrador"
+    },
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "error": {
+      "generic": "No se pudo enviar la propuesta. Inténtalo de nuevo"
+    },
+    "errors": {
+      "nameRequired": "El nombre del refugio es obligatorio",
+      "nameTooLong": "El nombre no puede superar los 100 caracteres",
+      "latitudeRequired": "La latitud es obligatoria",
+      "latitudeInvalid": "La latitud debe ser un número válido",
+      "longitudeRequired": "La longitud es obligatoria",
+      "longitudeInvalid": "La longitud debe ser un número válido",
+      "regionTooLong": "La región no puede superar los 100 caracteres",
+      "departementTooLong": "La provincia no puede superar los 100 caracteres",
+      "altitudeInvalid": "La altitud debe ser un entero positivo",
+      "altitudeTooHigh": "La altitud no puede superar los 8800m",
+      "placesInvalid": "Las plazas deben ser un entero positivo",
+      "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
+      "commentTooLong": "El comentario no puede superar los 3000 caracteres"
+    }
   }
 }

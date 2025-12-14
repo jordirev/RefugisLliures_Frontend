@@ -454,5 +454,48 @@
       "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
       "generic": "Could not create renovation. Please try again."
     }
+  },
+  "createRefuge": {
+    "title": "Propose Shelter",
+    "proposalInfo": "This is a shelter creation proposal that will be reviewed and approved by an administrator",
+    "coordinates": "Coordinates",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "namePlaceholder": "Shelter name",
+    "regionPlaceholder": "Region",
+    "departementPlaceholder": "Province",
+    "descriptionPlaceholder": "Describe the shelter...",
+    "links": "Extra information links",
+    "linkPlaceholder": "https://example.com",
+    "addLink": "Add link",
+    "adminComment": "Comment for administrators",
+    "adminCommentPlaceholder": "Extra information that may be useful for administrators to verify this shelter",
+    "submit": "Submit Proposal",
+    "photoAlert": {
+      "title": "Shelter photos",
+      "message": "Photos can be uploaded once the creation proposal is accepted by an administrator"
+    },
+    "success": {
+      "title": "Proposal submitted",
+      "message": "Your proposal has been submitted successfully and will be reviewed by an administrator"
+    },
+    "error": {
+      "generic": "Could not submit proposal. Please try again"
+    },
+    "errors": {
+      "nameRequired": "Refuge name is required",
+      "nameTooLong": "Name cannot exceed 100 characters",
+      "latitudeRequired": "Latitude is required",
+      "latitudeInvalid": "Latitude must be a valid number",
+      "longitudeRequired": "Longitude is required",
+      "longitudeInvalid": "Longitude must be a valid number",
+      "regionTooLong": "Region cannot exceed 100 characters",
+      "departementTooLong": "Province cannot exceed 100 characters",
+      "altitudeInvalid": "Altitude must be a positive integer",
+      "altitudeTooHigh": "Altitude cannot exceed 8800m",
+      "placesInvalid": "Places must be a positive integer",
+      "descriptionTooLong": "Description cannot exceed 3000 characters",
+      "commentTooLong": "Comment cannot exceed 3000 characters"
+    }
   }
 }

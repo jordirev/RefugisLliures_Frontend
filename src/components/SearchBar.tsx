@@ -11,6 +11,7 @@ interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenFilters?: () => void;
+  onAddPress?: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
   topInset?: number;
@@ -23,6 +24,7 @@ export const SearchBar = memo(function SearchBar({
   searchQuery, 
   onSearchChange, 
   onOpenFilters, 
+  onAddPress,
   suggestions = [], 
   onSuggestionSelect, 
   topInset = 0,
@@ -101,7 +103,7 @@ export const SearchBar = memo(function SearchBar({
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            Keyboard.dismiss();
+            onAddPress && onAddPress();
             /* TODO: Implementar afegir nova ubicació */
           }}
         >
