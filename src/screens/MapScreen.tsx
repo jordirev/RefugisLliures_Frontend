@@ -42,7 +42,8 @@ export function MapScreen({
     condition: []
   });
 
-  // Filtrar refugis localment basant-se en searchQuery
+  // Filtrar refugis localment pel seu nom basant-se en searchQuery 
+  // (utilitzat per a llista de suggeriments a la searchbar)
   const filteredLocations = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) {
       return allLocations;
@@ -96,7 +97,6 @@ export function MapScreen({
           filterParams.condition = filters.condition.join(',');
         }
       }
-      // NO enviem searchQuery a l'API - filtrem localment!
       
       // Si no hi ha cap filtre, crida sense paràmetres
       if (Object.keys(filterParams).length === 0) {
@@ -110,6 +110,16 @@ export function MapScreen({
         //console.error('Invalid refugis response:', data);
         return;
       }
+      
+      // Si hi ha filtres aplicats i no hi ha resultats, mostrar alerta
+      if (Object.keys(filterParams).length > 0 && data.length === 0) {
+        showAlert(
+          t('map.noResults.title'),
+          t('map.noResults.message'),
+          [{ text: t('common.ok'), onPress: hideAlert }]
+        );
+      }
+      
       setAllLocations(data); // Guardar tots els refugis
       setLocations(data); // Mostrar tots inicialment
     } catch (error) {

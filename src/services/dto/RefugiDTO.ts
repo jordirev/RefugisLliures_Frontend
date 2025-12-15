@@ -75,6 +75,7 @@ export interface RefugiBodyDTO {
   type?: string;
   region?: string | null;
   departement?: string | null;
+  condition?: number | null;
 }
 
 /**

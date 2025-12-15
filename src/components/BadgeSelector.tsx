@@ -9,52 +9,70 @@ interface BadgeSelectorProps {
   value?: string | number;
   onValueChange: (value: string | number) => void;
   style?: ViewStyle;
+  expanded?: boolean;
+  onToggle?: () => void;
+  renderOptionsExternal?: boolean;
 }
+
+export const getTypeOptions = () => [
+  { value: 'non gardé', label: 'refuge.type.noGuarded' },
+  { value: 'cabane ouverte mais ocupee par le berger l ete', label: 'refuge.type.occupiedInSummer' },
+  { value: 'fermée', label: 'refuge.type.closed' },
+  { value: 'orri', label: 'refuge.type.shelter' },
+  { value: 'emergence', label: 'refuge.type.emergency' },
+];
+
+export const getConditionOptions = () => [
+  { value: 0, label: 'refuge.condition.poor' },
+  { value: 1, label: 'refuge.condition.fair' },
+  { value: 2, label: 'refuge.condition.good' },
+  { value: 3, label: 'refuge.condition.excellent' },
+];
 
 export const BadgeSelector: React.FC<BadgeSelectorProps> = ({
   type,
   value,
   onValueChange,
   style,
+  expanded: externalExpanded,
+  onToggle: externalOnToggle,
+  renderOptionsExternal = false,
 }) => {
   const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const expanded = externalExpanded !== undefined ? externalExpanded : internalExpanded;
 
-  const typeOptions = [
-    { value: 'non gardé', label: 'refuge.type.noGuarded' },
-    { value: 'cabane ouverte mais ocupee par le berger l ete', label: 'refuge.type.occupiedInSummer' },
-    { value: 'fermée', label: 'refuge.type.closed' },
-    { value: 'orri', label: 'refuge.type.shelter' },
-    { value: 'emergence', label: 'refuge.type.emergency' },
-  ];
-
-  const conditionOptions = [
-    { value: 0, label: 'refuge.condition.poor' },
-    { value: 1, label: 'refuge.condition.fair' },
-    { value: 2, label: 'refuge.condition.good' },
-    { value: 3, label: 'refuge.condition.excellent' },
-  ];
+  const typeOptions = getTypeOptions();
+  const conditionOptions = getConditionOptions();
 
   const handleToggle = () => {
-    setExpanded(!expanded);
+    if (externalOnToggle) {
+      externalOnToggle();
+    } else {
+      setInternalExpanded(!internalExpanded);
+    }
   };
 
   const handleSelect = (selectedValue: string | number) => {
     onValueChange(selectedValue);
-    setExpanded(false);
+    if (externalOnToggle) {
+      externalOnToggle(); // Tanquem el selector
+    } else {
+      setInternalExpanded(false);
+    }
   };
 
   const renderBadge = () => {
     if (type === 'type') {
       return (
         <TouchableOpacity onPress={handleToggle} activeOpacity={0.7}>
-          <BadgeType type={value as string || undefined} />
+          <BadgeType type={typeof value === 'string' ? (value as string) : undefined} />
         </TouchableOpacity>
       );
     } else {
       return (
         <TouchableOpacity onPress={handleToggle} activeOpacity={0.7}>
-          <BadgeCondition condition={value as number || undefined} />
+          <BadgeCondition condition={typeof value === 'number' ? (value as number) : undefined} />
         </TouchableOpacity>
       );
     }
@@ -86,22 +104,21 @@ export const BadgeSelector: React.FC<BadgeSelectorProps> = ({
   return (
     <View style={[styles.container, style]}>
       {renderBadge()}
-      {expanded && renderOptions()}
+      {expanded && !renderOptionsExternal && renderOptions()}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: 8,
+    // El badge es renderitza tal qual
   },
   optionsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    marginTop: 8,
+    paddingHorizontal: 4,
   },
   optionButton: {
     // No extra styling needed, BadgeType/BadgeCondition handle their own styling

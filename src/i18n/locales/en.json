@@ -40,7 +40,11 @@
     "title": "Shelter Map",
     "searchPlaceholder": "Search shelters...",
     "noLocationsFound": "Could not load shelters",
-    "errorLoading": "Could not load shelters"
+    "errorLoading": "Could not load shelters",
+    "noResults": {
+      "title": "No results",
+      "message": "There are no shelters that match the selected filters"
+    }
   },
   "favorites": {
     "title": "My favorites",
@@ -220,7 +224,9 @@
       "moreInformation": "For more information:",
       "weather": "Weather",
       "nearbyRoutes": "Nearby routes",
-      "information_not_precise": "Information may not be accurate or up to date. The app administrators are not responsible for its use. \nIf you are going to the mountains, take the necessary precautions."
+      "information_not_precise": "Information may not be accurate or up to date. The app administrators are not responsible for its use. \nIf you are going to the mountains, take the necessary precautions.",
+      "coordinates": "Coordinates",
+      "typeAndCondition": "Type and Condition"
     },
     "amenities": {
       "manque_un_mur": "One wall missing",
@@ -461,9 +467,11 @@
     "coordinates": "Coordinates",
     "latitude": "Latitude",
     "longitude": "Longitude",
+    "generalInfo": "General Information",
     "namePlaceholder": "Shelter name",
     "regionPlaceholder": "Region",
     "departementPlaceholder": "Province",
+    "altitudePlaceholder": "Altitude (m)",
     "descriptionPlaceholder": "Describe the shelter...",
     "links": "Extra information links",
     "linkPlaceholder": "https://example.com",
@@ -489,6 +497,7 @@
       "latitudeInvalid": "Latitude must be a valid number",
       "longitudeRequired": "Longitude is required",
       "longitudeInvalid": "Longitude must be a valid number",
+      "invalidColon": "Coordinates must use a dot (.) as decimal separator",
       "regionTooLong": "Region cannot exceed 100 characters",
       "departementTooLong": "Province cannot exceed 100 characters",
       "altitudeInvalid": "Altitude must be a positive integer",

@@ -2,7 +2,7 @@
  * DTOs per a les propostes de refugis
  */
 
-import { RefugiDTO } from './RefugiDTO';
+import { RefugiBodyDTO } from './RefugiDTO';
 
 /**
  * DTO per a la resposta d'una proposta de refugi
@@ -11,7 +11,7 @@ export interface RefugeProposalDTO {
   id: string;
   refuge_id: string | null;
   action: 'create' | 'update' | 'delete';
-  payload: Partial<RefugiDTO> | null;
+  payload: Partial<RefugiBodyDTO> | null;
   comment: string | null;
   status: 'pending' | 'approved' | 'rejected';
   creator_uid: string;
@@ -27,7 +27,7 @@ export interface RefugeProposalDTO {
 export interface RefugeProposalCreateDTO {
   refuge_id?: string | null;
   action: 'create' | 'update' | 'delete';
-  payload?: Partial<RefugiDTO> | null;
+  payload?: Partial<RefugiBodyDTO> | null;
   comment?: string | null;
 }
 

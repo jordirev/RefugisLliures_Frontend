@@ -100,7 +100,6 @@ export function mapRefugisFromDTO(refugisDTO: RefugiDTO[]): Location[] {
   return refugisDTO.map(mapRefugiFromDTO);
 }
 
-
 /**
  * Converteix un UserRefugiInfoDTO al format Location del frontend 
  */
@@ -180,6 +179,7 @@ export function mapPartialRefugiToDTO(location: Partial<Location>): Partial<Refu
   if (location.type !== undefined) dto.type = location.type;
   if (location.region !== undefined) dto.region = location.region ?? null;
   if (location.departement !== undefined) dto.departement = location.departement ?? null;
+  if (location.condition !== undefined) dto.condition = location.condition;
     
   return dto;
 }

@@ -40,7 +40,11 @@
     "title": "Mapa de Refugis",
     "searchPlaceholder": "Cercar refugis...",
     "noLocationsFound": "No s'han pogut carregar els refugis",
-    "errorLoading": "No s'han pogut carregar els refugis"
+    "errorLoading": "No s'han pogut carregar els refugis",
+    "noResults": {
+      "title": "Cap resultat",
+      "message": "No hi ha refugis que compleixin amb els filtres seleccionats"
+    }
   },
   "favorites": {
     "title": "Els meus preferits",
@@ -235,7 +239,8 @@
       "weather": "Meteo",
       "nearbyRoutes": "Rutes a prop",
       "information_not_precise": "La informació pot no ser precisa o estar desactualitzada. Els administradors de l'aplicació no es fan responsables de l'ús que se'n pugui fer. \nSi vas a la muntanya, pren les precaucions necessaries.",
-      "coordinates": "Coordenades"
+      "coordinates": "Coordenades",
+      "typeAndCondition": "Tipus i Estat"
     },
     "amenities": {
       "manque_un_mur": "Falta un mur",
@@ -476,9 +481,11 @@
     "coordinates": "Coordenades",
     "latitude": "Latitud",
     "longitude": "Longitud",
+    "generalInfo": "Informació general",
     "namePlaceholder": "Nom del refugi",
     "regionPlaceholder": "Comunitat autònoma",
     "departementPlaceholder": "Província",
+    "pressToEdit": "Prem per editar",
     "descriptionPlaceholder": "Descriu el refugi...",
     "links": "Enllaços d'informació extra",
     "linkPlaceholder": "https://exemple.com",
@@ -504,6 +511,7 @@
       "latitudeInvalid": "La latitud ha de ser un número vàlid",
       "longitudeRequired": "La longitud és obligatòria",
       "longitudeInvalid": "La longitud ha de ser un número vàlid",
+      "invalidColon": "Les coordenades han de dur (.) com a separador decimal",
       "regionTooLong": "La regió no pot superar els 100 caràcters",
       "departementTooLong": "La província no pot superar els 100 caràcters",
       "altitudeInvalid": "L'altitud ha de ser un enter positiu",

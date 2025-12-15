@@ -17,12 +17,14 @@ export const BadgeType: React.FC<Props> = ({ type, style, neutral = false, muted
       case "cabane ouverte mais ocupee par le berger l ete": // occupiedInSummer
         return {
           key: 'refuge.type.occupiedInSummer',
-          color: { background: '#DBEAFE', color: '#1E40AF', borderColor: '#60A5FA' }
+          // map occupiedInSummer -> fair (pastel blue)
+          color: { background: '#EAF4FF', color: '#3A5B99', borderColor: '#A3C4FF' }
         };
       case "fermée": // closed
         return {
           key: 'refuge.type.closed',
-          color: { background: '#FEE2E2', color: '#7A0B0B', borderColor: '#F87171' }
+          // map closed -> poor (pastel red)
+          color: { background: '#FDE8E8', color: '#9B1F1F', borderColor: '#F4A6A6' }
         };
       case "orri": // shelter
         return {
@@ -32,12 +34,14 @@ export const BadgeType: React.FC<Props> = ({ type, style, neutral = false, muted
       case "emergence": // emergency
         return {
           key: 'refuge.type.emergency',
-          color: { background: '#FEF3C7', color: '#92400E', borderColor: '#F59E42' }
+          // map emergence -> excellent (pastel yellow/gold)
+          color: { background: '#FFF6E0', color: '#8B4B18', borderColor: '#F7C67A' }
         };
       default: // including "non gardé" (noGuarded) and unknown types
         return {
           key: 'refuge.type.noGuarded',
-          color: { background: '#D1FAE5', color: '#065F46', borderColor: '#34D399' }
+          // map noGuarded -> good (pastel green)
+          color: { background: '#E6F8EE', color: '#14532D', borderColor: '#7EE0B0' }
         };
     }
   };

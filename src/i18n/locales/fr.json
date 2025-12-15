@@ -40,7 +40,11 @@
     "title": "Carte des Refuges",
     "searchPlaceholder": "Rechercher refuges...",
     "noLocationsFound": "Impossible de charger les refuges",
-    "errorLoading": "Impossible de charger les refuges"
+    "errorLoading": "Impossible de charger les refuges",
+    "noResults": {
+      "title": "Aucun résultat",
+      "message": "Il n'y a pas de refuges qui correspondent aux filtres sélectionnés"
+    }
   },
   "favorites": {
     "title": "Mes favoris",
@@ -234,7 +238,8 @@
       "weather": "Météo",
       "nearbyRoutes": "Itinéraires à proximité",
       "information_not_precise": "Les informations peuvent ne pas être exactes ou être obsolètes. Les administrateurs de l'application ne sont pas responsables de l'utilisation qui peut en être faite. \nSi vous allez en montagne, prenez les précautions nécessaires.",
-      "coordinates": "Coordonnées"
+      "coordinates": "Coordonnées",
+      "typeAndCondition": "Type et État"
     },
     "amenities": {
       "manque_un_mur": "Manque un mur",
@@ -475,9 +480,11 @@
     "coordinates": "Coordonnées",
     "latitude": "Latitude",
     "longitude": "Longitude",
+    "generalInfo": "Informations générales",
     "namePlaceholder": "Nom du refuge",
     "regionPlaceholder": "Région",
     "departementPlaceholder": "Département",
+    "pressToEdit": "Appuyez pour éditer",
     "descriptionPlaceholder": "Décrivez le refuge...",
     "links": "Liens d'information supplémentaires",
     "linkPlaceholder": "https://exemple.com",
@@ -503,6 +510,7 @@
       "latitudeInvalid": "La latitude doit être un nombre valide",
       "longitudeRequired": "La longitude est obligatoire",
       "longitudeInvalid": "La longitude doit être un nombre valide",
+      "invalidColon": "Les coordonnées doivent utiliser un point (.) comme séparateur décimal",
       "regionTooLong": "La région ne peut pas dépasser 100 caractères",
       "departementTooLong": "Le département ne peut pas dépasser 100 caractères",
       "altitudeInvalid": "L'altitude doit être un entier positif",

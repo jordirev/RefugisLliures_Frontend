@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +17,8 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { CustomAlert } from '../components/CustomAlert';
 import { BadgeSelector } from '../components/BadgeSelector';
+import { BadgeType } from '../components/BadgeType';
+import { BadgeCondition } from '../components/BadgeCondition';
 import { Location, InfoComp } from '../models';
 import { RefugeProposalsService } from '../services/RefugeProposalsService';
 
@@ -70,6 +73,10 @@ export function CreateRefugeScreen() {
   const [links, setLinks] = useState<string[]>(['']);
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Badge selector state
+  const [typeExpanded, setTypeExpanded] = useState(false);
+  const [conditionExpanded, setConditionExpanded] = useState(false);
 
   // Error states
   const [errors, setErrors] = useState<{
@@ -167,6 +174,8 @@ export function CreateRefugeScreen() {
       newErrors.latitude = t('createRefuge.errors.latitudeRequired');
     } else if (isNaN(parseFloat(latitude))) {
       newErrors.latitude = t('createRefuge.errors.latitudeInvalid');
+    } else if (latitude.includes(',') ) {
+      newErrors.latitude = t('createRefuge.errors.invalidColon');
     }
 
     // Validar longitud (obligatori, número vàlid)
@@ -308,298 +317,387 @@ export function CreateRefugeScreen() {
         </View>
       </View>
 
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
       >
-        {/* Info text about proposal */}
-        <Text style={styles.infoText}>{t('createRefuge.proposalInfo')}</Text>
+        <ScrollView
+            ref={scrollViewRef}
+            style={[styles.scrollView, { paddingTop: insets.top }]}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            {/* Info text about proposal */}
+            <Text style={styles.infoText}>{t('createRefuge.proposalInfo')}</Text>
 
-        {/* Default image */}
-        <TouchableOpacity onPress={handleImagePress} activeOpacity={0.7}>
-          <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
-            style={styles.headerImage}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
-
-        {/* Coordinates */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('createRefuge.coordinates')}</Text>
-          <View style={styles.coordsRow}>
-            <View style={styles.coordInput} ref={latitudeRef}>
-              <Text style={styles.inputLabel}>
-                {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.textInput, errors.latitude && styles.textInputError]}
-                value={latitude}
-                onChangeText={(text) => {
-                  setLatitude(text);
-                  if (errors.latitude) setErrors({ ...errors, latitude: undefined });
-                }}
-                placeholder="42.1234"
-                keyboardType="decimal-pad"
-                placeholderTextColor="#9CA3AF"
-              />
-              {errors.latitude && <Text style={styles.errorText}>{errors.latitude}</Text>}
-            </View>
-            <View style={styles.coordInput} ref={longitudeRef}>
-              <Text style={styles.inputLabel}>
-                {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
-              </Text>
-              <TextInput
-                style={[styles.textInput, errors.longitude && styles.textInputError]}
-                value={longitude}
-                onChangeText={(text) => {
-                  setLongitude(text);
-                  if (errors.longitude) setErrors({ ...errors, longitude: undefined });
-                }}
-                placeholder="1.12345"
-                keyboardType="decimal-pad"
-                placeholderTextColor="#9CA3AF"
-              />
-              {errors.longitude && <Text style={styles.errorText}>{errors.longitude}</Text>}
-            </View>
-          </View>
-        </View>
-
-        {/* Name */}
-        <View style={styles.section} ref={nameRef}>
-          <Text style={styles.inputLabel}>
-            {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
-          </Text>
-          <TextInput
-            style={[styles.nameInput, errors.name && styles.textInputError]}
-            value={name}
-            onChangeText={(text) => {
-              if (text.length <= 100) {
-                setName(text);
-                if (errors.name) setErrors({ ...errors, name: undefined });
-              }
-            }}
-            placeholder={t('createRefuge.namePlaceholder')}
-            placeholderTextColor="#9CA3AF"
-            maxLength={100}
-          />
-          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-        </View>
-
-        {/* Region and Departement */}
-        <View style={styles.section}>
-          <View style={styles.regionRow}>
-            <View style={{ flex: 1 }}>
-              <TextInput
-                style={[styles.textInput, styles.regionInput, errors.region && styles.textInputError]}
-                value={region}
-                onChangeText={(text) => {
-                  if (text.length <= 100) {
-                    setRegion(text);
-                    if (errors.region) setErrors({ ...errors, region: undefined });
-                  }
-                }}
-                placeholder={t('createRefuge.regionPlaceholder')}
-                placeholderTextColor="#9CA3AF"
-                maxLength={100}
-              />
-              {errors.region && <Text style={styles.errorText}>{errors.region}</Text>}
-            </View>
-            <Text style={styles.regionSeparator}>,</Text>
-            <View style={{ flex: 1 }} ref={regionRef}>
-              <TextInput
-                style={[styles.textInput, styles.regionInput, errors.departement && styles.textInputError]}
-                value={departement}
-                onChangeText={(text) => {
-                  if (text.length <= 100) {
-                    setDepartement(text);
-                    if (errors.departement) setErrors({ ...errors, departement: undefined });
-                  }
-                }}
-                placeholder={t('createRefuge.departementPlaceholder')}
-                placeholderTextColor="#9CA3AF"
-                maxLength={100}
-              />
-              {errors.departement && <Text style={styles.errorText}>{errors.departement}</Text>}
-            </View>
-          </View>
-        </View>
-
-        {/* Stats */}
-        <View style={styles.section}>
-          <View style={styles.statsGrid}>
-            <View style={[styles.statCard, errors.altitude && styles.statCardError]} ref={altitudeRef}>
-              <AltitudeIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>{t('refuge.details.altitude')} (m)</Text>
-              <TextInput
-                style={styles.statInput}
-                value={altitude}
-                onChangeText={(text) => {
-                  setAltitude(text);
-                  if (errors.altitude) setErrors({ ...errors, altitude: undefined });
-                }}
-                placeholder="0"
-                keyboardType="number-pad"
-                placeholderTextColor="#9CA3AF"
-              />
-              {errors.altitude && <Text style={styles.errorTextStat}>{errors.altitude}</Text>}
-            </View>
-
-            <View style={[styles.statCard, errors.places && styles.statCardError]} ref={placesRef}>
-              <UsersIcon width={24} height={24} color="#FF6900" />
-              <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
-              <TextInput
-                style={styles.statInput}
-                value={places}
-                onChangeText={(text) => {
-                  setPlaces(text);
-                  if (errors.places) setErrors({ ...errors, places: undefined });
-                }}
-                placeholder="0"
-                keyboardType="number-pad"
-                placeholderTextColor="#9CA3AF"
-              />
-              {errors.places && <Text style={styles.errorTextStat}>{errors.places}</Text>}
-            </View>
-          </View>
-        </View>
-
-        {/* Description */}
-        <View style={styles.section} ref={descriptionRef}>
-          <View style={styles.labelRow}>
-            <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
-            <Text style={styles.charCounter}>{description.length}/3000</Text>
-          </View>
-          <TextInput
-            style={[styles.descriptionInput, errors.description && styles.textInputError]}
-            value={description}
-            onChangeText={(text) => {
-              if (text.length <= 3000) {
-                setDescription(text);
-                if (errors.description) setErrors({ ...errors, description: undefined });
-              }
-            }}
-            placeholder={t('createRefuge.descriptionPlaceholder')}
-            placeholderTextColor="#9CA3AF"
-            multiline
-            numberOfLines={6}
-            textAlignVertical="top"
-            maxLength={3000}
-          />
-          {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-        </View>
-
-        {/* Links */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
-          <View style={styles.amenitiesGrid}>
-            {amenityList.map((amenity) => (
-              <TouchableOpacity
-                key={amenity.key}
-                style={[
-                  styles.amenityChip,
-                  amenities[amenity.key] && styles.amenityChipSelected,
-                ]}
-                onPress={() => handleAmenityToggle(amenity.key)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.amenityIcon}>{amenity.icon}</Text>
-                <Text
-                  style={[
-                    styles.amenityLabel,
-                    amenities[amenity.key] && styles.amenityLabelSelected,
-                  ]}
-                >
-                  {t(`refuge.amenities.${amenity.key}`)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Links */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
-          {links.map((link, index) => (
-            <View key={index} style={styles.linkRow}>
-              <TextInput
-                style={[styles.textInput, styles.linkInput]}
-                value={link}
-                onChangeText={(value) => handleLinkChange(index, value)}
-                placeholder={t('createRefuge.linkPlaceholder')}
-                placeholderTextColor="#9CA3AF"
-              />
-              {links.length > 1 && (
-                <TouchableOpacity
-                  style={styles.removeLinkButton}
-                  onPress={() => handleRemoveLink(index)}
-                >
-                  <Text style={styles.removeLinkText}>✕</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
-          <TouchableOpacity style={styles.addLinkButton} onPress={handleAddLink}>
-            <Text style={styles.addLinkText}>+ {t('createRefuge.addLink')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Comment for admins */}
-        <View style={styles.section} ref={commentRef}>
-          <View style={styles.labelRow}>
-            <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
-            <Text style={styles.charCounter}>{comment.length}/3000</Text>
-          </View>
-          <TextInput
-            style={[styles.descriptionInput, errors.comment && styles.textInputError]}
-            value={comment}
-            onChangeText={(text) => {
-              if (text.length <= 3000) {
-                setComment(text);
-                if (errors.comment) setErrors({ ...errors, comment: undefined });
-              }
-            }}
-            placeholder={t('createRefuge.adminCommentPlaceholder')}
-            placeholderTextColor="#9CA3AF"
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            maxLength={3000}
-          />
-          {errors.comment && <Text style={styles.errorText}>{errors.comment}</Text>}
-        </View>
-
-        {/* Submit button */}
-        <View style={styles.buttonContainer}>
-          {isFormValid ? (
-            <TouchableOpacity
-              onPress={handleSubmit}
-              disabled={isLoading}
-              activeOpacity={0.8}
-            >
-              <LinearGradient
-                colors={['#FF6900', '#FF8533']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.submitButton}
-              >
-                <Text style={styles.submitButtonText}>
-                  {isLoading ? t('common.loading') : t('createRefuge.submit')}
-                </Text>
-              </LinearGradient>
+            {/* Default image */}
+            <TouchableOpacity onPress={handleImagePress} activeOpacity={0.7}>
+            <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+                style={styles.headerImage}
+                resizeMode="cover"
+            />
             </TouchableOpacity>
-          ) : (
-            <View style={styles.submitButtonDisabled}>
-              <Text style={styles.submitButtonTextDisabled}>{t('createRefuge.submit')}</Text>
-            </View>
-          )}
-        </View>
 
-        {/* Bottom spacing */}
-        <View style={{ height: 40 }} />
-      </ScrollView>
+            {/* Coordinates */}
+            <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('createRefuge.coordinates')}</Text>
+            <View style={styles.coordsRow}>
+                <View style={styles.coordInput} ref={latitudeRef}>
+                <Text style={styles.inputLabel}>
+                    {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
+                </Text>
+                <TextInput
+                    style={[styles.textInput, errors.latitude && styles.textInputError]}
+                    value={latitude}
+                    onChangeText={(text) => {
+                    setLatitude(text);
+                    if (errors.latitude) setErrors({ ...errors, latitude: undefined });
+                    }}
+                    placeholder="42.1234"
+                    keyboardType="decimal-pad"
+                    placeholderTextColor="#9CA3AF"
+                />
+                {errors.latitude && <Text style={styles.errorText}>{errors.latitude}</Text>}
+                </View>
+                <View style={styles.coordInput} ref={longitudeRef}>
+                <Text style={styles.inputLabel}>
+                    {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
+                </Text>
+                <TextInput
+                    style={[styles.textInput, errors.longitude && styles.textInputError]}
+                    value={longitude}
+                    onChangeText={(text) => {
+                    setLongitude(text);
+                    if (errors.longitude) setErrors({ ...errors, longitude: undefined });
+                    }}
+                    placeholder="1.12345"
+                    keyboardType="decimal-pad"
+                    placeholderTextColor="#9CA3AF"
+                />
+                {errors.longitude && <Text style={styles.errorText}>{errors.longitude}</Text>}
+                </View>
+            </View>
+            </View>
+
+            {/* Name */}
+            <View style={styles.section} ref={nameRef}>
+            <Text style={styles.sectionTitle}>{t('createRefuge.generalInfo')}</Text>
+            <Text style={styles.inputLabel}>
+                {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
+            </Text>
+            <TextInput
+                style={[styles.nameInput, errors.name && styles.textInputError]}
+                value={name}
+                onChangeText={(text) => {
+                if (text.length <= 100) {
+                    setName(text);
+                    if (errors.name) setErrors({ ...errors, name: undefined });
+                }
+                }}
+                placeholder={t('createRefuge.namePlaceholder')}
+                placeholderTextColor="#9CA3AF"
+                maxLength={100}
+            />
+            {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+            </View>
+
+            {/* Region and Departement */}
+            <View style={[styles.section, { marginTop: 10 }]}>
+            <View style={styles.regionRow}>
+                <View style={{ flex: 1 }}>
+                <TextInput
+                    style={[styles.textInput, styles.regionInput, errors.region && styles.textInputError]}
+                    value={region}
+                    onChangeText={(text) => {
+                    if (text.length <= 100) {
+                        setRegion(text);
+                        if (errors.region) setErrors({ ...errors, region: undefined });
+                    }
+                    }}
+                    placeholder={t('createRefuge.regionPlaceholder')}
+                    placeholderTextColor="#9CA3AF"
+                    maxLength={100}
+                />
+                {errors.region && <Text style={styles.errorText}>{errors.region}</Text>}
+                </View>
+                <Text style={styles.regionSeparator}>,</Text>
+                <View style={{ flex: 1 }} ref={regionRef}>
+                <TextInput
+                    style={[styles.textInput, styles.regionInput, errors.departement && styles.textInputError]}
+                    value={departement}
+                    onChangeText={(text) => {
+                    if (text.length <= 100) {
+                        setDepartement(text);
+                        if (errors.departement) setErrors({ ...errors, departement: undefined });
+                    }
+                    }}
+                    placeholder={t('createRefuge.departementPlaceholder')}
+                    placeholderTextColor="#9CA3AF"
+                    maxLength={100}
+                />
+                {errors.departement && <Text style={styles.errorText}>{errors.departement}</Text>}
+                </View>
+            </View>
+            </View>
+
+            {/* Type and Condition Selectors */}
+            <View style={styles.section}>
+            <Text style={styles.inputLabel}>{t('refuge.details.typeAndCondition')}</Text>
+            <Text style={[styles.inputLabel, {fontWeight: '300', fontSize: 10}]}>{t('createRefuge.pressToEdit')}</Text>
+            <View style={styles.badgeSelectorsRow}>
+                <BadgeSelector
+                type="type"
+                value={type}
+                onValueChange={(value) => setType(value as string)}
+                expanded={typeExpanded}
+                onToggle={() => {
+                    setTypeExpanded(!typeExpanded);
+                    if (conditionExpanded) setConditionExpanded(false);
+                }}
+                renderOptionsExternal={true}
+                />
+                <BadgeSelector
+                type="condition"
+                value={condition}
+                onValueChange={(value) => setCondition(value as number)}
+                expanded={conditionExpanded}
+                onToggle={() => {
+                    setConditionExpanded(!conditionExpanded);
+                    if (typeExpanded) setTypeExpanded(false);
+                }}
+                renderOptionsExternal={true}
+                />
+            </View>
+            
+            {/* Render options below badges */}
+            {(typeExpanded || conditionExpanded) && (
+                <View style={styles.badgeOptionsContainer}>
+                {typeExpanded && (
+                    <>
+                    {[
+                        { value: 'non gardé', label: 'refuge.type.noGuarded' },
+                        { value: 'cabane ouverte mais ocupee par le berger l ete', label: 'refuge.type.occupiedInSummer' },
+                        { value: 'fermée', label: 'refuge.type.closed' },
+                        { value: 'orri', label: 'refuge.type.shelter' },
+                        { value: 'emergence', label: 'refuge.type.emergency' },
+                    ].map((option) => (
+                        <TouchableOpacity
+                        key={String(option.value)}
+                        onPress={() => {
+                            setType(option.value);
+                            setTypeExpanded(false);
+                        }}
+                        activeOpacity={0.7}
+                        >
+                        <BadgeType type={option.value} />
+                        </TouchableOpacity>
+                    ))}
+                    </>
+                )}
+                {conditionExpanded && (
+                    <>
+                    {[
+                        { value: 0, label: 'refuge.condition.poor' },
+                        { value: 1, label: 'refuge.condition.fair' },
+                        { value: 2, label: 'refuge.condition.good' },
+                        { value: 3, label: 'refuge.condition.excellent' },
+                    ].map((option) => (
+                        <TouchableOpacity
+                        key={String(option.value)}
+                        onPress={() => {
+                            setCondition(option.value);
+                            setConditionExpanded(false);
+                        }}
+                        activeOpacity={0.7}
+                        >
+                        <BadgeCondition condition={option.value} />
+                        </TouchableOpacity>
+                    ))}
+                    </>
+                )}
+                </View>
+            )}
+            </View>
+
+            {/* Stats */}
+            <View style={styles.section}>
+            <View style={styles.statsGrid}>
+                <View style={[styles.statCard, errors.altitude && styles.statCardError]} ref={altitudeRef}>
+                <AltitudeIcon width={24} height={24} color="#FF6900" />
+                <Text style={styles.statLabel}>{t('refuge.details.altitude')} (m)</Text>
+                <TextInput
+                    style={styles.statInput}
+                    value={altitude}
+                    onChangeText={(text) => {
+                    setAltitude(text);
+                    if (errors.altitude) setErrors({ ...errors, altitude: undefined });
+                    }}
+                    placeholder="0"
+                    keyboardType="number-pad"
+                    placeholderTextColor="#9CA3AF"
+                />
+                {errors.altitude && <Text style={styles.errorTextStat}>{errors.altitude}</Text>}
+                </View>
+
+                <View style={[styles.statCard, errors.places && styles.statCardError]} ref={placesRef}>
+                <UsersIcon width={24} height={24} color="#FF6900" />
+                <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
+                <TextInput
+                    style={styles.statInput}
+                    value={places}
+                    onChangeText={(text) => {
+                    setPlaces(text);
+                    if (errors.places) setErrors({ ...errors, places: undefined });
+                    }}
+                    placeholder="0"
+                    keyboardType="number-pad"
+                    placeholderTextColor="#9CA3AF"
+                />
+                {errors.places && <Text style={styles.errorTextStat}>{errors.places}</Text>}
+                </View>
+            </View>
+            </View>
+
+            {/* Description */}
+            <View style={styles.section} ref={descriptionRef}>
+            <View style={styles.labelRow}>
+              <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+            </View>
+            <View style={styles.descriptionContainer}>
+              <TextInput
+                style={[styles.descriptionInput, errors.description && styles.textInputError]}
+                value={description}
+                onChangeText={(text) => {
+                if (text.length <= 3000) {
+                  setDescription(text);
+                  if (errors.description) setErrors({ ...errors, description: undefined });
+                }
+                }}
+                placeholder={t('createRefuge.descriptionPlaceholder')}
+                placeholderTextColor="#9CA3AF"
+                multiline
+                numberOfLines={10}
+                textAlignVertical="top"
+                maxLength={3000}
+              />
+              <Text style={styles.descriptionCharCounter}>{description.length}/3000</Text>
+            </View>
+            {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+            </View>
+
+            {/* Links */}
+            <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
+            <View style={styles.amenitiesGrid}>
+                {amenityList.map((amenity) => (
+                <TouchableOpacity
+                    key={amenity.key}
+                    style={[
+                    styles.amenityChip,
+                    amenities[amenity.key] && styles.amenityChipSelected,
+                    ]}
+                    onPress={() => handleAmenityToggle(amenity.key)}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.amenityIcon}>{amenity.icon}</Text>
+                    <Text
+                    style={[
+                        styles.amenityLabel,
+                        amenities[amenity.key] && styles.amenityLabelSelected,
+                    ]}
+                    >
+                    {t(`refuge.amenities.${amenity.key}`)}
+                    </Text>
+                </TouchableOpacity>
+                ))}
+            </View>
+            </View>
+
+            {/* Links */}
+            <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
+            {links.map((link, index) => (
+                <View key={index} style={styles.linkRow}>
+                <TextInput
+                    style={[styles.textInput, styles.linkInput]}
+                    value={link}
+                    onChangeText={(value) => handleLinkChange(index, value)}
+                    placeholder={t('createRefuge.linkPlaceholder')}
+                    placeholderTextColor="#9CA3AF"
+                />
+                {links.length > 1 && (
+                    <TouchableOpacity
+                    style={styles.removeLinkButton}
+                    onPress={() => handleRemoveLink(index)}
+                    >
+                    <Text style={styles.removeLinkText}>✕</Text>
+                    </TouchableOpacity>
+                )}
+                </View>
+            ))}
+            <TouchableOpacity style={styles.addLinkButton} onPress={handleAddLink}>
+                <Text style={styles.addLinkText}>+ {t('createRefuge.addLink')}</Text>
+            </TouchableOpacity>
+            </View>
+
+            {/* Comment for admins */}
+            <View style={styles.section} ref={commentRef}>
+              <View style={styles.labelRow}>
+                <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
+              </View>
+              <View style={styles.commentContainer}>
+                <TextInput
+                  style={[styles.descriptionInput, errors.comment && styles.textInputError]}
+                  value={comment}
+                  onChangeText={(text) => {
+                    if (text.length <= 3000) {
+                      setComment(text);
+                      if (errors.comment) setErrors({ ...errors, comment: undefined });
+                    }
+                  }}
+                  placeholder={t('createRefuge.adminCommentPlaceholder')}
+                  placeholderTextColor="#9CA3AF"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  maxLength={3000}
+                />
+                <Text style={styles.commentCharCounter}>{comment.length}/3000</Text>
+              </View>
+              {errors.comment && <Text style={styles.errorText}>{errors.comment}</Text>}
+            </View>
+
+            {/* Submit button */}
+            <View style={styles.buttonContainer}>
+            {isFormValid ? (
+                <TouchableOpacity
+                onPress={handleSubmit}
+                disabled={isLoading}
+                activeOpacity={0.8}
+                >
+                <LinearGradient
+                    colors={['#FF6900', '#FF8533']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.submitButton}
+                >
+                    <Text style={styles.submitButtonText}>
+                    {isLoading ? t('common.loading') : t('createRefuge.submit')}
+                    </Text>
+                </LinearGradient>
+                </TouchableOpacity>
+            ) : (
+                <View style={styles.submitButtonDisabled}>
+                <Text style={styles.submitButtonTextDisabled}>{t('createRefuge.submit')}</Text>
+                </View>
+            )}
+            </View>
+
+            {/* Bottom spacing */}
+            <View style={{ height: 40 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Custom Alert */}
       {alertVisible && alertConfig && (
@@ -620,9 +718,12 @@ export function CreateRefugeScreen() {
 }
 
 const styles = StyleSheet.create({
+  keyboardView: {
+    flex: 1,
+  },
   root: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   headerFixed: {
     position: 'absolute',
@@ -630,17 +731,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   safeArea: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
@@ -702,9 +803,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   textInput: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'transparent',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 14,
@@ -712,9 +813,9 @@ const styles = StyleSheet.create({
     color: '#1F2937',
   },
   nameInput: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'transparent',
     borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 16,
@@ -729,6 +830,7 @@ const styles = StyleSheet.create({
   },
   regionInput: {
     flex: 1,
+    fontSize: 12,
   },
   regionSeparator: {
     fontSize: 14,
@@ -744,12 +846,12 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'transparent',
   },
   statLabel: {
     fontSize: 12,
@@ -765,13 +867,36 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     minWidth: 60,
   },
+  descriptionContainer: {
+    position: 'relative',
+  },
+  descriptionCharCounter: {
+    position: 'absolute',
+    right: 12,
+    bottom: 12,
+    fontSize: 12,
+    color: '#9CA3AF',
+    backgroundColor: 'transparent',
+  },
+  commentContainer: {
+    position: 'relative',
+  },
+  commentCharCounter: {
+    position: 'absolute',
+    right: 12,
+    bottom: 12,
+    fontSize: 12,
+    color: '#9CA3AF',
+    backgroundColor: 'transparent',
+  },
   descriptionInput: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: 'transparent',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 14,
+    paddingBottom: 40,
     fontSize: 14,
     color: '#1F2937',
     minHeight: 120,
@@ -783,12 +908,12 @@ const styles = StyleSheet.create({
   },
   amenityChip: {
     backgroundColor: '#F3F4F6',
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 8,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     borderWidth: 1,
     borderColor: '#D1D5DB',
   },
@@ -873,7 +998,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
     zIndex: 5,
   },
   required: {
@@ -912,5 +1037,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
     fontWeight: '500',
+  },
+  badgeSelectorsRow: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+  },
+  badgeOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 12,
+    paddingHorizontal: 4,
   },
 });

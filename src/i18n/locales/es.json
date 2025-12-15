@@ -40,7 +40,11 @@
     "title": "Mapa de Refugios",
     "searchPlaceholder": "Buscar refugios...",
     "noLocationsFound": "No se pudieron cargar los refugios",
-    "errorLoading": "No se pudieron cargar los refugios"
+    "errorLoading": "No se pudieron cargar los refugios",
+    "noResults": {
+      "title": "Sin resultados",
+      "message": "No hay refugios que cumplan con los filtros seleccionados"
+    }
   },
   "favorites": {
     "title": "Mis favoritos",
@@ -231,7 +235,8 @@
       "weather": "Meteo",
       "nearbyRoutes": "Rutas cercanas",
       "information_not_precise": "La información puede no ser precisa o estar desactualizada. Los administradores de la aplicación no se hacen responsables del uso que se pueda hacer. \nSi vas a la montaña, toma las precauciones necesarias.",
-      "coordinates": "Coordenadas"
+      "coordinates": "Coordenadas",
+      "typeAndCondition": "Tipo y Estado"
     },
     "amenities": {
       "manque_un_mur": "Falta un muro",
@@ -472,9 +477,11 @@
     "coordinates": "Coordenadas",
     "latitude": "Latitud",
     "longitude": "Longitud",
+    "generalInfo": "Información general",
     "namePlaceholder": "Nombre del refugio",
     "regionPlaceholder": "Comunidad autónoma",
     "departementPlaceholder": "Provincia",
+    "pressToEdit": "Pulsa para editar",
     "descriptionPlaceholder": "Describe el refugio...",
     "links": "Enlaces de información extra",
     "linkPlaceholder": "https://ejemplo.com",
@@ -500,6 +507,7 @@
       "latitudeInvalid": "La latitud debe ser un número válido",
       "longitudeRequired": "La longitud es obligatoria",
       "longitudeInvalid": "La longitud debe ser un número válido",
+      "invalidColon": "Las coordenadas deben usar un punto (.) como separador decimal",
       "regionTooLong": "La región no puede superar los 100 caracteres",
       "departementTooLong": "La provincia no puede superar los 100 caracteres",
       "altitudeInvalid": "La altitud debe ser un entero positivo",
