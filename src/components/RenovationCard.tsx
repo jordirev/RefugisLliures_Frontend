@@ -61,7 +61,7 @@ export function RenovationCard({
 
   const refugeName = refuge?.name || t('refuge.title');
   const refugeLocation = refuge?.region || refuge?.departement || t('common.unknown');
-  const refugeImageUrl = refuge?.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
+  const refugeImageUrl = refuge.images_metadata[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
 
   return (
     <View style={styles.card}>

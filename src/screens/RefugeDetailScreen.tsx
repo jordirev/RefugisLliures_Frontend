@@ -430,7 +430,7 @@ export function RefugeDetailScreen({
         <View style={styles.header}>
           <Image
             source={{ 
-              uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
+              uri: refuge.images_metadata[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
             }}
             style={styles.headerImage}
             resizeMode="cover"
@@ -477,32 +477,34 @@ export function RefugeDetailScreen({
         </View>
         
         {/* Descripció */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
-          {refuge.description && (
-            <View>
-              <Text
-                style={styles.description}
-                numberOfLines={descriptionExpanded ? undefined : 4}
-              >
-                {refuge.description}
-              </Text>
-              {refuge.description.length > 200 && (
-                <TouchableOpacity 
-                  onPress={() => {
-                    setDescriptionExpanded(!descriptionExpanded);
-                  }} 
-                  style={styles.readMoreButton}
-                  activeOpacity={0.7}
+        { refuge.description && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+            {refuge.description && (
+              <View>
+                <Text
+                  style={styles.description}
+                  numberOfLines={descriptionExpanded ? undefined : 4}
                 >
-                  <Text style={styles.readMoreText}>
-                    {descriptionExpanded ? t('common.showLess') : t('common.readMore')}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-        </View>
+                  {refuge.description}
+                </Text>
+                {refuge.description.length > 200 && (
+                  <TouchableOpacity 
+                    onPress={() => {
+                      setDescriptionExpanded(!descriptionExpanded);
+                    }} 
+                    style={styles.readMoreButton}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.readMoreText}>
+                      {descriptionExpanded ? t('common.showLess') : t('common.readMore')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </View>
+        )}
         
         {/* Amenities (Equipament) */}
         {(() => {

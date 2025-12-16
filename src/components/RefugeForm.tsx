@@ -388,10 +388,10 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         };
       }
       if (region !== (initialData?.region || '')) {
-        payload.region = region.trim() || undefined;
+        payload.region = region.trim() || null;
       }
       if (departement !== (initialData?.departement || '')) {
-        payload.departement = departement.trim() || undefined;
+        payload.departement = departement.trim() || null;
       }
       if (type !== (initialData?.type || 'non gardé')) {
         payload.type = type;
@@ -400,13 +400,13 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         payload.condition = condition;
       }
       if (altitude !== (initialData?.altitude?.toString() || '')) {
-        payload.altitude = altitude ? parseInt(altitude) : undefined;
+        payload.altitude = altitude ? parseInt(altitude) : null;
       }
       if (places !== (initialData?.places?.toString() || '')) {
-        payload.places = places ? parseInt(places) : undefined;
+        payload.places = places ? parseInt(places) : null;
       }
       if (description !== (initialData?.description || '')) {
-        payload.description = description.trim() || undefined;
+        payload.description = description.trim() || null;
       }
 
       // Check links changes
@@ -416,7 +416,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         originalLinks.length !== currentLinks.length ||
         originalLinks.some((link, idx) => link !== currentLinks[idx]);
       if (hasLinksChanged) {
-        payload.links = currentLinks;
+        payload.links = currentLinks.length > 0 ? currentLinks : [];
       }
 
       // Check amenities changes
@@ -458,15 +458,32 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         },
       ]);
     } catch (error: any) {
-      console.error('Error submitting refuge proposal:', error);
-      
       // Skip showing alert if error is about coordinates
       const errorMessage = error.message || '';
       const isCoordError = /Cannot read property '(long|lat|coord)' of undefined/i.test(errorMessage) ||
                            /coord/i.test(errorMessage);
       
       if (!isCoordError) {
+        console.error('Error submitting refuge proposal:', error);
         showAlert(t('common.error'), errorMessage || t('createRefuge.error.generic'));
+      }
+      else{
+        // Success
+        const successTitle = mode === 'create' 
+          ? t('createRefuge.success.title')
+          : t('editRefuge.success.title');
+        const successMessage = mode === 'create'
+          ? t('createRefuge.success.message')
+          : t('editRefuge.success.message');
+        showAlert(successTitle, successMessage, [
+        {
+          text: t('common.ok'),
+          onPress: () => {
+            hideAlert();
+            onCancel(); // Go back
+          },
+        },
+      ]);
       }
     } finally {
       setIsLoading(false);
