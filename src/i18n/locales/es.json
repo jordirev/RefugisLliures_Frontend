@@ -262,7 +262,8 @@
       "ask": "Preguntar \nduda",
       "shareExperience": "Compartir\nexperiencia",
       "addPhoto": "Añadir foto",
-      "editRefuge": "Editar refugio"
+      "editRefuge": "Editar refugio",
+      "deleteRefuge": "Eliminar"
     },
     "descriptions": {
       "addToFavorites": "Guarda este refugio en tus favoritos",
@@ -469,6 +470,35 @@
       "groupLinkInvalid": "El enlace debe ser de WhatsApp o Telegram",
       "overlapMessage": "Ya existe una reforma planificada para este refugio en estas fechas.",
       "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Eliminar Refugio",
+    "warning": "Estás a punto de proponer la eliminación del refugio '{{name}}'. Esta acción creará una propuesta que será revisada por un administrador.",
+    "commentLabel": "Razón de la eliminación",
+    "commentPlaceholder": "Explica por qué este refugio debería ser eliminado (mínimo {{min}} caracteres)",
+    "minChars": "(mínimo {{min}})",
+    "confirm": "Enviar Propuesta",
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta de eliminación ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "error": {
+      "generic": "No se ha podido enviar la propuesta de eliminación. Inténtalo de nuevo"
+    }
+  },
+  "editRefuge": {
+    "title": "Editar Refugio",
+    "proposalInfo": "Esta es una propuesta de edición de refugio que será revisada y aprobada por un administrador",
+    "adminCommentPlaceholder": "Comentario obligatorio para el administrador (mínimo 100 caracteres)",
+    "minChars": "mínimo {{min}}",
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta de edición ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "errors": {
+      "commentRequired": "El comentario es obligatorio para proponer ediciones",
+      "commentTooShort": "El comentario debe tener al menos {{min}} caracteres"
     }
   },
   "createRefuge": {

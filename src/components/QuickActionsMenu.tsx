@@ -26,6 +26,7 @@ import MessageCircleIcon from '../assets/icons/message-circle.svg';
 import DoubtIcon from '../assets/icons/doubt.png';
 import CameraIcon from '../assets/icons/camera.svg';
 import EditIcon from '../assets/icons/edit-white.png';
+import TrashIcon from '../assets/icons/trash.svg';
 
 interface QuickActionsMenuProps {
   visible: boolean;
@@ -35,6 +36,8 @@ interface QuickActionsMenuProps {
   isFavourite: boolean;
   onToggleFavorite: () => void;
   onShowAlert: (title: string, message: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function QuickActionsMenu({
@@ -45,6 +48,8 @@ export function QuickActionsMenu({
   isFavourite,
   onToggleFavorite,
   onShowAlert,
+  onDelete,
+  onEdit,
 }: QuickActionsMenuProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -140,6 +145,20 @@ export function QuickActionsMenu({
 
   const handleAddPhoto = () => {
     onShowAlert(t('alerts.addPhoto.title'), t('alerts.addPhoto.message'));
+    onClose();
+  };
+
+  const handleEditRefuge = () => {
+    if (onEdit) {
+      onEdit();
+    }
+    onClose();
+  };
+
+  const handleDeleteRefuge = () => {
+    if (onDelete) {
+      onDelete();
+    }
     onClose();
   };
 
@@ -264,7 +283,7 @@ export function QuickActionsMenu({
 
                 <TouchableOpacity
                   style={styles.menuItem}
-                  onPress={handleAddPhoto}
+                  onPress={handleEditRefuge}
                   testID="menu-edit"
                 >
                   <View style={styles.menuItemIconContainer}>
@@ -272,6 +291,19 @@ export function QuickActionsMenu({
                   </View>
                   <Text style={styles.menuItemText}>
                     {t('refuge.actions.editRefuge')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleDeleteRefuge}
+                  testID="menu-delete"
+                >
+                  <View style={styles.menuItemIconContainer}>
+                    <TrashIcon width={24} height={24} color="#EF4444" />
+                  </View>
+                  <Text style={[styles.menuItemText, styles.deleteText]}>
+                    {t('refuge.actions.deleteRefuge')}
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
@@ -318,6 +350,9 @@ const styles = StyleSheet.create({
   },
   menuContent: {
     paddingVertical: 4,
+  },
+  deleteText: {
+    color: '#EF4444',
   },
   menuItem: {
     flexDirection: 'column',

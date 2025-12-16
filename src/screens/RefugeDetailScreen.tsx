@@ -55,6 +55,7 @@ interface RefugeDetailScreenProps {
   onToggleFavorite: (id: string | undefined) => void;
   onNavigate: (location: Location) => void;
   onEdit?: (location: Location) => void;
+  onDelete?: (location: Location) => void;
 }
 
 // Badges use centralized components: Badge, BadgeType, BadgeCondition
@@ -65,6 +66,7 @@ export function RefugeDetailScreen({
   onToggleFavorite, 
   onNavigate, 
   onEdit,
+  onDelete,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -645,6 +647,8 @@ export function RefugeDetailScreen({
         isFavourite={isFavourite}
         onToggleFavorite={handleToggleFavorite}
         onShowAlert={showAlert}
+        onDelete={onDelete ? () => onDelete(refuge) : undefined}
+        onEdit={onEdit ? () => onEdit(refuge) : undefined}
       />
 
       {/* Back button rendered last so it's visually on top - hide when menu is open */}

@@ -252,7 +252,8 @@
       "ask": "Ask doubt",
       "shareExperience": "Share\nexperience",
       "addPhoto": "Add Photo",
-      "editRefuge": "Edit refuge"
+      "editRefuge": "Edit refuge",
+      "deleteRefuge": "Delete"
     },
     "descriptions": {
       "addToFavorites": "Save this refuge to your favorites",
@@ -459,6 +460,35 @@
       "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
       "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
       "generic": "Could not create renovation. Please try again."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Delete Shelter",
+    "warning": "You are about to propose the deletion of the shelter '{{name}}'. This action will create a proposal that will be reviewed by an administrator.",
+    "commentLabel": "Reason for deletion",
+    "commentPlaceholder": "Explain why this shelter should be deleted (minimum {{min}} characters)",
+    "minChars": "(minimum {{min}})",
+    "confirm": "Send Proposal",
+    "success": {
+      "title": "Proposal sent",
+      "message": "Your deletion proposal has been successfully sent and will be reviewed by an administrator"
+    },
+    "error": {
+      "generic": "Failed to send deletion proposal. Please try again"
+    }
+  },
+  "editRefuge": {
+    "title": "Edit Shelter",
+    "proposalInfo": "This is a shelter edit proposal that will be reviewed and approved by an administrator",
+    "adminCommentPlaceholder": "Required comment for administrator (minimum 100 characters)",
+    "minChars": "minimum {{min}}",
+    "success": {
+      "title": "Proposal sent",
+      "message": "Your edit proposal has been successfully sent and will be reviewed by an administrator"
+    },
+    "errors": {
+      "commentRequired": "Comment is required to propose edits",
+      "commentTooShort": "Comment must be at least {{min}} characters"
     }
   },
   "createRefuge": {

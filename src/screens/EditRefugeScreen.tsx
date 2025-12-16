@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
 import { RefugeProposalsService } from '../services/RefugeProposalsService';
@@ -10,13 +10,29 @@ import { RefugeForm } from '../components/RefugeForm';
 // Icons
 import BackIcon from '../assets/icons/arrow-left.svg';
 
-export function CreateRefugeScreen() {
+type EditRefugeScreenRouteProp = RouteProp<
+  {
+    EditRefuge: {
+      refuge: Location;
+    };
+  },
+  'EditRefuge'
+>;
+
+export function EditRefugeScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const route = useRoute<EditRefugeScreenRouteProp>();
   const insets = useSafeAreaInsets();
 
+  const { refuge } = route.params;
+
   const handleSubmit = async (data: Location | Partial<Location>, comment?: string) => {
-    await RefugeProposalsService.proposalCreateRefuge(data as Location, comment);
+    await RefugeProposalsService.proposalEditRefuge(
+      refuge.id,
+      data as Partial<Location>,
+      comment
+    );
   };
 
   const handleCancel = () => {
@@ -32,14 +48,15 @@ export function CreateRefugeScreen() {
           <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('createRefuge.title')}</Text>
+          <Text style={styles.title}>{t('editRefuge.title')}</Text>
         </View>
       </View>
 
       {/* Form content */}
       <View style={[styles.formContainer, { paddingTop: insets.top }]}>
         <RefugeForm
-          mode="create"
+          mode="edit"
+          initialData={refuge}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

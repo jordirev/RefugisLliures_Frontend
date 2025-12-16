@@ -266,7 +266,8 @@
       "ask": "Preguntar \ndubte",
       "shareExperience": "Compartir\nexperiència",
       "addPhoto": "Afegir foto",
-      "editRefuge": "Editar refugi"
+      "editRefuge": "Editar refugi",
+      "deleteRefuge": "Eliminar"
     },
     "descriptions": {
       "addToFavorites": "Desa aquest refugi als teus preferits",
@@ -473,6 +474,35 @@
       "groupLinkInvalid": "L'enllaç ha de ser de WhatsApp o Telegram",
       "overlapMessage": "Ja existeix una reforma planificada per aquest refugi en aquestes dates.",
       "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Eliminar Refugi",
+    "warning": "Estàs a punt de proposar l'eliminació del refugi '{{name}}'. Aquesta acció crearà una proposta que serà revisada per un administrador.",
+    "commentLabel": "Raó de l'eliminació",
+    "commentPlaceholder": "Explica per què aquest refugi hauria de ser eliminat (mínim {{min}} caràcters)",
+    "minChars": "(mínim {{min}})",
+    "confirm": "Enviar Proposta",
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta d'eliminació ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "error": {
+      "generic": "No s'ha pogut enviar la proposta d'eliminació. Torna-ho a intentar"
+    }
+  },
+  "editRefuge": {
+    "title": "Editar Refugi",
+    "proposalInfo": "Aquesta és una proposta d'edició de refugi que serà revisada i aprovada per un administrador",
+    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador (mínim 100 caràcters)",
+    "minChars": "mínim {{min}}",
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta d'edició ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "errors": {
+      "commentRequired": "El comentari és obligatori per proposar edicions",
+      "commentTooShort": "El comentari ha de tenir almenys {{min}} caràcters"
     }
   },
   "createRefuge": {

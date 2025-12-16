@@ -265,7 +265,8 @@
       "ask": "Demander \ndoute",
       "shareExperience": "Partager\nl'expérience",
       "addPhoto": "Ajouter photo",
-      "editRefuge": "Modifier \nrefuge"
+      "editRefuge": "Modifier \nrefuge",
+      "deleteRefuge": "Supprimer"
     },
     "descriptions": {
       "addToFavorites": "Enregistrez ce refuge dans vos favoris",
@@ -472,6 +473,35 @@
       "groupLinkInvalid": "Le lien doit être de WhatsApp ou Telegram",
       "overlapMessage": "Une rénovation est déjà planifiée pour ce refuge à ces dates.",
       "generic": "Impossible de créer la rénovation. Veuillez réessayer."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Supprimer le Refuge",
+    "warning": "Vous êtes sur le point de proposer la suppression du refuge '{{name}}'. Cette action créera une proposition qui sera examinée par un administrateur.",
+    "commentLabel": "Raison de la suppression",
+    "commentPlaceholder": "Expliquez pourquoi ce refuge devrait être supprimé (minimum {{min}} caractères)",
+    "minChars": "(minimum {{min}})",
+    "confirm": "Envoyer la Proposition",
+    "success": {
+      "title": "Proposition envoyée",
+      "message": "Votre proposition de suppression a été envoyée avec succès et sera examinée par un administrateur"
+    },
+    "error": {
+      "generic": "Échec de l'envoi de la proposition de suppression. Veuillez réessayer"
+    }
+  },
+  "editRefuge": {
+    "title": "Modifier le Refuge",
+    "proposalInfo": "Ceci est une proposition de modification de refuge qui sera examinée et approuvée par un administrateur",
+    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur (minimum 100 caractères)",
+    "minChars": "minimum {{min}}",
+    "success": {
+      "title": "Proposition envoyée",
+      "message": "Votre proposition de modification a été envoyée avec succès et sera examinée par un administrateur"
+    },
+    "errors": {
+      "commentRequired": "Le commentaire est obligatoire pour proposer des modifications",
+      "commentTooShort": "Le commentaire doit contenir au moins {{min}} caractères"
     }
   },
   "createRefuge": {
