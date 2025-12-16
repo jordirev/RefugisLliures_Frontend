@@ -490,7 +490,7 @@
   "editRefuge": {
     "title": "Editar Refugio",
     "proposalInfo": "Esta es una propuesta de edición de refugio que será revisada y aprobada por un administrador",
-    "adminCommentPlaceholder": "Comentario obligatorio para el administrador (mínimo 100 caracteres)",
+    "adminCommentPlaceholder": "Comentario obligatorio para el administrador (mínimo 50 caracteres)",
     "minChars": "mínimo {{min}}",
     "success": {
       "title": "Propuesta enviada",
@@ -534,9 +534,9 @@
       "nameRequired": "El nombre del refugio es obligatorio",
       "nameTooLong": "El nombre no puede superar los 100 caracteres",
       "latitudeRequired": "La latitud es obligatoria",
-      "latitudeInvalid": "La latitud debe ser un número válido",
+      "latitudeAtLeast3Decimals": "La latitud debe tener al menos 3 decimales",
       "longitudeRequired": "La longitud es obligatoria",
-      "longitudeInvalid": "La longitud debe ser un número válido",
+      "longitudeAtLeast3Decimals": "La longitud debe tener al menos 3 decimales",
       "invalidColon": "Las coordenadas deben usar un punto (.) como separador decimal",
       "regionTooLong": "La región no puede superar los 100 caracteres",
       "departementTooLong": "La provincia no puede superar los 100 caracteres",
@@ -544,7 +544,8 @@
       "altitudeTooHigh": "La altitud no puede superar los 8800m",
       "placesInvalid": "Las plazas deben ser un entero positivo",
       "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
-      "commentTooLong": "El comentario no puede superar los 3000 caracteres"
+      "commentTooLong": "El comentario no puede superar los 3000 caracteres",
+      "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
     }
   }
 }

@@ -161,16 +161,16 @@ export function mapInfoCompToDTO(infoComp: any | undefined): any | undefined {
  * Converteix un Partial<Location> del frontend al format Partial<RefugiDTO> per al backend
  * Útil per a actualitzacions parcials (només els camps que es volen modificar)
  */
-export function mapPartialRefugiToDTO(location: Partial<Location>): Partial<RefugiBodyDTO> {
+export function mapPartialRefugiToDTO(location: Partial<Location>, action: String): Partial<RefugiBodyDTO> {
   const dto: Partial<RefugiBodyDTO> = {};
 
-  if (!location.name || !location.coord) {
+  if (action === 'create' && (!location.name || !location.coord)) {
     throw new Error('Name and coordinate data is mandatory in UserRefugiInfoDTO');
   }
   
   if (location.name !== undefined) dto.name = location.name;
   if (location.surname !== undefined) dto.surname = location.surname || null;
-  if (location.coord !== undefined) dto.coord = mapCoordToDTO(location.coord);
+  if (location.coord !== undefined && location.coord !== null) dto.coord = mapCoordToDTO(location.coord);
   if (location.altitude !== undefined) dto.altitude = location.altitude ?? null;
   if (location.places !== undefined) dto.places = location.places ?? null;
   if (location.info_comp !== undefined) dto.info_comp = mapInfoCompToDTO(location.info_comp);

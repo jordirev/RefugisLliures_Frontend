@@ -25,8 +25,8 @@ export function CreateRefugeScreen() {
 
   return (
     <View style={styles.root}>
-      {/* Fixed header with SafeArea */}
-      <View style={styles.headerFixed}>
+      {/* Header with SafeArea */}
+      <View style={styles.headerContainer}>
         <SafeAreaView edges={['top']} style={styles.safeArea} />
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
@@ -37,7 +37,7 @@ export function CreateRefugeScreen() {
       </View>
 
       {/* Form content */}
-      <View style={[styles.formContainer, { paddingTop: insets.top }]}>
+      <View style={styles.formContainer}>
         <RefugeForm
           mode="create"
           onSubmit={handleSubmit}
@@ -58,13 +58,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  headerFixed: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
+  headerContainer: {
     backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -89,7 +85,6 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    marginTop: 60,
   },
   bottomSafeArea: {
     position: 'absolute',

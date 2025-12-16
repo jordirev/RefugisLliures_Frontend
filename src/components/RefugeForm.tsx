@@ -18,6 +18,7 @@ import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { ProposalCommentInput } from './ProposalCommentInput';
 
 // Icons
 import AltitudeIcon from '../assets/icons/altitude2.svg';
@@ -47,6 +48,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
   const placesRef = useRef<View>(null);
   const descriptionRef = useRef<View>(null);
   const commentRef = useRef<View>(null);
+  const linksRef = useRef<View>(null);
 
   const fieldRefs: { [key: string]: React.RefObject<any> } = {
     name: nameRef,
@@ -58,6 +60,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
     places: placesRef,
     description: descriptionRef,
     comment: commentRef,
+    links: linksRef,
   };
 
   // Form state
@@ -92,6 +95,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
     places?: string;
     description?: string;
     comment?: string;
+    links?: string;
   }>({});
 
   // Amenities state
@@ -240,20 +244,30 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
       newErrors.name = t('createRefuge.errors.nameTooLong');
     }
 
-    // Validar latitud (obligatori, número vàlid)
-    if (!latitude.trim()) {
+    // Validar latitud (obligatori, número vàlid amb com a mínim 3 decimals)
+    if (!latitude.trim() && mode === 'create') {
       newErrors.latitude = t('createRefuge.errors.latitudeRequired');
-    } else if (isNaN(parseFloat(latitude))) {
-      newErrors.latitude = t('createRefuge.errors.latitudeInvalid');
     } else if (latitude.includes(',')) {
       newErrors.latitude = t('createRefuge.errors.invalidColon');
+    } else {
+      const latTrim = latitude.trim();
+      const latRegex = /^-?\d+\.\d{3,}$/; // at least 3 decimals
+      if (!latRegex.test(latTrim)) {
+        newErrors.latitude = t('createRefuge.errors.latitudeAtLeast3Decimals');
+      }
     }
 
-    // Validar longitud (obligatori, número vàlid)
-    if (!longitude.trim()) {
+    // Validar longitud (obligatori, número vàlid amb com a mínim 3 decimals)
+    if (!longitude.trim() && mode === 'create') {
       newErrors.longitude = t('createRefuge.errors.longitudeRequired');
-    } else if (isNaN(parseFloat(longitude))) {
-      newErrors.longitude = t('createRefuge.errors.longitudeInvalid');
+    } else if (longitude.includes(',')) {
+      newErrors.longitude = t('createRefuge.errors.invalidColon');
+    } else {
+      const longTrim = longitude.trim();
+      const longRegex = /^-?\d+\.\d{3,}$/; // at least 3 decimals
+      if (!longRegex.test(longTrim)) {
+        newErrors.longitude = t('createRefuge.errors.longitudeAtLeast3Decimals');
+      }
     }
 
     // Validar regió (màxim 100 caràcters)
@@ -266,21 +280,31 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
       newErrors.departement = t('createRefuge.errors.departementTooLong');
     }
 
-    // Validar altitud (enter positiu, màxim 8800)
+    // Validar altitud (enter positiu, sense comes ni punts, màxim 8800)
     if (altitude.trim()) {
-      const altNum = parseInt(altitude);
-      if (isNaN(altNum) || altNum < 0 || !Number.isInteger(parseFloat(altitude))) {
+      const altTrim = altitude.trim();
+      if (!/^[0-9]+$/.test(altTrim)) {
         newErrors.altitude = t('createRefuge.errors.altitudeInvalid');
-      } else if (altNum > 8800) {
-        newErrors.altitude = t('createRefuge.errors.altitudeTooHigh');
+      } else {
+        const altNum = parseInt(altTrim, 10);
+        if (altNum < 0) {
+          newErrors.altitude = t('createRefuge.errors.altitudeInvalid');
+        } else if (altNum > 8800) {
+          newErrors.altitude = t('createRefuge.errors.altitudeTooHigh');
+        }
       }
     }
 
-    // Validar places (enter positiu)
+    // Validar places (enter positiu, sense comes ni punts)
     if (places.trim()) {
-      const placesNum = parseInt(places);
-      if (isNaN(placesNum) || placesNum < 0 || !Number.isInteger(parseFloat(places))) {
+      const placesTrim = places.trim();
+      if (!/^[0-9]+$/.test(placesTrim)) {
         newErrors.places = t('createRefuge.errors.placesInvalid');
+      } else {
+        const placesNum = parseInt(placesTrim, 10);
+        if (placesNum < 0) {
+          newErrors.places = t('createRefuge.errors.placesInvalid');
+        }
       }
     }
 
@@ -291,11 +315,11 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
 
     // Validar comentari
     if (mode === 'edit') {
-      // En mode edit, el comentari és obligatori amb mínim 100 caràcters
+      // En mode edit, el comentari és obligatori amb mínim 50 caràcters
       if (!comment.trim()) {
         newErrors.comment = t('editRefuge.errors.commentRequired');
-      } else if (comment.trim().length < 100) {
-        newErrors.comment = t('editRefuge.errors.commentTooShort', { min: 100 });
+      } else if (comment.trim().length < 50) {
+        newErrors.comment = t('editRefuge.errors.commentTooShort', { min: 50 });
       } else if (comment.length > 3000) {
         newErrors.comment = t('createRefuge.errors.commentTooLong');
       }
@@ -303,6 +327,18 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
       // En mode create, el comentari és opcional però màxim 3000 caràcters
       if (comment.length > 3000) {
         newErrors.comment = t('createRefuge.errors.commentTooLong');
+      }
+    }
+
+    // Validate links: ensure any provided link looks like a URL
+    const currentLinks = links.filter((l) => l.trim() !== '');
+    if (currentLinks.length > 0 && !newErrors.links) {
+      const urlRegex = /^(https?:\/\/|www\.)[^\s]+$/i;
+      for (let i = 0; i < currentLinks.length; i++) {
+        if (!urlRegex.test(currentLinks[i].trim())) {
+          newErrors.links = t('createRefuge.errors.linkInvalid') || 'Invalid link format';
+          break;
+        }
       }
     }
 
@@ -423,7 +459,15 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
       ]);
     } catch (error: any) {
       console.error('Error submitting refuge proposal:', error);
-      showAlert(t('common.error'), error.message || t('createRefuge.error.generic'));
+      
+      // Skip showing alert if error is about coordinates
+      const errorMessage = error.message || '';
+      const isCoordError = /Cannot read property '(long|lat|coord)' of undefined/i.test(errorMessage) ||
+                           /coord/i.test(errorMessage);
+      
+      if (!isCoordError) {
+        showAlert(t('common.error'), errorMessage || t('createRefuge.error.generic'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -769,14 +813,17 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
           </View>
 
           {/* Links */}
-          <View style={styles.section}>
+          <View style={styles.section} ref={linksRef}>
             <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
             {links.map((link, index) => (
               <View key={index} style={styles.linkRow}>
                 <TextInput
-                  style={[styles.textInput, styles.linkInput]}
+                  style={[styles.textInput, styles.linkInput, errors.links && styles.textInputError]}
                   value={link}
-                  onChangeText={(value) => handleLinkChange(index, value)}
+                  onChangeText={(value) => {
+                    handleLinkChange(index, value);
+                    if (errors.links) setErrors({ ...errors, links: undefined });
+                  }}
                   placeholder={t('createRefuge.linkPlaceholder')}
                   placeholderTextColor="#9CA3AF"
                 />
@@ -790,6 +837,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
                 )}
               </View>
             ))}
+            {errors.links && <Text style={styles.errorText}>{errors.links}</Text>}
             <TouchableOpacity style={styles.addLinkButton} onPress={handleAddLink}>
               <Text style={styles.addLinkText}>+ {t('createRefuge.addLink')}</Text>
             </TouchableOpacity>
@@ -797,38 +845,17 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
 
           {/* Comment for admins */}
           <View style={styles.section} ref={commentRef}>
-            <View style={styles.labelRow}>
-              <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
-            </View>
-            <View style={styles.commentContainer}>
-              <TextInput
-                style={[styles.descriptionInput, errors.comment && styles.textInputError]}
-                value={comment}
-                onChangeText={(text) => {
-                  if (text.length <= 3000) {
-                    setComment(text);
-                    if (errors.comment) setErrors({ ...errors, comment: undefined });
-                  }
-                }}
-                placeholder={mode === 'edit' 
-                  ? t('editRefuge.adminCommentPlaceholder')
-                  : t('createRefuge.adminCommentPlaceholder')
-                }
-                placeholderTextColor="#9CA3AF"
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-                maxLength={3000}
-              />
-              <Text style={[
-                styles.commentCharCounter,
-                mode === 'edit' && comment.length < 100 && styles.commentCharCounterWarning,
-              ]}>
-                {comment.length}/3000
-                {mode === 'edit' && comment.length < 100 && ` (${t('editRefuge.minChars', { min: 100 })})`}
-              </Text>
-            </View>
-            {errors.comment && <Text style={styles.errorText}>{errors.comment}</Text>}
+            <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
+            <ProposalCommentInput
+              mode={mode}
+              value={comment}
+              onChange={setComment}
+              minChars={50}
+              maxChars={3000}
+              error={errors.comment}
+              onClearError={() => setErrors({ ...errors, comment: undefined })}
+              numberOfLines={4}
+            />
           </View>
 
           {/* Submit button */}
@@ -1014,21 +1041,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9CA3AF',
     backgroundColor: 'transparent',
-  },
-  commentContainer: {
-    position: 'relative',
-  },
-  commentCharCounter: {
-    position: 'absolute',
-    right: 12,
-    bottom: 12,
-    fontSize: 12,
-    color: '#9CA3AF',
-    backgroundColor: 'transparent',
-  },
-  commentCharCounterWarning: {
-    color: '#EF4444',
-    fontWeight: '600',
   },
   descriptionInput: {
     backgroundColor: '#F9FAFB',

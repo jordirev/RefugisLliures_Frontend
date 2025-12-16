@@ -250,7 +250,7 @@ export class RefugeProposalsService {
   ): Promise<RefugeProposal> {
     const data: RefugeProposalCreateDTO = {
       action: 'create',
-      payload: mapPartialRefugiToDTO(payload),
+      payload: mapPartialRefugiToDTO(payload, 'create'),
       comment: comment || null
     };
     
@@ -274,7 +274,7 @@ export class RefugeProposalsService {
     const data: RefugeProposalCreateDTO = {
       refuge_id: refugeId,
       action: 'update',
-      payload: mapPartialRefugiToDTO(payload),
+      payload: mapPartialRefugiToDTO(payload, 'update'),
       comment: comment || null
     };
     

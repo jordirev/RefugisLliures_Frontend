@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Modal,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
+import { ProposalCommentInput } from './ProposalCommentInput';
 
 interface DeleteRefugePopUpProps {
   visible: boolean;
@@ -29,7 +29,7 @@ export function DeleteRefugePopUp({
   const { t } = useTranslation();
   const [comment, setComment] = useState('');
 
-  const isCommentValid = comment.trim().length >= 100;
+  const isCommentValid = comment.trim().length >= 50;
 
   const handleConfirm = () => {
     if (!isCommentValid) return;
@@ -74,28 +74,14 @@ export function DeleteRefugePopUp({
 
             {/* Comment input */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>{t('deleteRefuge.commentLabel')}</Text>
-              <TextInput
-                style={styles.textInput}
+              <ProposalCommentInput
+                mode="delete"
                 value={comment}
-                onChangeText={(text) => {
-                  if (text.length <= 3000) {
-                    setComment(text);
-                  }
-                }}
-                placeholder={t('deleteRefuge.commentPlaceholder')}
-                placeholderTextColor="#9CA3AF"
-                multiline
+                onChange={setComment}
+                minChars={50}
+                maxChars={3000}
                 numberOfLines={6}
-                textAlignVertical="top"
-                maxLength={3000}
               />
-              <Text style={[
-                styles.charCounter,
-                comment.length < 100 && styles.charCounterWarning,
-              ]}>
-                {comment.length}/3000 {comment.length < 100 && t('deleteRefuge.minChars', { min: 100 })}
-              </Text>
             </View>
 
             {/* Buttons */}
@@ -114,7 +100,7 @@ export function DeleteRefugePopUp({
                 onPress={handleConfirm} 
                 activeOpacity={0.8}
                 disabled={!isCommentValid}
-                style={{ flex: 1, opacity: isCommentValid ? 1 : 0.5 }}
+                style={{ flex: 2, opacity: isCommentValid ? 1 : 0.5 }}
               >
                 <LinearGradient
                   colors={['#EF4444', '#DC2626']}
@@ -182,30 +168,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 24,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  textInput: {
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    fontSize: 14,
-    color: '#1F2937',
-    minHeight: 120,
-    textAlignVertical: 'top',
-  },
-  charCounter: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    marginTop: 6,
-    textAlign: 'right',
-  },
   buttonsContainer: {
     flexDirection: 'row',
     gap: 12,
@@ -215,32 +177,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
     borderRadius: 10,
     paddingVertical: 14,
+    paddingHorizontal: 10,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#D1D5DB',
   },
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
     color: '#6B7280',
   },
   confirmButton: {
+    flex: 1,
     borderRadius: 10,
     paddingVertical: 14,
+    paddingHorizontal: 10,
     alignItems: 'center',
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
   },
   confirmButtonText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '700',
     color: '#FFFFFF',
-  },
-  charCounterWarning: {
-    color: '#EF4444',
-    fontWeight: '600',
   },
 });

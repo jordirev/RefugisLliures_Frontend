@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, BackHandler, Platform, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, BackHandler, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
@@ -16,10 +17,6 @@ import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
 import { DeleteRefugePopUp } from './DeleteRefugePopUp';
-import { RefugeForm } from './RefugeForm';
-
-// Icons
-import BackIcon from '../assets/icons/arrow-left.svg';
 
 import { Location } from '../models';
 import { RefugeProposalsService } from '../services/RefugeProposalsService';
@@ -32,6 +29,7 @@ const Stack = createNativeStackNavigator();
 export function AppNavigator() {
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const navigation = useNavigation<any>();
   
   // Només estats globals (compartits entre pantalles)
   const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
@@ -80,10 +78,18 @@ export function AppNavigator() {
     } catch (error: any) {
       console.error('Error creating delete proposal:', error);
       setShowDeletePopup(false);
-      showAlert(
-        t('common.error'),
-        error.message || t('deleteRefuge.error.generic')
-      );
+      
+      // Skip showing alert if error is about coordinates
+      const errorMessage = error.message || '';
+      const isCoordError = /Cannot read property '(long|lat|coord)' of undefined/i.test(errorMessage) ||
+                           /coord/i.test(errorMessage);
+      
+      if (!isCoordError) {
+        showAlert(
+          t('common.error'),
+          errorMessage || t('deleteRefuge.error.generic')
+        );
+      }
     }
   };
 
@@ -124,6 +130,10 @@ export function AppNavigator() {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
+      if (refugeToEdit) {
+        setRefugeToEdit(undefined);
+        return true;
+      }
       if (showDetailScreen) {
         handleCloseDetailScreen();
         return true;
@@ -137,7 +147,7 @@ export function AppNavigator() {
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
-  }, [showBottomSheet, showDetailScreen]);
+  }, [showBottomSheet, showDetailScreen, refugeToEdit]);
 
   return (
     <View style={styles.container}>
@@ -225,48 +235,13 @@ export function AppNavigator() {
         </View>
       )}
 
-      {/* Edit Refuge Form overlay */}
+      {/* Edit Refuge Screen overlay - Per sobre de RefugeDetailScreen */}
       {refugeToEdit && (
         <View style={styles.editRefugeOverlay}>
-          <View style={styles.editRefugeContainer}>
-            {/* Header */}
-            <View style={styles.editHeader}>
-              <TouchableOpacity 
-                style={styles.backButton} 
-                onPress={() => {
-                  setRefugeToEdit(undefined);
-                }}
-              >
-                <BackIcon />
-              </TouchableOpacity>
-              <Text style={styles.editTitle}>{t('editRefuge.title')}</Text>
-            </View>
-            
-            {/* Refuge Form */}
-            <RefugeForm
-              mode="edit"
-              initialData={refugeToEdit}
-              onSubmit={async (data, comment) => {
-                try {
-                  await RefugeProposalsService.proposalEditRefuge(
-                    refugeToEdit.id,
-                    data as Partial<Location>,
-                    comment
-                  );
-                  setRefugeToEdit(undefined);
-                  showAlert(
-                    t('editRefuge.success.title'),
-                    t('editRefuge.success.message')
-                  );
-                } catch (error: any) {
-                  showAlert(t('common.error'), error.message);
-                }
-              }}
-              onCancel={() => {
-                setRefugeToEdit(undefined);
-              }}
-            />
-          </View>
+          <EditRefugeScreen 
+            refuge={refugeToEdit} 
+            onCancel={() => setRefugeToEdit(undefined)}
+          />
         </View>
       )}
 
@@ -315,26 +290,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'white',
     zIndex: 1001,
-  },
-  editRefugeContainer: {
-    flex: 1,
-  },
-  editHeader: {
-    height: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 12,
-  },
-  editTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1F2937',
   },
 });

@@ -481,7 +481,7 @@
     "commentLabel": "Raison de la suppression",
     "commentPlaceholder": "Expliquez pourquoi ce refuge devrait être supprimé (minimum {{min}} caractères)",
     "minChars": "(minimum {{min}})",
-    "confirm": "Envoyer la Proposition",
+    "confirm": "Envoyer Proposition",
     "success": {
       "title": "Proposition envoyée",
       "message": "Votre proposition de suppression a été envoyée avec succès et sera examinée par un administrateur"
@@ -493,7 +493,7 @@
   "editRefuge": {
     "title": "Modifier le Refuge",
     "proposalInfo": "Ceci est une proposition de modification de refuge qui sera examinée et approuvée par un administrateur",
-    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur (minimum 100 caractères)",
+    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur (minimum 50 caractères)",
     "minChars": "minimum {{min}}",
     "success": {
       "title": "Proposition envoyée",
@@ -537,9 +537,9 @@
       "nameRequired": "Le nom du refuge est obligatoire",
       "nameTooLong": "Le nom ne peut pas dépasser 100 caractères",
       "latitudeRequired": "La latitude est obligatoire",
-      "latitudeInvalid": "La latitude doit être un nombre valide",
+      "latitudeAtLeast3Decimals": "La latitude doit avoir au moins 3 décimales",
       "longitudeRequired": "La longitude est obligatoire",
-      "longitudeInvalid": "La longitude doit être un nombre valide",
+      "longitudeAtLeast3Decimals": "La longitude doit avoir au moins 3 décimales",
       "invalidColon": "Les coordonnées doivent utiliser un point (.) comme séparateur décimal",
       "regionTooLong": "La région ne peut pas dépasser 100 caractères",
       "departementTooLong": "Le département ne peut pas dépasser 100 caractères",
@@ -547,7 +547,8 @@
       "altitudeTooHigh": "L'altitude ne peut pas dépasser 8800m",
       "placesInvalid": "Les places doivent être un entier positif",
       "descriptionTooLong": "La description ne peut pas dépasser 3000 caractères",
-      "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères"
+      "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères",
+      "linkInvalid": "Le lien doit être une URL valide (commence par http://, https:// ou www.)"
     }
   }
 }

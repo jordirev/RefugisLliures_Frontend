@@ -494,7 +494,7 @@
   "editRefuge": {
     "title": "Editar Refugi",
     "proposalInfo": "Aquesta és una proposta d'edició de refugi que serà revisada i aprovada per un administrador",
-    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador (mínim 100 caràcters)",
+    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador (mínim 50 caràcters)",
     "minChars": "mínim {{min}}",
     "success": {
       "title": "Proposta enviada",
@@ -538,9 +538,9 @@
       "nameRequired": "El nom del refugi és obligatori",
       "nameTooLong": "El nom no pot superar els 100 caràcters",
       "latitudeRequired": "La latitud és obligatòria",
-      "latitudeInvalid": "La latitud ha de ser un número vàlid",
+      "latitudeAtLeast3Decimals": "La latitud ha de tenir almenys 3 decimals",
       "longitudeRequired": "La longitud és obligatòria",
-      "longitudeInvalid": "La longitud ha de ser un número vàlid",
+      "longitudeAtLeast3Decimals": "La longitud ha de tenir almenys 3 decimals",
       "invalidColon": "Les coordenades han de dur (.) com a separador decimal",
       "regionTooLong": "La regió no pot superar els 100 caràcters",
       "departementTooLong": "La província no pot superar els 100 caràcters",
@@ -548,7 +548,8 @@
       "altitudeTooHigh": "L'altitud no pot superar els 8800m",
       "placesInvalid": "Les places han de ser un enter positiu",
       "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
-      "commentTooLong": "El comentari no pot superar els 3000 caràcters"
+      "commentTooLong": "El comentari no pot superar els 3000 caràcters",
+      "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
     }
   }
 }

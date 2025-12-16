@@ -480,7 +480,7 @@
   "editRefuge": {
     "title": "Edit Shelter",
     "proposalInfo": "This is a shelter edit proposal that will be reviewed and approved by an administrator",
-    "adminCommentPlaceholder": "Required comment for administrator (minimum 100 characters)",
+    "adminCommentPlaceholder": "Required comment for administrator (minimum 50 characters)",
     "minChars": "minimum {{min}}",
     "success": {
       "title": "Proposal sent",
@@ -524,9 +524,9 @@
       "nameRequired": "Refuge name is required",
       "nameTooLong": "Name cannot exceed 100 characters",
       "latitudeRequired": "Latitude is required",
-      "latitudeInvalid": "Latitude must be a valid number",
+      "latitudeAtLeast3Decimals": "Latitude must have at least 3 decimal places",
       "longitudeRequired": "Longitude is required",
-      "longitudeInvalid": "Longitude must be a valid number",
+      "longitudeAtLeast3Decimals": "Longitude must have at least 3 decimal places",
       "invalidColon": "Coordinates must use a dot (.) as decimal separator",
       "regionTooLong": "Region cannot exceed 100 characters",
       "departementTooLong": "Province cannot exceed 100 characters",
@@ -534,7 +534,8 @@
       "altitudeTooHigh": "Altitude cannot exceed 8800m",
       "placesInvalid": "Places must be a positive integer",
       "descriptionTooLong": "Description cannot exceed 3000 characters",
-      "commentTooLong": "Comment cannot exceed 3000 characters"
+      "commentTooLong": "Comment cannot exceed 3000 characters",
+      "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
     }
   }
 }

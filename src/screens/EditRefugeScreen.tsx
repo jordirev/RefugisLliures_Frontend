@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
@@ -19,13 +19,31 @@ type EditRefugeScreenRouteProp = RouteProp<
   'EditRefuge'
 >;
 
-export function EditRefugeScreen() {
+interface EditRefugeScreenProps {
+  refuge?: Location;
+  onCancel?: () => void;
+}
+
+export function EditRefugeScreen({ refuge: refugeProp, onCancel: onCancelProp }: EditRefugeScreenProps = {}) {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
-  const route = useRoute<EditRefugeScreenRouteProp>();
   const insets = useSafeAreaInsets();
 
-  const { refuge } = route.params;
+  // Intentar obtenir navigation i route només si estem dins d'un navigator
+  let navigation: any;
+  let routeParams: any;
+  
+  try {
+    navigation = useNavigation<any>();
+    const route = useRoute<EditRefugeScreenRouteProp>();
+    routeParams = route.params;
+  } catch (e) {
+    // No estem dins d'un navigator, és normal quan es renderitza com a overlay
+    navigation = null;
+    routeParams = null;
+  }
+
+  // Usar el refuge del prop o del route
+  const refuge = refugeProp || routeParams?.refuge;
 
   const handleSubmit = async (data: Location | Partial<Location>, comment?: string) => {
     await RefugeProposalsService.proposalEditRefuge(
@@ -36,13 +54,28 @@ export function EditRefugeScreen() {
   };
 
   const handleCancel = () => {
-    navigation.goBack();
+    if (onCancelProp) {
+      onCancelProp();
+    } else if (navigation && navigation.canGoBack()) {
+      navigation.goBack();
+    } else if (navigation) {
+      navigation.navigate('RefugeDetails', { refugeId: refuge.id });
+    }
   };
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleCancel();
+      return true;
+    });
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <View style={styles.root}>
-      {/* Fixed header with SafeArea */}
-      <View style={styles.headerFixed}>
+      {/* Header with SafeArea */}
+      <View style={styles.headerContainer}>
         <SafeAreaView edges={['top']} style={styles.safeArea} />
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
@@ -53,7 +86,7 @@ export function EditRefugeScreen() {
       </View>
 
       {/* Form content */}
-      <View style={[styles.formContainer, { paddingTop: insets.top }]}>
+      <View style={styles.formContainer}>
         <RefugeForm
           mode="edit"
           initialData={refuge}
@@ -75,13 +108,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  headerFixed: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
+  headerContainer: {
     backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -106,14 +135,8 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    marginTop: 60,
   },
   bottomSafeArea: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     backgroundColor: '#FFFFFF',
-    zIndex: 5,
   },
 });
