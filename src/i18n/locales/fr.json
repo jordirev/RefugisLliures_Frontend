@@ -135,6 +135,8 @@
       "language": "Langue",
       "changeEmail": "Changer l'e-mail",
       "changePassword": "Changer le mot de passe",
+      "myProposals": "Mes propositions",
+      "proposalsManagement": "Gestion des propositions",
       "help": "Aide et support",
       "about": "À propos de l'app",
       "privacy": "Confidentialité",
@@ -549,6 +551,67 @@
       "descriptionTooLong": "La description ne peut pas dépasser 3000 caractères",
       "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères",
       "linkInvalid": "Le lien doit être une URL valide (commence par http://, https:// ou www.)"
+    }
+  },
+  "proposals": {
+    "titleMy": "Mes propositions",
+    "titleAdmin": "Gestion des propositions",
+    "emptyState": "Aucune proposition disponible",
+    "filters": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "rejected": "Rejetées"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "rejected": "Rejetée"
+    },
+    "actions": {
+      "create": "Créer",
+      "update": "Modifier",
+      "delete": "Supprimer"
+    },
+    "card": {
+      "unknownRefuge": "Refuge inconnu",
+      "unknownUser": "Utilisateur inconnu",
+      "createdAt": "Créée le",
+      "reviewedAt": "Révisée le",
+      "rejectionReason": "Raison du rejet",
+      "creator": "Créateur/trice",
+      "reviewer": "Réviseur/se"
+    },
+    "detail": {
+      "title": "Détail de la proposition",
+      "comment": "Commentaire",
+      "changes": "Modifications proposées",
+      "newRefuge": "Nouveau refuge",
+      "refugeToDelete": "Refuge à supprimer",
+      "current": "Actuel",
+      "new": "Nouveau",
+      "value": "Valeur",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+    "approve": {
+      "successTitle": "Proposition approuvée",
+      "successMessage": "La proposition a été approuvée avec succès"
+    },
+    "reject": {
+      "successTitle": "Proposition rejetée",
+      "successMessage": "La proposition a été rejetée avec succès"
+    },
+    "rejectModal": {
+      "title": "Rejeter la proposition",
+      "warning": "Vous êtes sur le point de rejeter la proposition pour le refuge '{{name}}'. Veuillez expliquer la raison du rejet.",
+      "confirm": "Rejeter la proposition"
+    },
+    "errors": {
+      "loadError": "Impossible de charger les propositions",
+      "loadDetailError": "Impossible de charger les détails de la proposition",
+      "approveError": "Impossible d'approuver la proposition",
+      "rejectError": "Impossible de rejeter la proposition"
     }
   }
 }

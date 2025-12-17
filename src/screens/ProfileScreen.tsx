@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
-import { RefugisService } from '../services/RefugisService';
+import { useRefuge } from '../hooks/useRefugesQuery';
 import { Location } from '../models';
 
 // Icones
@@ -31,7 +31,10 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser, backendUser, isLoading, refreshUserData, visitedRefuges } = useAuth();
   const insets = useSafeAreaInsets();
-  const [validVisitedRefuges, setValidVisitedRefuges] = useState<Location[]>(visitedRefuges);
+  
+  // Els refugis visitats ja vénen validats del context AuthContext
+  // No cal fer crides addicionals a l'API per validar-los
+  const validVisitedRefuges = visitedRefuges;
 
   // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
   useFocusEffect(
@@ -52,70 +55,14 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
     }, [])
   );
 
-  // Verificar quins refugis visitats existeixen (filtrar els que retornen 404)
-  useEffect(() => {
-    const validateVisitedRefuges = async () => {
-      const valid: Location[] = [];
-      
-      for (const refuge of visitedRefuges) {
-        try {
-          if (refuge.id) {
-            const exists = await RefugisService.getRefugiById(String(refuge.id));
-            if (exists) {
-              valid.push(refuge);
-            }
-          }
-        } catch (error: any) {
-          // Si retorna 404 o qualsevol altre error, no afegir a la llista
-          console.log(`Visited refuge ${refuge.id} not found or error:`, error.message);
-        }
-      }
-      
-      setValidVisitedRefuges(valid);
-    };
-    
-    if (visitedRefuges.length > 0) {
-      validateVisitedRefuges();
-    } else {
-      setValidVisitedRefuges([]);
-    }
-  }, [visitedRefuges]);
-
-  // Navigation handlers
-  const handleViewMap = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before navigating
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
-        if (fullRefuge) {
-          // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
-          onViewMap(fullRefuge);
-          // Navigate to Map tab using the navigator route name and pass the selected refuge
-          navigation.navigate('Map', { selectedRefuge: fullRefuge });
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge for map:', error);
-      // Fallback to showing with current data and navigate to Map tab
-      onViewMap(refuge);
-      navigation.navigate('Map', { selectedRefuge: refuge });
-    }
+  // Navigation handlers - les dades completes ja estan disponibles des de AuthContext
+  const handleViewMap = (refuge: Location) => {
+    onViewMap(refuge);
+    navigation.navigate('Map', { selectedRefuge: refuge });
   };
 
-  const handleViewDetail = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before showing detail
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
-        if (fullRefuge) {
-          onViewDetail(fullRefuge);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge details:', error);
-      // Fallback to showing with current data
-      onViewDetail(refuge);
-    }
+  const handleViewDetail = (refuge: Location) => {
+    onViewDetail(refuge);
   };
   
   // Empty component for visited refuges

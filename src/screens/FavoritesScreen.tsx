@@ -33,74 +33,21 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
-  // Verificar quins refugis favorits existeixen (filtrar els que retornen 404)
-  useEffect(() => {
-    const validateFavourites = async () => {
-      const valid: Location[] = [];
-      
-      for (const refuge of favouriteRefuges) {
-        try {
-          if (refuge.id) {
-            const exists = await RefugisService.getRefugiById(refuge.id);
-            if (exists) {
-              valid.push(refuge);
-            }
-          }
-        } catch (error: any) {
-          // Si retorna 404 o qualsevol altre error, no afegir a la llista
-          console.log(`Refuge ${refuge.id} not found or error:`, error.message);
-        }
-      }
-      
-      setValidFavourites(valid);
-    };
-    
-    if (favouriteRefuges.length > 0) {
-      validateFavourites();
-    } else {
-      setValidFavourites([]);
-    }
+  // Els refugis favorits ja vénen validats del context AuthContext
+  // No cal fer crides addicionals a l'API per validar-los
+  const favoriteLocations = useMemo(() => {
+    return favouriteRefuges.map(location => ({ ...location, isFavorite: true }));
   }, [favouriteRefuges]);
 
-  // Obtenir favorits amb la propietat isFavorite (prové del context)
-  const favoriteLocations = useMemo(() => {
-    return validFavourites.map(location => ({ ...location, isFavorite: true }));
-  }, [validFavourites]);
-
-  const handleViewMap = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before navigating
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(refuge.id);
-        if (fullRefuge) {
-          // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
-          onViewMap(fullRefuge);
-          // Navigate to Map tab using the navigator route name and pass the selected refuge
-          (navigation as any).navigate('Map', { selectedRefuge: fullRefuge });
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge for map:', error);
-      // Fallback to showing with current data and navigate to Map tab
-      onViewMap(refuge);
-      (navigation as any).navigate('Map', { selectedRefuge: refuge });
-    }
+  const handleViewMap = (refuge: Location) => {
+    // Les dades completes ja estan disponibles des de AuthContext
+    onViewMap(refuge);
+    (navigation as any).navigate('Map', { selectedRefuge: refuge });
   };
 
-  const handleViewDetail = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before showing detail
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(refuge.id);
-        if (fullRefuge) {
-          onViewDetail(fullRefuge);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge details:', error);
-      // Fallback to showing with current data
-      onViewDetail(refuge);
-    }
+  const handleViewDetail = (refuge: Location) => {
+    // Les dades completes ja estan disponibles des de AuthContext
+    onViewDetail(refuge);
   };
 
 

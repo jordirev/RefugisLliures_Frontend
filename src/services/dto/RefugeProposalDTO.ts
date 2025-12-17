@@ -10,6 +10,7 @@ import { RefugiBodyDTO } from './RefugiDTO';
 export interface RefugeProposalDTO {
   id: string;
   refuge_id: string | null;
+  refuge_snapshot: Partial<RefugiBodyDTO> | null;
   action: 'create' | 'update' | 'delete';
   payload: Partial<RefugiBodyDTO> | null;
   comment: string | null;

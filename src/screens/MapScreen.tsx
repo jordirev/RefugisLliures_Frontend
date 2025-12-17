@@ -6,10 +6,10 @@ import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../models';
-import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { useRefuges } from '../hooks/useRefugesQuery';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -30,8 +30,6 @@ export function MapScreen({
   
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [allLocations, setAllLocations] = useState<Location[]>([]); // Guardar tots els refugis
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   
@@ -42,8 +40,53 @@ export function MapScreen({
     condition: []
   });
 
+  // Construir objecte de filtres per React Query
+  const filterParams = useMemo(() => {
+    const params: any = {};
+    
+    // Altitude
+    if (filters.altitude && (filters.altitude[0] > 0 || filters.altitude[1] < MAX_ALTITUDE)) {
+      params.altitude_min = filters.altitude[0];
+      params.altitude_max = filters.altitude[1];
+    }
+    
+    // Places
+    if (filters.places && (filters.places[0] > 0 || filters.places[1] < MAX_PLACES)) {
+      params.places_min = filters.places[0];
+      params.places_max = filters.places[1];
+    }
+    
+    // Types
+    if (filters.types && filters.types.length > 0) {
+      params.type = filters.types.join(',');
+    }
+    
+    // Condition
+    if (filters.condition && filters.condition.length > 0) {
+      params.condition = filters.condition.join(',');
+    }
+    
+    return Object.keys(params).length > 0 ? params : undefined;
+  }, [filters]);
+
+  // Utilitzar React Query per carregar refugis
+  const { data: allLocations = [], isLoading, isError } = useRefuges(filterParams);
+
+  // Mostrar alertes quan hi ha errors o no resultats
+  useEffect(() => {
+    if (isError) {
+      showAlert(t('common.error'), t('map.errorLoading'));
+    } else if (!isLoading && filterParams && allLocations.length === 0) {
+      showAlert(
+        t('map.noResults.title'),
+        t('map.noResults.message'),
+        [{ text: t('common.ok'), onPress: hideAlert }]
+      );
+    }
+  }, [isError, isLoading, filterParams, allLocations.length]);
+
   // Filtrar refugis localment pel seu nom basant-se en searchQuery 
-  // (utilitzat per a llista de suggeriments a la searchbar)
+  // (utilitzat per a llista de suggeriments a la searchbar i mapa)
   const filteredLocations = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) {
       return allLocations;
@@ -61,72 +104,6 @@ export function MapScreen({
       filteredLocations.map(loc => loc.name).filter(Boolean)
     ));
   }, [searchQuery, filteredLocations]);
-
-  // Actualitzar locations mostrats al mapa
-  useEffect(() => {
-    setLocations(filteredLocations);
-  }, [filteredLocations]);
-
-  // Carregar refugis del backend només quan canvien els filtres (no searchQuery!)
-  useEffect(() => {
-    loadRefugis();
-  }, [filters]);
-
-  const loadRefugis = async () => {
-    try {
-      let data;
-      // Construir objecte de filtres només si cal
-      const filterParams: any = {};
-      if (filters) {
-        // Altitude
-        if (filters.altitude && (filters.altitude[0] > 0 || filters.altitude[1] < MAX_ALTITUDE)) {
-          filterParams.altitude_min = filters.altitude[0];
-          filterParams.altitude_max = filters.altitude[1];
-        }
-        // places
-        if (filters.places && (filters.places[0] > 0 || filters.places[1] < MAX_PLACES)) {
-          filterParams.places_min = filters.places[0];
-          filterParams.places_max = filters.places[1];
-        }
-        // Types
-        if (filters.types && filters.types.length > 0) {
-          filterParams.type = filters.types.join(',');
-        }
-        // Condition
-        if (filters.condition && filters.condition.length > 0) {
-          filterParams.condition = filters.condition.join(',');
-        }
-      }
-      
-      // Si no hi ha cap filtre, crida sense paràmetres
-      if (Object.keys(filterParams).length === 0) {
-        data = await RefugisService.getRefugis();
-      } else {
-        data = await RefugisService.getRefugis(filterParams);
-      }
-      // Validació de la resposta
-      if (!Array.isArray(data)) {
-        showAlert(t('common.error'), t('map.errorLoading'));
-        //console.error('Invalid refugis response:', data);
-        return;
-      }
-      
-      // Si hi ha filtres aplicats i no hi ha resultats, mostrar alerta
-      if (Object.keys(filterParams).length > 0 && data.length === 0) {
-        showAlert(
-          t('map.noResults.title'),
-          t('map.noResults.message'),
-          [{ text: t('common.ok'), onPress: hideAlert }]
-        );
-      }
-      
-      setAllLocations(data); // Guardar tots els refugis
-      setLocations(data); // Mostrar tots inicialment
-    } catch (error) {
-      showAlert(t('common.error'), t('map.errorLoading'));
-      //console.error(error);
-    }
-  };
 
   const handleOpenFilters = useCallback(() => {
     setIsFilterOpen(true);
@@ -147,18 +124,10 @@ export function MapScreen({
   // Quan l'usuari selecciona un suggeriment
   const handleSuggestionSelect = useCallback((name: string) => {
     setSearchQuery(name);
-    // Trobar el refugi seleccionat i obtenir detall (des de la cache si s'hi troba)
+    // Trobar el refugi seleccionat - les dades ja estan disponibles a allLocations
     const selectedRefuge = allLocations.find(loc => loc.name === name);
-    const fetchAndSelect = async (id: string) => {
-      try {
-        const detailed = await RefugisService.getRefugiById(id);
-        if (detailed) onLocationSelect(detailed);
-      } catch (err) {
-        // ignore
-      }
-    };
-    if (selectedRefuge && selectedRefuge.id) {
-      fetchAndSelect(selectedRefuge.id);
+    if (selectedRefuge) {
+      onLocationSelect(selectedRefuge);
     }
   }, [allLocations, onLocationSelect]);
 
@@ -186,18 +155,15 @@ export function MapScreen({
   return (
     <View style={styles.container}>
       <MapViewComponent
-        locations={locations}
-        onLocationSelect={async (payload: any) => {
-          try {
-            if (typeof payload === 'string') {
-              const detailed = await RefugisService.getRefugiById(payload);
-              if (detailed) onLocationSelect(detailed);
-            } else if (payload && payload.id) {
-              const detailed = await RefugisService.getRefugiById(payload.id);
-              if (detailed) onLocationSelect(detailed);
-            }
-          } catch (err) {
-            // ignore
+        locations={filteredLocations}
+        onLocationSelect={(payload: any) => {
+          // Simplement passar l'objecte sencer que ja està a filteredLocations
+          // No cal fer crides addicionals a l'API ja que tenim totes les dades
+          if (typeof payload === 'string') {
+            const location = filteredLocations.find(loc => loc.id === payload);
+            if (location) onLocationSelect(location);
+          } else if (payload && payload.id) {
+            onLocationSelect(payload);
           }
         }}
         selectedLocation={selectedLocation}

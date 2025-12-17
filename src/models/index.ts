@@ -111,6 +111,7 @@ export type RefugeProposalStatus = 'pending' | 'approved' | 'rejected';
 export interface RefugeProposal {
   id: string;
   refuge_id: string | null;
+  refuge_snapshot: Location | null;
   action: RefugeProposalAction;
   payload: Location | null;
   comment: string | null;

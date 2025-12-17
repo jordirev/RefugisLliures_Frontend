@@ -143,6 +143,60 @@ export class RefugeProposalsService {
   }
 
   /**
+   * Llista les propostes creades per l'usuari autenticat
+   *
+   * @param status - Filtre opcional per status (pending, approved, rejected)
+   * @returns Array de propostes creades per l'usuari
+   * @throws Error amb missatge descriptiu en cas d'error
+   */
+  static async listMyProposals(
+    status?: RefugeProposalStatus
+  ): Promise<RefugeProposal[]> {
+    try {
+      const params = new URLSearchParams();
+      if (status) {
+        params.append('status', status);
+      }
+
+      const queryString = params.toString();
+      const url = `${API_BASE_URL}/my-refuges-proposals/${queryString ? `?${queryString}` : ''}`;
+
+      const response = await apiGet(url);
+
+      if (!response.ok) {
+        const errorData: ApiErrorResponse = await response.json().catch(() => ({ 
+          error: `Error ${response.status}: ${response.statusText}` 
+        }));
+
+        if (response.status === 400) {
+          throw new Error(errorData.error || 'Paràmetres de filtre invàlids');
+        } else if (response.status === 401) {
+          throw new Error('No estàs autenticat. Si us plau, inicia sessió.');
+        } else if (response.status === 500) {
+          throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
+        }
+
+        throw new Error(errorData.error || 'No s\'han pogut carregar les teves propostes');
+      }
+
+      const proposalsDTO: RefugeProposalDTO[] = await response.json();
+
+      if (!Array.isArray(proposalsDTO)) {
+        console.error('Expected array but got:', proposalsDTO);
+        return [];
+      }
+
+      return mapRefugeProposalsFromDTO(proposalsDTO);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      console.error('Error listing my refuge proposals:', error);
+      throw new Error('No s\'han pogut carregar les teves propostes de refugis');
+    }
+  }
+
+  /**
    * Aprova una proposta de refugi (només admins)
    * 
    * @param proposalId - ID de la proposta a aprovar

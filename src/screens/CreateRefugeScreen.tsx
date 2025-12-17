@@ -4,7 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
-import { RefugeProposalsService } from '../services/RefugeProposalsService';
+import { useCreateRefugeProposal } from '../hooks/useProposalsQuery';
 import { RefugeForm } from '../components/RefugeForm';
 
 // Icons
@@ -15,8 +15,16 @@ export function CreateRefugeScreen() {
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
 
+  // Mutation for creating refuge proposal
+  const createProposalMutation = useCreateRefugeProposal();
+
   const handleSubmit = async (data: Location | Partial<Location>, comment?: string) => {
-    await RefugeProposalsService.proposalCreateRefuge(data as Location, comment);
+    return new Promise<void>((resolve, reject) => {
+      createProposalMutation.mutate({ payload: data as Location, comment }, {
+        onSuccess: () => resolve(),
+        onError: (error) => reject(error),
+      });
+    });
   };
 
   const handleCancel = () => {

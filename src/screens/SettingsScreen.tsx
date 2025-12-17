@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { isUserAdmin } from '../utils/authUtils';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
@@ -21,10 +22,20 @@ export function SettingsScreen() {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
+  const [isAdmin, setIsAdmin] = useState(false);
   // Fixed header height (used to pad the scrollable content)
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
   const insets = useSafeAreaInsets();
+  
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const adminStatus = await isUserAdmin();
+      setIsAdmin(adminStatus);
+    };
+    checkAdminStatus();
+  }, []);
   
   // Actualitzar l'idioma mostrat quan canvia l'idioma de i18n
   useEffect(() => {
@@ -110,6 +121,28 @@ export function SettingsScreen() {
           >
             <Text style={styles.menuText}>{t('profile.settings.changePassword')}</Text>
           </TouchableOpacity>
+
+          {/* Separador */}
+          <View style={styles.separator} />
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('Proposals', { mode: 'my' })}
+          >
+            <Text style={styles.menuText}>{t('profile.settings.myProposals')}</Text>
+          </TouchableOpacity>
+
+          { isAdmin && (
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('Proposals', { mode: 'admin' })}
+            >
+              <Text style={styles.menuText}>{t('profile.settings.proposalsManagement')}</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Separador */}
+          <View style={styles.separator} />
 
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
@@ -314,6 +347,11 @@ const styles = StyleSheet.create({
   menuArrow: {
     fontSize: 24,
     color: '#9ca3af',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#E5E7EB',
+    marginBottom: 24,
   },
   bottomSafeArea: {
     position: 'absolute',

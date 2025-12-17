@@ -4,7 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
-import { RefugeProposalsService } from '../services/RefugeProposalsService';
+import { useUpdateRefugeProposal } from '../hooks/useProposalsQuery';
 import { RefugeForm } from '../components/RefugeForm';
 
 // Icons
@@ -45,12 +45,20 @@ export function EditRefugeScreen({ refuge: refugeProp, onCancel: onCancelProp }:
   // Usar el refuge del prop o del route
   const refuge = refugeProp || routeParams?.refuge;
 
+  // Mutation for updating refuge proposal
+  const updateProposalMutation = useUpdateRefugeProposal();
+
   const handleSubmit = async (data: Location | Partial<Location>, comment?: string) => {
-    await RefugeProposalsService.proposalEditRefuge(
-      refuge.id,
-      data as Partial<Location>,
-      comment
-    );
+    return new Promise<void>((resolve, reject) => {
+      updateProposalMutation.mutate({ 
+        refugeId: refuge.id, 
+        payload: data as Partial<Location>, 
+        comment 
+      }, {
+        onSuccess: () => resolve(),
+        onError: (error) => reject(error),
+      });
+    });
   };
 
   const handleCancel = () => {

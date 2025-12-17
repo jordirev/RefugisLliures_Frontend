@@ -135,6 +135,8 @@
       "language": "Idioma",
       "changeEmail": "Cambiar correo electrónico",
       "changePassword": "Cambiar contraseña",
+      "myProposals": "Mis propuestas",
+      "proposalsManagement": "Gestión de propuestas",
       "help": "Ayuda y soporte",
       "about": "Sobre la app",
       "privacy": "Privacidad",
@@ -546,6 +548,65 @@
       "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
       "commentTooLong": "El comentario no puede superar los 3000 caracteres",
       "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
-    }
-  }
+    }  },
+  "proposals": {
+    "titleMy": "Mis propuestas",
+    "titleAdmin": "Gestión de propuestas",
+    "emptyState": "No hay propuestas disponibles",
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendientes",
+      "approved": "Aprobadas",
+      "rejected": "Rechazadas"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "actions": {
+      "create": "Crear",
+      "update": "Editar",
+      "delete": "Eliminar"
+    },
+    "card": {
+      "unknownRefuge": "Refugio desconocido",
+      "unknownUser": "Usuario desconocido",
+      "createdAt": "Creada el",
+      "reviewedAt": "Revisada el",
+      "rejectionReason": "Razón del rechazo",
+      "creator": "Creador/a",
+      "reviewer": "Revisor/a"
+    },
+    "detail": {
+      "title": "Detalle de la propuesta",
+      "comment": "Comentario",
+      "changes": "Cambios propuestos",
+      "newRefuge": "Nuevo refugio",
+      "refugeToDelete": "Refugio a eliminar",
+      "current": "Actual",
+      "new": "Nuevo",
+      "value": "Valor",
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    },
+    "approve": {
+      "successTitle": "Propuesta aprobada",
+      "successMessage": "La propuesta ha sido aprobada correctamente"
+    },
+    "reject": {
+      "successTitle": "Propuesta rechazada",
+      "successMessage": "La propuesta ha sido rechazada correctamente"
+    },
+    "rejectModal": {
+      "title": "Rechazar Propuesta",
+      "warning": "Estás a punto de rechazar la propuesta para el refugio '{{name}}'. Por favor, explica la razón del rechazo.",
+      "confirm": "Rechazar Propuesta"
+    },
+    "errors": {
+      "loadError": "No se pudieron cargar las propuestas",
+      "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
+      "approveError": "No se pudo aprobar la propuesta",
+      "rejectError": "No se pudo rechazar la propuesta"
+    }  }
 }

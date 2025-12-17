@@ -19,10 +19,9 @@ import { useCustomAlert } from '../hooks/useCustomAlert';
 import { RefugeCard } from '../components/RefugeCard';
 import { CustomAlert } from '../components/CustomAlert';
 import { Renovation, Location, User } from '../models';
-import { RenovationService } from '../services/RenovationService';
-import { RefugisService } from '../services/RefugisService';
-import { UsersService } from '../services/UsersService';
-import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
+import { useRefuge } from '../hooks/useRefugesQuery';
+import { useUser, useUsers } from '../hooks/useUsersQuery';
+import { useRenovation, useJoinRenovation, useLeaveRenovation, useDeleteRenovation } from '../hooks/useRenovationsQuery';
 
 // Icons
 import CalendarIcon from '../assets/icons/calendar2.svg';
@@ -54,70 +53,37 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
-  const [renovation, setRenovation] = useState<Renovation | null>(null);
-  const [refuge, setRefuge] = useState<Location | null>(null);
-  const [participants, setParticipants] = useState<User[]>([]);
-  const [creator, setCreator] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isJoining, setIsJoining] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const renovationId = route.params?.renovationId;
 
-  useFocusEffect(
-    useCallback(() => {
-      if (renovationId) {
-        loadRenovationDetails();
-      }
-    }, [renovationId])
+  // Utilitzar React Query per carregar renovation
+  const { data: renovation, isLoading: loadingRenovation } = useRenovation(renovationId);
+  
+  // Utilitzar React Query per carregar refuge i creator
+  const { data: refuge } = useRefuge(renovation?.refuge_id);
+  const { data: creator } = useUser(renovation?.creator_uid);
+  
+  // Determinar si mostrar participants
+  const shouldShowParticipants = renovation && firebaseUser && (
+    renovation.creator_uid === firebaseUser.uid ||
+    renovation.participants_uids?.includes(firebaseUser.uid)
   );
-
-  const loadRenovationDetails = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Load renovation
-      const renovationDTO = await RenovationService.getRenovationById(renovationId);
-      const mappedRenovation = mapRenovationFromDTO(renovationDTO);
-      setRenovation(mappedRenovation);
-
-      // Load refuge
-      const refugeData = await RefugisService.getRefugiById(mappedRenovation.refuge_id);
-      setRefuge(refugeData);
-
-      // Load creator
-      const creatorData = await UsersService.getUserByUid(mappedRenovation.creator_uid);
-      setCreator(creatorData);
-
-      // Load participants if user is creator or participant
-      if (firebaseUser) {
-        const isCreator = mappedRenovation.creator_uid === firebaseUser.uid;
-        const isParticipant = mappedRenovation.participants_uids?.includes(firebaseUser.uid);
-        
-        if (isCreator || isParticipant) {
-          await loadParticipants(mappedRenovation.participants_uids || []);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading renovation details:', error);
-      showAlert(t('common.error'), t('renovations.errorLoadingDetails'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadParticipants = async (participantUids: string[]) => {
-    try {
-      const participantsData = await Promise.all(
-        participantUids.map(uid => UsersService.getUserByUid(uid))
-      );
-      setParticipants(participantsData.filter(p => p !== null) as User[]);
-    } catch (error) {
-      console.error('Error loading participants:', error);
-    }
-  };
+  
+  // Carregar participants si cal
+  const { data: participants = [] } = useUsers(
+    shouldShowParticipants ? renovation?.participants_uids : undefined
+  );
+  
+  // Mutations
+  const joinMutation = useJoinRenovation();
+  const leaveMutation = useLeaveRenovation();
+  const deleteMutation = useDeleteRenovation();
+  
+  const isLoading = loadingRenovation;
+  const isJoining = joinMutation.isPending;
+  const isLeaving = leaveMutation.isPending;
+  const isDeleting = deleteMutation.isPending;
 
   const isUserCreator = firebaseUser && renovation && renovation.creator_uid === firebaseUser.uid;
   const isUserParticipant = firebaseUser && renovation && renovation.participants_uids?.includes(firebaseUser.uid);
@@ -151,25 +117,17 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
     navigation.navigate('Renovations')
   };
 
-  const handleJoinRenovation = async () => {
+  const handleJoinRenovation = () => {
     if (!renovation) return;
 
-    try {
-      setIsJoining(true);
-      const updatedRenovationDTO = await RenovationService.joinRenovation(renovation.id);
-      const updatedRenovation = mapRenovationFromDTO(updatedRenovationDTO);
-      setRenovation(updatedRenovation);
-      
-      // Reload participants
-      await loadParticipants(updatedRenovation.participants_uids || []);
-    } catch (error: any) {
-      showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
-    } finally {
-      setIsJoining(false);
-    }
+    joinMutation.mutate(renovation.id, {
+      onError: (error: any) => {
+        showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
+      }
+    });
   };
 
-  const handleLeaveRenovation = async () => {
+  const handleLeaveRenovation = () => {
     if (!renovation || !firebaseUser) return;
 
     showAlert(
@@ -180,30 +138,22 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
         {
           text: t('renovations.leave'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              setIsLeaving(true);
-              const updatedRenovationDTO = await RenovationService.removeParticipant(
-                renovation.id,
-                firebaseUser.uid
-              );
-              const updatedRenovation = mapRenovationFromDTO(updatedRenovationDTO);
-              setRenovation(updatedRenovation);
-              
-              // Reload participants
-              await loadParticipants(updatedRenovation.participants_uids || []);
-            } catch (error: any) {
-              showAlert(t('common.error'), error.message || t('renovations.errorLeaving'));
-            } finally {
-              setIsLeaving(false);
-            }
+          onPress: () => {
+            leaveMutation.mutate(
+              { renovationId: renovation.id, participantUid: firebaseUser.uid },
+              {
+                onError: (error: any) => {
+                  showAlert(t('common.error'), error.message || t('renovations.errorLeaving'));
+                }
+              }
+            );
           }
         }
       ]
     );
   };
 
-  const handleRemoveParticipant = async (participantUid: string, participantName: string) => {
+  const handleRemoveParticipant = (participantUid: string, participantName: string) => {
     if (!renovation) return;
 
     showAlert(
@@ -214,20 +164,15 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
         {
           text: t('common.remove'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              const updatedRenovationDTO = await RenovationService.removeParticipant(
-                renovation.id,
-                participantUid
-              );
-              const updatedRenovation = mapRenovationFromDTO(updatedRenovationDTO);
-              setRenovation(updatedRenovation);
-              
-              // Reload participants
-              await loadParticipants(updatedRenovation.participants_uids || []);
-            } catch (error: any) {
-              showAlert(t('common.error'), error.message || t('renovations.errorRemovingParticipant'));
-            }
+          onPress: () => {
+            leaveMutation.mutate(
+              { renovationId: renovation.id, participantUid },
+              {
+                onError: (error: any) => {
+                  showAlert(t('common.error'), error.message || t('renovations.errorRemovingParticipant'));
+                }
+              }
+            );
           }
         }
       ]
@@ -250,16 +195,15 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
         {
           text: t('common.delete'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              setIsDeleting(true);
-              await RenovationService.deleteRenovation(renovation.id);
-              handleGoBack();
-              setIsDeleting(false);
-            } catch (error: any) {
-              showAlert(t('common.error'), error.message || t('renovations.errorDeleting'));
-              setIsDeleting(false);
-            }
+          onPress: () => {
+            deleteMutation.mutate(renovation.id, {
+              onSuccess: () => {
+                handleGoBack();
+              },
+              onError: (error: any) => {
+                showAlert(t('common.error'), error.message || t('renovations.errorDeleting'));
+              }
+            });
           }
         }
       ]

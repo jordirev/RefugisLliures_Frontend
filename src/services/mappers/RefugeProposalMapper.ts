@@ -13,6 +13,7 @@ export function mapRefugeProposalFromDTO(dto: RefugeProposalDTO): RefugeProposal
   return {
     id: dto.id,
     refuge_id: dto.refuge_id,
+    refuge_snapshot: dto.refuge_snapshot ? mapRefugiFromDTO(dto.refuge_snapshot as any) : null,
     action: dto.action as RefugeProposalAction,
     payload: dto.payload ? mapRefugiFromDTO(dto.payload as any) : null,
     comment: dto.comment,

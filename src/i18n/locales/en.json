@@ -125,6 +125,8 @@
       "language": "Language",
       "changeEmail": "Change email",
       "changePassword": "Change password",
+      "myProposals": "My proposals",
+      "proposalsManagement": "Proposals management",
       "help": "Help & support",
       "about": "About the app",
       "privacy": "Privacy",
@@ -536,6 +538,65 @@
       "descriptionTooLong": "Description cannot exceed 3000 characters",
       "commentTooLong": "Comment cannot exceed 3000 characters",
       "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
-    }
-  }
+    }  },
+  "proposals": {
+    "titleMy": "My proposals",
+    "titleAdmin": "Proposals management",
+    "emptyState": "No proposals available",
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "create": "Create",
+      "update": "Edit",
+      "delete": "Delete"
+    },
+    "card": {
+      "unknownRefuge": "Unknown shelter",
+      "unknownUser": "Unknown user",
+      "createdAt": "Created on",
+      "reviewedAt": "Reviewed on",
+      "rejectionReason": "Rejection reason",
+      "creator": "Creator",
+      "reviewer": "Reviewer"
+    },
+    "detail": {
+      "title": "Proposal detail",
+      "comment": "Comment",
+      "changes": "Proposed changes",
+      "newRefuge": "New shelter",
+      "refugeToDelete": "Shelter to delete",
+      "current": "Current",
+      "new": "New",
+      "value": "Value",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "approve": {
+      "successTitle": "Proposal approved",
+      "successMessage": "The proposal has been approved successfully"
+    },
+    "reject": {
+      "successTitle": "Proposal rejected",
+      "successMessage": "The proposal has been rejected successfully"
+    },
+    "rejectModal": {
+      "title": "Reject Proposal",
+      "warning": "You are about to reject the proposal for shelter '{{name}}'. Please explain the reason for rejection.",
+      "confirm": "Reject Proposal"
+    },
+    "errors": {
+      "loadError": "Could not load proposals",
+      "loadDetailError": "Could not load proposal details",
+      "approveError": "Could not approve the proposal",
+      "rejectError": "Could not reject the proposal"
+    }  }
 }

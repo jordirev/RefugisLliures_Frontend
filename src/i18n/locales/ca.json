@@ -136,6 +136,8 @@
       "language": "Idioma",
       "changeEmail": "Canviar correu electrònic",
       "changePassword": "Canviar contrasenya",
+      "myProposals": "Les meves propostes",
+      "proposalsManagement": "Gestió de propostes",
       "help": "Ajuda i suport",
       "about": "Sobre l'app",
       "privacy": "Privacitat",
@@ -550,6 +552,67 @@
       "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
       "commentTooLong": "El comentari no pot superar els 3000 caràcters",
       "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
+    }
+  },
+  "proposals": {
+    "titleMy": "Les meves propostes",
+    "titleAdmin": "Gestió de propostes",
+    "emptyState": "No hi ha propostes disponibles",
+    "filters": {
+      "all": "Totes",
+      "pending": "Pendents",
+      "approved": "Aprovades",
+      "rejected": "Rebutjades"
+    },
+    "status": {
+      "pending": "Pendent",
+      "approved": "Aprovada",
+      "rejected": "Rebutjada"
+    },
+    "actions": {
+      "create": "Crear",
+      "update": "Editar",
+      "delete": "Eliminar"
+    },
+    "card": {
+      "unknownRefuge": "Refugi desconegut",
+      "unknownUser": "Usuari desconegut",
+      "createdAt": "Creada el",
+      "reviewedAt": "Revisada el",
+      "rejectionReason": "Raó del rebuig",
+      "creator": "Creador/a",
+      "reviewer": "Revisor/a"
+    },
+    "detail": {
+      "title": "Detall de la proposta",
+      "comment": "Comentari",
+      "changes": "Canvis proposats",
+      "newRefuge": "Nou refugi",
+      "refugeToDelete": "Refugi a eliminar",
+      "current": "Actual",
+      "new": "Nou",
+      "value": "Valor",
+      "approve": "Aprovar",
+      "reject": "Rebutjar"
+    },
+    "approve": {
+      "successTitle": "Proposta aprovada",
+      "successMessage": "La proposta ha estat aprovada correctament"
+    },
+    "reject": {
+      "successTitle": "Proposta rebutjada",
+      "successMessage": "La proposta ha estat rebutjada correctament"
+    },
+    "rejectModal": {
+      "title": "Rebutjar Proposta",
+      "warning": "Estàs a punt de rebutjar la proposta per al refugi '{{name}}'. Si us plau, explica la raó del rebuig.",
+      "confirm": "Rebutjar Proposta"
+    },
+    "errors": {
+      "loadError": "No s'han pogut carregar les propostes",
+      "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
+      "approveError": "No s'ha pogut aprovar la proposta",
+      "rejectError": "No s'ha pogut rebutjar la proposta"
     }
   }
 }
