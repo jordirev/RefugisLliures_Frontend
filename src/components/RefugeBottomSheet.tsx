@@ -6,6 +6,7 @@ import { Location } from '../models';
 import { BadgeType } from './BadgeType';
 import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
+import { useRefuge } from '../hooks/useRefugesQuery';
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
@@ -17,7 +18,7 @@ import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
 // BadgeCondition component handles mapping condition -> colors
 
 interface RefugeBottomSheetProps {
-  refuge: Location;
+  refugeId: string;
   isVisible: boolean;
   onClose: () => void;
   onToggleFavorite: (id: string | undefined) => void;
@@ -34,7 +35,7 @@ const SCREEN_WIDTH = Math.min(
 );
 
 export function RefugeBottomSheet({ 
-  refuge, 
+  refugeId, 
   isVisible, 
   onClose, 
   onToggleFavorite,
@@ -43,8 +44,19 @@ export function RefugeBottomSheet({
 }: RefugeBottomSheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refuge.id);
+  
+  // Load full refuge data - must call hooks BEFORE any early returns
+  const { data: refuge, isLoading } = useRefuge(refugeId || '');
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refugeId || '');
+  
+  // Early return if not visible (after all hooks)
   if (!isVisible) return null;
+
+  // Show loading or return null if no data
+  if (isLoading || !refuge || !refugeId) return null;
+
+  // Safe access to images_metadata
+  const imageUrl = refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
 
   return (
     <View style={styles.overlay}>
@@ -61,7 +73,7 @@ export function RefugeBottomSheet({
           <View style={styles.imageContainer}>
             <Image
               testID="refuge-image"
-              source={{ uri: refuge.images_metadata[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+              source={{ uri: imageUrl }}
               style={styles.image}
               resizeMode="cover"
             />

@@ -199,10 +199,14 @@ export function AppNavigator() {
         
         <Stack.Screen name="RefugeDetail">
           {({ route, navigation: nav }: any) => {
-            const { refuge } = route.params || {};
+            const { refugeId } = route.params || {};
+            if (!refugeId) {
+              nav.goBack();
+              return null;
+            }
             return (
               <RefugeDetailScreen
-                refuge={refuge}
+                refugeId={refugeId}
                 onBack={() => nav.goBack()}
                 onToggleFavorite={handleToggleFavorite}
                 onNavigate={handleNavigate}
@@ -219,7 +223,7 @@ export function AppNavigator() {
       {/* Bottom Sheet del refugi */}
       {selectedLocation && (
         <RefugeBottomSheet
-          refuge={selectedLocation}
+          refugeId={selectedLocation.id}
           isVisible={showBottomSheet}
           onClose={handleCloseBottomSheet}
           onToggleFavorite={handleToggleFavorite}
@@ -232,7 +236,7 @@ export function AppNavigator() {
       {selectedLocation && showDetailScreen && !refugeToEdit && (
         <View style={styles.detailScreenOverlay}>
           <RefugeDetailScreen
-            refuge={selectedLocation}
+            refugeId={selectedLocation.id}
             onEdit={(location: Location) => {
               setRefugeToEdit(location);
             }}

@@ -270,7 +270,7 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
         <View style={styles.refugeCardContainer}>
           <RefugeCard
             refuge={refuge}
-            onPress={() => navigation.navigate('RefugeDetail', { refuge })}
+            onPress={() => navigation.navigate('RefugeDetail', { refugeId: refuge?.id })}
             onViewMap={handleViewOnMap}
           />
         </View>

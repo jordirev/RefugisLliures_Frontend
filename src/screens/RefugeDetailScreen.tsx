@@ -30,6 +30,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
+import { useRefuge } from '../hooks/useRefugesQuery';
 
 // Icons
 import HeartIcon from '../assets/icons/fav.svg';
@@ -50,7 +51,7 @@ import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
 
 interface RefugeDetailScreenProps {
-  refuge: Location;
+  refugeId: string;
   onBack: () => void;
   onToggleFavorite: (id: string | undefined) => void;
   onNavigate: (location: Location) => void;
@@ -61,7 +62,7 @@ interface RefugeDetailScreenProps {
 // Badges use centralized components: Badge, BadgeType, BadgeCondition
 
 export function RefugeDetailScreen({ 
-  refuge, 
+  refugeId, 
   onBack, 
   onToggleFavorite, 
   onNavigate, 
@@ -71,14 +72,17 @@ export function RefugeDetailScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
-  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refuge.id);
+  
+  // Load full refuge data - pass refugeId even if empty (hooks must always be called)
+  const { data: refuge, isLoading: loadingRefuge } = useRefuge(refugeId || '');
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refugeId || '');
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
   const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
 
-  // Edge drag zone for opening menu
+  // Edge drag zone for opening menu - must be before early returns
   const screenWidth = Dimensions.get('window').width;
   const edgeDragZone = 500;
   const panResponder = React.useRef(
@@ -103,6 +107,22 @@ export function RefugeDetailScreen({
       },
     })
   ).current;
+
+  // Show loading or error if no valid refugeId or data (after all hooks)
+  if (!refugeId || loadingRefuge || !refuge) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <ArrowLeftIcon width={24} height={24} color="#1F2937" />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>{!refugeId ? t('common.error') : loadingRefuge ? t('common.loading') : t('common.error')}</Text>
+        </View>
+      </View>
+    );
+  }
 
   // Helper to format coordinates: lat 4 decimals, long 5 decimals -> (lat, long)
   const formatCoord = (lat: number, long: number) => {

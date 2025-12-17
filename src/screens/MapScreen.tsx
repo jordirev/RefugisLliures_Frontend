@@ -157,13 +157,21 @@ export function MapScreen({
       <MapViewComponent
         locations={filteredLocations}
         onLocationSelect={(payload: any) => {
-          // Simplement passar l'objecte sencer que ja està a filteredLocations
-          // No cal fer crides addicionals a l'API ja que tenim totes les dades
+          // Sempre buscar el location complet des de filteredLocations
+          // per assegurar que tenim totes les dades necessàries
+          let locationId: string | undefined;
+          
           if (typeof payload === 'string') {
-            const location = filteredLocations.find(loc => loc.id === payload);
-            if (location) onLocationSelect(location);
+            locationId = payload;
           } else if (payload && payload.id) {
-            onLocationSelect(payload);
+            locationId = payload.id;
+          }
+          
+          if (locationId) {
+            const location = filteredLocations.find(loc => loc.id === locationId);
+            if (location) {
+              onLocationSelect(location);
+            }
           }
         }}
         selectedLocation={selectedLocation}
