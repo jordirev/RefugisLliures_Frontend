@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
@@ -26,16 +26,46 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   
   // Get favourite refuges from AuthContext (contains full Location[])
   const { favouriteRefuges } = useAuth();
+  const [validFavourites, setValidFavourites] = useState<Location[]>(favouriteRefuges);
 
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
+  // Verificar quins refugis favorits existeixen (filtrar els que retornen 404)
+  useEffect(() => {
+    const validateFavourites = async () => {
+      const valid: Location[] = [];
+      
+      for (const refuge of favouriteRefuges) {
+        try {
+          if (refuge.id) {
+            const exists = await RefugisService.getRefugiById(refuge.id);
+            if (exists) {
+              valid.push(refuge);
+            }
+          }
+        } catch (error: any) {
+          // Si retorna 404 o qualsevol altre error, no afegir a la llista
+          console.log(`Refuge ${refuge.id} not found or error:`, error.message);
+        }
+      }
+      
+      setValidFavourites(valid);
+    };
+    
+    if (favouriteRefuges.length > 0) {
+      validateFavourites();
+    } else {
+      setValidFavourites([]);
+    }
+  }, [favouriteRefuges]);
+
   // Obtenir favorits amb la propietat isFavorite (prové del context)
   const favoriteLocations = useMemo(() => {
-    return favouriteRefuges.map(location => ({ ...location, isFavorite: true }));
-  }, [favouriteRefuges]);
+    return validFavourites.map(location => ({ ...location, isFavorite: true }));
+  }, [validFavourites]);
 
   const handleViewMap = async (refuge: Location) => {
     try {
@@ -83,7 +113,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
             <FavouriteIcon width={20} height={20} />
             <Text style={styles.title}>
               {t('favorites.title')}
-              <Text style={styles.count}> {`(${favouriteRefuges.length})`}</Text>
+              <Text style={styles.count}> {`(${validFavourites.length})`}</Text>
             </Text>
           </View>
         </SafeAreaView>

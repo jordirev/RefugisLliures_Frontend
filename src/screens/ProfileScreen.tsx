@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -31,6 +31,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser, backendUser, isLoading, refreshUserData, visitedRefuges } = useAuth();
   const insets = useSafeAreaInsets();
+  const [validVisitedRefuges, setValidVisitedRefuges] = useState<Location[]>(visitedRefuges);
 
   // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
   useFocusEffect(
@@ -50,6 +51,35 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
       };
     }, [])
   );
+
+  // Verificar quins refugis visitats existeixen (filtrar els que retornen 404)
+  useEffect(() => {
+    const validateVisitedRefuges = async () => {
+      const valid: Location[] = [];
+      
+      for (const refuge of visitedRefuges) {
+        try {
+          if (refuge.id) {
+            const exists = await RefugisService.getRefugiById(String(refuge.id));
+            if (exists) {
+              valid.push(refuge);
+            }
+          }
+        } catch (error: any) {
+          // Si retorna 404 o qualsevol altre error, no afegir a la llista
+          console.log(`Visited refuge ${refuge.id} not found or error:`, error.message);
+        }
+      }
+      
+      setValidVisitedRefuges(valid);
+    };
+    
+    if (visitedRefuges.length > 0) {
+      validateVisitedRefuges();
+    } else {
+      setValidVisitedRefuges([]);
+    }
+  }, [visitedRefuges]);
 
   // Navigation handlers
   const handleViewMap = async (refuge: Location) => {
@@ -182,7 +212,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={styles.statsGrid}>
               <View style={styles.statsRow}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.visited_refuges?.length ?? 0}</Text>
+                  <Text style={styles.statValue}>{validVisitedRefuges?.length ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
                 </View>
                 <View style={styles.statCard}>
@@ -207,11 +237,11 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={[styles.sectionTitle, { paddingLeft: 32, marginTop: 12 }]}>
               <AltitudeIcon width={20} height={20} />
               <Text style={styles.title}>{t('visited.title')}</Text>
-              <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
+              <Text style={styles.titleValue}>({validVisitedRefuges?.length ?? 0})</Text>
             </View>
-            {visitedRefuges && visitedRefuges.length > 0 ? (
+            {validVisitedRefuges && validVisitedRefuges.length > 0 ? (
               <View style={styles.visitedList}>
-                {visitedRefuges.map((refuge, index) => (
+                {validVisitedRefuges.map((refuge, index) => (
                   <RefugeCard
                     key={refuge.id ? String(refuge.id) : String(index)}
                     refuge={refuge}
