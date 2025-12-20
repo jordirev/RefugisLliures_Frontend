@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageMetadata } from '../models';
-import { PhotoViewerModal } from '../components/PhotoViewerModal';
+import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal';
 import { useTranslation } from '../hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -29,7 +29,14 @@ interface GalleryScreenProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const PHOTO_SIZE = (SCREEN_WIDTH - 48) / 3; // 3 columns with padding
+const PHOTO_SIZE = (SCREEN_WIDTH - 16) / 3; // 3 columns with padding and gaps
+
+// Helper function to check if a media is a video based on URL extension
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 export function GalleryScreen({
   photos,
@@ -107,11 +114,22 @@ export function GalleryScreen({
                 onPress={() => handlePhotoPress(index)}
                 activeOpacity={0.7}
               >
-                <Image
-                  source={{ uri: photo.url }}
-                  style={styles.photoImage}
-                  resizeMode="cover"
-                />
+                {isVideo(photo.url) ? (
+                  <>
+                    <VideoThumbnail uri={photo.url} style={styles.photoImage} />
+                    <View style={styles.videoOverlay}>
+                      <View style={styles.playIconContainer}>
+                        <Text style={styles.playIcon}>▶</Text>
+                      </View>
+                    </View>
+                  </>
+                ) : (
+                  <Image
+                    source={{ uri: photo.url }}
+                    style={styles.photoImage}
+                    resizeMode="cover"
+                  />
+                )}
               </TouchableOpacity>
             ))}
           </View>
@@ -208,12 +226,34 @@ const styles = StyleSheet.create({
   photoItem: {
     width: PHOTO_SIZE,
     height: PHOTO_SIZE,
-    borderRadius: 4,
     overflow: 'hidden',
     backgroundColor: '#F3F4F6',
+    position: 'relative',
   },
   photoImage: {
     width: '100%',
     height: '100%',
+  },
+  videoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  playIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playIcon: {
+    fontSize: 30,
+    color: '#e0e0e0ff',
+    marginLeft: 4,
   },
 });

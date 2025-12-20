@@ -38,7 +38,7 @@ import { useRefuge } from '../hooks/useRefugesQuery';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
 import { QuickActionsMenu } from '../components/QuickActionsMenu';
-import { PhotoViewerModal } from '../components/PhotoViewerModal';
+import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal';
 import { GalleryScreen } from './GalleryScreen';
 import { RefugeMediaService } from '../services/RefugeMediaService';
 import { useAuth } from '../contexts/AuthContext';
@@ -60,6 +60,12 @@ import CalendarIcon from '../assets/icons/calendar.svg';
 import GalleryIcon from '../assets/icons/gallery.png';
 import AddPhotoIcon from '../assets/icons/addPhoto.png';
 
+// Helper function to check if a media is a video based on URL extension
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 
 interface RefugeDetailScreenProps {
@@ -69,7 +75,6 @@ interface RefugeDetailScreenProps {
   onNavigate: (location: Location) => void;
   onEdit?: (location: Location) => void;
   onDelete?: (location: Location) => void;
-  onViewMap?: (location: Location) => void;
 }
 
 // Badges use centralized components: Badge, BadgeType, BadgeCondition
@@ -81,7 +86,6 @@ export function RefugeDetailScreen({
   onNavigate, 
   onEdit,
   onDelete,
-  onViewMap,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
@@ -98,6 +102,14 @@ export function RefugeDetailScreen({
   const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
   
+  // Sort images by uploaded_at in descending order (most recent first)
+  const sortedImages = React.useMemo(() => {
+    if (!refuge?.images_metadata) return [];
+    return [...refuge.images_metadata].sort((a, b) => {
+      return new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime();
+    });
+  }, [refuge?.images_metadata]);
+  
   // Gallery states
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [photoViewerVisible, setPhotoViewerVisible] = React.useState(false);
@@ -108,7 +120,7 @@ export function RefugeDetailScreen({
 
   // Edge drag zone for opening menu - must be before early returns
   const screenWidth = Dimensions.get('window').width;
-  const edgeDragZone = 500;
+  const edgeDragZone = 400;
   const panResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
@@ -472,9 +484,13 @@ export function RefugeDetailScreen({
 
       // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ['videos', 'images'],
         allowsMultipleSelection: true,
+        aspect: [4, 3],
         quality: 0.8,
+        ...(Platform.OS === 'ios' && {
+          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
+        }),
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -483,18 +499,22 @@ export function RefugeDetailScreen({
 
       setUploadingPhotos(true);
 
-      // Convert assets to File objects
-      const files: File[] = [];
+      // Prepare files for upload using URIs directly (React Native compatible)
+      const files: any[] = [];
       for (const asset of result.assets) {
-        const response = await fetch(asset.uri);
-        const blob = await response.blob();
-        const fileName = asset.uri.split('/').pop() || 'photo.jpg';
-        const file = new File([blob], fileName, { type: blob.type });
-        files.push(file);
+        const fileName = asset.uri.split('/').pop() || `photo_${Date.now()}.jpg`;
+        const mimeType = asset.mimeType || 'image/jpeg';
+        
+        // Create file object compatible with React Native FormData
+        files.push({
+          uri: asset.uri,
+          type: mimeType,
+          name: fileName,
+        });
       }
 
       // Upload photos
-      await RefugeMediaService.uploadRefugeMedia(refugeId, files);
+      await RefugeMediaService.uploadRefugeMedia(refugeId, files as any);
       
       // Refetch refuge data to get updated photos
       await refetchRefuge();
@@ -534,7 +554,7 @@ export function RefugeDetailScreen({
       {galleryScreenVisible && refuge && (
         <View style={StyleSheet.absoluteFill}>
           <GalleryScreen
-            photos={refuge.images_metadata || []}
+            photos={sortedImages}
             refugeId={refugeId}
             refugeName={refuge.name}
             onBack={() => setGalleryScreenVisible(false)}
@@ -575,17 +595,28 @@ export function RefugeDetailScreen({
                 scrollEventThrottle={16}
               >
                 {/* Display first 3 photos */}
-                {(refuge?.images_metadata || []).slice(0, 3).map((image, index) => (
+                {sortedImages.slice(0, 3).map((image, index) => (
                   <TouchableOpacity
                     key={image.key}
                     activeOpacity={0.9}
                     onPress={() => handleImagePress(index)}
                   >
-                    <Image
-                      source={{ uri: image.url }}
-                      style={styles.headerImage}
-                      resizeMode="cover"
-                    />
+                    {isVideo(image.url) ? (
+                      <>
+                        <VideoThumbnail uri={image.url} style={styles.headerImage} />
+                        <View style={styles.videoOverlay}>
+                          <View style={styles.playIconContainer}>
+                            <Text style={styles.playIcon}>▶</Text>
+                          </View>
+                        </View>
+                      </>
+                    ) : (
+                      <Image
+                        source={{ uri: image.url }}
+                        style={styles.headerImage}
+                        resizeMode="cover"
+                      />
+                    )}
                   </TouchableOpacity>
                 ))}
                 
@@ -593,7 +624,7 @@ export function RefugeDetailScreen({
                 <View style={styles.buttonScreen}>
                   <Image
                     source={{ 
-                      uri: refuge?.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
+                      uri: sortedImages[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
                     }}
                     style={styles.headerImage}
                     resizeMode="cover"
@@ -608,7 +639,7 @@ export function RefugeDetailScreen({
                       <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.viewAll')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.galleryButton}
+                      style={[styles.galleryButton, { paddingVertical: 12 }]}
                       onPress={handleUploadPhotos}
                       activeOpacity={0.8}
                       disabled={uploadingPhotos}
@@ -627,7 +658,7 @@ export function RefugeDetailScreen({
               {/* Page indicators (dots) */}
               <View style={styles.pageIndicators}>
                 {Array.from({ 
-                  length: Math.min((refuge?.images_metadata?.length || 0) + 1, 4) 
+                  length: Math.min(sortedImages.length + 1, 4) 
                 }).map((_, index) => (
                   <View
                     key={index}
@@ -822,7 +853,7 @@ export function RefugeDetailScreen({
 
           {/* Action buttons overlay (fixed) */}
           {!menuOpen && (
-            <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
+            <View style={[styles.fixedActions, { top: 18 + insets.top }]}> 
           <TouchableOpacity 
             style={styles.actionButton} 
             onPress={handleToggleFavorite}
@@ -860,18 +891,14 @@ export function RefugeDetailScreen({
         onPhotoUploaded={handlePhotoDeleted}
         onViewMap={() => {
           setMenuOpen(false);
-          if (onViewMap) {
-            onViewMap(refuge);
-          } else {
-            navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: refuge } });
-          }
+          navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: refuge } });
         }}
       />
 
       {/* Back button rendered last so it's visually on top - hide when menu is open */}
       {!menuOpen && (
         <TouchableOpacity 
-          style={[styles.backButton, { top: 16 + insets.top, zIndex: 3000 }]} 
+          style={[styles.backButton, { top: 18 + insets.top, zIndex: 3000 }]} 
           onPress={onBack}
           testID="back-button"
         >
@@ -916,7 +943,7 @@ export function RefugeDetailScreen({
       {/* Photo Viewer Modal */}
       <PhotoViewerModal
         visible={photoViewerVisible}
-        photos={refuge?.images_metadata || []}
+        photos={sortedImages}
         initialIndex={photoViewerIndex}
         refugeId={refugeId}
         onClose={() => setPhotoViewerVisible(false)}
@@ -1046,7 +1073,7 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     position: 'absolute',
-    top: 16,
+    top: 18,
     right: 16,
     flexDirection: 'row',
     gap: 8,
@@ -1066,6 +1093,7 @@ const styles = StyleSheet.create({
   },
   fixedActions: {
     position: 'absolute',
+    top: 18,
     right: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -1406,6 +1434,28 @@ const styles = StyleSheet.create({
   addPhotoButtonIcon: {
     width: 30, 
     height: 30,
-  }
+  },
+  videoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  playIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playIcon: {
+    fontSize: 50,
+    color: '#e0e0e0ff',
+    marginLeft: 4,
+  },
 });
 

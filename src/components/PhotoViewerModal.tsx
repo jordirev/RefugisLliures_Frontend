@@ -11,11 +11,14 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { useAuth } from '../contexts/AuthContext';
 import { ImageMetadata } from '../models';
 import { RefugeMediaService } from '../services/RefugeMediaService';
 import { UsersService } from '../services/UsersService';
 import { useQuery } from '@tanstack/react-query';
+import { CustomAlert } from './CustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Icons
 // @ts-ignore
@@ -34,6 +37,51 @@ interface PhotoViewerModalProps {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+// Helper function to check if a media is a video based on URL extension
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
+
+// Video thumbnail component - shows first frame of video with play icon
+export function VideoThumbnail({ uri, style, onPress }: { uri: string; style: any; onPress?: () => void }) {
+  const player = useVideoPlayer(uri, player => {
+    player.pause();
+    player.muted = true;
+  });
+
+  return (
+    <TouchableOpacity onPress={onPress} disabled={!onPress} activeOpacity={1} style={{ position: 'relative' }}>
+      <VideoView
+        player={player}
+        style={style}
+        contentFit="cover"
+        nativeControls={false}
+      />
+    </TouchableOpacity>
+  );
+}
+
+// Video player component using expo-video
+function VideoPlayer({ uri, style }: { uri: string; style: any }) {
+  const player = useVideoPlayer(uri, player => {
+    player.loop = false;
+    player.pause();
+  });
+
+  return (
+    <VideoView
+      player={player}
+      style={style}
+      fullscreenOptions={{ enable: true }}
+      allowsPictureInPicture
+      contentFit="contain"
+      nativeControls
+    />
+  );
+}
+
 export function PhotoViewerModal({
   visible,
   photos,
@@ -46,6 +94,7 @@ export function PhotoViewerModal({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const scrollViewRef = useRef<ScrollView>(null);
   const [deleting, setDeleting] = useState(false);
+  const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
   const currentPhoto = photos[currentIndex];
 
@@ -83,7 +132,7 @@ export function PhotoViewerModal({
   };
 
   const handleDelete = async () => {
-    Alert.alert(
+    showAlert(
       'Eliminar fotografia',
       'Estàs segur que vols eliminar aquesta fotografia? Aquesta acció no es pot desfer.',
       [
@@ -104,7 +153,7 @@ export function PhotoViewerModal({
               onClose();
             } catch (error) {
               console.error('Error deleting photo:', error);
-              Alert.alert('Error', 'No s\'ha pogut eliminar la fotografia');
+              showAlert('Error', 'No s\'ha pogut eliminar la fotografia');
             } finally {
               setDeleting(false);
             }
@@ -116,11 +165,10 @@ export function PhotoViewerModal({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ca-ES', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+    const day = date.getDate();
+    const month = date.toLocaleDateString('ca-ES', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
   };
 
   if (!currentPhoto) return null;
@@ -150,11 +198,15 @@ export function PhotoViewerModal({
         >
           {photos.map((photo, index) => (
             <View key={photo.key} style={styles.photoContainer}>
-              <Image
-                source={{ uri: photo.url }}
-                style={styles.photo}
-                resizeMode="contain"
-              />
+              {isVideo(photo.url) ? (
+                <VideoPlayer uri={photo.url} style={styles.photo} />
+              ) : (
+                <Image
+                  source={{ uri: photo.url }}
+                  style={styles.photo}
+                  resizeMode="contain"
+                />
+              )}
             </View>
           ))}
         </ScrollView>
@@ -209,6 +261,17 @@ export function PhotoViewerModal({
 
         {/* Page indicators removed as requested */}
       </View>
+
+      {/* CustomAlert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={alertVisible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          onDismiss={hideAlert}
+        />
+      )}
     </Modal>
   );
 }
@@ -241,10 +304,11 @@ const styles = StyleSheet.create({
   photo: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT * 0.8,
+    marginBottom: 40,
   },
   metadataContainer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 100,
     left: 20,
     right: 20,
     flexDirection: 'row',
@@ -252,11 +316,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metadataPill: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(31, 31, 31, 0.7)',
     borderRadius: 20,
     paddingVertical: 6,
-    paddingHorizontal: 10,
-    flex: 1,
+    paddingHorizontal: 14,
     marginRight: 12,
   },
   creatorInfo: {
@@ -298,10 +361,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   deleteButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(31, 31, 31, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
   },

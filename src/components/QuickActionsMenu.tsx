@@ -12,6 +12,7 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -168,9 +169,13 @@ export function QuickActionsMenu({
 
       // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ['images', 'videos'],
         allowsMultipleSelection: true,
+        aspect: [4, 3],
         quality: 0.8,
+        ...(Platform.OS === 'ios' && {
+          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
+        }),
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -179,18 +184,22 @@ export function QuickActionsMenu({
 
       setUploadingPhotos(true);
 
-      // Convert assets to File objects
-      const files: File[] = [];
+      // Prepare files for upload using URIs directly (React Native compatible)
+      const files: any[] = [];
       for (const asset of result.assets) {
-        const response = await fetch(asset.uri);
-        const blob = await response.blob();
-        const fileName = asset.uri.split('/').pop() || 'photo.jpg';
-        const file = new File([blob], fileName, { type: blob.type });
-        files.push(file);
+        const fileName = asset.uri.split('/').pop() || `photo_${Date.now()}.jpg`;
+        const mimeType = asset.mimeType || 'image/jpeg';
+        
+        // Create file object compatible with React Native FormData
+        files.push({
+          uri: asset.uri,
+          type: mimeType,
+          name: fileName,
+        });
       }
 
       // Upload photos
-      await RefugeMediaService.uploadRefugeMedia(refuge.id, files);
+      await RefugeMediaService.uploadRefugeMedia(refuge.id, files as any);
       
       // Notify parent to refetch refuge data
       if (onPhotoUploaded) {
@@ -371,7 +380,7 @@ export function QuickActionsMenu({
                   testID="menu-edit"
                 >
                   <View style={styles.menuItemIconContainer}>
-                    <Image source={EditIcon} style={{ width: 24, height: 24 }} />
+                    <Image source={EditIcon} style={{ width: 22, height: 22 }} />
                   </View>
                   <Text style={styles.menuItemText}>
                     {t('refuge.actions.editRefuge')}

@@ -7,6 +7,14 @@ import { BadgeType } from './BadgeType';
 import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
+import { VideoThumbnail } from './PhotoViewerModal';
+
+// Helper function to check if a media is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
@@ -71,12 +79,19 @@ export function RefugeBottomSheet({
         <View style={styles.handle} />
           {/* Imatge del refugi */}
           <View style={styles.imageContainer}>
-            <Image
-              testID="refuge-image"
-              source={{ uri: imageUrl }}
-              style={styles.image}
-              resizeMode="cover"
-            />
+            {isVideo(imageUrl) ? (
+              <VideoThumbnail
+                uri={imageUrl}
+                style={styles.image}
+              />
+            ) : (
+              <Image
+                testID="refuge-image"
+                source={{ uri: imageUrl }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            )}
           </View>
           <View style={styles.sheetInfo}>
             <View style={styles.namefavorite}>

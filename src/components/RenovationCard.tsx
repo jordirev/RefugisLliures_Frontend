@@ -2,6 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Renovation, Location } from '../models';
+import { VideoThumbnail } from './PhotoViewerModal';
+
+// Helper function to check if a media is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 import { LinearGradient } from 'expo-linear-gradient';
  
@@ -61,7 +69,7 @@ export function RenovationCard({
 
   const refugeName = refuge?.name || t('refuge.title');
   const refugeLocation = refuge?.region || refuge?.departement || t('common.unknown');
-  const refugeImageUrl = refuge.images_metadata[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
+  const refugeImageUrl = refuge?.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
 
   return (
     <View style={styles.card}>
@@ -85,11 +93,18 @@ export function RenovationCard({
         </View>
         
         <View style={styles.imageContainer}>
-          <Image 
-            source={{ uri: refugeImageUrl }} 
-            style={styles.image}
-            resizeMode="cover"
-          />
+          {isVideo(refugeImageUrl) ? (
+            <VideoThumbnail
+              uri={refugeImageUrl}
+              style={styles.image}
+            />
+          ) : (
+            <Image 
+              source={{ uri: refugeImageUrl }} 
+              style={styles.image}
+              resizeMode="cover"
+            />
+          )}
         </View>
       </View>
       

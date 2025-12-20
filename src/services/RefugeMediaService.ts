@@ -114,7 +114,7 @@ export class RefugeMediaService {
         throw new Error('No s\'han proporcionat fitxers per pujar');
       }
 
-      const url = `${API_BASE_URL}/refugis/${refugeId}/media/`;
+      const url = `${API_BASE_URL}/refuges/${refugeId}/media/`;
       
       // Crear FormData per enviar els fitxers
       const formData = new FormData();
@@ -177,7 +177,7 @@ export class RefugeMediaService {
 
       // Codificar la key per la URL (pot contenir caràcters especials)
       const encodedKey = encodeURIComponent(mediaKey);
-      const url = `${API_BASE_URL}/refugis/${refugeId}/media/${encodedKey}/`;
+      const url = `${API_BASE_URL}/refuges/${refugeId}/media/${encodedKey}/`;
       
       const response = await apiDelete(url);
       
