@@ -12,7 +12,9 @@ import {
   PanResponder,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import * as FileSystem from 'expo-file-system/legacy';
 // Use a runtime require for expo-sharing so the code still typechecks if the
@@ -46,10 +48,14 @@ import MenuIcon from '../assets/icons/menu.svg';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
 import { QuickActionsMenu } from '../components/QuickActionsMenu';
+import { PhotoViewerModal } from '../components/PhotoViewerModal';
+import { GalleryScreen } from './GalleryScreen';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
+import { RefugeMediaService } from '../services/RefugeMediaService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface RefugeDetailScreenProps {
   refugeId: string;
@@ -73,15 +79,24 @@ export function RefugeDetailScreen({
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const { firebaseUser } = useAuth();
   
   // Load full refuge data - pass refugeId even if empty (hooks must always be called)
-  const { data: refuge, isLoading: loadingRefuge } = useRefuge(refugeId || '');
+  const { data: refuge, isLoading: loadingRefuge, refetch: refetchRefuge } = useRefuge(refugeId || '');
   const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refugeId || '');
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
   const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
+  
+  // Gallery states
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  const [photoViewerVisible, setPhotoViewerVisible] = React.useState(false);
+  const [photoViewerIndex, setPhotoViewerIndex] = React.useState(0);
+  const [galleryScreenVisible, setGalleryScreenVisible] = React.useState(false);
+  const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
+  const imageScrollRef = React.useRef<ScrollView>(null);
 
   // Edge drag zone for opening menu - must be before early returns
   const screenWidth = Dimensions.get('window').width;
@@ -433,53 +448,206 @@ export function RefugeDetailScreen({
     setConfirmModalVisible(true);
   };
 
+  // Handle photo upload
+  const handleUploadPhotos = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necessaris',
+          'Necessitem permisos per accedir a les teves fotos i vídeos.'
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsMultipleSelection: true,
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        return;
+      }
+
+      setUploadingPhotos(true);
+
+      // Convert assets to File objects
+      const files: File[] = [];
+      for (const asset of result.assets) {
+        const response = await fetch(asset.uri);
+        const blob = await response.blob();
+        const fileName = asset.uri.split('/').pop() || 'photo.jpg';
+        const file = new File([blob], fileName, { type: blob.type });
+        files.push(file);
+      }
+
+      // Upload photos
+      await RefugeMediaService.uploadRefugeMedia(refugeId, files);
+      
+      // Refetch refuge data to get updated photos
+      await refetchRefuge();
+      
+      showAlert('Èxit', `S'han pujat ${files.length} foto(s) correctament.`);
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      showAlert('Error', 'No s\'han pogut pujar les fotos. Intenta-ho de nou.');
+    } finally {
+      setUploadingPhotos(false);
+    }
+  };
+
+  const handleImageScroll = (event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const screenWidth = Dimensions.get('window').width;
+    const index = Math.round(offsetX / screenWidth);
+    setCurrentImageIndex(index);
+  };
+
+  const handleImagePress = (index: number) => {
+    setPhotoViewerIndex(index);
+    setPhotoViewerVisible(true);
+  };
+
+  const handleViewAllPhotos = () => {
+    setGalleryScreenVisible(true);
+  };
+
+  const handlePhotoDeleted = async () => {
+    await refetchRefuge();
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
-      {/* Edge drag zone for opening menu from right edge */}
-      {!menuOpen && (
-        <View
-          style={styles.edgeDragZone}
-          {...panResponder.panHandlers}
-        >
-          <View style={styles.dragIndicator}>
-            <Image source={ArrowIcon} style={styles.dragIndicatorImage} />
-          </View>
-        </View>
-      )}
-      
-      {/* Contingut principal amb ScrollView */}
-      <ScrollView
-        style={styles.scrollContent}
-        contentContainerStyle={styles.scrollContentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header amb imatge (ara dins del ScrollView) */}
-        <View style={styles.header}>
-          <Image
-            source={{ 
-              uri: refuge.images_metadata[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
-            }}
-            style={styles.headerImage}
-            resizeMode="cover"
+      {/* Gallery Screen */}
+      {galleryScreenVisible && refuge && (
+        <View style={StyleSheet.absoluteFill}>
+          <GalleryScreen
+            photos={refuge.images_metadata || []}
+            refugeId={refugeId}
+            refugeName={refuge.name}
+            onBack={() => setGalleryScreenVisible(false)}
+            onPhotoDeleted={handlePhotoDeleted}
+            onAddPhotos={handleUploadPhotos}
           />
         </View>
+      )}
 
-        {/* Títol i informació bàsica */}
-        <View style={styles.section}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{refuge.name}</Text>
-            {refuge.departement ? (
-              <Text style={styles.departmentText}>{refuge.departement}, {refuge.region}</Text>
-            ) : null}
-            <View style={styles.badgesContainer}>
-              {refuge.type !== undefined && (
-                <BadgeType type={refuge.type} style={{ marginRight: 8 }} />
-              )}
-              {(refuge.condition !== undefined && refuge.condition !== null) && (
-                <BadgeCondition condition={refuge.condition} />
-              )}
+      {!galleryScreenVisible && (
+        <>
+          {/* Edge drag zone for opening menu from right edge */}
+          {!menuOpen && (
+            <View
+              style={styles.edgeDragZone}
+              {...panResponder.panHandlers}
+            >
+              <View style={styles.dragIndicator}>
+                <Image source={ArrowIcon} style={styles.dragIndicatorImage} />
+              </View>
             </View>
-          </View>
+          )}
+          
+          {/* Contingut principal amb ScrollView */}
+          <ScrollView
+            style={styles.scrollContent}
+            contentContainerStyle={styles.scrollContentContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Image gallery carousel - full width without padding */}
+            <View style={styles.imageGalleryContainer}>
+              <ScrollView
+                ref={imageScrollRef}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onScroll={handleImageScroll}
+                scrollEventThrottle={16}
+              >
+                {/* Display first 3 photos */}
+                {(refuge?.images_metadata || []).slice(0, 3).map((image, index) => (
+                  <TouchableOpacity
+                    key={image.key}
+                    activeOpacity={0.9}
+                    onPress={() => handleImagePress(index)}
+                  >
+                    <Image
+                      source={{ uri: image.url }}
+                      style={styles.headerImage}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                ))}
+                
+                {/* 4th screen with buttons */}
+                <View style={styles.buttonScreen}>
+                  <Image
+                    source={{ 
+                      uri: refuge?.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
+                    }}
+                    style={styles.headerImage}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.buttonScreenOverlay}>
+                    <TouchableOpacity
+                      style={styles.galleryButton}
+                      onPress={handleViewAllPhotos}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.viewAll')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.galleryButton}
+                      onPress={handleUploadPhotos}
+                      activeOpacity={0.8}
+                      disabled={uploadingPhotos}
+                    >
+                      {uploadingPhotos ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                      ) : (
+                        <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.addPhoto')}</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </ScrollView>
+
+              {/* Page indicators (dots) */}
+              <View style={styles.pageIndicators}>
+                {Array.from({ 
+                  length: Math.min((refuge?.images_metadata?.length || 0) + 1, 4) 
+                }).map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.pageIndicator,
+                      currentImageIndex === index && styles.pageIndicatorActive,
+                    ]}
+                  />
+                ))}
+              </View>
+            </View>
+
+            {/* Content with padding */}
+            <View style={styles.contentWithPadding}>
+              {/* Títol i informació bàsica */}
+              <View style={styles.section}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>{refuge.name}</Text>
+                  {refuge.departement ? (
+                    <Text style={styles.departmentText}>{refuge.departement}, {refuge.region}</Text>
+                  ) : null}
+                  <View style={styles.badgesContainer}>
+                    {refuge.type !== undefined && (
+                      <BadgeType type={refuge.type} style={{ marginRight: 8 }} />
+                    )}
+                    {(refuge.condition !== undefined && refuge.condition !== null) && (
+                      <BadgeCondition condition={refuge.condition} />
+                    )}
+                  </View>
+                </View>
           
           {/* Stats en grid */}
           <View style={styles.statsGrid}>
@@ -639,11 +807,12 @@ export function RefugeDetailScreen({
 
         {/* Espai addicional per permetre scroll complet */}
         <View style={{ height: 10 }} />
-      </ScrollView>
+            </View>
+          </ScrollView>
 
-      {/* Action buttons overlay (fixed) */}
-      {!menuOpen && (
-        <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
+          {/* Action buttons overlay (fixed) */}
+          {!menuOpen && (
+            <View style={[styles.fixedActions, { top: 16 + insets.top }]}> 
           <TouchableOpacity 
             style={styles.actionButton} 
             onPress={handleToggleFavorite}
@@ -725,6 +894,16 @@ export function RefugeDetailScreen({
         </View>
       </Modal>
       
+      {/* Photo Viewer Modal */}
+      <PhotoViewerModal
+        visible={photoViewerVisible}
+        photos={refuge?.images_metadata || []}
+        initialIndex={photoViewerIndex}
+        refugeId={refugeId}
+        onClose={() => setPhotoViewerVisible(false)}
+        onPhotoDeleted={handlePhotoDeleted}
+      />
+      
       {/* CustomAlert */}
       {alertConfig && (
         <CustomAlert
@@ -735,6 +914,8 @@ export function RefugeDetailScreen({
           onDismiss={hideAlert}
         />
       )}
+        </>
+      )}
     </View>
   );
 }
@@ -744,17 +925,77 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  imageGalleryContainer: {
+    height: 320,
+    position: 'relative',
+    width: '100%',
+  },
   header: {
     height: 320,
     position: 'relative',
     marginBottom: 16,
   },
   headerImage: {
-    width: '100%',
-    height: '100%',
-    // full-bleed image
+    width: Dimensions.get('window').width,
+    height: 320,
     alignSelf: 'stretch',
-    borderRadius: 12,
+  },
+  buttonScreen: {
+    width: Dimensions.get('window').width,
+    height: 320,
+    position: 'relative',
+  },
+  buttonScreenOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+    paddingHorizontal: 32,
+  },
+  galleryButton: {
+    backgroundColor: 'rgba(128, 128, 128, 0.7)',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    width: '100%',
+    maxWidth: 280,
+    alignItems: 'center',
+  },
+  galleryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  pageIndicators: {
+    position: 'absolute',
+    bottom: 16,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+  },
+  pageIndicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(200, 200, 200, 0.5)',
+  },
+  pageIndicatorActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    width: 16,
+    height: 6,
+    borderRadius: 3,
+  },
+  contentWithPadding: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   gradientOverlay: {
     position: 'absolute',
@@ -812,8 +1053,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
+    paddingBottom: 24,
   },
   section: {
     marginBottom: 24,

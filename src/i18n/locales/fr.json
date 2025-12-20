@@ -299,6 +299,13 @@
       "shareYourExperience": "Partagez votre expérience",
       "askAboutRefuge": "Poser des questions sur le refuge",
       "uploadPhoto": "Télécharger une photo du refuge"
+    },
+    "gallery": {
+      "title": "Galerie photos du refuge",
+      "viewAll": "Voir tout",
+      "addPhoto": "Ajouter photo",
+      "noPhotos": "Il n'y a pas de photos de ce refuge.",
+      "addPhotosButton": "Ajoutez des photos!"
     }
   },
   "filters": {

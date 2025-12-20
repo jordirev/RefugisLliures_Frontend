@@ -286,6 +286,13 @@
       "shareYourExperience": "Share your experience",
       "askAboutRefuge": "Ask questions about the refuge",
       "uploadPhoto": "Upload a photo of the refuge"
+    },
+    "gallery": {
+      "title": "Refuge photo gallery",
+      "viewAll": "View all",
+      "addPhoto": "Add photo",
+      "noPhotos": "There are no photos of this refuge.",
+      "addPhotosButton": "Add photos!"
     }
   },
   "filters": {

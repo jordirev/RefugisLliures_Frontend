@@ -300,6 +300,13 @@
       "shareYourExperience": "Comparteix la teva experiència",
       "askAboutRefuge": "Pregunta dubtes sobre el refugi",
       "uploadPhoto": "Puja una foto del refugi"
+    },
+    "gallery": {
+      "title": "Galeria de fotos del refugi",
+      "viewAll": "Veure-ho tot",
+      "addPhoto": "Afegeix foto",
+      "noPhotos": "No hi ha fotos d'aquest refugi.",
+      "addPhotosButton": "Afegeix fotos!"
     }
   },
   "filters": {
