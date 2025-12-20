@@ -186,9 +186,11 @@ export class RefugeProposalsService {
         return [];
       }
 
+      console.log('[RefugeProposalsService] Mapping', proposalsDTO.length, 'proposals');
       return mapRefugeProposalsFromDTO(proposalsDTO);
     } catch (error) {
       if (error instanceof Error) {
+        console.error('[RefugeProposalsService] Error in listMyProposals:', error.message, error);
         throw error;
       }
       console.error('Error listing my refuge proposals:', error);

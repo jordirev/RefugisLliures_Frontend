@@ -120,6 +120,57 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
 
   // Track if any field has been edited (for edit mode)
   const [hasChanges, setHasChanges] = useState(false);
+  
+  // Track if altitude has been manually edited by user
+  const [altitudeManuallyEdited, setAltitudeManuallyEdited] = useState(false);
+
+  // Auto-fetch elevation when latitude and longitude are both filled
+  useEffect(() => {
+    const fetchElevation = async () => {
+      // No autocompletar si l'usuari ha editat manualment l'altitude
+      if (altitudeManuallyEdited) {
+        return;
+      }
+      
+      // Verificar que ambdós camps estiguin completats
+      if (!latitude.trim() || !longitude.trim()) {
+        return;
+      }
+
+      // Validar que siguin números vàlids
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.results && data.results.length > 0) {
+            const elevation = data.results[0].elevation;
+            // Arrodonir l'elevació i establir-la
+            setAltitude(Math.round(elevation).toString());
+          }
+        }
+      } catch (error) {
+        // Silenciosament ignorar errors (l'API pot no estar disponible)
+        console.log('Error fetching elevation:', error);
+      }
+    };
+
+    // Debounce per evitar massa crides a l'API
+    const timeoutId = setTimeout(() => {
+      fetchElevation();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [latitude, longitude, altitudeManuallyEdited]);
 
   // Track edited state for each field
   useEffect(() => {
@@ -506,405 +557,405 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
   ];
 
   return (
-    <View style={styles.root}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}
+    >
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Info text about proposal */}
-          <Text style={styles.infoText}>
-            {mode === 'create' ? t('createRefuge.proposalInfo') : t('editRefuge.proposalInfo')}
-          </Text>
+        {/* Info text about proposal */}
+        <Text style={styles.infoText}>
+          {mode === 'create' ? t('createRefuge.proposalInfo') : t('editRefuge.proposalInfo')}
+        </Text>
 
-          {/* Default image */}
-          <TouchableOpacity onPress={handleImagePress} activeOpacity={0.7}>
-            <Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-              }}
-              style={styles.headerImage}
-              resizeMode="cover"
-            />
-          </TouchableOpacity>
+        {/* Default image */}
+        <TouchableOpacity onPress={handleImagePress} activeOpacity={0.7}>
+          <Image
+            source={{
+              uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+            }}
+            style={styles.headerImage}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
 
-          {/* Coordinates */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('createRefuge.coordinates')}</Text>
-            <View style={styles.coordsRow}>
-              <View style={styles.coordInput} ref={latitudeRef}>
-                <Text style={styles.inputLabel}>
-                  {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
-                </Text>
-                <TextInput
-                  style={[styles.textInput, errors.latitude && styles.textInputError]}
-                  value={latitude}
-                  onChangeText={(text) => {
-                    setLatitude(text);
-                    if (errors.latitude) setErrors({ ...errors, latitude: undefined });
-                  }}
-                  placeholder="42.1234"
-                  keyboardType="decimal-pad"
-                  placeholderTextColor="#9CA3AF"
-                />
-                {errors.latitude && <Text style={styles.errorText}>{errors.latitude}</Text>}
-              </View>
-              <View style={styles.coordInput} ref={longitudeRef}>
-                <Text style={styles.inputLabel}>
-                  {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
-                </Text>
-                <TextInput
-                  style={[styles.textInput, errors.longitude && styles.textInputError]}
-                  value={longitude}
-                  onChangeText={(text) => {
-                    setLongitude(text);
-                    if (errors.longitude) setErrors({ ...errors, longitude: undefined });
-                  }}
-                  placeholder="1.12345"
-                  keyboardType="decimal-pad"
-                  placeholderTextColor="#9CA3AF"
-                />
-                {errors.longitude && <Text style={styles.errorText}>{errors.longitude}</Text>}
-              </View>
-            </View>
-          </View>
-
-          {/* Name */}
-          <View style={styles.section} ref={nameRef}>
-            <Text style={styles.sectionTitle}>{t('createRefuge.generalInfo')}</Text>
-            <Text style={styles.inputLabel}>
-              {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-              style={[styles.nameInput, errors.name && styles.textInputError]}
-              value={name}
-              onChangeText={(text) => {
-                if (text.length <= 100) {
-                  setName(text);
-                  if (errors.name) setErrors({ ...errors, name: undefined });
-                }
-              }}
-              placeholder={t('createRefuge.namePlaceholder')}
-              placeholderTextColor="#9CA3AF"
-              maxLength={100}
-            />
-            {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-          </View>
-
-          {/* Region and Departement */}
-          <View style={[styles.section, { marginTop: 10 }]}>
-            <View style={styles.regionRow}>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  style={[
-                    styles.textInput,
-                    styles.regionInput,
-                    errors.region && styles.textInputError,
-                  ]}
-                  value={region}
-                  onChangeText={(text) => {
-                    if (text.length <= 100) {
-                      setRegion(text);
-                      if (errors.region) setErrors({ ...errors, region: undefined });
-                    }
-                  }}
-                  placeholder={t('createRefuge.regionPlaceholder')}
-                  placeholderTextColor="#9CA3AF"
-                  maxLength={100}
-                />
-                {errors.region && <Text style={styles.errorText}>{errors.region}</Text>}
-              </View>
-              <Text style={styles.regionSeparator}>,</Text>
-              <View style={{ flex: 1 }} ref={regionRef}>
-                <TextInput
-                  style={[
-                    styles.textInput,
-                    styles.regionInput,
-                    errors.departement && styles.textInputError,
-                  ]}
-                  value={departement}
-                  onChangeText={(text) => {
-                    if (text.length <= 100) {
-                      setDepartement(text);
-                      if (errors.departement) setErrors({ ...errors, departement: undefined });
-                    }
-                  }}
-                  placeholder={t('createRefuge.departementPlaceholder')}
-                  placeholderTextColor="#9CA3AF"
-                  maxLength={100}
-                />
-                {errors.departement && (
-                  <Text style={styles.errorText}>{errors.departement}</Text>
-                )}
-              </View>
-            </View>
-          </View>
-
-          {/* Type and Condition Selectors */}
-          <View style={styles.section}>
-            <Text style={styles.inputLabel}>{t('refuge.details.typeAndCondition')}</Text>
-            <Text style={[styles.inputLabel, { fontWeight: '300', fontSize: 10 }]}>
-              {t('createRefuge.pressToEdit')}
-            </Text>
-            <View style={styles.badgeSelectorsRow}>
-              <BadgeSelector
-                type="type"
-                value={type}
-                onValueChange={(value) => setType(value as string)}
-                expanded={typeExpanded}
-                onToggle={() => {
-                  setTypeExpanded(!typeExpanded);
-                  if (conditionExpanded) setConditionExpanded(false);
-                }}
-                renderOptionsExternal={true}
-              />
-              <BadgeSelector
-                type="condition"
-                value={condition}
-                onValueChange={(value) => setCondition(value as number)}
-                expanded={conditionExpanded}
-                onToggle={() => {
-                  setConditionExpanded(!conditionExpanded);
-                  if (typeExpanded) setTypeExpanded(false);
-                }}
-                renderOptionsExternal={true}
-              />
-            </View>
-
-            {/* Render options below badges */}
-            {(typeExpanded || conditionExpanded) && (
-              <View style={styles.badgeOptionsContainer}>
-                {typeExpanded && (
-                  <>
-                    {[
-                      { value: 'non gardé', label: 'refuge.type.noGuarded' },
-                      {
-                        value: 'cabane ouverte mais ocupee par le berger l ete',
-                        label: 'refuge.type.occupiedInSummer',
-                      },
-                      { value: 'fermée', label: 'refuge.type.closed' },
-                      { value: 'orri', label: 'refuge.type.shelter' },
-                      { value: 'emergence', label: 'refuge.type.emergency' },
-                    ].map((option) => (
-                      <TouchableOpacity
-                        key={String(option.value)}
-                        onPress={() => {
-                          setType(option.value);
-                          setTypeExpanded(false);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <BadgeType type={option.value} />
-                      </TouchableOpacity>
-                    ))}
-                  </>
-                )}
-                {conditionExpanded && (
-                  <>
-                    {[
-                      { value: 0, label: 'refuge.condition.poor' },
-                      { value: 1, label: 'refuge.condition.fair' },
-                      { value: 2, label: 'refuge.condition.good' },
-                      { value: 3, label: 'refuge.condition.excellent' },
-                    ].map((option) => (
-                      <TouchableOpacity
-                        key={String(option.value)}
-                        onPress={() => {
-                          setCondition(option.value);
-                          setConditionExpanded(false);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <BadgeCondition condition={option.value} />
-                      </TouchableOpacity>
-                    ))}
-                  </>
-                )}
-              </View>
-            )}
-          </View>
-
-          {/* Stats */}
-          <View style={styles.section}>
-            <View style={styles.statsGrid}>
-              <View
-                style={[styles.statCard, errors.altitude && styles.statCardError]}
-                ref={altitudeRef}
-              >
-                <AltitudeIcon width={24} height={24} color="#FF6900" />
-                <Text style={styles.statLabel}>{t('refuge.details.altitude')} (m)</Text>
-                <TextInput
-                  style={styles.statInput}
-                  value={altitude}
-                  onChangeText={(text) => {
-                    setAltitude(text);
-                    if (errors.altitude) setErrors({ ...errors, altitude: undefined });
-                  }}
-                  placeholder="0"
-                  keyboardType="number-pad"
-                  placeholderTextColor="#9CA3AF"
-                />
-                {errors.altitude && <Text style={styles.errorTextStat}>{errors.altitude}</Text>}
-              </View>
-
-              <View
-                style={[styles.statCard, errors.places && styles.statCardError]}
-                ref={placesRef}
-              >
-                <UsersIcon width={24} height={24} color="#FF6900" />
-                <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
-                <TextInput
-                  style={styles.statInput}
-                  value={places}
-                  onChangeText={(text) => {
-                    setPlaces(text);
-                    if (errors.places) setErrors({ ...errors, places: undefined });
-                  }}
-                  placeholder="0"
-                  keyboardType="number-pad"
-                  placeholderTextColor="#9CA3AF"
-                />
-                {errors.places && <Text style={styles.errorTextStat}>{errors.places}</Text>}
-              </View>
-            </View>
-          </View>
-
-          {/* Description */}
-          <View style={styles.section} ref={descriptionRef}>
-            <View style={styles.labelRow}>
-              <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
-            </View>
-            <View style={styles.descriptionContainer}>
+        {/* Coordinates */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('createRefuge.coordinates')}</Text>
+          <View style={styles.coordsRow}>
+            <View style={styles.coordInput} ref={latitudeRef}>
+              <Text style={styles.inputLabel}>
+                {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
+              </Text>
               <TextInput
-                style={[styles.descriptionInput, errors.description && styles.textInputError]}
-                value={description}
+                style={[styles.textInput, errors.latitude && styles.textInputError]}
+                value={latitude}
                 onChangeText={(text) => {
-                  if (text.length <= 3000) {
-                    setDescription(text);
-                    if (errors.description) setErrors({ ...errors, description: undefined });
+                  setLatitude(text);
+                  if (errors.latitude) setErrors({ ...errors, latitude: undefined });
+                }}
+                placeholder="42.1234"
+                keyboardType="decimal-pad"
+                placeholderTextColor="#9CA3AF"
+              />
+              {errors.latitude && <Text style={styles.errorText}>{errors.latitude}</Text>}
+            </View>
+            <View style={styles.coordInput} ref={longitudeRef}>
+              <Text style={styles.inputLabel}>
+                {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
+              </Text>
+              <TextInput
+                style={[styles.textInput, errors.longitude && styles.textInputError]}
+                value={longitude}
+                onChangeText={(text) => {
+                  setLongitude(text);
+                  if (errors.longitude) setErrors({ ...errors, longitude: undefined });
+                }}
+                placeholder="1.12345"
+                keyboardType="decimal-pad"
+                placeholderTextColor="#9CA3AF"
+              />
+              {errors.longitude && <Text style={styles.errorText}>{errors.longitude}</Text>}
+            </View>
+          </View>
+        </View>
+
+        {/* Name */}
+        <View style={styles.section} ref={nameRef}>
+          <Text style={styles.sectionTitle}>{t('createRefuge.generalInfo')}</Text>
+          <Text style={styles.inputLabel}>
+            {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            style={[styles.nameInput, errors.name && styles.textInputError]}
+            value={name}
+            onChangeText={(text) => {
+              if (text.length <= 100) {
+                setName(text);
+                if (errors.name) setErrors({ ...errors, name: undefined });
+              }
+            }}
+            placeholder={t('createRefuge.namePlaceholder')}
+            placeholderTextColor="#9CA3AF"
+            maxLength={100}
+          />
+          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+        </View>
+
+        {/* Region and Departement */}
+        <View style={[styles.section, { marginTop: 10 }]}>
+          <View style={styles.regionRow}>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                style={[
+                  styles.textInput,
+                  styles.regionInput,
+                  errors.region && styles.textInputError,
+                ]}
+                value={region}
+                onChangeText={(text) => {
+                  if (text.length <= 100) {
+                    setRegion(text);
+                    if (errors.region) setErrors({ ...errors, region: undefined });
                   }
                 }}
-                placeholder={t('createRefuge.descriptionPlaceholder')}
+                placeholder={t('createRefuge.regionPlaceholder')}
                 placeholderTextColor="#9CA3AF"
-                multiline
-                numberOfLines={10}
-                textAlignVertical="top"
-                maxLength={3000}
+                maxLength={100}
               />
-              <Text style={styles.descriptionCharCounter}>{description.length}/3000</Text>
+              {errors.region && <Text style={styles.errorText}>{errors.region}</Text>}
             </View>
-            {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-          </View>
-
-          {/* Amenities */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
-            <View style={styles.amenitiesGrid}>
-              {amenityList.map((amenity) => (
-                <TouchableOpacity
-                  key={amenity.key}
-                  style={[
-                    styles.amenityChip,
-                    amenities[amenity.key] && styles.amenityChipSelected,
-                  ]}
-                  onPress={() => handleAmenityToggle(amenity.key)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.amenityIcon}>{amenity.icon}</Text>
-                  <Text
-                    style={[
-                      styles.amenityLabel,
-                      amenities[amenity.key] && styles.amenityLabelSelected,
-                    ]}
-                  >
-                    {t(`refuge.amenities.${amenity.key}`)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <Text style={styles.regionSeparator}>,</Text>
+            <View style={{ flex: 1 }} ref={regionRef}>
+              <TextInput
+                style={[
+                  styles.textInput,
+                  styles.regionInput,
+                  errors.departement && styles.textInputError,
+                ]}
+                value={departement}
+                onChangeText={(text) => {
+                  if (text.length <= 100) {
+                    setDepartement(text);
+                    if (errors.departement) setErrors({ ...errors, departement: undefined });
+                  }
+                }}
+                placeholder={t('createRefuge.departementPlaceholder')}
+                placeholderTextColor="#9CA3AF"
+                maxLength={100}
+              />
+              {errors.departement && (
+                <Text style={styles.errorText}>{errors.departement}</Text>
+              )}
             </View>
           </View>
+        </View>
 
-          {/* Links */}
-          <View style={styles.section} ref={linksRef}>
-            <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
-            {links.map((link, index) => (
-              <View key={index} style={styles.linkRow}>
-                <TextInput
-                  style={[styles.textInput, styles.linkInput, errors.links && styles.textInputError]}
-                  value={link}
-                  onChangeText={(value) => {
-                    handleLinkChange(index, value);
-                    if (errors.links) setErrors({ ...errors, links: undefined });
-                  }}
-                  placeholder={t('createRefuge.linkPlaceholder')}
-                  placeholderTextColor="#9CA3AF"
-                />
-                {links.length > 1 && (
-                  <TouchableOpacity
-                    style={styles.removeLinkButton}
-                    onPress={() => handleRemoveLink(index)}
-                  >
-                    <Text style={styles.removeLinkText}>✕</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            ))}
-            {errors.links && <Text style={styles.errorText}>{errors.links}</Text>}
-            <TouchableOpacity style={styles.addLinkButton} onPress={handleAddLink}>
-              <Text style={styles.addLinkText}>+ {t('createRefuge.addLink')}</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Comment for admins */}
-          <View style={styles.section} ref={commentRef}>
-            <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
-            <ProposalCommentInput
-              mode={mode}
-              value={comment}
-              onChange={setComment}
-              minChars={50}
-              maxChars={3000}
-              error={errors.comment}
-              onClearError={() => setErrors({ ...errors, comment: undefined })}
-              numberOfLines={4}
+        {/* Type and Condition Selectors */}
+        <View style={styles.section}>
+          <Text style={styles.inputLabel}>{t('refuge.details.typeAndCondition')}</Text>
+          <Text style={[styles.inputLabel, { fontWeight: '300', fontSize: 10 }]}>
+            {t('createRefuge.pressToEdit')}
+          </Text>
+          <View style={styles.badgeSelectorsRow}>
+            <BadgeSelector
+              type="type"
+              value={type}
+              onValueChange={(value) => setType(value as string)}
+              expanded={typeExpanded}
+              onToggle={() => {
+                setTypeExpanded(!typeExpanded);
+                if (conditionExpanded) setConditionExpanded(false);
+              }}
+              renderOptionsExternal={true}
+            />
+            <BadgeSelector
+              type="condition"
+              value={condition}
+              onValueChange={(value) => setCondition(value as number)}
+              expanded={conditionExpanded}
+              onToggle={() => {
+                setConditionExpanded(!conditionExpanded);
+                if (typeExpanded) setTypeExpanded(false);
+              }}
+              renderOptionsExternal={true}
             />
           </View>
 
-          {/* Submit button */}
-          <View style={styles.buttonContainer}>
-            {canSubmit ? (
-              <TouchableOpacity
-                onPress={handleSubmit}
-                disabled={isLoading}
-                activeOpacity={0.8}
-              >
-                <LinearGradient
-                  colors={['#FF6900', '#FF8533']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.submitButton}
-                >
-                  <Text style={styles.submitButtonText}>
-                    {isLoading ? t('common.loading') : t('createRefuge.submit')}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.submitButtonDisabled}>
-                <Text style={styles.submitButtonTextDisabled}>{t('createRefuge.submit')}</Text>
-              </View>
-            )}
-          </View>
+          {/* Render options below badges */}
+          {(typeExpanded || conditionExpanded) && (
+            <View style={styles.badgeOptionsContainer}>
+              {typeExpanded && (
+                <>
+                  {[
+                    { value: 'non gardé', label: 'refuge.type.noGuarded' },
+                    {
+                      value: 'cabane ouverte mais ocupee par le berger l ete',
+                      label: 'refuge.type.occupiedInSummer',
+                    },
+                    { value: 'fermée', label: 'refuge.type.closed' },
+                    { value: 'orri', label: 'refuge.type.shelter' },
+                    { value: 'emergence', label: 'refuge.type.emergency' },
+                  ].map((option) => (
+                    <TouchableOpacity
+                      key={String(option.value)}
+                      onPress={() => {
+                        setType(option.value);
+                        setTypeExpanded(false);
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <BadgeType type={option.value} />
+                    </TouchableOpacity>
+                  ))}
+                </>
+              )}
+              {conditionExpanded && (
+                <>
+                  {[
+                    { value: 0, label: 'refuge.condition.poor' },
+                    { value: 1, label: 'refuge.condition.fair' },
+                    { value: 2, label: 'refuge.condition.good' },
+                    { value: 3, label: 'refuge.condition.excellent' },
+                  ].map((option) => (
+                    <TouchableOpacity
+                      key={String(option.value)}
+                      onPress={() => {
+                        setCondition(option.value);
+                        setConditionExpanded(false);
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <BadgeCondition condition={option.value} />
+                    </TouchableOpacity>
+                  ))}
+                </>
+              )}
+            </View>
+          )}
+        </View>
 
-          {/* Bottom spacing */}
-          <View style={{ height: 40 }} />
-        </ScrollView>
-      </KeyboardAvoidingView>
+        {/* Stats */}
+        <View style={styles.section}>
+          <View style={styles.statsGrid}>
+            <View
+              style={[styles.statCard, errors.altitude && styles.statCardError]}
+              ref={altitudeRef}
+            >
+              <AltitudeIcon width={24} height={24} color="#FF6900" />
+              <Text style={styles.statLabel}>{t('refuge.details.altitude')} (m)</Text>
+              <TextInput
+                style={styles.statInput}
+                value={altitude}
+                onChangeText={(text) => {
+                  setAltitude(text);
+                  setAltitudeManuallyEdited(true);
+                  if (errors.altitude) setErrors({ ...errors, altitude: undefined });
+                }}
+                placeholder="0"
+                keyboardType="number-pad"
+                placeholderTextColor="#9CA3AF"
+              />
+              {errors.altitude && <Text style={styles.errorTextStat}>{errors.altitude}</Text>}
+            </View>
+
+            <View
+              style={[styles.statCard, errors.places && styles.statCardError]}
+              ref={placesRef}
+            >
+              <UsersIcon width={24} height={24} color="#FF6900" />
+              <Text style={styles.statLabel}>{t('refuge.details.capacity')}</Text>
+              <TextInput
+                style={styles.statInput}
+                value={places}
+                onChangeText={(text) => {
+                  setPlaces(text);
+                  if (errors.places) setErrors({ ...errors, places: undefined });
+                }}
+                placeholder="0"
+                keyboardType="number-pad"
+                placeholderTextColor="#9CA3AF"
+              />
+              {errors.places && <Text style={styles.errorTextStat}>{errors.places}</Text>}
+            </View>
+          </View>
+        </View>
+
+        {/* Description */}
+        <View style={styles.section} ref={descriptionRef}>
+          <View style={styles.labelRow}>
+            <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+          </View>
+          <View style={styles.descriptionContainer}>
+            <TextInput
+              style={[styles.descriptionInput, errors.description && styles.textInputError]}
+              value={description}
+              onChangeText={(text) => {
+                if (text.length <= 3000) {
+                  setDescription(text);
+                  if (errors.description) setErrors({ ...errors, description: undefined });
+                }
+              }}
+              placeholder={t('createRefuge.descriptionPlaceholder')}
+              placeholderTextColor="#9CA3AF"
+              multiline
+              numberOfLines={10}
+              textAlignVertical="top"
+              maxLength={3000}
+            />
+            <Text style={styles.descriptionCharCounter}>{description.length}/3000</Text>
+          </View>
+          {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+        </View>
+
+        {/* Amenities */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
+          <View style={styles.amenitiesGrid}>
+            {amenityList.map((amenity) => (
+              <TouchableOpacity
+                key={amenity.key}
+                style={[
+                  styles.amenityChip,
+                  amenities[amenity.key] && styles.amenityChipSelected,
+                ]}
+                onPress={() => handleAmenityToggle(amenity.key)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.amenityIcon}>{amenity.icon}</Text>
+                <Text
+                  style={[
+                    styles.amenityLabel,
+                    amenities[amenity.key] && styles.amenityLabelSelected,
+                  ]}
+                >
+                  {t(`refuge.amenities.${amenity.key}`)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Links */}
+        <View style={styles.section} ref={linksRef}>
+          <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
+          {links.map((link, index) => (
+            <View key={index} style={styles.linkRow}>
+              <TextInput
+                style={[styles.textInput, styles.linkInput, errors.links && styles.textInputError]}
+                value={link}
+                onChangeText={(value) => {
+                  handleLinkChange(index, value);
+                  if (errors.links) setErrors({ ...errors, links: undefined });
+                }}
+                placeholder={t('createRefuge.linkPlaceholder')}
+                placeholderTextColor="#9CA3AF"
+              />
+              {links.length > 1 && (
+                <TouchableOpacity
+                  style={styles.removeLinkButton}
+                  onPress={() => handleRemoveLink(index)}
+                >
+                  <Text style={styles.removeLinkText}>✕</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
+          {errors.links && <Text style={styles.errorText}>{errors.links}</Text>}
+          <TouchableOpacity style={styles.addLinkButton} onPress={handleAddLink}>
+            <Text style={styles.addLinkText}>+ {t('createRefuge.addLink')}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Comment for admins */}
+        <View style={styles.section} ref={commentRef}>
+          <Text style={styles.sectionTitle}>{t('createRefuge.adminComment')}</Text>
+          <ProposalCommentInput
+            mode={mode}
+            value={comment}
+            onChange={setComment}
+            minChars={50}
+            maxChars={3000}
+            error={errors.comment}
+            onClearError={() => setErrors({ ...errors, comment: undefined })}
+            numberOfLines={4}
+          />
+        </View>
+
+        {/* Submit button */}
+        <View style={styles.buttonContainer}>
+          {canSubmit ? (
+            <TouchableOpacity
+              onPress={handleSubmit}
+              disabled={isLoading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={['#FF6900', '#FF8533']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.submitButton}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isLoading ? t('common.loading') : t('createRefuge.submit')}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.submitButtonDisabled}>
+              <Text style={styles.submitButtonTextDisabled}>{t('createRefuge.submit')}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Bottom spacing */}
+        <View style={{ height: 40 }} />
+      </ScrollView>
 
       {/* Custom Alert */}
       {alertVisible && alertConfig && (
@@ -916,7 +967,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
           onDismiss={hideAlert}
         />
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -932,7 +983,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   infoText: {
     textAlign: 'center',

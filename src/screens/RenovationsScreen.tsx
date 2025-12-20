@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RenovationCard } from '../components/RenovationCard';
@@ -30,8 +30,16 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const scrollViewRef = useRef<ScrollView>(null);
   
   const [joiningRenovationId, setJoiningRenovationId] = useState<string | null>(null);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
 
   // Utilitzar React Query per carregar renovations
   const { data: renovations = [], isLoading: loadingRenovations, refetch } = useRenovations();
@@ -139,6 +147,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
       </View>
 
       <ScrollView 
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={[styles.scrollContent, { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) }]}
       >

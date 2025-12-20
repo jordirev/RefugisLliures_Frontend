@@ -15,6 +15,7 @@
     "success": "Éxito",
     "noResults": "No se encontraron resultados",
     "readMore": "Leer más...",
+    "readLess": "Mostrar menos",
     "showLess": "Mostrar menos",
     "places": "plazas",
     "download": "Descargar",
@@ -478,7 +479,7 @@
     "title": "Eliminar Refugio",
     "warning": "Estás a punto de proponer la eliminación del refugio '{{name}}'. Esta acción creará una propuesta que será revisada por un administrador.",
     "commentLabel": "Razón de la eliminación",
-    "commentPlaceholder": "Explica por qué este refugio debería ser eliminado (mínimo {{min}} caracteres)",
+    "commentPlaceholder": "Explica por qué este refugio debería ser eliminado.",
     "minChars": "(mínimo {{min}})",
     "confirm": "Enviar Propuesta",
     "success": {
@@ -492,7 +493,7 @@
   "editRefuge": {
     "title": "Editar Refugio",
     "proposalInfo": "Esta es una propuesta de edición de refugio que será revisada y aprobada por un administrador",
-    "adminCommentPlaceholder": "Comentario obligatorio para el administrador (mínimo 50 caracteres)",
+    "adminCommentPlaceholder": "Comentario obligatorio para el administrador.",
     "minChars": "mínimo {{min}}",
     "success": {
       "title": "Propuesta enviada",
@@ -581,6 +582,7 @@
     "detail": {
       "title": "Detalle de la propuesta",
       "comment": "Comentario",
+      "review": "Revisión",
       "changes": "Cambios propuestos",
       "newRefuge": "Nuevo refugio",
       "refugeToDelete": "Refugio a eliminar",
@@ -588,7 +590,10 @@
       "new": "Nuevo",
       "value": "Valor",
       "approve": "Aprobar",
-      "reject": "Rechazar"
+      "reject": "Rechazar",
+      "newType": "Nuevo tipo:",
+      "newCondition": "Nuevo estado:",
+      "newTypeAndCondition": "Nuevo tipo y estado:"
     },
     "approve": {
       "successTitle": "Propuesta aprobada",

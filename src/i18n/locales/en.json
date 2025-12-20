@@ -15,6 +15,7 @@
     "success": "Success",
     "noResults": "No results found",
     "readMore": "Read more...",
+    "readLess": "Show less",
     "showLess": "Show less",
     "places": "places",
     "download": "Download",
@@ -468,7 +469,7 @@
     "title": "Delete Shelter",
     "warning": "You are about to propose the deletion of the shelter '{{name}}'. This action will create a proposal that will be reviewed by an administrator.",
     "commentLabel": "Reason for deletion",
-    "commentPlaceholder": "Explain why this shelter should be deleted (minimum {{min}} characters)",
+    "commentPlaceholder": "Explain why this shelter should be deleted.",
     "minChars": "(minimum {{min}})",
     "confirm": "Send Proposal",
     "success": {
@@ -482,7 +483,7 @@
   "editRefuge": {
     "title": "Edit Shelter",
     "proposalInfo": "This is a shelter edit proposal that will be reviewed and approved by an administrator",
-    "adminCommentPlaceholder": "Required comment for administrator (minimum 50 characters)",
+    "adminCommentPlaceholder": "Required comment for administrator",
     "minChars": "minimum {{min}}",
     "success": {
       "title": "Proposal sent",
@@ -571,6 +572,7 @@
     "detail": {
       "title": "Proposal detail",
       "comment": "Comment",
+      "review": "Review",
       "changes": "Proposed changes",
       "newRefuge": "New shelter",
       "refugeToDelete": "Shelter to delete",
@@ -578,7 +580,10 @@
       "new": "New",
       "value": "Value",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "newType": "New type:",
+      "newCondition": "New condition:",
+      "newTypeAndCondition": "New type and condition:"
     },
     "approve": {
       "successTitle": "Proposal approved",

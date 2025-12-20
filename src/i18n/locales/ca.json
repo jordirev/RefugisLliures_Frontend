@@ -15,6 +15,7 @@
     "success": "Èxit",
     "noResults": "No s'han trobat resultats",
     "readMore": "Llegir més...",
+    "readLess": "Mostrar menys",
     "showLess": "Mostrar menys",
     "places": "places",
     "download": "Descarregar",
@@ -482,7 +483,7 @@
     "title": "Eliminar Refugi",
     "warning": "Estàs a punt de proposar l'eliminació del refugi '{{name}}'. Aquesta acció crearà una proposta que serà revisada per un administrador.",
     "commentLabel": "Raó de l'eliminació",
-    "commentPlaceholder": "Explica per què aquest refugi hauria de ser eliminat (mínim {{min}} caràcters)",
+    "commentPlaceholder": "Explica per què aquest refugi hauria de ser eliminat",
     "minChars": "(mínim {{min}})",
     "confirm": "Enviar Proposta",
     "success": {
@@ -496,7 +497,7 @@
   "editRefuge": {
     "title": "Editar Refugi",
     "proposalInfo": "Aquesta és una proposta d'edició de refugi que serà revisada i aprovada per un administrador",
-    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador (mínim 50 caràcters)",
+    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador",
     "minChars": "mínim {{min}}",
     "success": {
       "title": "Proposta enviada",
@@ -586,6 +587,7 @@
     "detail": {
       "title": "Detall de la proposta",
       "comment": "Comentari",
+      "review": "Revisió",
       "changes": "Canvis proposats",
       "newRefuge": "Nou refugi",
       "refugeToDelete": "Refugi a eliminar",
@@ -593,7 +595,10 @@
       "new": "Nou",
       "value": "Valor",
       "approve": "Aprovar",
-      "reject": "Rebutjar"
+      "reject": "Rebutjar",
+      "newType": "Nou tipus:",
+      "newCondition": "Nou estat:",
+      "newTypeAndCondition": "Nous tipus i estat:"
     },
     "approve": {
       "successTitle": "Proposta aprovada",

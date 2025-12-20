@@ -75,6 +75,14 @@ export function TabsNavigator({
             }
           }, [selectedLocation, selectedRefuge, mapNavigation]);
           
+          // Netejar selectedLocation quan sortim de la tab Map
+          useEffect(() => {
+            return mapNavigation.addListener('blur', () => {
+              // Quan deixem la tab Map, resetar selectedLocation
+              onLocationSelect(null as any);
+            });
+          }, [mapNavigation]);
+          
           // Si selectedLocation no és undefined, utilitzar-lo; sinó utilitzar selectedRefuge
           const effectiveLocation = selectedLocation !== undefined ? selectedLocation : selectedRefuge;
           

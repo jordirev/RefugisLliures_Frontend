@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
@@ -115,7 +115,11 @@ export function MapScreen({
 
   const handleFiltersChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters);
-  }, []);
+    // Si hi ha una cerca activa, esborrar-la quan s'apliquen filtres
+    if (searchQuery && searchQuery.trim().length > 0) {
+      setSearchQuery('');
+    }
+  }, [searchQuery]);
 
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -147,6 +151,16 @@ export function MapScreen({
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
   }, [searchQuery]);
+
+  // Resetar cerca quan canviem de tab (quan deixem de tenir focus)
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // Quan la pantalla perd el focus (sortim de MapScreen/canviem de tab)
+        setSearchQuery('');
+      };
+    }, [])
+  );
 
   const handleAddPress = () => {
     navigation.navigate('CreateRefuge');

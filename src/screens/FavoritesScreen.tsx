@@ -1,6 +1,6 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,10 +23,18 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const flatListRef = useRef<FlatList>(null);
   
   // Get favourite refuges from AuthContext (contains full Location[])
   const { favouriteRefuges } = useAuth();
   const [validFavourites, setValidFavourites] = useState<Location[]>(favouriteRefuges);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }, [])
+  );
 
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
@@ -67,6 +75,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
       </View>
 
       <FlatList
+        ref={flatListRef}
         data={favoriteLocations}
         style={styles.container}
         renderItem={({ item }: { item: Location }) => (

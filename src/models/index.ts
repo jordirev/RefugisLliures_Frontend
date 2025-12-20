@@ -113,7 +113,7 @@ export interface RefugeProposal {
   refuge_id: string | null;
   refuge_snapshot: Location | null;
   action: RefugeProposalAction;
-  payload: Location | null;
+  payload: any; // Raw payload map to distinguish between deleted and missing fields
   comment: string | null;
   status: RefugeProposalStatus;
   creator_uid: string;

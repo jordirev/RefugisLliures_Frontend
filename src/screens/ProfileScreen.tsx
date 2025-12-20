@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,7 @@ import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
 import { useRefuge } from '../hooks/useRefugesQuery';
+import { useUser } from '../hooks/useUsersQuery';
 import { Location } from '../models';
 
 // Icones
@@ -29,31 +30,26 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, isLoading, refreshUserData, visitedRefuges } = useAuth();
+  const { firebaseUser, backendUser, visitedRefuges } = useAuth();
   const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  // Utilitzar React Query per obtenir dades de l'usuari amb cache
+  const { data: userFromQuery, isLoading: isLoadingUser } = useUser(firebaseUser?.uid);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
   
   // Els refugis visitats ja vénen validats del context AuthContext
   // No cal fer crides addicionals a l'API per validar-los
   const validVisitedRefuges = visitedRefuges;
-
-  // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-      
-      const loadUserData = async () => {
-        if (isActive) {
-          await refreshUserData();
-        }
-      };
-      
-      loadUserData();
-      
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
+  
+  // Utilitzar les dades de React Query si estan disponibles, sinó usar backendUser
+  const displayUser = userFromQuery || backendUser;
 
   // Navigation handlers - les dades completes ja estan disponibles des de AuthContext
   const handleViewMap = (refuge: Location) => {
@@ -82,6 +78,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
         <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
       </View>
       <ScrollView 
+        ref={scrollViewRef}
         style={styles.container} 
         showsVerticalScrollIndicator={false}
       >
@@ -115,7 +112,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
                 {(() => {
-                  const name = backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || '';
+                  const name = displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || '';
                   const parts = name.trim().split(/\s+/);
                   if (parts.length === 0) return '';
                   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -128,13 +125,13 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
             <Text style={styles.nameText}>
-              {backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || ''}
+              {displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || ''}
             </Text>
             <Text style={styles.subtitleText}>
               {(() => {
-                // Prefer backendUser data if available, otherwise use Firebase creation time
+                // Prefer displayUser data if available, otherwise use Firebase creation time
                 try {
-                  const created = backendUser?.created_at ?? firebaseUser?.metadata?.creationTime;
+                  const created = displayUser?.created_at ?? firebaseUser?.metadata?.creationTime;
                   if (created) {
                     const d = typeof created === 'number' ? new Date(created * 1000) : new Date(created);
                     if (!Number.isNaN(d.getTime())) {
@@ -163,17 +160,17 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
                   <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.num_renovated_refuges ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
                 </View>
               </View>
               <View style={styles.statsRow}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_shared_experiences ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.num_shared_experiences ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_uploaded_photos ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.num_uploaded_photos ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
                 </View>
               </View>

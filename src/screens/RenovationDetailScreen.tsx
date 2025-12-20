@@ -61,7 +61,7 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
   const { data: renovation, isLoading: loadingRenovation } = useRenovation(renovationId);
   
   // Utilitzar React Query per carregar refuge i creator
-  const { data: refuge } = useRefuge(renovation?.refuge_id);
+  const { data: refuge, isLoading: loadingRefuge } = useRefuge(renovation?.refuge_id);
   const { data: creator } = useUser(renovation?.creator_uid);
   
   // Determinar si mostrar participants
@@ -80,7 +80,7 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
   const leaveMutation = useLeaveRenovation();
   const deleteMutation = useDeleteRenovation();
   
-  const isLoading = loadingRenovation;
+  const isLoading = loadingRenovation || loadingRefuge;
   const isJoining = joinMutation.isPending;
   const isLeaving = leaveMutation.isPending;
   const isDeleting = deleteMutation.isPending;

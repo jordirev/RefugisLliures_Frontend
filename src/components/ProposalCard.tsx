@@ -36,7 +36,7 @@ export function ProposalCard({ proposal, onPress, showCreatorInfo = false }: Pro
     showCreatorInfo ? proposal.reviewer_uid : undefined
   );
   
-  const loadingUsers = loadingCreator || loadingReviewer;
+  const loadingUsers = loadingReviewer;
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
@@ -60,10 +60,13 @@ export function ProposalCard({ proposal, onPress, showCreatorInfo = false }: Pro
       onPress={() => onPress(proposal)}
       activeOpacity={0.7}
     >
-      {/* Header: Refuge name */}
+      {/* Header: Refuge name and creation date */}
       <View style={styles.header}>
-        <Text style={styles.refugeName} numberOfLines={1}>
+        <Text style={styles.refugeName} numberOfLines={1} ellipsizeMode="tail">
           {refugeName}
+        </Text>
+        <Text style={styles.createdDate}>
+          {formatDate(proposal.created_at)}
         </Text>
       </View>
 
@@ -83,60 +86,45 @@ export function ProposalCard({ proposal, onPress, showCreatorInfo = false }: Pro
         />
       </View>
 
-      {/* Created at */}
-      <View style={styles.infoRow}>
-        <Text style={styles.infoLabel}>{t('proposals.card.createdAt')}:</Text>
-        <Text style={styles.infoValue}>{formatDate(proposal.created_at)}</Text>
-      </View>
-
-      {/* Reviewed info (if approved or rejected) */}
-      {proposal.status !== 'pending' && (
-        <>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{t('proposals.card.reviewedAt')}:</Text>
-            <Text style={styles.infoValue}>{formatDate(proposal.reviewed_at)}</Text>
-          </View>
-
-          {/* Rejection reason */}
-          {proposal.status === 'rejected' && proposal.rejection_reason && (
-            <View style={styles.rejectionContainer}>
-              <Text style={styles.rejectionLabel}>{t('proposals.card.rejectionReason')}:</Text>
-              <Text style={styles.rejectionText} numberOfLines={3}>
-                {proposal.rejection_reason}
-              </Text>
+      {/* Creator info (admin mode) */}
+      {showCreatorInfo && (
+        <View>
+          {loadingCreator ? (
+            <ActivityIndicator size="small" color="#FF6900" />
+          ) : (
+            <View style={styles.userRow}>
+              <View style={styles.avatarContainer}>
+                {creator?.avatar_metadata?.url ? (
+                  <Image 
+                    source={{ uri: creator.avatar_metadata.url }} 
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <View style={[styles.avatar, styles.avatarPlaceholder]}>
+                    <Text style={styles.avatarPlaceholderText}>
+                      {creator?.username?.charAt(0)?.toUpperCase() || '?'}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{creator?.username || t('proposals.card.unknownUser')}</Text>
+              </View>
             </View>
           )}
-        </>
+        </View>
       )}
 
-      {/* Creator & Reviewer info (admin mode) */}
-      {showCreatorInfo && (
+      {/*Reviewer info (admin mode) */}
+      {showCreatorInfo && proposal.status !== 'pending' && (
         <View style={styles.usersContainer}>
           {loadingUsers ? (
             <ActivityIndicator size="small" color="#FF6900" />
           ) : (
             <>
-              {/* Creator */}
-              <View style={styles.userRow}>
-                <View style={styles.avatarContainer}>
-                  {creator?.avatar_metadata?.url ? (
-                    <Image 
-                      source={{ uri: creator.avatar_metadata.url }} 
-                      style={styles.avatar}
-                    />
-                  ) : (
-                    <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                      <Text style={styles.avatarPlaceholderText}>
-                        {creator?.username?.charAt(0)?.toUpperCase() || '?'}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-                <View style={styles.userInfo}>
-                  <Text style={styles.userLabel}>{t('proposals.card.creator')}:</Text>
-                  <Text style={styles.userName}>{creator?.username || t('proposals.card.unknownUser')}</Text>
-                </View>
-              </View>
+            {/* Reviewed info (if approved or rejected) */}
+
+              
 
               {/* Reviewer (if exists) */}
               {reviewer && (
@@ -159,6 +147,9 @@ export function ProposalCard({ proposal, onPress, showCreatorInfo = false }: Pro
                     <Text style={styles.userLabel}>{t('proposals.card.reviewer')}:</Text>
                     <Text style={styles.userName}>{reviewer?.username}</Text>
                   </View>
+                  <View style={styles.reviewedDateContainer}>
+                    <Text style={styles.createdDate}>{formatDate(proposal.reviewed_at)}</Text>
+                  </View>
                 </View>
               )}
             </>
@@ -175,7 +166,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: '#000000ff',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -184,13 +175,23 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   refugeName: {
+    flex: 1,
     fontSize: 18,
     fontWeight: '700',
     color: '#111827',
     fontFamily: 'Arimo',
+    marginRight: 12,
+  },
+  createdDate: {
+    fontSize: 12,
+    color: '#99a1afff',
+    fontWeight: '400',
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -238,18 +239,23 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
   },
+  noBorder: {
+    borderTopWidth: 0,
+    paddingTop: 0,
+  },
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    justifyContent: 'space-between',
   },
   avatarContainer: {
     marginRight: 12,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   avatarPlaceholder: {
     backgroundColor: '#FF6900',
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
   },
   avatarPlaceholderText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
   userInfo: {
@@ -272,6 +278,9 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 14,
     color: '#111827',
-    fontWeight: '600',
+    fontWeight: '400',
+  },
+  reviewedDateContainer: {
+    marginLeft: 12,
   },
 });

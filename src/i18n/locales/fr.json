@@ -14,7 +14,8 @@
     "error": "Erreur",
     "success": "Succès",
     "noResults": "Aucun résultat trouvé",
-    "readMore": "Lire plus...",
+    "readMore": "Lire la suite...",
+    "readLess": "Afficher moins",
     "showLess": "Afficher moins",
     "places": "places",
     "download": "Télécharger",
@@ -481,7 +482,7 @@
     "title": "Supprimer le Refuge",
     "warning": "Vous êtes sur le point de proposer la suppression du refuge '{{name}}'. Cette action créera une proposition qui sera examinée par un administrateur.",
     "commentLabel": "Raison de la suppression",
-    "commentPlaceholder": "Expliquez pourquoi ce refuge devrait être supprimé (minimum {{min}} caractères)",
+    "commentPlaceholder": "Expliquez pourquoi ce refuge devrait être supprimé.",
     "minChars": "(minimum {{min}})",
     "confirm": "Envoyer Proposition",
     "success": {
@@ -495,7 +496,7 @@
   "editRefuge": {
     "title": "Modifier le Refuge",
     "proposalInfo": "Ceci est une proposition de modification de refuge qui sera examinée et approuvée par un administrateur",
-    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur (minimum 50 caractères)",
+    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur.",
     "minChars": "minimum {{min}}",
     "success": {
       "title": "Proposition envoyée",
@@ -585,6 +586,7 @@
     "detail": {
       "title": "Détail de la proposition",
       "comment": "Commentaire",
+      "review": "Révision",
       "changes": "Modifications proposées",
       "newRefuge": "Nouveau refuge",
       "refugeToDelete": "Refuge à supprimer",
@@ -592,7 +594,10 @@
       "new": "Nouveau",
       "value": "Valeur",
       "approve": "Approuver",
-      "reject": "Rejeter"
+      "reject": "Rejeter",
+      "newType": "Nouveau type :",
+      "newCondition": "Nouvel état :",
+      "newTypeAndCondition": "Nouveau type et état :"
     },
     "approve": {
       "successTitle": "Proposition approuvée",

@@ -11,6 +11,7 @@ import {
   Modal,
   PanResponder,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import * as FileSystem from 'expo-file-system/legacy';
@@ -112,13 +113,19 @@ export function RefugeDetailScreen({
   if (!refugeId || loadingRefuge || !refuge) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <ArrowLeftIcon width={24} height={24} color="#1F2937" />
-          </TouchableOpacity>
-        </View>
+        {!loadingRefuge && (
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <ArrowLeftIcon width={24} height={24} color="#1F2937" />
+            </TouchableOpacity>
+          </View>
+        )}
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>{!refugeId ? t('common.error') : loadingRefuge ? t('common.loading') : t('common.error')}</Text>
+          {loadingRefuge ? (
+            <ActivityIndicator size="large" color="#F97316" />
+          ) : (
+            <Text>{t('common.error')}</Text>
+          )}
         </View>
       </View>
     );

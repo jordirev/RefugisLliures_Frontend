@@ -73,24 +73,34 @@ function determineCondition(refugiDTO: RefugiDTO): number | undefined {
  * Converteix un RefugiDTO al format Location del frontend
  */
 export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
-  return {
-    id: refugiDTO.id,
-    name: refugiDTO.name,
-    surname: refugiDTO.surname || undefined,
-    coord: mapCoordFromDTO(refugiDTO.coord),
-    altitude: refugiDTO.altitude,
-    places: refugiDTO.places,
-    info_comp: mapInfoCompFromDTO(refugiDTO.info_comp),
-    description: refugiDTO.description,
-    links: refugiDTO.links,
-    type: refugiDTO.type,
-    modified_at: refugiDTO.modified_at,
-    region: refugiDTO.region,
-    departement: refugiDTO.departement,
-    condition: refugiDTO.condition || determineCondition(refugiDTO),
-    visitors: refugiDTO.visitors,
-    images_metadata: refugiDTO.images_metadata,
-  };
+  try {
+    if (!refugiDTO.coord) {
+      console.warn('[RefugiMapper] Missing coord for refuge:', refugiDTO.id || 'unknown');
+    }
+    
+    return {
+      id: refugiDTO.id,
+      name: refugiDTO.name,
+      surname: refugiDTO.surname || undefined,
+      coord: refugiDTO.coord ? mapCoordFromDTO(refugiDTO.coord) : { lat: 0, long: 0 },
+      altitude: refugiDTO.altitude,
+      places: refugiDTO.places,
+      info_comp: mapInfoCompFromDTO(refugiDTO.info_comp),
+      description: refugiDTO.description,
+      links: refugiDTO.links,
+      type: refugiDTO.type,
+      modified_at: refugiDTO.modified_at,
+      region: refugiDTO.region,
+      departement: refugiDTO.departement,
+      condition: refugiDTO.condition || determineCondition(refugiDTO),
+      visitors: refugiDTO.visitors,
+      images_metadata: refugiDTO.images_metadata,
+    };
+  } catch (error) {
+    console.error('[RefugiMapper] Error mapping refuge:', refugiDTO?.id || 'unknown', error);
+    console.error('[RefugiMapper] DTO:', JSON.stringify(refugiDTO));
+    throw error;
+  }
 }
 
 /**

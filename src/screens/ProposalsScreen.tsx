@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -138,12 +139,16 @@ export function ProposalsScreen() {
 
       {/* Filters */}
       <View style={[styles.filtersContainer, { top: HEADER_HEIGHT }]}>
-        <View style={styles.filtersScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersScroll}
+        >
           {renderFilterBadge('all')}
           {renderFilterBadge('pending')}
           {renderFilterBadge('approved')}
           {renderFilterBadge('rejected')}
-        </View>
+        </ScrollView>
       </View>
 
       {/* Content */}
@@ -246,18 +251,18 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 9,
     backgroundColor: '#fff',
-    paddingVertical: 12,
+    paddingTop: 20,
+    paddingBottom: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
   filtersScroll: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
+    flexWrap: 'nowrap',
   },
   filterBadge: {
     paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
   },
   container: {
     flex: 1,
