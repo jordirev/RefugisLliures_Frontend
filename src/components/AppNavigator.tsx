@@ -214,6 +214,13 @@ export function AppNavigator() {
                 onEdit={(location: Location) => {
                   nav.navigate('EditRefuge', { refuge: location });
                 }}
+                onViewMap={(location: Location) => {
+                  nav.goBack();
+                  setTimeout(() => {
+                    handleShowRefugeBottomSheet(location);
+                    navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
+                  }, 100);
+                }}
               />
             );
           }}
@@ -244,6 +251,13 @@ export function AppNavigator() {
             onBack={handleCloseDetailScreen}
             onToggleFavorite={handleToggleFavorite}
             onNavigate={handleNavigate}
+            onViewMap={(location: Location) => {
+              handleCloseDetailScreen();
+              setTimeout(() => {
+                handleShowRefugeBottomSheet(location);
+                navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
+              }, 300);
+            }}
           />
         </View>
       )}

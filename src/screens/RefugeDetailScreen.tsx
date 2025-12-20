@@ -28,12 +28,20 @@ try {
   Sharing = null;
 }
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { Location } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
+import { BadgeType } from '../components/BadgeType';
+import { BadgeCondition } from '../components/BadgeCondition';
+import { QuickActionsMenu } from '../components/QuickActionsMenu';
+import { PhotoViewerModal } from '../components/PhotoViewerModal';
+import { GalleryScreen } from './GalleryScreen';
+import { RefugeMediaService } from '../services/RefugeMediaService';
+import { useAuth } from '../contexts/AuthContext';
 
 // Icons
 import HeartIcon from '../assets/icons/fav.svg';
@@ -45,17 +53,14 @@ import MapPinIcon from '../assets/icons/map-pin.svg';
 import ArrowIcon from '../assets/icons/right-arrow.png';
 import DownloadIcon from '../assets/icons/download.svg';
 import MenuIcon from '../assets/icons/menu.svg';
-import { BadgeType } from '../components/BadgeType';
-import { BadgeCondition } from '../components/BadgeCondition';
-import { QuickActionsMenu } from '../components/QuickActionsMenu';
-import { PhotoViewerModal } from '../components/PhotoViewerModal';
-import { GalleryScreen } from './GalleryScreen';
 import RoutesIcon from '../assets/icons/routes.png';
 import WeatherIcon from '../assets/icons/weather2.png';
 import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
-import { RefugeMediaService } from '../services/RefugeMediaService';
-import { useAuth } from '../contexts/AuthContext';
+import GalleryIcon from '../assets/icons/gallery.png';
+import AddPhotoIcon from '../assets/icons/addPhoto.png';
+
+
 
 interface RefugeDetailScreenProps {
   refugeId: string;
@@ -64,6 +69,7 @@ interface RefugeDetailScreenProps {
   onNavigate: (location: Location) => void;
   onEdit?: (location: Location) => void;
   onDelete?: (location: Location) => void;
+  onViewMap?: (location: Location) => void;
 }
 
 // Badges use centralized components: Badge, BadgeType, BadgeCondition
@@ -75,8 +81,10 @@ export function RefugeDetailScreen({
   onNavigate, 
   onEdit,
   onDelete,
+  onViewMap,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const { firebaseUser } = useAuth();
@@ -596,6 +604,7 @@ export function RefugeDetailScreen({
                       onPress={handleViewAllPhotos}
                       activeOpacity={0.8}
                     >
+                      <Image source={GalleryIcon} style={styles.galleryButtonIcon} />
                       <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.viewAll')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -604,9 +613,10 @@ export function RefugeDetailScreen({
                       activeOpacity={0.8}
                       disabled={uploadingPhotos}
                     >
+                      <Image source={AddPhotoIcon} style={styles.addPhotoButtonIcon} />
                       {uploadingPhotos ? (
                         <ActivityIndicator size="small" color="#FFFFFF" />
-                      ) : (
+                      ) : (                        
                         <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.addPhoto')}</Text>
                       )}
                     </TouchableOpacity>
@@ -847,6 +857,15 @@ export function RefugeDetailScreen({
         onShowAlert={showAlert}
         onDelete={onDelete ? () => onDelete(refuge) : undefined}
         onEdit={onEdit ? () => onEdit(refuge) : undefined}
+        onPhotoUploaded={handlePhotoDeleted}
+        onViewMap={() => {
+          setMenuOpen(false);
+          if (onViewMap) {
+            onViewMap(refuge);
+          } else {
+            navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: refuge } });
+          }
+        }}
       />
 
       {/* Back button rendered last so it's visually on top - hide when menu is open */}
@@ -965,6 +984,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 280,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
   },
   galleryButtonText: {
     color: '#FFFFFF',
@@ -1377,5 +1399,13 @@ const styles = StyleSheet.create({
     marginRight: 10, 
     transform: [{ rotate: '180deg' }],
   },
+  galleryButtonIcon: {
+    width: 20,
+    height: 20,
+  },
+  addPhotoButtonIcon: {
+    width: 30, 
+    height: 30,
+  }
 });
 

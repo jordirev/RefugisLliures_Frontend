@@ -12,10 +12,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageMetadata } from '../models';
 import { PhotoViewerModal } from '../components/PhotoViewerModal';
 import { useTranslation } from '../hooks/useTranslation';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Icons
 // @ts-ignore
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
+import AddPhotoIcon from '../assets/icons/addPhoto.png';
 
 interface GalleryScreenProps {
   photos: ImageMetadata[];
@@ -73,11 +75,21 @@ export function GalleryScreen({
           <Text style={styles.emptyText}>{t('refuge.gallery.noPhotos')}</Text>
           {onAddPhotos && (
             <TouchableOpacity
-              style={styles.addPhotosButton}
               onPress={onAddPhotos}
               activeOpacity={0.8}
             >
-              <Text style={styles.addPhotosButtonText}>{t('refuge.gallery.addPhotosButton')}</Text>
+              <LinearGradient
+                colors={["#FF8904", "#F54900"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.addPhotosButton}
+              >
+                <Image
+                  source={AddPhotoIcon}
+                  style={{ width: 30, height: 30, marginRight: 8 }}
+                />
+                <Text style={styles.addPhotosButtonText}>{t('refuge.gallery.addPhotosButton')}</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
         </View>
@@ -161,6 +173,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+    marginTop: -60,
   },
   emptyText: {
     fontSize: 16,
@@ -169,10 +182,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   addPhotosButton: {
-    backgroundColor: '#FF6900',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   addPhotosButtonText: {
     color: '#FFFFFF',

@@ -305,8 +305,8 @@
       "title": "Galeria de fotos del refugi",
       "viewAll": "Veure-ho tot",
       "addPhoto": "Afegeix foto",
-      "noPhotos": "No hi ha fotos d'aquest refugi.",
-      "addPhotosButton": "Afegeix fotos!"
+      "noPhotos": "No hi ha fotos d'aquest refugi\nSigues el primer en aportar les teves!",
+      "addPhotosButton": "Afegeix fotos"
     }
   },
   "filters": {

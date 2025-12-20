@@ -291,8 +291,8 @@
       "title": "Refuge photo gallery",
       "viewAll": "View all",
       "addPhoto": "Add photo",
-      "noPhotos": "There are no photos of this refuge.",
-      "addPhotosButton": "Add photos!"
+      "noPhotos": "There are no photos of this refuge.\nBe the first to contribute yours!",
+      "addPhotosButton": "Add photos"
     }
   },
   "filters": {

@@ -19,7 +19,7 @@ import { CustomAlert } from './CustomAlert';
 // Icons
 import CrossIcon from '../assets/icons/x.svg';
 import TrashIcon from '../assets/icons/trash.svg';
-const EditWhiteIcon = require('../assets/icons/edit-white.png');
+import EditWhiteIcon from '../assets/icons/edit-white.png';
 
 interface AvatarPopupProps {
   visible: boolean;
@@ -236,7 +236,7 @@ export function AvatarPopup({
                 <ActivityIndicator color="#374151" size="small" />
               ) : (
                 <>
-                  <Image source={EditWhiteIcon} style={styles.buttonIcon} />
+                  <Image source={EditWhiteIcon} style={{ width: 20, height: 20 }} />
                   <Text style={styles.buttonText}>{t('profile.avatar.changePhoto')}</Text>
                 </>
               )}

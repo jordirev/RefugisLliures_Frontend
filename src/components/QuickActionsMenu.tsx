@@ -10,21 +10,26 @@ import {
   Dimensions,
   Share,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
 import useVisited from '../hooks/useVisited';
+import { RefugeMediaService } from '../services/RefugeMediaService';
 
 // Icons
 import HeartIcon from '../assets/icons/fav-white.svg';
 import HeartFilledIcon from '../assets/icons/favourite2.svg';
 const NonVisitedIcon = require('../assets/icons/non-visited.png');
 const VisitedIcon = require('../assets/icons/visited.png');
+import MapIcon from '../assets/icons/location-map-white.png';
 import MessageCircleIcon from '../assets/icons/message-circle.svg';
 import DoubtIcon from '../assets/icons/doubt.png';
-import CameraIcon from '../assets/icons/camera.svg';
+import AddPhotoIcon from '../assets/icons/addPhoto.png';
 import EditIcon from '../assets/icons/edit-white.png';
 import TrashIcon from '../assets/icons/trash.svg';
 
@@ -38,6 +43,8 @@ interface QuickActionsMenuProps {
   onShowAlert: (title: string, message: string) => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onPhotoUploaded?: () => void;
+  onViewMap?: () => void;
 }
 
 export function QuickActionsMenu({
@@ -50,10 +57,13 @@ export function QuickActionsMenu({
   onShowAlert,
   onDelete,
   onEdit,
+  onPhotoUploaded,
+  onViewMap,
 }: QuickActionsMenuProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isVisited, toggleVisited, isProcessing } = useVisited(refuge.id);
+  const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
 
   const screenWidth = Dimensions.get('window').width;
   const sideMenuWidth = Math.min(120, screenWidth * 0.40);
@@ -143,8 +153,57 @@ export function QuickActionsMenu({
     onClose();
   };
 
-  const handleAddPhoto = () => {
-    onShowAlert(t('alerts.addPhoto.title'), t('alerts.addPhoto.message'));
+  const handleAddPhoto = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necessaris',
+          'Necessitem permisos per accedir a les teves fotos i vídeos.'
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsMultipleSelection: true,
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        return;
+      }
+
+      setUploadingPhotos(true);
+
+      // Convert assets to File objects
+      const files: File[] = [];
+      for (const asset of result.assets) {
+        const response = await fetch(asset.uri);
+        const blob = await response.blob();
+        const fileName = asset.uri.split('/').pop() || 'photo.jpg';
+        const file = new File([blob], fileName, { type: blob.type });
+        files.push(file);
+      }
+
+      // Upload photos
+      await RefugeMediaService.uploadRefugeMedia(refuge.id, files);
+      
+      // Notify parent to refetch refuge data
+      if (onPhotoUploaded) {
+        onPhotoUploaded();
+      }
+      
+      onShowAlert('Èxit', `S'han pujat ${files.length} foto(s) correctament.`);
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      onShowAlert('Error', 'No s\'han pogut pujar les fotos. Intenta-ho de nou.');
+    } finally {
+      setUploadingPhotos(false);
+    }
     onClose();
   };
 
@@ -158,6 +217,13 @@ export function QuickActionsMenu({
   const handleDeleteRefuge = () => {
     if (onDelete) {
       onDelete();
+    }
+    onClose();
+  };
+
+  const handleViewOnMap = () => {
+    if (onViewMap) {
+      onViewMap();
     }
     onClose();
   };
@@ -244,6 +310,19 @@ export function QuickActionsMenu({
 
                 <TouchableOpacity
                   style={styles.menuItem}
+                  onPress={handleViewOnMap}
+                  testID="menu-view-map"
+                >
+                  <View style={styles.menuItemIconContainer}>
+                    <Image source={MapIcon} style={{ width: 38, height: 30, marginLeft: 2 }} resizeMode="stretch" />
+                  </View>
+                  <Text style={styles.menuItemText}>
+                    {t('refuge.actions.viewOnMap')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
                   onPress={handleShareExperience}
                   testID="menu-share-experience"
                 >
@@ -272,12 +351,17 @@ export function QuickActionsMenu({
                   style={styles.menuItem}
                   onPress={handleAddPhoto}
                   testID="menu-photo"
+                  disabled={uploadingPhotos}
                 >
                   <View style={styles.menuItemIconContainer}>
-                    <CameraIcon width={24} height={24} color="#ffffff" />
+                    {uploadingPhotos ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <Image source={AddPhotoIcon} style={{ width: 38, height: 38 }} />
+                    )}
                   </View>
                   <Text style={styles.menuItemText}>
-                    {t('refuge.actions.addPhoto')}
+                    {uploadingPhotos ? t('common.loading') : t('refuge.actions.addPhoto')}
                   </Text>
                 </TouchableOpacity>
 
@@ -349,7 +433,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuContent: {
-    paddingVertical: 4,
+    paddingBottom: 40,
   },
   deleteText: {
     color: '#EF4444',
@@ -360,7 +444,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 6,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   menuItemIconContainer: {
     marginBottom: 6,

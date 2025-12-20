@@ -304,8 +304,8 @@
       "title": "Galerie photos du refuge",
       "viewAll": "Voir tout",
       "addPhoto": "Ajouter photo",
-      "noPhotos": "Il n'y a pas de photos de ce refuge.",
-      "addPhotosButton": "Ajoutez des photos!"
+      "noPhotos": "Il n'y a pas de photos de ce refuge.\nSoyez le premier à contribuer les vôtres!",
+      "addPhotosButton": "Ajoutez des photos"
     }
   },
   "filters": {
