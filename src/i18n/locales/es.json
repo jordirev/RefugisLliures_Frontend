@@ -162,6 +162,25 @@
         "fr": "Français"
       },
       "updateError": "No se ha podido actualizar el idioma en el servidor"
+    },
+    "avatar": {
+      "changePhoto": "Cambiar foto",
+      "deletePhoto": "Eliminar foto",
+      "permissionDenied": "Permiso denegado",
+      "permissionMessage": "Necesitamos permiso para acceder a tus fotos. Por favor, actívalo desde la configuración de tu dispositivo.",
+      "permissionRequired": "Permiso necesario",
+      "permissionOptions": "Necesitamos acceso a tus fotos para cambiar la imagen de perfil. Puedes elegir entre acceso limitado o acceso completo a la galería.",
+      "requestPermission": "Permitir acceso",
+      "uploadSuccess": "Foto actualizada",
+      "uploadSuccessMessage": "Tu foto de perfil se ha actualizado correctamente",
+      "uploadError": "No se ha podido subir la foto",
+      "selectError": "No se ha podido seleccionar la imagen",
+      "deleteConfirmTitle": "Eliminar foto de perfil",
+      "deleteConfirmMessage": "¿Estás seguro/a de que quieres eliminar tu foto de perfil?",
+      "deleteSuccess": "Foto eliminada",
+      "deleteSuccessMessage": "Tu foto de perfil se ha eliminado correctamente",
+      "deleteError": "No se ha podido eliminar la foto",
+      "tapToChange": "Toca para cambiar la foto de perfil"
     }
   },
   "changePassword": {

@@ -1,28 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { CustomAlert } from '../components/CustomAlert';
+import { AvatarPopup } from '../components/AvatarPopup';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { useUser } from '../hooks/useUsersQuery';
 import BackIcon from '../assets/icons/arrow-left.svg';
 
 export function EditProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
-  const { updateUsername, firebaseUser, backendUser } = useAuth();
+  const { updateUsername, firebaseUser, backendUser, refreshUserData } = useAuth();
   
   const [username, setUsername] = useState('');
   const [originalUsername, setOriginalUsername] = useState('');
   const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [showAvatarPopup, setShowAvatarPopup] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   
   const HEADER_HEIGHT = 96;
   const insets = useSafeAreaInsets();
+  
+  // Utilitzar React Query per obtenir dades de l'usuari
+  const { data: userFromQuery, refetch: refetchUserQuery } = useUser(firebaseUser?.uid);
+  const displayUser = userFromQuery || backendUser;
 
   const validateUsername = (name: string) => {
     return name.length >= 2 && name.length <= 20;
@@ -89,6 +96,26 @@ export function EditProfileScreen() {
     setUsernameError(null);
     navigation.navigate('Settings');
   };
+  
+  const handleAvatarPress = () => {
+    setShowAvatarPopup(true);
+  };
+  
+  const handleAvatarUpdated = () => {
+    // Refrescar les dades de l'usuari
+    refetchUserQuery();
+    if (refreshUserData) {
+      refreshUserData();
+    }
+  };
+  
+  const getInitials = () => {
+    const name = displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 0) return '';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   // Populate username with current value from backend or firebase when available
   useEffect(() => {
@@ -140,10 +167,33 @@ export function EditProfileScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) }}
+        contentContainerStyle={{ paddingTop: HEADER_HEIGHT + 20, paddingBottom: Math.max(insets.bottom, 16) }}
         style={styles.container}
       >
         <View style={styles.content}>
+
+          {/* Avatar Section */}
+          <View style={styles.avatarSection}>
+            <TouchableOpacity 
+              style={styles.avatarContainer}
+              onPress={handleAvatarPress}
+              activeOpacity={0.8}
+            >
+              <View style={styles.avatar}>
+                {displayUser?.avatar_metadata?.url ? (
+                  <Image 
+                    source={{ uri: displayUser.avatar_metadata.url }} 
+                    style={styles.avatarImage}
+                  />
+                ) : (
+                  <View style={styles.avatarPlaceholder}>
+                    <Text style={styles.avatarPlaceholderText}>{getInitials()}</Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.avatarHelper}>{t('profile.avatar.tapToChange')}</Text>
+          </View>
 
           {/* New Username */}
           <View style={styles.inputContainer}>
@@ -207,6 +257,16 @@ export function EditProfileScreen() {
         />
       )}
       
+      {/* Avatar Popup */}
+      <AvatarPopup
+        visible={showAvatarPopup}
+        onClose={() => setShowAvatarPopup(false)}
+        avatarUrl={displayUser?.avatar_metadata?.url}
+        username={displayUser?.username || firebaseUser?.displayName}
+        uid={firebaseUser?.uid || ''}
+        onAvatarUpdated={handleAvatarUpdated}
+      />
+      
       {insets.bottom > 0 && (
         <View style={[styles.bottomSafeArea, { height: insets.bottom }]} />
       )}
@@ -260,6 +320,53 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+  },
+  avatarSection: {
+    alignItems: 'center',
+    marginBottom: 24,
+    marginTop: 8,
+  },
+  avatarContainer: {
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    overflow: 'hidden',
+    borderWidth: 0,
+    borderColor: 'transparent',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#FF6900',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    fontSize: 36,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  avatarHelper: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 12,
+    fontFamily: 'Arimo',
   },
   inputContainer: {
     marginBottom: 8,

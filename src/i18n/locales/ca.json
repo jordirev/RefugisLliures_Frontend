@@ -163,6 +163,25 @@
         "fr": "Français"
       },
       "updateError": "No s'ha pogut actualitzar l'idioma al servidor"
+    },
+    "avatar": {
+      "changePhoto": "Canviar foto",
+      "deletePhoto": "Eliminar foto",
+      "permissionDenied": "Permís denegat",
+      "permissionMessage": "Necessitem permís per accedir a les teves fotos. Si us plau, activa'l des de la configuració del teu dispositiu.",
+      "permissionRequired": "Permís necessari",
+      "permissionOptions": "Necessitem accés a les teves fotos per canviar la imatge de perfil. Pots escollir entre accés limitat o accés complet a la galeria.",
+      "requestPermission": "Permetre accés",
+      "uploadSuccess": "Foto actualitzada",
+      "uploadSuccessMessage": "La teva foto de perfil s'ha actualitzat correctament",
+      "uploadError": "No s'ha pogut pujar la foto",
+      "selectError": "No s'ha pogut seleccionar la imatge",
+      "deleteConfirmTitle": "Eliminar foto de perfil",
+      "deleteConfirmMessage": "Estàs segur/ra que vols eliminar la teva foto de perfil?",
+      "deleteSuccess": "Foto eliminada",
+      "deleteSuccessMessage": "La teva foto de perfil s'ha eliminat correctament",
+      "deleteError": "No s'ha pogut eliminar la foto",
+      "tapToChange": "Toca per canviar la foto de perfil"
     }
   },
   "changePassword": {

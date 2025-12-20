@@ -366,11 +366,18 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
                 <Text style={styles.sectionTitle}>{t('renovations.organizer')}</Text>
               </View>
               <View style={styles.creatorContainer}>
-                <View style={styles.avatarPlaceholder}>
-                  <Text style={styles.avatarText}>
-                    {creator.username?.charAt(0).toUpperCase() || 'U'}
-                  </Text>
-                </View>
+                {creator.avatar_metadata?.url ? (
+                  <Image 
+                    source={{ uri: creator.avatar_metadata.url }} 
+                    style={styles.avatarImage}
+                  />
+                ) : (
+                  <View style={styles.avatarPlaceholder}>
+                    <Text style={styles.avatarText}>
+                      {creator.username?.charAt(0).toUpperCase() || 'U'}
+                    </Text>
+                  </View>
+                )}
                 {isUserCreator ? (
                   <Text style={styles.creatorName}>{t('common.you')}</Text>
                 ) : (
@@ -393,11 +400,18 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
                 {participants.map((participant) => (
                   <View key={participant.uid} style={styles.participantItem}>
                     <View style={styles.participantInfo}>
-                      <View style={styles.participantAvatar}>
-                        <Text style={styles.participantAvatarText}>
-                          {participant.username?.charAt(0).toUpperCase() || 'U'}
-                        </Text>
-                      </View>
+                      {participant.avatar_metadata?.url ? (
+                        <Image 
+                          source={{ uri: participant.avatar_metadata.url }} 
+                          style={styles.participantAvatarImage}
+                        />
+                      ) : (
+                        <View style={styles.participantAvatar}>
+                          <Text style={styles.participantAvatarText}>
+                            {participant.username?.charAt(0).toUpperCase() || 'U'}
+                          </Text>
+                        </View>
+                      )}
                       <Text style={styles.participantName}>{participant.username}</Text>
                     </View>
                     {isUserCreator && (
@@ -649,6 +663,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
   },
   avatarText: {
     fontSize: 18,
@@ -739,6 +760,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#D1D5DB',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+    overflow: 'hidden',
+  },
+  participantAvatarImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     marginRight: 12,
   },
   participantAvatarText: {

@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
+import { AvatarPopup } from '../components/AvatarPopup';
 import { useRefuge } from '../hooks/useRefugesQuery';
 import { useUser } from '../hooks/useUsersQuery';
 import { Location } from '../models';
@@ -30,12 +31,14 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, visitedRefuges } = useAuth();
+  const { firebaseUser, backendUser, visitedRefuges, refreshUserData } = useAuth();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   
+  const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+  
   // Utilitzar React Query per obtenir dades de l'usuari amb cache
-  const { data: userFromQuery, isLoading: isLoadingUser } = useUser(firebaseUser?.uid);
+  const { data: userFromQuery, isLoading: isLoadingUser, refetch: refetchUserQuery } = useUser(firebaseUser?.uid);
   
   // Scroll to top when screen gains focus
   useFocusEffect(
@@ -69,6 +72,18 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
       <Text style={styles.emptyVisitedText}>{t('visited.empty.message')}</Text>
     </View>
   );
+  
+  const handleAvatarPress = () => {
+    setShowAvatarPopup(true);
+  };
+  
+  const handleAvatarUpdated = () => {
+    // Refrescar les dades de l'usuari
+    refetchUserQuery();
+    if (refreshUserData) {
+      refreshUserData();
+    }
+  };
   
   
   return (
@@ -108,19 +123,30 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           </LinearGradient>
 
           {/* Avatar overlapping the background */}
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={handleAvatarPress}
+            activeOpacity={0.8}
+          >
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {(() => {
-                  const name = displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || '';
-                  const parts = name.trim().split(/\s+/);
-                  if (parts.length === 0) return '';
-                  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-                  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-                })()}
-              </Text>
+              {displayUser?.avatar_metadata?.url ? (
+                <Image 
+                  source={{ uri: displayUser.avatar_metadata.url }} 
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <Text style={styles.avatarText}>
+                  {(() => {
+                    const name = displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || '';
+                    const parts = name.trim().split(/\s+/);
+                    if (parts.length === 0) return '';
+                    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                  })()}
+                </Text>
+              )}
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
@@ -200,6 +226,16 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           </View>
         </View>
       </ScrollView>
+      
+      {/* Avatar Popup */}
+      <AvatarPopup
+        visible={showAvatarPopup}
+        onClose={() => setShowAvatarPopup(false)}
+        avatarUrl={displayUser?.avatar_metadata?.url}
+        username={displayUser?.username || firebaseUser?.displayName || ''}
+        uid={firebaseUser?.uid || ''}
+        onAvatarUpdated={handleAvatarUpdated}
+      />
     </View>
   );
 }
@@ -214,8 +250,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: '#ffffffff',
-    paddingHorizontal: 6,
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -235,6 +270,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6900',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontSize: 20,

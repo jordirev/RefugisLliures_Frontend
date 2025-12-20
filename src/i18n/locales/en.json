@@ -152,6 +152,25 @@
         "fr": "Français"
       },
       "updateError": "Failed to update language on the server"
+    },
+    "avatar": {
+      "changePhoto": "Change photo",
+      "deletePhoto": "Delete photo",
+      "permissionDenied": "Permission denied",
+      "permissionMessage": "We need permission to access your photos. Please enable it from your device settings.",
+      "permissionRequired": "Permission required",
+      "permissionOptions": "We need access to your photos to change your profile picture. You can choose between limited access or full access to your gallery.",
+      "requestPermission": "Allow access",
+      "uploadSuccess": "Photo updated",
+      "uploadSuccessMessage": "Your profile photo has been updated successfully",
+      "uploadError": "Failed to upload photo",
+      "selectError": "Failed to select image",
+      "deleteConfirmTitle": "Delete profile photo",
+      "deleteConfirmMessage": "Are you sure you want to delete your profile photo?",
+      "deleteSuccess": "Photo deleted",
+      "deleteSuccessMessage": "Your profile photo has been deleted successfully",
+      "deleteError": "Failed to delete photo",
+      "tapToChange": "Tap to change profile photo"
     }
   },
   "changePassword": {
