@@ -45,6 +45,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [actionMode, setActionMode] = useState<ActionMode>('none');
   const [numVisitors, setNumVisitors] = useState<string>('');
+  const [originalNumVisitors, setOriginalNumVisitors] = useState<string>('');
   const [numVisitorsError, setNumVisitorsError] = useState<string | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
@@ -54,6 +55,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setSelectedDate(null);
       setActionMode('none');
       setNumVisitors('');
+      setOriginalNumVisitors('');
       setNumVisitorsError(null);
       setShowDisclaimer(false);
       // Reset to current month
@@ -115,7 +117,9 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
     const visit = selectedDate ? getVisitForDate(selectedDate) : null;
     if (visit) {
       setActionMode('edit');
-      setNumVisitors(String(visit.num_visitors));
+      const originalValue = String(visit.num_visitors);
+      setNumVisitors(originalValue);
+      setOriginalNumVisitors(originalValue);
       setNumVisitorsError(null);
     }
   };
@@ -177,6 +181,12 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
   const handleUpdateVisit = async () => {
     if (!validateNumVisitors(numVisitors) || !selectedDate) return;
 
+    // Check if the value has actually changed
+    if (parseInt(numVisitors) === parseInt(originalNumVisitors)) {
+      setNumVisitorsError('No changes detected. Please modify the number of visitors.');
+      return;
+    }
+
     try {
       const visit = await updateVisitMutation.mutateAsync({
         refugeId: refuge.id,
@@ -197,6 +207,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
 
       setActionMode('none');
       setNumVisitors('');
+      setOriginalNumVisitors('');
     } catch (error) {
       console.error('Error updating visit:', error);
       showAlert(t('common.error'), error instanceof Error ? error.message : String(error));
@@ -225,6 +236,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
   const handleCancelAction = () => {
     setActionMode('none');
     setNumVisitors('');
+    setOriginalNumVisitors('');
     setNumVisitorsError(null);
   };
 
