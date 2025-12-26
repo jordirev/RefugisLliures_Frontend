@@ -29,7 +29,33 @@
     "optional": "optional",
     "locale": "en",
     "you": "You",
-    "share": "Share"
+    "share": "Share",
+    "warning": "Warning",
+    "understand": "I understand",
+    "confirm": "Confirm",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "days": {
+      "sun": "Su",
+      "mon": "Mo",
+      "tue": "Tu",
+      "wed": "We",
+      "thu": "Th",
+      "fri": "Fr",
+      "sat": "Sa"
+    }
   },
   "navigation": {
     "map": "Map",
@@ -293,6 +319,18 @@
       "addPhoto": "Add photo",
       "noPhotos": "There are no photos of this refuge.\nBe the first to contribute yours!",
       "addPhotosButton": "Add photos"
+    },
+    "occupation": {
+      "title": "Refuge occupation",
+      "addVisit": "Add visit",
+      "editVisit": "Edit visit",
+      "deleteVisit": "Delete visit",
+      "deleteConfirmation": "Are you sure you want to delete this visit?",
+      "numVisitorsLabel": "Number of visitors",
+      "numVisitorsPlaceholder": "Ex: 4",
+      "numVisitorsError": "The number of visitors must be greater than 0",
+      "disclaimer": "You are not reserving any spot at the refuge. You are only indicating that you will go to this refuge on this date so other users know.",
+      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going."
     }
   },
   "filters": {

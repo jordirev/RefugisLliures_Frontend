@@ -10,3 +10,4 @@ export * from './useRefugesQuery';
 export * from './useProposalsQuery';
 export * from './useUsersQuery';
 export * from './useRenovationsQuery';
+export * from './useRefugeVisitsQuery';

@@ -29,7 +29,33 @@
     "optional": "opcional",
     "locale": "ca",
     "you": "Tu",
-    "share": "Compartir"
+    "share": "Compartir",
+    "warning": "Atenció",
+    "understand": "Ho entenc",
+    "confirm": "Confirmar",
+    "months": {
+      "january": "Gener",
+      "february": "Febrer",
+      "march": "Març",
+      "april": "Abril",
+      "may": "Maig",
+      "june": "Juny",
+      "july": "Juliol",
+      "august": "Agost",
+      "september": "Setembre",
+      "october": "Octubre",
+      "november": "Novembre",
+      "december": "Desembre"
+    },
+    "days": {
+      "sun": "Dg",
+      "mon": "Dl",
+      "tue": "Dm",
+      "wed": "Dc",
+      "thu": "Dj",
+      "fri": "Dv",
+      "sat": "Ds"
+    }
   },
   "navigation": {
     "map": "Mapa",
@@ -307,6 +333,18 @@
       "addPhoto": "Afegeix foto",
       "noPhotos": "No hi ha fotos d'aquest refugi\nSigues el primer en aportar les teves!",
       "addPhotosButton": "Afegeix fotos"
+    },
+    "occupation": {
+      "title": "Ocupació del refugi",
+      "addVisit": "Afegir visita",
+      "editVisit": "Editar visita",
+      "deleteVisit": "Eliminar visita",
+      "deleteConfirmation": "Estàs segur/a que vols eliminar aquesta visita?",
+      "numVisitorsLabel": "Nombre de visitants",
+      "numVisitorsPlaceholder": "Ex: 4",
+      "numVisitorsError": "El nombre de visitants ha de ser superior a 0",
+      "disclaimer": "No estàs reservant cap plaça al refugi. Només estàs indicant que aniràs a aquest refugi en aquesta data perquè la resta d'usuaris ho sàpiguen.",
+      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi."
     }
   },
   "filters": {

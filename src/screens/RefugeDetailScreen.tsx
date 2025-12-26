@@ -42,6 +42,7 @@ import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal
 import { GalleryScreen } from './GalleryScreen';
 import { RefugeMediaService } from '../services/RefugeMediaService';
 import { useAuth } from '../contexts/AuthContext';
+import { RefugeOccupationModal } from '../components/RefugeOccupationModal';
 
 // Icons
 import HeartIcon from '../assets/icons/fav.svg';
@@ -101,6 +102,7 @@ export function RefugeDetailScreen({
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
   const [confirmModalUrl, setConfirmModalUrl] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [occupationModalVisible, setOccupationModalVisible] = React.useState(false);
   
   // Sort images by uploaded_at in descending order (most recent first)
   const sortedImages = React.useMemo(() => {
@@ -704,11 +706,15 @@ export function RefugeDetailScreen({
               <Text style={styles.statValue}>{refuge.places !== null ? String(refuge.places) : 'N/A'}</Text>
             </View>
             
-            <View style={styles.statCard}>
+            <TouchableOpacity 
+              style={styles.statCard}
+              onPress={() => setOccupationModalVisible(true)}
+              activeOpacity={0.7}
+            >
               <CalendarIcon width={24} height={24} color="#FF6900" />
               <Text style={styles.statLabel}>{t('refuge.details.occupation')}</Text>
               <Text style={[styles.statValue, {fontSize: 12}]}>{t('refuge.details.seeOccupation')}</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         
@@ -949,6 +955,15 @@ export function RefugeDetailScreen({
         onClose={() => setPhotoViewerVisible(false)}
         onPhotoDeleted={handlePhotoDeleted}
       />
+      
+      {/* Refuge Occupation Modal */}
+      {refuge && (
+        <RefugeOccupationModal
+          visible={occupationModalVisible}
+          onClose={() => setOccupationModalVisible(false)}
+          refuge={refuge}
+        />
+      )}
       
       {/* CustomAlert */}
       {alertConfig && (

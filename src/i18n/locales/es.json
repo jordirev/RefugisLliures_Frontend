@@ -29,7 +29,33 @@
     "optional": "opcional",
     "locale": "es",
     "you": "Tú",
-    "share": "Compartir"
+    "share": "Compartir",
+    "warning": "Atención",
+    "understand": "Lo entiendo",
+    "confirm": "Confirmar",
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    },
+    "days": {
+      "sun": "Do",
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Mi",
+      "thu": "Ju",
+      "fri": "Vi",
+      "sat": "Sá"
+    }
   },
   "navigation": {
     "map": "Mapa",
@@ -303,6 +329,18 @@
       "addPhoto": "Añadir foto",
       "noPhotos": "No hay fotos de este refugio.\nSé el primero en aportar las tuyas!",
       "addPhotosButton": "Añade fotos"
+    },
+    "occupation": {
+      "title": "Ocupación del refugio",
+      "addVisit": "Añadir visita",
+      "editVisit": "Editar visita",
+      "deleteVisit": "Eliminar visita",
+      "deleteConfirmation": "¿Estás seguro/a de que quieres eliminar esta visita?",
+      "numVisitorsLabel": "Número de visitantes",
+      "numVisitorsPlaceholder": "Ej: 4",
+      "numVisitorsError": "El número de visitantes debe ser superior a 0",
+      "disclaimer": "No estás reservando ninguna plaza en el refugio. Solo estás indicando que irás a este refugio en esta fecha para que el resto de usuarios lo sepan.",
+      "placesExceeded": "La ocupación del refugio ({{total}} visitantes) supera la capacidad disponible ({{places}} plazas). Tenlo en cuenta antes de ir."
     }
   },
   "filters": {

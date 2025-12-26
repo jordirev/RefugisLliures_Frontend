@@ -32,6 +32,7 @@ export interface ImageMetadata {
   url: string;
   uploaded_at: string; // ISO date string
   creator_uid: string;
+  experience_id?: string | null; // id de l'experiencia a la que pertany la foto
 }
 
 export interface Location {
@@ -121,4 +122,48 @@ export interface RefugeProposal {
   reviewer_uid: string | null;
   reviewed_at: string | null;
   rejection_reason?: string | null;
+}
+
+/*******************************  Refuge Visit Model  ***********************************/
+
+export interface RefugeVisit {
+  date: string; // ISO date string
+  refuge_id: string;
+  total_visitors: number; // total number of visitors that day
+  is_visitor: boolean;
+  num_visitors: number; // number of visitors in the user's group
+}
+
+/*******************************  Refuge Experience Model  ***********************************/
+
+export interface Experience {
+  id: string;
+  refuge_id: string;
+  creator_uid: string;
+  modified_at: string; // ISO date string
+  comment: string;
+  images_metadata?: ImageMetadata[]; // 
+}
+
+
+/*******************************  Refuge Doubt Model  ***********************************/
+
+export interface Doubt {
+  id: string;
+  refuge_id: string;
+  creator_uid: string;
+  message: string;
+  created_at: string; // ISO date string
+  answers_count: number;
+  answers?: Answer[];
+}
+
+/*******************************  Refuge Answer Model  ***********************************/
+
+export interface Answer {
+  id: string;
+  creator_uid: string;
+  message: string;
+  created_at: string; // ISO date string
+  parent_answer_id?: string | null;
 }
