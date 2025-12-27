@@ -17,6 +17,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
 import useVisited from '../hooks/useVisited';
@@ -46,6 +47,8 @@ interface QuickActionsMenuProps {
   onDelete?: () => void;
   onPhotoUploaded?: () => void;
   onViewMap?: () => void;
+  onNavigateToDoubts?: (refugeId: string, refugeName: string) => void;
+  onNavigateToExperiences?: (refugeId: string, refugeName: string) => void;
 }
 
 export function QuickActionsMenu({
@@ -60,8 +63,11 @@ export function QuickActionsMenu({
   onEdit,
   onPhotoUploaded,
   onViewMap,
+  onNavigateToDoubts,
+  onNavigateToExperiences,
 }: QuickActionsMenuProps) {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { isVisited, toggleVisited, isProcessing } = useVisited(refuge.id);
   const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
@@ -139,19 +145,21 @@ export function QuickActionsMenu({
   };
 
   const handleShareExperience = () => {
-    onShowAlert(
-      t('alerts.shareExperience.title'),
-      t('alerts.shareExperience.message')
-    );
     onClose();
+    if (onNavigateToExperiences) {
+      onNavigateToExperiences(refuge.id, refuge.name);
+    } else {
+      navigation.navigate('ExperiencesScreen', { refugeId: refuge.id, refugeName: refuge.name });
+    }
   };
 
   const handleAskQuestion = () => {
-    onShowAlert(
-      t('alerts.askQuestion.title'),
-      t('alerts.askQuestion.message')
-    );
     onClose();
+    if (onNavigateToDoubts) {
+      onNavigateToDoubts(refuge.id, refuge.name);
+    } else {
+      navigation.navigate('DoubtsScreen', { refugeId: refuge.id, refugeName: refuge.name });
+    }
   };
 
   const handleAddPhoto = async () => {

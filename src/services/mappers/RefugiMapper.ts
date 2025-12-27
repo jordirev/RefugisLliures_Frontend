@@ -2,8 +2,14 @@
  * Mappers per convertir DTOs del backend al format del frontend
  */
 
-import { Location, Coord } from '../../models';
-import { RefugiDTO, RefugiBodyDTO, CoordDTO, UserRefugiInfoDTO } from '../dto/RefugiDTO';
+import { Location, Coord, ImageMetadata } from '../../models';
+import { 
+  RefugiDTO, 
+  RefugiBodyDTO, 
+  CoordDTO, 
+  UserRefugiInfoDTO, 
+  ImageMetadataDTO 
+} from '../dto/RefugiDTO';
 
 /**
  * Converteix les coordenades del DTO al format del frontend
@@ -69,6 +75,16 @@ function determineCondition(refugiDTO: RefugiDTO): number | undefined {
   return 0;
 }
 
+export function mapImageMetadataFromDTO(imageDTO: ImageMetadataDTO): ImageMetadata {
+  return {
+    key: imageDTO.key,
+    url: imageDTO.url,
+    uploaded_at: imageDTO.uploaded_at,
+    creator_uid: imageDTO.creator_uid,
+    experience_id: imageDTO.experience_id,
+  };
+}
+
 /**
  * Converteix un RefugiDTO al format Location del frontend
  */
@@ -94,7 +110,7 @@ export function mapRefugiFromDTO(refugiDTO: RefugiDTO): Location {
       departement: refugiDTO.departement,
       condition: refugiDTO.condition || determineCondition(refugiDTO),
       visitors: refugiDTO.visitors,
-      images_metadata: refugiDTO.images_metadata,
+      images_metadata: refugiDTO.images_metadata ? refugiDTO.images_metadata.map(mapImageMetadataFromDTO) : undefined,
     };
   } catch (error) {
     console.error('[RefugiMapper] Error mapping refuge:', refugiDTO?.id || 'unknown', error);

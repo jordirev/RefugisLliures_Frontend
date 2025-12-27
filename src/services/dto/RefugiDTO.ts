@@ -36,6 +36,7 @@ export interface ImageMetadataDTO {
   url: string;
   uploaded_at: string; // ISO date string
   creator_uid: string;
+  experience_id?: string | null;
 } 
 
 /**

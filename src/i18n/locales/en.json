@@ -604,6 +604,31 @@
       "commentTooLong": "Comment cannot exceed 3000 characters",
       "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
     }  },
+  "doubts": {
+    "title": "Doubts section",
+    "noDoubts": "No doubts yet. Be the first to ask a question!",
+    "doubtPlaceholder": "Write your doubt...",
+    "answerPlaceholder": "Write your answer...",
+    "reply": "Reply",
+    "replyingTo": "Replying to {{name}}",
+    "deleteDoubt": {
+      "title": "Delete doubt",
+      "message": "Are you sure you want to delete this doubt? All its answers will also be deleted.",
+      "success": "Doubt deleted successfully"
+    },
+    "deleteAnswer": {
+      "title": "Delete answer",
+      "message": "Are you sure you want to delete this answer?",
+      "success": "Answer deleted successfully"
+    },
+    "errors": {
+      "createDoubtError": "Could not create doubt",
+      "createAnswerError": "Could not create answer",
+      "deleteDoubtError": "Could not delete doubt",
+      "deleteAnswerError": "Could not delete answer",
+      "messageTooLong": "Message cannot exceed {{max}} characters"
+    }
+  },
   "proposals": {
     "titleMy": "My proposals",
     "titleAdmin": "Proposals management",
@@ -667,5 +692,31 @@
       "loadDetailError": "Could not load proposal details",
       "approveError": "Could not approve the proposal",
       "rejectError": "Could not reject the proposal"
-    }  }
+    }  
+  },
+  "experiences": {
+    "title": "Experiences",
+    "viewMore": "View all experiences",
+    "noExperiences": "No experiences shared yet. \nBe the first to share yours!",
+    "placeholder": "Share your experience...",
+    "newPhotos": "New photos",
+    "addPhotos": "Add photos",
+    "deletePhotoInfo": "To delete a photo, tap it in the carousel and delete it from the viewer",
+    "updateSuccess": "Experience updated successfully",
+    "deleteExperience": {
+      "title": "Delete experience",
+      "message": "Are you sure you want to delete this experience? This action cannot be undone.",
+      "success": "Experience deleted successfully"
+    },
+    "errors": {
+      "commentTooLong": "Comment cannot exceed 3000 characters",
+      "createExperienceError": "Experience has not been created",
+      "updateExperienceError": "Experience has not been updated",
+      "deleteExperienceError": "Experience has not been deleted",
+      "selectPhotosError": "Could not select photos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Some files could not be uploaded successfully"
+    }
+  }
 }

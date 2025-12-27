@@ -33,6 +33,8 @@ interface PhotoViewerModalProps {
   refugeId: string;
   onClose: () => void;
   onPhotoDeleted?: () => void;
+  experienceCreatorUid?: string; // UID del creador de l'experiència (si és des d'una experiència)
+  hideMetadata?: boolean; // Ocultar created_by i created_at
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -89,6 +91,8 @@ export function PhotoViewerModal({
   refugeId,
   onClose,
   onPhotoDeleted,
+  experienceCreatorUid,
+  hideMetadata = false,
 }: PhotoViewerModalProps) {
   const { firebaseUser } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -105,10 +109,13 @@ export function PhotoViewerModal({
       if (!currentPhoto?.creator_uid) return null;
       return await UsersService.getUserByUid(currentPhoto.creator_uid);
     },
-    enabled: !!currentPhoto?.creator_uid,
+    enabled: !!currentPhoto?.creator_uid && !hideMetadata,
   });
 
-  const isOwner = firebaseUser?.uid === currentPhoto?.creator_uid;
+  // Si és des d'una experiència, comprovar si l'usuari és el creador de l'experiència
+  const isOwner = experienceCreatorUid 
+    ? firebaseUser?.uid === experienceCreatorUid
+    : firebaseUser?.uid === currentPhoto?.creator_uid;
 
   React.useEffect(() => {
     if (visible) {
@@ -212,39 +219,58 @@ export function PhotoViewerModal({
         </ScrollView>
 
         {/* Photo metadata */}
-        <View style={styles.metadataContainer}>
-          <View style={styles.metadataPill}>
-            <View style={styles.creatorInfo}>
-              {loadingCreator ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <>
-                  {creator?.avatar_metadata?.url ? (
-                    <Image
-                      source={{ uri: creator.avatar_metadata.url }}
-                      style={styles.avatar}
-                    />
-                  ) : (
-                    <View style={styles.avatarPlaceholder}>
-                      <Text style={styles.avatarPlaceholderText}>
-                        {creator?.username?.charAt(0).toUpperCase() || '?'}
-                      </Text>
-                    </View>
-                  )}
-                  <Text style={styles.creatorName}>
-                    {creator?.username || 'Anònim'}
-                  </Text>
-                  <Text style={styles.separator}>·</Text>
-                  <Text style={styles.date}>
-                    {formatDate(currentPhoto.uploaded_at)}
-                  </Text>
-                </>
-              )}
+        {!hideMetadata && (
+          <View style={styles.metadataContainer}>
+            <View style={styles.metadataPill}>
+              <View style={styles.creatorInfo}>
+                {loadingCreator ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <>
+                    {creator?.avatar_metadata?.url ? (
+                      <Image
+                        source={{ uri: creator.avatar_metadata.url }}
+                        style={styles.avatar}
+                      />
+                    ) : (
+                      <View style={styles.avatarPlaceholder}>
+                        <Text style={styles.avatarPlaceholderText}>
+                          {creator?.username?.charAt(0).toUpperCase() || '?'}
+                        </Text>
+                      </View>
+                    )}
+                    <Text style={styles.creatorName}>
+                      {creator?.username || 'Anònim'}
+                    </Text>
+                    <Text style={styles.separator}>·</Text>
+                    <Text style={styles.date}>
+                      {formatDate(currentPhoto.uploaded_at)}
+                    </Text>
+                  </>
+                )}
+              </View>
             </View>
-          </View>
 
-          {/* Delete button (only if owner) */}
-          {isOwner && (
+            {/* Delete button (only if owner) - when metadata visible */}
+            {isOwner && (
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <TrashIcon width={20} height={20} color="#FFFFFF" />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
+        {/* Delete button (only if owner) - when metadata hidden */}
+        {hideMetadata && isOwner && (
+          <View style={styles.deleteButtonContainerNoMetadata}>
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDelete}
@@ -256,8 +282,8 @@ export function PhotoViewerModal({
                 <TrashIcon width={20} height={20} color="#FFFFFF" />
               )}
             </TouchableOpacity>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* Page indicators removed as requested */}
       </View>
@@ -367,5 +393,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(31, 31, 31, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  deleteButtonContainerNoMetadata: {
+    position: 'absolute',
+    bottom: 100,
+    right: 20,
   },
 });

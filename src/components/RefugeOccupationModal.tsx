@@ -29,8 +29,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
-  // Fetch refuge visits
-  const { data: visits, isLoading } = useRefugeVisits(refuge.id);
+  // Fetch refuge visits only when modal is visible
+  const { data: visits, isLoading } = useRefugeVisits(refuge.id, { enabled: visible });
   
   // Mutations
   const createVisitMutation = useCreateRefugeVisit();
@@ -261,7 +261,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
 
   // Calendar render helpers
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const firstDayOfMonth = (new Date(year, month, 1).getDay() + 6) % 7; // Adjust so Monday is 0
   
   const monthNames = [
     t('common.months.january'), t('common.months.february'), t('common.months.march'),
@@ -271,8 +271,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
   ];
   
   const dayNames = [
-    t('common.days.sun'), t('common.days.mon'), t('common.days.tue'),
-    t('common.days.wed'), t('common.days.thu'), t('common.days.fri'), t('common.days.sat')
+    t('common.days.mon'), t('common.days.tue'), t('common.days.wed'),
+    t('common.days.thu'), t('common.days.fri'), t('common.days.sat'), t('common.days.sun')
   ];
 
   const selectedVisit = selectedDate ? getVisitForDate(selectedDate) : null;
@@ -316,7 +316,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
                     <TouchableOpacity onPress={handlePrevMonth} style={styles.navButton}>
                       <Text style={styles.navButtonText}>←</Text>
                     </TouchableOpacity>
-                    <Text style={styles.monthYear}>{monthNames[month]} {year}</Text>
+                    <Text style={styles.monthYear}>{`${monthNames[month]} ${year}`}</Text>
                     <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
                       <Text style={styles.navButtonText}>→</Text>
                     </TouchableOpacity>

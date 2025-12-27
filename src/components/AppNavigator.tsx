@@ -15,6 +15,8 @@ import { EditRefugeScreen } from '../screens/EditRefugeScreen';
 import { EditRenovationScreen } from '../screens/EditRenovationScreen';
 import { ProposalsScreen } from '../screens/ProposalsScreen';
 import { ProposalDetailScreen } from '../screens/ProposalDetailScreen';
+import { DoubtsScreen } from '../screens/DoubtsScreen';
+import { ExperiencesScreen } from '../screens/ExperiencesScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
@@ -43,6 +45,12 @@ export function AppNavigator() {
   const [refugeToDelete, setRefugeToDelete] = useState<Location | undefined>(undefined);
   const [refugeToEdit, setRefugeToEdit] = useState<Location | undefined>(undefined);
   const [showDetailScreen, setShowDetailScreen] = useState(false);
+  
+  // Estats per DoubtsScreen i ExperiencesScreen overlays
+  const [showDoubtsScreen, setShowDoubtsScreen] = useState(false);
+  const [doubtsParams, setDoubtsParams] = useState<{refugeId: string, refugeName: string} | null>(null);
+  const [showExperiencesScreen, setShowExperiencesScreen] = useState(false);
+  const [experiencesParams, setExperiencesParams] = useState<{refugeId: string, refugeName: string} | null>(null);
 
   // Handlers globals per al BottomSheet
   const handleToggleFavorite = async (locationId: string | undefined) => {
@@ -137,6 +145,16 @@ export function AppNavigator() {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
+      if (showExperiencesScreen) {
+        setShowExperiencesScreen(false);
+        setExperiencesParams(null);
+        return true;
+      }
+      if (showDoubtsScreen) {
+        setShowDoubtsScreen(false);
+        setDoubtsParams(null);
+        return true;
+      }
       if (refugeToEdit) {
         setRefugeToEdit(undefined);
         return true;
@@ -154,7 +172,7 @@ export function AppNavigator() {
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
-  }, [showBottomSheet, showDetailScreen, refugeToEdit]);
+  }, [showBottomSheet, showDetailScreen, refugeToEdit, showDoubtsScreen, showExperiencesScreen]);
 
   return (
     <View style={styles.container}>
@@ -184,6 +202,8 @@ export function AppNavigator() {
         <Stack.Screen name="EditRenovation" component={EditRenovationScreen} />
         <Stack.Screen name="Proposals" component={ProposalsScreen} />
         <Stack.Screen name="ProposalDetail" component={ProposalDetailScreen} />
+        <Stack.Screen name="DoubtsScreen" component={DoubtsScreen} />
+        <Stack.Screen name="ExperiencesScreen" component={ExperiencesScreen} />
         <Stack.Screen name="RefromDetail">
           {({ navigation: nav }: any) => (
             <RenovationDetailScreen
@@ -221,6 +241,14 @@ export function AppNavigator() {
                     navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
                   }, 100);
                 }}
+                onNavigateToDoubts={(refugeId: string, refugeName: string) => {
+                  setDoubtsParams({ refugeId, refugeName });
+                  setShowDoubtsScreen(true);
+                }}
+                onNavigateToExperiences={(refugeId: string, refugeName: string) => {
+                  setExperiencesParams({ refugeId, refugeName });
+                  setShowExperiencesScreen(true);
+                }}
               />
             );
           }}
@@ -257,8 +285,13 @@ export function AppNavigator() {
                 handleShowRefugeBottomSheet(location);
                 navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
               }, 300);
-            }}
-          />
+            }}            onNavigateToDoubts={(refugeId: string, refugeName: string) => {
+              setDoubtsParams({ refugeId, refugeName });
+              setShowDoubtsScreen(true);
+            }}            onNavigateToExperiences={(refugeId: string, refugeName: string) => {
+              setExperiencesParams({ refugeId, refugeName });
+              setShowExperiencesScreen(true);
+            }}          />
         </View>
       )}
 
@@ -268,6 +301,34 @@ export function AppNavigator() {
           <EditRefugeScreen 
             refuge={refugeToEdit} 
             onCancel={() => setRefugeToEdit(undefined)}
+          />
+        </View>
+      )}
+
+      {/* Doubts Screen overlay - Per sobre de RefugeDetailScreen */}
+      {showDoubtsScreen && doubtsParams && (
+        <View style={styles.editRefugeOverlay}>
+          <DoubtsScreen 
+            refugeId={doubtsParams.refugeId}
+            refugeName={doubtsParams.refugeName}
+            onClose={() => {
+              setShowDoubtsScreen(false);
+              setDoubtsParams(null);
+            }}
+          />
+        </View>
+      )}
+
+      {/* Experiences Screen overlay - Per sobre de RefugeDetailScreen */}
+      {showExperiencesScreen && experiencesParams && (
+        <View style={styles.editRefugeOverlay}>
+          <ExperiencesScreen 
+            refugeId={experiencesParams.refugeId}
+            refugeName={experiencesParams.refugeName}
+            onClose={() => {
+              setShowExperiencesScreen(false);
+              setExperiencesParams(null);
+            }}
           />
         </View>
       )}

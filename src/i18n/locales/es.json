@@ -614,6 +614,31 @@
       "commentTooLong": "El comentario no puede superar los 3000 caracteres",
       "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
     }  },
+  "doubts": {
+    "title": "Sección de dudas",
+    "noDoubts": "Todavía no hay ninguna duda. ¡Sé el primero en hacer una pregunta!",
+    "doubtPlaceholder": "Escribe tu duda...",
+    "answerPlaceholder": "Escribe tu respuesta...",
+    "reply": "Responder",
+    "replyingTo": "Respondiendo a {{name}}",
+    "deleteDoubt": {
+      "title": "Eliminar duda",
+      "message": "¿Estás seguro de que quieres eliminar esta duda? También se eliminarán todas sus respuestas.",
+      "success": "Duda eliminada correctamente"
+    },
+    "deleteAnswer": {
+      "title": "Eliminar respuesta",
+      "message": "¿Estás seguro de que quieres eliminar esta respuesta?",
+      "success": "Respuesta eliminada correctamente"
+    },
+    "errors": {
+      "createDoubtError": "No se ha podido crear la duda",
+      "createAnswerError": "No se ha podido crear la respuesta",
+      "deleteDoubtError": "No se ha podido eliminar la duda",
+      "deleteAnswerError": "No se ha podido eliminar la respuesta",
+      "messageTooLong": "El mensaje no puede superar los {{max}} caracteres"
+    }
+  },
   "proposals": {
     "titleMy": "Mis propuestas",
     "titleAdmin": "Gestión de propuestas",
@@ -677,5 +702,31 @@
       "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
       "approveError": "No se pudo aprobar la propuesta",
       "rejectError": "No se pudo rechazar la propuesta"
-    }  }
+    }  
+  },
+  "experiences": {
+    "title": "Experiencias",
+    "viewMore": "Ver todas las experiencias",
+    "noExperiences": "Aún no hay experiencias.\n¡Sé el primero en compartir la tuya!",
+    "placeholder": "Comparte tu experiencia...",
+    "newPhotos": "Nuevas fotos",
+    "addPhotos": "Añadir fotos",
+    "deletePhotoInfo": "Para eliminar una foto, tócala en el carrusel y elimínala desde el visor",
+    "updateSuccess": "La experiencia se ha actualizado correctamente",
+    "deleteExperience": {
+      "title": "Eliminar experiencia",
+      "message": "¿Estás seguro de que deseas eliminar esta experiencia? Esta acción no se puede deshacer.",
+      "success": "La experiencia se ha eliminado correctamente"
+    },
+    "errors": {
+      "commentTooLong": "El comentario no puede superar los 3000 caracteres",
+      "createExperienceError": "La experiencia no se ha creado",
+      "updateExperienceError": "La experiencia no se ha actualizado",
+      "deleteExperienceError": "La experiencia no se ha eliminado",
+      "selectPhotosError": "No se pudieron seleccionar las fotos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Algunos archivos no se pudieron subir correctamente"
+    }
+  }
 }

@@ -619,6 +619,31 @@
       "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
     }
   },
+  "doubts": {
+    "title": "Secció de dubtes",
+    "noDoubts": "Encara no hi ha cap dubte. Sigues el primer en fer una pregunta!",
+    "doubtPlaceholder": "Escriu el teu dubte...",
+    "answerPlaceholder": "Escriu la teva resposta...",
+    "reply": "Respondre",
+    "replyingTo": "Responent a {{name}}",
+    "deleteDoubt": {
+      "title": "Eliminar dubte",
+      "message": "Estàs segur que vols eliminar aquest dubte? També s'eliminaran totes les seves respostes.",
+      "success": "Dubte eliminat correctament"
+    },
+    "deleteAnswer": {
+      "title": "Eliminar resposta",
+      "message": "Estàs segur que vols eliminar aquesta resposta?",
+      "success": "Resposta eliminada correctament"
+    },
+    "errors": {
+      "createDoubtError": "No s'ha pogut crear el dubte",
+      "createAnswerError": "No s'ha pogut crear la resposta",
+      "deleteDoubtError": "No s'ha pogut eliminar el dubte",
+      "deleteAnswerError": "No s'ha pogut eliminar la resposta",
+      "messageTooLong": "El missatge no pot superar els {{max}} caràcters"
+    }
+  },
   "proposals": {
     "titleMy": "Les meves propostes",
     "titleAdmin": "Gestió de propostes",
@@ -682,6 +707,31 @@
       "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
       "approveError": "No s'ha pogut aprovar la proposta",
       "rejectError": "No s'ha pogut rebutjar la proposta"
+    }
+  },
+  "experiences": {
+    "title": "Experiències",
+    "viewMore": "Veure totes les experiències",
+    "noExperiences": "Encara no hi ha experiències compartides. \nSigues el primer en compartir la teva!",
+    "placeholder": "Comparteix la teva experiència...",
+    "newPhotos": "Noves fotos",
+    "addPhotos": "Afegir fotos",
+    "deletePhotoInfo": "Per eliminar una foto, toca-la al carrusel i elimina-la des del visor",
+    "updateSuccess": "Experiència actualitzada correctament",
+    "deleteExperience": {
+      "title": "Eliminar experiència",
+      "message": "Estàs segur que vols eliminar aquesta experiència? Aquesta acció no es pot desfer.",
+      "success": "Experiència eliminada correctament"
+    },
+    "errors": {
+      "commentTooLong": "El comentari no pot superar els {max} caràcters",
+      "createExperienceError": "No s'ha pogut crear l'experiència",
+      "updateExperienceError": "No s'ha pogut actualitzar l'experiència",
+      "deleteExperienceError": "No s'ha pogut eliminar l'experiència",
+      "selectPhotosError": "No s'han pogut seleccionar les fotos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Alguns fitxers no s'han pogut pujar correctament"
     }
   }
 }

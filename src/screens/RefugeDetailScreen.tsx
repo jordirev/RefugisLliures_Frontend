@@ -29,16 +29,19 @@ try {
 }
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { Location } from '../models';
+import { Location, ImageMetadata } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
+import { useExperiences, useDeleteExperience } from '../hooks/useExperiencesQuery';
+import { useUser } from '../hooks/useUsersQuery';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
 import { QuickActionsMenu } from '../components/QuickActionsMenu';
 import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal';
+import { UserExperience } from '../components/UserExperience';
 import { GalleryScreen } from './GalleryScreen';
 import { RefugeMediaService } from '../services/RefugeMediaService';
 import { useAuth } from '../contexts/AuthContext';
@@ -60,12 +63,33 @@ import NavigationIcon from '../assets/icons/navigation.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
 import GalleryIcon from '../assets/icons/gallery.png';
 import AddPhotoIcon from '../assets/icons/addPhoto.png';
+import DoubtIcon from '../assets/icons/doubt-orange.png';
+import ExperienceIcon from '../assets/icons/message-circle.svg';
 
 // Helper function to check if a media is a video based on URL extension
 const isVideo = (url: string): boolean => {
   const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
   const lowerUrl = url.toLowerCase();
   return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
+
+// Component for experience preview in the list
+const ExperiencePreviewItem: React.FC<{ 
+  experience: any;
+  onPhotoPress: (photos: any[], index: number) => void;
+  onDelete?: () => void;
+}> = ({ experience, onPhotoPress, onDelete }) => {
+  const { data: user } = useUser(experience.creator_uid);
+
+  return (
+    <UserExperience
+      user={user || null}
+      experience={experience}
+      onPhotoPress={onPhotoPress}
+      onDelete={onDelete}
+      refugeCreatorUid={experience.creator_uid}
+    />
+  );
 };
 
 
@@ -76,6 +100,9 @@ interface RefugeDetailScreenProps {
   onNavigate: (location: Location) => void;
   onEdit?: (location: Location) => void;
   onDelete?: (location: Location) => void;
+  onViewMap?: (location: Location) => void;
+  onNavigateToDoubts?: (refugeId: string, refugeName: string) => void;
+  onNavigateToExperiences?: (refugeId: string, refugeName: string) => void;
 }
 
 // Badges use centralized components: Badge, BadgeType, BadgeCondition
@@ -87,6 +114,9 @@ export function RefugeDetailScreen({
   onNavigate, 
   onEdit,
   onDelete,
+  onViewMap,
+  onNavigateToDoubts,
+  onNavigateToExperiences,
 }: RefugeDetailScreenProps) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
@@ -97,6 +127,34 @@ export function RefugeDetailScreen({
   // Load full refuge data - pass refugeId even if empty (hooks must always be called)
   const { data: refuge, isLoading: loadingRefuge, refetch: refetchRefuge } = useRefuge(refugeId || '');
   const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refugeId || '');
+  
+  // Load experiences for this refuge
+  const { data: experiences, isLoading: loadingExperiences } = useExperiences(refugeId || '');
+  const deleteExperienceMutation = useDeleteExperience();
+  
+  // Get the 3 most recent experiences
+  const recentExperiences = React.useMemo(() => {
+    if (!experiences) return [];
+    return experiences.slice(0, 3);
+  }, [experiences]);
+  
+  // Local navigation handlers
+  const handleNavigateToDoubts = () => {
+    if (onNavigateToDoubts) {
+      onNavigateToDoubts(refugeId, refuge?.name || '');
+    } else {
+      navigation.navigate('DoubtsScreen', { refugeId, refugeName: refuge?.name || '' });
+    }
+  };
+  
+  const handleNavigateToExperiences = () => {
+    if (onNavigateToExperiences) {
+      onNavigateToExperiences(refugeId, refuge?.name || '');
+    } else {
+      navigation.navigate('ExperiencesScreen', { refugeId, refugeName: refuge?.name || '' });
+    }
+  };
+  
   const [descriptionExpanded, setDescriptionExpanded] = React.useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [confirmModalMessage, setConfirmModalMessage] = React.useState('');
@@ -119,6 +177,11 @@ export function RefugeDetailScreen({
   const [galleryScreenVisible, setGalleryScreenVisible] = React.useState(false);
   const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
   const imageScrollRef = React.useRef<ScrollView>(null);
+
+  // Experience photo viewer states
+  const [selectedPhotos, setSelectedPhotos] = React.useState<ImageMetadata[]>([]);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = React.useState(0);
+  const [photoModalVisible, setPhotoModalVisible] = React.useState(false);
 
   // Edge drag zone for opening menu - must be before early returns
   const screenWidth = Dimensions.get('window').width;
@@ -550,6 +613,52 @@ export function RefugeDetailScreen({
     await refetchRefuge();
   };
 
+  const handleExperiencePhotoPress = (photos: ImageMetadata[], index: number) => {
+    setSelectedPhotos(photos);
+    setSelectedPhotoIndex(index);
+    setPhotoModalVisible(true);
+  };
+
+  const handleExperiencePhotoDeleted = () => {
+    setPhotoModalVisible(false);
+    // React Query will handle cache invalidation
+  };
+
+  const handleExperienceDelete = (experienceId: string) => {
+    showAlert(
+      t('experiences.deleteExperience.title'),
+      t('experiences.deleteExperience.message'),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+          onPress: hideAlert,
+        },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: () => {
+            hideAlert();
+            deleteExperienceMutation.mutate(
+              { experienceId, refugeId: refugeId || '' },
+              {
+                onSuccess: () => {
+                  showAlert(t('common.success'), t('experiences.deleteExperience.success'));
+                },
+                onError: (error: any) => {
+                  showAlert(
+                    t('common.error'), 
+                    error.message || t('experiences.errors.deleteExperienceError')
+                  );
+                },
+              }
+            );
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
       {/* Gallery Screen */}
@@ -848,6 +957,63 @@ export function RefugeDetailScreen({
           </View>
         )}
 
+        {/* Doubts section button */}
+        <View style={styles.section}>
+          <TouchableOpacity 
+            style={styles.doubtsSectionButton} 
+            onPress={handleNavigateToDoubts}
+            activeOpacity={0.7}
+          >
+            <Image source={DoubtIcon} style={styles.doubtsIcon} />
+            <Text style={styles.doubtsSectionText}>{t('doubts.title')}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Experiences section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('experiences.title')}</Text>
+          
+          {loadingExperiences ? (
+            <View style={styles.experiencesLoadingContainer}>
+              <ActivityIndicator size="small" color="#FF6900" />
+            </View>
+          ) : recentExperiences.length > 0 ? (
+            <>
+              {recentExperiences.map((experience) => (
+                <ExperiencePreviewItem
+                  key={experience.id}
+                  experience={experience}
+                  onPhotoPress={handleExperiencePhotoPress}
+                  onDelete={() => handleExperienceDelete(experience.id)}
+                />
+              ))}
+              
+              {/* View more button */}
+              <TouchableOpacity 
+                style={styles.doubtsSectionButton} 
+                onPress={handleNavigateToExperiences}
+                activeOpacity={0.7}
+              >
+                <ExperienceIcon width={24} height={24} color="#FF6000" />
+                <Text style={styles.doubtsSectionText}>
+                  {t('experiences.viewMore')}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity 
+              style={styles.addExperienceButton} 
+              onPress={handleNavigateToExperiences}
+              activeOpacity={0.7}
+            >
+              <ExperienceIcon width={24} height={24} color="#111827" />
+              <Text style={styles.addExperienceText}>
+                {t('experiences.addFirst')}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         <View style={styles.informationNotPreciseContainer}>
           <Text style={styles.informationNotPreciseText}>{t('refuge.details.information_not_precise')}</Text>
         </View>
@@ -895,10 +1061,15 @@ export function RefugeDetailScreen({
         onDelete={onDelete ? () => onDelete(refuge) : undefined}
         onEdit={onEdit ? () => onEdit(refuge) : undefined}
         onPhotoUploaded={handlePhotoDeleted}
-        onViewMap={() => {
+        onViewMap={onViewMap ? () => {
+          setMenuOpen(false);
+          onViewMap(refuge);
+        } : () => {
           setMenuOpen(false);
           navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: refuge } });
         }}
+        onNavigateToDoubts={handleNavigateToDoubts}
+        onNavigateToExperiences={handleNavigateToExperiences}
       />
 
       {/* Back button rendered last so it's visually on top - hide when menu is open */}
@@ -954,6 +1125,24 @@ export function RefugeDetailScreen({
         refugeId={refugeId}
         onClose={() => setPhotoViewerVisible(false)}
         onPhotoDeleted={handlePhotoDeleted}
+      />
+
+      {/* Experience Photo Viewer Modal */}
+      <PhotoViewerModal
+        visible={photoModalVisible}
+        photos={selectedPhotos}
+        initialIndex={selectedPhotoIndex}
+        refugeId={refugeId}
+        onClose={() => setPhotoModalVisible(false)}
+        onPhotoDeleted={handleExperiencePhotoDeleted}
+        hideMetadata={true}
+        experienceCreatorUid={
+          recentExperiences?.find(exp => 
+            exp.images_metadata?.some(img => 
+              selectedPhotos.some(photo => photo.key === img.key)
+            )
+          )?.creator_uid
+        }
       />
       
       {/* Refuge Occupation Modal */}
@@ -1410,6 +1599,117 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     justifyContent: 'center',
+  },
+  doubtsSectionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+    gap: 12,
+  },
+  doubtsIcon: {
+    width: 24,
+    height: 24,
+  },
+  doubtsSectionText: {
+    fontSize: 14,
+    color: '#111827',
+    fontWeight: '400',
+    flex: 1,
+  },
+  experiencesLoadingContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  experiencePreview: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  experiencePreviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  experienceAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  experienceAvatarPlaceholder: {
+    backgroundColor: '#FF6900',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  experienceAvatarText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  experiencePreviewInfo: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  experienceUsername: {
+    fontSize: 14,
+    color: '#111827',
+    fontWeight: '600',
+  },
+  experienceDate: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  experienceComment: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  experienceImageIndicator: {
+    position: 'relative',
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  experienceThumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  imageCountBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  imageCountText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  addExperienceButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    gap: 12,
+  },
+  addExperienceText: {
+    fontSize: 16,
+    color: '#111827',
+    fontWeight: '600',
+    flex: 1,
   },
   edgeDragZone: {
     position: 'absolute',

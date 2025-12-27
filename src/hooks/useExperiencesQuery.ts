@@ -1,0 +1,132 @@
+/**
+ * React Query hooks for Experiences API
+ */
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { 
+  ExperienceService, 
+  CreateExperienceRequest, 
+  UpdateExperienceRequest 
+} from '../services/ExperienceService';
+import { mapExperienceFromDTO } from '../services/mappers/ExperienceMapper';
+import { Experience } from '../models';
+
+/**
+ * Hook per obtenir totes les experiències d'un refugi
+ */
+export function useExperiences(refugeId: string | undefined) {
+  return useQuery({
+    queryKey: refugeId ? ['experiences', 'refuge', refugeId] : ['experiences', 'refuge', 'undefined'],
+    queryFn: async () => {
+      if (!refugeId) throw new Error('Refuge ID is required');
+      const experiencesDTO = await ExperienceService.getExperiencesByRefuge(refugeId);
+      return experiencesDTO.map(mapExperienceFromDTO);
+    },
+    enabled: !!refugeId,
+  });
+}
+
+/**
+ * Hook per crear una nova experiència
+ * Afegeix l'experiència a la cache en lloc d'invalidar tota la llista
+ */
+export function useCreateExperience() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: CreateExperienceRequest) => {
+      const response = await ExperienceService.createExperience(request);
+      return {
+        experience: mapExperienceFromDTO(response.experience),
+        uploaded_files: response.uploaded_files,
+        failed_files: response.failed_files,
+        message: response.message,
+      };
+    },
+    onSuccess: (data, variables) => {
+      // Afegir la nova experiència a la llista existent
+      const refugeId = variables.refuge_id;
+      const queryKey = ['experiences', 'refuge', refugeId];
+      
+      queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
+        if (!oldData) return [data.experience];
+        // Afegir al principi ja que les experiències estan ordenades per modified_at descendent
+        return [data.experience, ...oldData];
+      });
+    },
+  });
+}
+
+/**
+ * Hook per actualitzar una experiència
+ * Actualitza l'experiència a la cache en lloc d'invalidar tota la llista
+ */
+export function useUpdateExperience() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      experienceId, 
+      refugeId, 
+      request 
+    }: { 
+      experienceId: string; 
+      refugeId: string; 
+      request: UpdateExperienceRequest 
+    }) => {
+      const response = await ExperienceService.updateExperience(experienceId, request);
+      return {
+        experience: response.experience ? mapExperienceFromDTO(response.experience) : undefined,
+        uploaded_files: response.uploaded_files,
+        failed_files: response.failed_files,
+        message: response.message,
+        experienceId,
+        refugeId,
+      };
+    },
+    onSuccess: (data) => {
+      if (!data.experience) return;
+      
+      // Actualitzar l'experiència a la llista existent
+      const queryKey = ['experiences', 'refuge', data.refugeId];
+      
+      queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
+        if (!oldData) return [data.experience!];
+        
+        return oldData.map(exp => 
+          exp.id === data.experienceId ? data.experience! : exp
+        );
+      });
+    },
+  });
+}
+
+/**
+ * Hook per eliminar una experiència
+ * Elimina l'experiència de la cache en lloc d'invalidar tota la llista
+ */
+export function useDeleteExperience() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      experienceId, 
+      refugeId 
+    }: { 
+      experienceId: string; 
+      refugeId: string 
+    }) => {
+      await ExperienceService.deleteExperience(experienceId);
+      return { experienceId, refugeId };
+    },
+    onSuccess: ({ experienceId, refugeId }) => {
+      // Eliminar l'experiència de la llista existent
+      const queryKey = ['experiences', 'refuge', refugeId];
+      
+      queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
+        if (!oldData) return [];
+        return oldData.filter(exp => exp.id !== experienceId);
+      });
+    },
+  });
+}

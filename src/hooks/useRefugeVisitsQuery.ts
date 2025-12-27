@@ -15,14 +15,14 @@ import { RefugeVisit } from '../models';
 /**
  * Hook to fetch refuge visits (current and future)
  */
-export function useRefugeVisits(refugeId: string | undefined) {
+export function useRefugeVisits(refugeId: string | undefined, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: refugeId ? ['refugeVisits', 'refuge', refugeId] : ['refugeVisits', 'refuge', 'undefined'],
     queryFn: async () => {
       if (!refugeId) throw new Error('Refuge ID is required');
       return await RefugeVisitService.getRefugeVisits(refugeId);
     },
-    enabled: !!refugeId,
+    enabled: options?.enabled !== undefined ? options.enabled && !!refugeId : !!refugeId,
   });
 }
 

@@ -618,6 +618,31 @@
       "linkInvalid": "Le lien doit être une URL valide (commence par http://, https:// ou www.)"
     }
   },
+  "doubts": {
+    "title": "Section des doutes",
+    "noDoubts": "Pas encore de doutes. Soyez le premier à poser une question!",
+    "doubtPlaceholder": "Écrivez votre doute...",
+    "answerPlaceholder": "Écrivez votre réponse...",
+    "reply": "Répondre",
+    "replyingTo": "Répondre à {{name}}",
+    "deleteDoubt": {
+      "title": "Supprimer le doute",
+      "message": "Êtes-vous sûr de vouloir supprimer ce doute? Toutes ses réponses seront également supprimées.",
+      "success": "Doute supprimé avec succès"
+    },
+    "deleteAnswer": {
+      "title": "Supprimer la réponse",
+      "message": "Êtes-vous sûr de vouloir supprimer cette réponse?",
+      "success": "Réponse supprimée avec succès"
+    },
+    "errors": {
+      "createDoubtError": "Impossible de créer le doute",
+      "createAnswerError": "Impossible de créer la réponse",
+      "deleteDoubtError": "Impossible de supprimer le doute",
+      "deleteAnswerError": "Impossible de supprimer la réponse",
+      "messageTooLong": "Le message ne peut pas dépasser {{max}} caractères"
+    }
+  },
   "proposals": {
     "titleMy": "Mes propositions",
     "titleAdmin": "Gestion des propositions",
@@ -681,6 +706,31 @@
       "loadDetailError": "Impossible de charger les détails de la proposition",
       "approveError": "Impossible d'approuver la proposition",
       "rejectError": "Impossible de rejeter la proposition"
+    }
+  },
+  "experiences": {
+    "title": "Expériences",
+    "viewMore": "Voir toutes les expériences",
+    "noExperiences": "Il n'y a pas encore d'expériences.\nSoyez le premier à partager la vôtre !",
+    "placeholder": "Partagez votre expérience...",
+    "newPhotos": "Nouvelles photos",
+    "addPhotos": "Ajouter des photos",
+    "deletePhotoInfo": "Pour supprimer une photo, appuyez dessus dans le carrousel et supprimez-la depuis le visualiseur",
+    "updateSuccess": "L'expérience a été mise à jour avec succès",
+    "deleteExperience": {
+      "title": "Supprimer l'expérience",
+      "message": "Êtes-vous sûr de vouloir supprimer cette expérience ? Cette action est irréversible.",
+      "success": "L'expérience a été supprimée avec succès"
+    },
+    "errors": {
+      "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères",
+      "createExperienceError": "L'expérience n'a pas été créée",
+      "updateExperienceError": "L'expérience n'a pas été mise à jour",
+      "deleteExperienceError": "L'expérience n'a pas été supprimée",
+      "selectPhotosError": "Impossible de sélectionner les photos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Certains fichiers n'ont pas pu être téléversés avec succès"
     }
   }
 }
