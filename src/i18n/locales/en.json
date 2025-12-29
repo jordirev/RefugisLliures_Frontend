@@ -697,6 +697,7 @@
   "experiences": {
     "title": "Experiences",
     "viewMore": "View all experiences",
+    "addFirst": "Share your experience!",
     "noExperiences": "No experiences shared yet. \nBe the first to share yours!",
     "placeholder": "Share your experience...",
     "newPhotos": "New photos",

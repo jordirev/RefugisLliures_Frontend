@@ -30,6 +30,7 @@ import { Doubt, Answer } from '../models';
 
 // Icons
 import BackIcon from '../assets/icons/arrow-left.svg';
+import SendIcon from '../assets/icons/navigation.svg';
 
 type DoubtsScreenParams = {
   refugeId: string;
@@ -122,6 +123,7 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
     userName?: string;
   } | null>(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
@@ -139,11 +141,17 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => setIsKeyboardVisible(true)
+      (e) => {
+        setIsKeyboardVisible(true);
+        setKeyboardHeight(e.endCoordinates.height);
+      }
     );
     const keyboardWillHide = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setIsKeyboardVisible(false)
+      () => {
+        setIsKeyboardVisible(false);
+        setKeyboardHeight(0);
+      }
     );
 
     return () => {
@@ -167,7 +175,10 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
       answerId,
       userName,
     });
-    inputRef.current?.focus();
+    setTimeout(() => {
+      inputRef.current?.blur();
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }, 200);
   };
 
   const handleSend = () => {
@@ -365,46 +376,43 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
             )}
           </ScrollView>
         )}
-
-        {/* Input area */}
-        <SafeAreaView edges={['bottom']} style={styles.inputSafeArea}>
-          <View style={styles.inputContainer}>
-            {replyingTo && (
-              <View style={styles.replyingContainer}>
-                <Text style={styles.replyingText}>
-                  {t('doubts.replyingTo', { name: replyingTo.userName || t('common.unknown') })}
-                </Text>
-                <TouchableOpacity onPress={cancelReply}>
-                  <Text style={styles.cancelReplyText}>{t('common.cancel')}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            <View style={styles.inputRow}>
-              <TextInput
-                ref={inputRef}
-                style={styles.input}
-                placeholder={replyingTo ? t('doubts.answerPlaceholder') : t('doubts.doubtPlaceholder')}
-                placeholderTextColor="#9CA3AF"
-                value={message}
-                onChangeText={setMessage}
-                multiline
-                maxLength={500}
-              />
-              <TouchableOpacity
-                style={[styles.sendButton, !message.trim() && styles.sendButtonDisabled]}
-                onPress={handleSend}
-                disabled={!message.trim() || createDoubtMutation.isPending || createAnswerMutation.isPending || createAnswerReplyMutation.isPending}
-              >
-                {createDoubtMutation.isPending || createAnswerMutation.isPending || createAnswerReplyMutation.isPending ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.sendButtonText}>▶</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </SafeAreaView>
       </KeyboardAvoidingView>
+
+      <View style={[styles.inputContainer, { paddingBottom: insets.bottom, bottom: keyboardHeight + 8 }]}>
+        {replyingTo && (
+          <View style={styles.replyingContainer}>
+            <Text style={styles.replyingText}>
+              {t('doubts.replyingTo', { name: replyingTo.userName || t('common.unknown') })}
+            </Text>
+            <TouchableOpacity onPress={cancelReply}>
+              <Text style={styles.cancelReplyText}>{t('common.cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.inputRow}>
+          <TextInput
+            ref={inputRef}
+            style={styles.input}
+            placeholder={replyingTo ? t('doubts.answerPlaceholder') : t('doubts.doubtPlaceholder')}
+            placeholderTextColor="#9CA3AF"
+            value={message}
+            onChangeText={setMessage}
+            multiline
+            maxLength={500}
+          />
+          <TouchableOpacity
+            style={[styles.sendButton, !message.trim() && styles.sendButtonDisabled]}
+            onPress={handleSend}
+            disabled={!message.trim() || createDoubtMutation.isPending || createAnswerMutation.isPending || createAnswerReplyMutation.isPending}
+          >
+            {createDoubtMutation.isPending || createAnswerMutation.isPending || createAnswerReplyMutation.isPending ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <SendIcon width={20} height={20} color="#FFFFFF" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* CustomAlert */}
       {alertConfig && (
@@ -423,42 +431,36 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   headerFixed: {
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 10,
-    backgroundColor: '#fff',
   },
   safeArea: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    padding: 16,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    borderBottomWidth: 1.2,
-    borderBottomColor: '#e3e4e5ff',
+    height: 60,
     flexDirection: 'row',
-    gap: 24,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
   backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: -8,
+    padding: 8,
+    marginRight: 12,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'Arimo',
-    color: '#111827',
-    textAlign: 'left',
-    flex: 1,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1F2937',
   },
   keyboardAvoid: {
     flex: 1,
@@ -472,8 +474,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   refugeName: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#111827',
     marginBottom: 24,
   },
@@ -498,6 +500,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   inputContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 11,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
@@ -541,6 +548,8 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    textAlign: 'justify',
+    textAlignVertical: 'center',
   },
   sendButton: {
     width: 44,

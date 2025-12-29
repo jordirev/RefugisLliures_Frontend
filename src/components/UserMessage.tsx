@@ -92,7 +92,7 @@ export function UserMessage({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
   },
   answerContainer: {
     marginLeft: 32,

@@ -1002,12 +1002,12 @@ export function RefugeDetailScreen({
             </>
           ) : (
             <TouchableOpacity 
-              style={styles.addExperienceButton} 
+              style={styles.doubtsSectionButton} 
               onPress={handleNavigateToExperiences}
               activeOpacity={0.7}
             >
-              <ExperienceIcon width={24} height={24} color="#111827" />
-              <Text style={styles.addExperienceText}>
+              <ExperienceIcon width={24} height={24} color="#FF6000" />
+              <Text style={styles.doubtsSectionText}>
                 {t('experiences.addFirst')}
               </Text>
             </TouchableOpacity>
@@ -1694,22 +1694,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '700',
-  },
-  addExperienceButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    gap: 12,
-  },
-  addExperienceText: {
-    fontSize: 16,
-    color: '#111827',
-    fontWeight: '600',
-    flex: 1,
   },
   edgeDragZone: {
     position: 'absolute',

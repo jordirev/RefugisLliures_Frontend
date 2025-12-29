@@ -428,14 +428,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   playIcon: {
-    fontSize: 24,
-    color: '#FF6900',
-    marginLeft: 4,
+    fontSize: 32,
+    color: '#e0e0e0ff',
   },
   newFilesContainer: {
     paddingLeft: 44,
