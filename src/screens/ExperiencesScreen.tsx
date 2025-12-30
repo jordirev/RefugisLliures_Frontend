@@ -90,6 +90,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [inputHeight, setInputHeight] = useState(44);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [inputContainerHeight, setInputContainerHeight] = useState(0);
 
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
@@ -317,7 +318,10 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
             <BackIcon />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('experiences.title')}</Text>
+          <View style={styles.headerTitleContainer}>
+            <Text style={styles.headerTitle}>{t('experiences.title')}</Text>
+            <Text style={styles.headerSubtitle}>{refugeName}</Text>
+          </View> 
         </View>
       </View>
 
@@ -337,15 +341,12 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
             contentContainerStyle={[
               styles.scrollContent,
               {
-                paddingTop: HEADER_HEIGHT + 16,
-                paddingBottom: 16,
+                paddingTop: HEADER_HEIGHT + 40,
+                paddingBottom: keyboardHeight > 0 ? inputContainerHeight + keyboardHeight + 40 : inputContainerHeight + 40,
               },
             ]}
             showsVerticalScrollIndicator={false}
           >
-            {/* Refuge name */}
-            <Text style={styles.refugeName}>{refugeName}</Text>
-
             {/* Experiences list */}
             {experiences && experiences.length > 0 ? (
               experiences.map((experience) => (
@@ -366,7 +367,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
         )}
       </KeyboardAvoidingView>
 
-      <View style={[styles.inputContainer, { paddingBottom: insets.bottom, bottom: keyboardHeight + 8 }]}>
+      <View style={[styles.inputContainer, { paddingBottom: insets.bottom, bottom: keyboardHeight + 8 }]} onLayout={(event) => setInputContainerHeight(event.nativeEvent.layout.height)}>
         {/* Selected files preview */}
         {selectedFiles.length > 0 && (
           <ScrollView 
@@ -488,11 +489,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    height: 60,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
@@ -500,10 +500,18 @@ const styles = StyleSheet.create({
     padding: 8,
     marginRight: 12,
   },
-  title: {
-    fontSize: 20,
+  headerTitleContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#111827',
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
   },
   keyboardAvoid: {
     flex: 1,
@@ -515,12 +523,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-  },
-  refugeName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 24,
   },
   emptyContainer: {
     flex: 1,

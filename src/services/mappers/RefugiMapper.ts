@@ -142,6 +142,7 @@ export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): L
     coord: mapCoordFromDTO(coordData),
     places: userRefugiInfoDTO.places,
     region: userRefugiInfoDTO.region,
+    images_metadata: userRefugiInfoDTO.images_metadata ? userRefugiInfoDTO.images_metadata.map(mapImageMetadataFromDTO) : undefined,
   };
 }
 

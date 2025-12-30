@@ -2,8 +2,6 @@
  * DTOs per a les respostes del backend de Refugis Lliures
  */
 
-import { mapImageMetadataFromDTO } from "../mappers";
-
 /**
  * Coordenades del refugi
  */
@@ -119,6 +117,7 @@ export interface UserRefugiInfoDTO {
   coord?: CoordDTO;
   places?: number | null;
   region?: string | null;
+  images_metadata?: ImageMetadataDTO[];
 }
 
 /**

@@ -131,9 +131,12 @@ export function ProposalDetailScreen() {
   };
 
   const renderUserInfo = (user: User | null, label?: string, comment?: string, date?: string, rejectedReason?: string, isReviewer?: boolean) => {
-    if (!user) return null;
-
     const hasExtraContent = comment || rejectedReason;
+    // If there's no user and no extra content, don't render anything
+    if (!user && !hasExtraContent) return null;
+
+    // Fallback to an "unknown user" label (match ProposalCard) when user is missing but there's a reason/comment
+    const displayUser: User = user || ({ username: t('proposals.card.unknownUser'), avatar_metadata: null } as unknown as User);
     const commentKey = isReviewer ? 'reviewer' : 'creator';
     const isExpanded = expandedComments[commentKey];
     const contentText = comment || rejectedReason || '';
@@ -146,19 +149,19 @@ export function ProposalDetailScreen() {
           {/* Fila superior: avatar, nom, data */}
           <View style={styles.userTopRow}>
             <View style={[styles.avatarContainer, hasExtraContent && styles.avatarWithExtraContent]}>
-              {user?.avatar_metadata?.url ? (
-                <Image source={{ uri: user.avatar_metadata.url }} style={styles.avatar} />
+              {displayUser?.avatar_metadata?.url ? (
+                <Image source={{ uri: displayUser.avatar_metadata.url }} style={styles.avatar} />
               ) : (
                 <View style={[styles.avatar, styles.avatarPlaceholder]}>
                   <Text style={styles.avatarPlaceholderText}>
-                    {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                    {user ? (displayUser?.username?.charAt(0)?.toUpperCase() || '?') : '?'}
                   </Text>
                 </View>
               )}
             </View>
             <View style={styles.userInfo}>
               {label && <Text style={styles.userLabel}>{label}</Text>}
-              <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{user.username}</Text>
+              <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{displayUser.username}</Text>
             </View>
             {date && (
               <View style={styles.userDateContainer}>
@@ -203,19 +206,19 @@ export function ProposalDetailScreen() {
     return (
       <View style={[styles.userContainer, !label && styles.centeredUserContainer, isReviewer && styles.reviewerContainer]}>
         <View style={styles.avatarContainer}>
-          {user?.avatar_metadata?.url ? (
-            <Image source={{ uri: user.avatar_metadata.url }} style={styles.avatar} />
+          {displayUser?.avatar_metadata?.url ? (
+            <Image source={{ uri: displayUser.avatar_metadata.url }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatar, styles.avatarPlaceholder]}>
               <Text style={styles.avatarPlaceholderText}>
-                {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                {user ? (displayUser?.username?.charAt(0)?.toUpperCase() || '?') : '?'}
               </Text>
             </View>
           )}
         </View>
         <View style={styles.userInfo}>
           {label && <Text style={styles.userLabel}>{label}</Text>}
-          <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{user.username}</Text>
+          <Text style={styles.userName} numberOfLines={1} ellipsizeMode="tail">{displayUser.username}</Text>
         </View>
         {date && (
           <View style={styles.userDateContainer}>
@@ -738,11 +741,27 @@ export function ProposalDetailScreen() {
 
           </View>
 
-          {/* Users info */}
-          {reviewer && (
+          {/* Users info (reviewer). If there's no reviewer but a rejection reason, show unknown + reason */}
+          {(reviewer || (proposal.status === 'rejected' && proposal.rejection_reason)) && (
             <>
               <Text style={styles.sectionTitle}>{t('proposals.detail.review')}</Text>
-              {renderUserInfo(reviewer, undefined, undefined, formatDate(proposal.reviewed_at), proposal.status === 'rejected' ? proposal.rejection_reason : undefined, true)}
+              {
+                // Distinguish reviewer_uid cases:
+                // - If reviewer_uid === 'unknown' -> show unknown user
+                // - If reviewer_uid === null and reason === 'refuge has been deleted' -> show Admin
+                // Otherwise show the fetched reviewer (may be null)
+              }
+              {(() => {
+                let reviewerToShow: User | null = reviewer || null;
+                if (proposal.reviewer_uid === 'unknown') {
+                  // keep null so renderUserInfo will display the 'unknownUser' fallback
+                  reviewerToShow = null;
+                } else if (proposal.reviewer_uid == null && proposal.rejection_reason === 'refuge has been deleted') {
+                  // show Admin label
+                  reviewerToShow = { username: 'Admin', avatar_metadata: null } as unknown as User;
+                }
+                return renderUserInfo(reviewerToShow, undefined, undefined, formatDate(proposal.reviewed_at), proposal.status === 'rejected' ? proposal.rejection_reason : undefined, true);
+              })()}
             </>
           )}
 

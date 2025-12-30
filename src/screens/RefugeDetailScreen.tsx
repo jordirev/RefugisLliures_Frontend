@@ -82,13 +82,15 @@ const ExperiencePreviewItem: React.FC<{
   const { data: user } = useUser(experience.creator_uid);
 
   return (
-    <UserExperience
-      user={user || null}
-      experience={experience}
-      onPhotoPress={onPhotoPress}
-      onDelete={onDelete}
-      refugeCreatorUid={experience.creator_uid}
-    />
+    <View style={styles.experiencePreviewItem}>
+      <UserExperience
+        user={user || null}
+        experience={experience}
+        onPhotoPress={onPhotoPress}
+        onDelete={onDelete}
+        refugeCreatorUid={experience.creator_uid}
+      />
+    </View>
   );
 };
 
@@ -1756,5 +1758,19 @@ const styles = StyleSheet.create({
     color: '#e0e0e0ff',
     marginLeft: 4,
   },
+  experiencePreviewItem: {
+    borderWidth: 1, 
+    borderColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 12,
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    shadowColor: '#818181ff',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  }
 });
 
