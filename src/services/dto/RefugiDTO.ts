@@ -2,6 +2,8 @@
  * DTOs per a les respostes del backend de Refugis Lliures
  */
 
+import { mapImageMetadataFromDTO } from "../mappers";
+
 /**
  * Coordenades del refugi
  */
