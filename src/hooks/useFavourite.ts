@@ -1,44 +1,64 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAddFavouriteRefuge, useRemoveFavouriteRefuge } from './useUsersQuery';
 
 export default function useFavourite(refugeId?: string) {
-  const { backendUser, addFavouriteRefuge, removeFavouriteRefuge } = useAuth();
+  const { firebaseUser, favouriteRefugeIds, setFavouriteRefugeIds } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [optimistic, setOptimistic] = useState<boolean | null>(null);
+  
+  const addFavouriteMutation = useAddFavouriteRefuge();
+  const removeFavouriteMutation = useRemoveFavouriteRefuge();
 
-  // Sync optimistic state with backendUser when backendUser changes
-  useEffect(() => {
-    if (refugeId == null) return;
-    const backendState = backendUser?.favourite_refuges?.includes(String(refugeId)) ?? false;
-    setOptimistic(backendState);
-  }, [backendUser, refugeId]);
+  // Local optimistic state
+  const [optimisticFavourite, setOptimisticFavourite] = useState<boolean | null>(null);
 
-  const isFavourite = optimistic ?? (backendUser?.favourite_refuges?.includes(String(refugeId)) ?? false);
-
+  // Use optimistic state if available, otherwise use context state
+  const isFavourite = optimisticFavourite ?? (refugeId ? favouriteRefugeIds.includes(refugeId) : false);
+  
   const toggleFavourite = useCallback(async () => {
-    if (refugeId == null) return;
+    if (!refugeId) {
+      console.warn('[useFavourite] Cannot toggle favourite - no refuge ID provided');
+      return;
+    }
     if (isProcessing) return;
+    if (!firebaseUser?.uid) return;
+    
     setIsProcessing(true);
 
-    const currentlyFav = backendUser?.favourite_refuges?.includes(String(refugeId)) ?? false;
-    // optimistic flip
-    setOptimistic(!currentlyFav);
+    console.log('[useFavourite] Toggling favourite for refuge:', refugeId);
+    const currentlyFavourite = favouriteRefugeIds.includes(refugeId);
+    
+    // Optimistic UI update
+    setOptimisticFavourite(!currentlyFavourite);
 
     try {
-      if (currentlyFav) {
-        await removeFavouriteRefuge(refugeId);
+      if (currentlyFavourite) {
+        console.log('[useFavourite] Removing refuge from favourites:', refugeId);
+        await removeFavouriteMutation.mutateAsync({ uid: firebaseUser.uid, refugeId });
+        
+        // Update context
+        setFavouriteRefugeIds(favouriteRefugeIds.filter(id => id !== refugeId));
       } else {
-        await addFavouriteRefuge(refugeId);
+        console.log('[useFavourite] Adding refuge to favourites:', refugeId);
+        await addFavouriteMutation.mutateAsync({ uid: firebaseUser.uid, refugeId });
+        
+        // Update context (avoid duplicates)
+        if (!favouriteRefugeIds.includes(refugeId)) {
+          setFavouriteRefugeIds([...favouriteRefugeIds, refugeId]);
+        }
       }
+      
+      // Clear optimistic state after successful mutation
+      setOptimisticFavourite(null);
     } catch (err) {
-      // revert optimistic on error
-      setOptimistic(currentlyFav);
+      // Revert optimistic update on error
+      setOptimisticFavourite(null);
       console.error('Error toggling favourite via hook:', err);
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [refugeId, backendUser, addFavouriteRefuge, removeFavouriteRefuge, isProcessing]);
-
+  }, [refugeId, favouriteRefugeIds, firebaseUser, addFavouriteMutation, removeFavouriteMutation, isProcessing, setFavouriteRefugeIds]);
+  
   return { isFavourite, toggleFavourite, isProcessing };
 }

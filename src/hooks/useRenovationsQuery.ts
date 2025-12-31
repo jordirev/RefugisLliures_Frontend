@@ -69,6 +69,9 @@ export function useCreateRenovation() {
       if (data.refuge_id) {
         queryClient.invalidateQueries({ queryKey: ['renovations', 'refuge', data.refuge_id] });
       }
+
+      // Invalidar dades del user (num_renovated_refuges)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }
@@ -102,13 +105,23 @@ export function useDeleteRenovation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async ({ id, refugeId }: { id: string; refugeId?: string }) => {
       await RenovationService.deleteRenovation(id);
-      return id;
+      return { id, refugeId };
     },
-    onSuccess: () => {
+    onSuccess: ({ refugeId }) => {
       // Invalidate renovations queries
       queryClient.invalidateQueries({ queryKey: ['renovations'] });
+
+      // Si la renovació tenia fotos associades al refugi, invalidar el refugi i les llistes
+      if (refugeId) {
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
+        queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+      }
+
+      // Invalidar dades del user (num_renovated_refuges)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }

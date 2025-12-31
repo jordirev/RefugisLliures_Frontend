@@ -81,18 +81,25 @@ export function ProposalDetailScreen() {
   const processing = approveMutation.isPending || rejectMutation.isPending;
 
   const handleApprove = async () => {
-    approveMutation.mutate(proposal.id, {
-      onSuccess: () => {
-        showAlert(
-          t('proposals.approve.successTitle'),
-          t('proposals.approve.successMessage'),
-          [{ text: t('common.ok'), onPress: () => navigation.goBack() }]
-        );
+    approveMutation.mutate(
+      { 
+        proposalId: proposal.id,
+        proposalType: proposal.action,
+        refugeId: proposal.refuge_id || undefined
       },
-      onError: (error: any) => {
-        showAlert(t('common.error'), error.message || t('proposals.errors.approveError'));
-      },
-    });
+      {
+        onSuccess: () => {
+          showAlert(
+            t('proposals.approve.successTitle'),
+            t('proposals.approve.successMessage'),
+            [{ text: t('common.ok'), onPress: () => navigation.goBack() }]
+          );
+        },
+        onError: (error: any) => {
+          showAlert(t('common.error'), error.message || t('proposals.errors.approveError'));
+        },
+      }
+    );
   };
 
   const handleReject = async (reason: string) => {

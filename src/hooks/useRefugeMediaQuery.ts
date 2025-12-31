@@ -40,13 +40,21 @@ export function useUploadRefugeMedia() {
     onSuccess: (data, variables) => {
       // Invalidar la cache del refugi per actualitzar images_metadata
       queryClient.invalidateQueries({
-        queryKey: ['refuge', variables.refugeId],
+        queryKey: ['refuges', 'detail', variables.refugeId],
       });
       
       // Invalidar la cache dels mitjans del refugi
       queryClient.invalidateQueries({
         queryKey: ['refugeMedia', variables.refugeId],
       });
+
+      // Invalidar filtres de refugis ja que les fotos afecten el refugi
+      queryClient.invalidateQueries({
+        queryKey: ['refuges', 'list'],
+      });
+
+      // Invalidar dades del user (uploaded_photos_keys)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }
@@ -61,15 +69,17 @@ export function useDeleteRefugeMedia() {
   return useMutation({
     mutationFn: async ({ 
       refugeId, 
-      mediaKey 
+      mediaKey,
+      experienceId 
     }: { 
       refugeId: string; 
-      mediaKey: string 
+      mediaKey: string;
+      experienceId?: string | null;
     }) => {
       await RefugeMediaService.deleteRefugeMedia(refugeId, mediaKey);
-      return { refugeId, mediaKey };
+      return { refugeId, mediaKey, experienceId };
     },
-    onSuccess: ({ refugeId, mediaKey }) => {
+    onSuccess: ({ refugeId, mediaKey, experienceId }) => {
       // Eliminar el mitjà de la cache de mitjans del refugi
       queryClient.setQueryData<ImageMetadata[]>(
         ['refugeMedia', refugeId],
@@ -81,13 +91,23 @@ export function useDeleteRefugeMedia() {
       
       // Invalidar la cache del refugi per actualitzar images_metadata
       queryClient.invalidateQueries({
-        queryKey: ['refuge', refugeId],
+        queryKey: ['refuges', 'detail', refugeId],
+      });
+
+      // Invalidar filtres de refugis ja que les fotos afecten el refugi
+      queryClient.invalidateQueries({
+        queryKey: ['refuges', 'list'],
       });
       
-      // Invalidar la cache de les experiències del refugi (per si el mitjà pertany a una experiència)
-      queryClient.invalidateQueries({
-        queryKey: ['experiences', 'refuge', refugeId],
-      });
+      // Si el mitjà pertany a una experiència, invalidar les experiències del refugi
+      if (experienceId) {
+        queryClient.invalidateQueries({
+          queryKey: ['experiences', 'refuge', refugeId],
+        });
+      }
+
+      // Invalidar dades del user (uploaded_photos_keys)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }

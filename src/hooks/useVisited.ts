@@ -1,48 +1,64 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAddVisitedRefuge, useRemoveVisitedRefuge } from './useUsersQuery';
 
 export default function useVisited(refugeId?: string) {
-  const { backendUser, addVisitedRefuge, removeVisitedRefuge } = useAuth();
+  const { firebaseUser, visitedRefugeIds, setVisitedRefugeIds } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [optimistic, setOptimistic] = useState<boolean | null>(null);
+  
+  const addVisitedMutation = useAddVisitedRefuge();
+  const removeVisitedMutation = useRemoveVisitedRefuge();
 
-  // Sync optimistic state with backendUser when backendUser changes
-  useEffect(() => {
-    if (!refugeId) return;
-    const backendState = backendUser?.visited_refuges?.includes(refugeId) ?? false;
-    setOptimistic(backendState);
-  }, [backendUser, refugeId]);
+  // Local optimistic state
+  const [optimisticVisited, setOptimisticVisited] = useState<boolean | null>(null);
 
-  const isVisited = optimistic ?? (refugeId ? backendUser?.visited_refuges?.includes(refugeId) ?? false : false);
+  // Use optimistic state if available, otherwise use context state
+  const isVisited = optimisticVisited ?? (refugeId ? visitedRefugeIds.includes(refugeId) : false);
+  
   const toggleVisited = useCallback(async () => {
     if (!refugeId) {
       console.warn('[useVisited] Cannot toggle visited - no refuge ID provided');
       return;
     }
     if (isProcessing) return;
+    if (!firebaseUser?.uid) return;
+    
     setIsProcessing(true);
 
     console.log('[useVisited] Toggling visited for refuge:', refugeId);
-    const currentlyVisited = backendUser?.visited_refuges?.includes(refugeId) ?? false;
-    // optimistic flip
-    setOptimistic(!currentlyVisited);
+    const currentlyVisited = visitedRefugeIds.includes(refugeId);
+    
+    // Optimistic UI update
+    setOptimisticVisited(!currentlyVisited);
 
     try {
       if (currentlyVisited) {
         console.log('[useVisited] Removing refuge from visited:', refugeId);
-        await removeVisitedRefuge(refugeId);
+        await removeVisitedMutation.mutateAsync({ uid: firebaseUser.uid, refugeId });
+        
+        // Update context
+        setVisitedRefugeIds(visitedRefugeIds.filter(id => id !== refugeId));
       } else {
         console.log('[useVisited] Adding refuge to visited:', refugeId);
-        await addVisitedRefuge(refugeId);
+        await addVisitedMutation.mutateAsync({ uid: firebaseUser.uid, refugeId });
+        
+        // Update context (avoid duplicates)
+        if (!visitedRefugeIds.includes(refugeId)) {
+          setVisitedRefugeIds([...visitedRefugeIds, refugeId]);
+        }
       }
+      
+      // Clear optimistic state after successful mutation
+      setOptimisticVisited(null);
     } catch (err) {
-      // revert optimistic on error
-      setOptimistic(currentlyVisited);
+      // Revert optimistic update on error
+      setOptimisticVisited(null);
       console.error('Error toggling visited via hook:', err);
       throw err;
     } finally {
       setIsProcessing(false);
     }
-  }, [refugeId, backendUser, addVisitedRefuge, removeVisitedRefuge, isProcessing]);
+  }, [refugeId, visitedRefugeIds, firebaseUser, addVisitedMutation, removeVisitedMutation, isProcessing, setVisitedRefugeIds]);
+  
   return { isVisited, toggleVisited, isProcessing };
 }

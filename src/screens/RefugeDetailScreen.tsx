@@ -35,7 +35,7 @@ import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
-import { useExperiences, useDeleteExperience } from '../hooks/useExperiencesQuery';
+import { useExperiences, useDeleteExperience, useUpdateExperience } from '../hooks/useExperiencesQuery';
 import { useUser } from '../hooks/useUsersQuery';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
@@ -77,8 +77,9 @@ const isVideo = (url: string): boolean => {
 const ExperiencePreviewItem: React.FC<{ 
   experience: any;
   onPhotoPress: (photos: any[], index: number) => void;
+  onEdit?: (experienceId: string, newComment: string, newFiles: File[]) => void;
   onDelete?: () => void;
-}> = ({ experience, onPhotoPress, onDelete }) => {
+}> = ({ experience, onPhotoPress, onEdit, onDelete }) => {
   const { data: user } = useUser(experience.creator_uid);
 
   return (
@@ -87,6 +88,7 @@ const ExperiencePreviewItem: React.FC<{
         user={user || null}
         experience={experience}
         onPhotoPress={onPhotoPress}
+        onEdit={onEdit}
         onDelete={onDelete}
         refugeCreatorUid={experience.creator_uid}
       />
@@ -133,6 +135,7 @@ export function RefugeDetailScreen({
   // Load experiences for this refuge
   const { data: experiences, isLoading: loadingExperiences } = useExperiences(refugeId || '');
   const deleteExperienceMutation = useDeleteExperience();
+  const updateExperienceMutation = useUpdateExperience();
   
   // Get the 3 most recent experiences
   const recentExperiences = React.useMemo(() => {
@@ -626,6 +629,27 @@ export function RefugeDetailScreen({
     // React Query will handle cache invalidation
   };
 
+  const handleExperienceEdit = (experienceId: string, newComment: string, newFiles: File[]) => {
+    updateExperienceMutation.mutate(
+      { 
+        experienceId, 
+        refugeId: refugeId || '', 
+        request: { comment: newComment, files: newFiles } 
+      },
+      {
+        onSuccess: () => {
+          showAlert(t('common.success'), t('experiences.updateExperience.success') || 'Experiència actualitzada correctament');
+        },
+        onError: (error: any) => {
+          showAlert(
+            t('common.error'), 
+            error.message || t('experiences.errors.updateExperienceError') || 'Error al actualitzar l\'experiència'
+          );
+        },
+      }
+    );
+  };
+
   const handleExperienceDelete = (experienceId: string) => {
     showAlert(
       t('experiences.deleteExperience.title'),
@@ -986,6 +1010,7 @@ export function RefugeDetailScreen({
                   key={experience.id}
                   experience={experience}
                   onPhotoPress={handleExperiencePhotoPress}
+                  onEdit={handleExperienceEdit}
                   onDelete={() => handleExperienceDelete(experience.id)}
                 />
               ))}

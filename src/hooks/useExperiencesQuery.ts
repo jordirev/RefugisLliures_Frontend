@@ -41,6 +41,8 @@ export function useCreateExperience() {
         uploaded_files: response.uploaded_files,
         failed_files: response.failed_files,
         message: response.message,
+        refuge_id: request.refuge_id,
+        hasFiles: request.files && request.files.length > 0,
       };
     },
     onSuccess: (data, variables) => {
@@ -53,6 +55,17 @@ export function useCreateExperience() {
         // Afegir al principi ja que les experiències estan ordenades per modified_at descendent
         return [data.experience, ...oldData];
       });
+
+      // Si es pugen fotos, invalidar el refugi (les fotos també es pengen al refugi)
+      if (data.hasFiles) {
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
+        queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
+        // Invalidar filtres de refugis ja que les fotos afecten el refugi
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+      }
+
+      // Invalidar dades del user (num_shared_experiences)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }
@@ -82,6 +95,7 @@ export function useUpdateExperience() {
         message: response.message,
         experienceId,
         refugeId,
+        hasFiles: request.files && request.files.length > 0,
       };
     },
     onSuccess: (data) => {
@@ -97,6 +111,19 @@ export function useUpdateExperience() {
           exp.id === data.experienceId ? data.experience! : exp
         );
       });
+
+      // Si es pugen fotos, invalidar el refugi (les fotos també es pengen al refugi)
+      if (data.hasFiles) {
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', data.refugeId] });
+        queryClient.invalidateQueries({ queryKey: ['refugeMedia', data.refugeId] });
+        // Invalidar filtres de refugis ja que les fotos afecten el refugi
+        queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+      }
+
+      // Invalidar dades del user (uploaded_photos_keys)
+      if (data.hasFiles) {
+        queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
+      }
     },
   });
 }
@@ -127,6 +154,15 @@ export function useDeleteExperience() {
         if (!oldData) return [];
         return oldData.filter(exp => exp.id !== experienceId);
       });
+
+      // Invalidar el refugi (les fotos de l'experiència també estan al refugi)
+      queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
+      queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
+      // Invalidar filtres de refugis ja que les fotos afecten el refugi
+      queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+
+      // Invalidar dades del user (num_shared_experiences, uploaded_photos_keys)
+      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }

@@ -9,8 +9,7 @@ import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
 import { AvatarPopup } from '../components/AvatarPopup';
-import { useRefuge } from '../hooks/useRefugesQuery';
-import { useUser } from '../hooks/useUsersQuery';
+import { useUser, useVisitedRefuges } from '../hooks/useUsersQuery';
 import { Location } from '../models';
 
 // Icones
@@ -31,14 +30,15 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, visitedRefuges, refreshUserData } = useAuth();
+  const { firebaseUser, backendUser, refreshUserData } = useAuth();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   
   const [showAvatarPopup, setShowAvatarPopup] = useState(false);
   
-  // Utilitzar React Query per obtenir dades de l'usuari amb cache
+  // Utilitzar React Query per obtenir dades de l'usuari i refugis visitats amb cache
   const { data: userFromQuery, isLoading: isLoadingUser, refetch: refetchUserQuery } = useUser(firebaseUser?.uid);
+  const { data: visitedRefuges = [], isLoading: isLoadingVisited } = useVisitedRefuges(firebaseUser?.uid);
   
   // Scroll to top when screen gains focus
   useFocusEffect(
@@ -46,10 +46,6 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
       scrollViewRef.current?.scrollTo({ y: 0, animated: false });
     }, [])
   );
-  
-  // Els refugis visitats ja vénen validats del context AuthContext
-  // No cal fer crides addicionals a l'API per validar-los
-  const validVisitedRefuges = visitedRefuges;
   
   // Utilitzar les dades de React Query si estan disponibles, sinó usar backendUser
   const displayUser = userFromQuery || backendUser;
@@ -182,7 +178,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={styles.statsGrid}>
               <View style={styles.statsRow}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{validVisitedRefuges?.length ?? 0}</Text>
+                  <Text style={styles.statValue}>{visitedRefuges?.length ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
                 </View>
                 <View style={styles.statCard}>
@@ -196,7 +192,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
                   <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{displayUser?.num_uploaded_photos ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.uploaded_photos_keys?.length ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
                 </View>
               </View>
@@ -207,11 +203,11 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={[styles.sectionTitle, { paddingLeft: 32, marginTop: 12 }]}>
               <AltitudeIcon width={20} height={20} />
               <Text style={styles.title}>{t('visited.title')}</Text>
-              <Text style={styles.titleValue}>({validVisitedRefuges?.length ?? 0})</Text>
+              <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
             </View>
-            {validVisitedRefuges && validVisitedRefuges.length > 0 ? (
+            {visitedRefuges && visitedRefuges.length > 0 ? (
               <View style={styles.visitedList}>
-                {validVisitedRefuges.map((refuge, index) => (
+                {visitedRefuges.map((refuge, index) => (
                   <RefugeCard
                     key={refuge.id ? String(refuge.id) : String(index)}
                     refuge={refuge}

@@ -135,10 +135,15 @@ export function UserExperience({
         return;
       }
 
+      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ['videos', 'images'],
         allowsMultipleSelection: true,
+        aspect: [4, 3],
         quality: 0.8,
+        ...(Platform.OS === 'ios' && {
+          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
+        }),
       });
 
       if (!result.canceled && result.assets) {

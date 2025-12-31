@@ -40,14 +40,35 @@ export function useApproveProposal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (proposalId: string) => {
-      return await RefugeProposalsService.approveProposal(proposalId);
+    mutationFn: async ({ 
+      proposalId, 
+      proposalType, 
+      refugeId 
+    }: { 
+      proposalId: string;
+      proposalType?: 'create' | 'update' | 'delete';
+      refugeId?: string;
+    }) => {
+      await RefugeProposalsService.approveProposal(proposalId);
+      return { proposalId, proposalType, refugeId };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate all refuge and proposal queries
       queryClient.invalidateQueries({ queryKey: queryKeys.refuges });
       queryClient.invalidateQueries({ queryKey: queryKeys.proposals });
       queryClient.invalidateQueries({ queryKey: queryKeys.myProposals() });
+
+      // Si s'ha aprovat una proposta d'eliminació de refugi
+      if (data.proposalType === 'delete' && data.refugeId) {
+        // Invalidar totes les renovacions (les del refugi eliminat s'hauran eliminat)
+        queryClient.invalidateQueries({ queryKey: ['renovations'] });
+
+        // Invalidar refugis favorits i visitats (per si el refugi estava en aquestes llistes)
+        queryClient.invalidateQueries({ queryKey: ['users'] });
+
+        // Invalidar dades del user
+        queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
+      }
     },
   });
 }

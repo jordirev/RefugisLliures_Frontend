@@ -82,7 +82,7 @@ export interface User {
   language: string;
   favourite_refuges?: string[];
   visited_refuges?: string[];
-  num_uploaded_photos: number | null;
+  uploaded_photos_keys?: string[];
   num_shared_experiences: number | null;
   num_renovated_refuges: number | null;
   created_at: string; // ISO date string

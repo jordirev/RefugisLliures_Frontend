@@ -4,11 +4,11 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
 import { useAuth } from '../contexts/AuthContext';
+import { useFavouriteRefuges } from '../hooks/useUsersQuery';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RefugisService } from '../services/RefugisService';
 
 import FavouriteIcon from '../assets/icons/favRed.svg';
 import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
@@ -25,9 +25,9 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const flatListRef = useRef<FlatList>(null);
   
-  // Get favourite refuges from AuthContext (contains full Location[])
-  const { favouriteRefuges } = useAuth();
-  const [validFavourites, setValidFavourites] = useState<Location[]>(favouriteRefuges);
+  // Get favourite refuges from React Query
+  const { firebaseUser } = useAuth();
+  const { data: favouriteRefuges = [], isLoading } = useFavouriteRefuges(firebaseUser?.uid);
   
   // Scroll to top when screen gains focus
   useFocusEffect(
@@ -41,20 +41,16 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
-  // Els refugis favorits ja vénen validats del context AuthContext
-  // No cal fer crides addicionals a l'API per validar-los
   const favoriteLocations = useMemo(() => {
     return favouriteRefuges.map(location => ({ ...location, isFavorite: true }));
   }, [favouriteRefuges]);
 
   const handleViewMap = (refuge: Location) => {
-    // Les dades completes ja estan disponibles des de AuthContext
     onViewMap(refuge);
     (navigation as any).navigate('Map', { selectedRefuge: refuge });
   };
 
   const handleViewDetail = (refuge: Location) => {
-    // Les dades completes ja estan disponibles des de AuthContext
     onViewDetail(refuge);
   };
 
@@ -68,7 +64,7 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
             <FavouriteIcon width={20} height={20} />
             <Text style={styles.title}>
               {t('favorites.title')}
-              <Text style={styles.count}> {`(${validFavourites.length})`}</Text>
+              <Text style={styles.count}> {`(${favouriteRefuges.length})`}</Text>
             </Text>
           </View>
         </SafeAreaView>

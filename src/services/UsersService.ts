@@ -1,6 +1,6 @@
 import { User, Location, AvatarMetadata } from '../models';
 import { UserRefugiInfoResponseDTO, UserDTO } from './dto';
-import { mapperUserRefugiInfoResponseDTO, mapUserFromDTO } from './mappers';
+import { mapperUserRefugiInfoDTO, mapperUserRefugiInfoResponseDTO, mapUserFromDTO } from './mappers';
 import { apiGet, apiPost, apiPatch, apiDelete, apiClient } from './apiClient';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
@@ -198,9 +198,9 @@ export class UsersService {
    * @param uid - UID de l'usuari
    * @param refuge_id - ID del refugi a afegir als preferits
    * @param authToken - Token d'autenticació de Firebase (opcional)
-   * @returns Un llistat amb els refugis preferits actualitzats o null si hi ha error
+   * @returns El refugi afegit o null si hi ha error
    */
-  static async addFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
+  static async addFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/favorite-refuges/`;
       
@@ -215,14 +215,12 @@ export class UsersService {
       const data = await response.json();
       console.log('addFavouriteRefuge response:', data);
       
-      // Backend may return either a direct array or an object with {count, results: []}
-      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
-      if (!items) {
+      if (!data) {
         console.warn('Invalid add favourite refuge response');
-        return [];
+        return null;
       }
 
-      return mapperUserRefugiInfoResponseDTO(items);
+      return mapperUserRefugiInfoDTO(data);
     } catch (err) {
       console.error('Error adding favourite refuge:', err);
       return null;
@@ -236,9 +234,9 @@ export class UsersService {
    * @param uid - UID de l'usuari
    * @param refuge_id - ID del refugi a eliminar dels preferits
    * @param authToken - Token d'autenticació de Firebase (opcional)
-   * @returns Un llistat amb els refugis preferits actualitzats o null si hi ha error
+   * @returns true si s'ha eliminat correctament, false altrament
    */
-  static async removeFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
+  static async removeFavouriteRefuge(uid: string, refuge_id: string, authToken?: string): Promise<boolean> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/favorite-refuges/${refuge_id}/`;
       
@@ -247,23 +245,13 @@ export class UsersService {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error removing favourite refuge:', errorData);
-        return null;
-      }
-      
-      const data = await response.json();
-      console.log('removeFavouriteRefuge response:', data);
-      
-      // Backend may return either a direct array or an object with {count, results: []}
-      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
-      if (!items) {
-        console.warn('Invalid remove favourite refuge response');
-        return [];
+        return false;
       }
 
-      return mapperUserRefugiInfoResponseDTO(items);
+      return true;
     } catch (err) {
       console.error('Error removing favourite refuge:', err);
-      return null;
+      return false;
     }
   }
 
@@ -310,9 +298,9 @@ export class UsersService {
    * @param uid - UID de l'usuari
    * @param refuge_id - ID del refugi a afegir als visitats
    * @param authToken - Token d'autenticació de Firebase (opcional)
-   * @returns Un llistat amb els refugis visitats actualitzats o null si hi ha error
+   * @returns El refugi afegit o null si hi ha error
    */
-  static async addVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
+  static async addVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location | null> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/visited-refuges/`;
       
@@ -327,14 +315,12 @@ export class UsersService {
       const data = await response.json();
       console.log('addVisitedRefuge response:', data);
       
-      // Backend may return either a direct array or an object with {count, results: []}
-      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
-      if (!items) {
+      if (!data) {
         console.warn('Invalid add visited refuge response');
-        return [];
+        return null;
       }
 
-      return mapperUserRefugiInfoResponseDTO(items);
+      return mapperUserRefugiInfoDTO(data);
     } catch (err) {
       console.error('Error adding visited refuge:', err);
       return null;
@@ -348,9 +334,9 @@ export class UsersService {
    * @param uid - UID de l'usuari
    * @param refuge_id - ID del refugi a eliminar dels visitats
    * @param authToken - Token d'autenticació de Firebase (opcional)
-   * @returns Un llistat amb els refugis visitats actualitzats o null si hi ha error
+   * @returns true si s'ha eliminat correctament o false si hi ha error
    */
-  static async removeVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<Location[] | null> {
+  static async removeVisitedRefuge(uid: string, refuge_id: string, authToken?: string): Promise<boolean> {
     try {
       const url = `${API_BASE_URL}/users/${uid}/visited-refuges/${refuge_id}/`;
       
@@ -359,23 +345,13 @@ export class UsersService {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error removing visited refuge:', errorData);
-        return null;
-      }
-      
-      const data = await response.json();
-      console.log('removeVisitedRefuge response:', data);
-      
-      // Backend may return either a direct array or an object with {count, results: []}
-      const items = Array.isArray(data) ? data : (data && Array.isArray(data.results) ? data.results : null);
-      if (!items) {
-        console.warn('Invalid remove visited refuge response');
-        return [];
+        return false;
       }
 
-      return mapperUserRefugiInfoResponseDTO(items);
+      return true;
     } catch (err) {
       console.error('Error removing visited refuge:', err);
-      return null;
+      return false;
     }
   }
 
