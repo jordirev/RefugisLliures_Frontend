@@ -10,6 +10,7 @@ interface AuthContextType {
   backendUser: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isOfflineMode: boolean;
   authToken: string | null;
   favouriteRefugeIds: string[];
   visitedRefugeIds: string[];
@@ -26,6 +27,8 @@ interface AuthContextType {
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   changeEmail: (password: string, newEmail: string) => Promise<void>;
   updateUsername: (newUsername: string) => Promise<void>;
+  enterOfflineMode: () => void;
+  exitOfflineMode: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,6 +42,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [backendUser, setBackendUser] = useState<User | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [favouriteRefugeIds, setFavouriteRefugeIds] = useState<string[]>([]);
   const [visitedRefugeIds, setVisitedRefugeIds] = useState<string[]>([]);
 
@@ -208,6 +212,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setBackendUser(updatedUser);
   };
 
+  // Entrar en mode offline (permet accés sense autenticació)
+  const enterOfflineMode = () => {
+    setIsOfflineMode(true);
+    setIsLoading(false);
+  };
+
+  // Sortir del mode offline i tornar al login
+  const exitOfflineMode = async () => {
+    setIsOfflineMode(false);
+    // Forcçar logout si estava en mode offline
+    if (!firebaseUser) {
+      setBackendUser(null);
+      setAuthToken(null);
+      setFavouriteRefugeIds([]);
+      setVisitedRefugeIds([]);
+    }
+  };
+
 
 
   const value: AuthContextType = {
@@ -215,6 +237,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     backendUser,
     isLoading,
     isAuthenticated: !!firebaseUser && firebaseUser.emailVerified,
+    isOfflineMode,
     authToken,
     favouriteRefugeIds,
     visitedRefugeIds,
@@ -230,7 +253,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshUserData,
     changePassword,
     changeEmail,
-    updateUsername
+    updateUsername,
+    enterOfflineMode,
+    exitOfflineMode
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

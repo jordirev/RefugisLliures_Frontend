@@ -24,19 +24,30 @@ interface CacheMetadata {
   totalTiles: number;
   downloadedTiles: number;
   isComplete: boolean;
+  refugesCount?: number;
+}
+
+interface BasicRefugeInfo {
+  id: string;
+  name: string;
+  surname?: string | null;
+  coord: { lat: number; long: number };
+  geohash?: string;
 }
 
 export class MapCacheService {
   private static readonly CACHE_DIR = `${FileSystem.documentDirectory!}map_cache/`;
   private static readonly METADATA_KEY = 'map_cache_metadata';
+  private static readonly REFUGES_KEY = 'map_cache_refuges';
   private static readonly TILE_SERVER = 'https://a.tile.opentopomap.org';
+  private static readonly API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
   
-  // Bounds dels Pirineus (aproximats)
+  // Bounds dels Pirineus (Espanya i França)
   public static readonly PYRENEES_BOUNDS: TileBounds = {
-    north: 43.0,
-    south: 42.0,
-    east: 2.5,
-    west: -2.0
+    north: 43.5,
+    south: 41.5,
+    east: 3.5,
+    west: -2.5
   };
 
   /**
@@ -117,7 +128,7 @@ export class MapCacheService {
    */
   static async downloadTilesForArea(
     bounds: TileBounds = this.PYRENEES_BOUNDS,
-    minZoom: number = 8,
+    minZoom: number = 6,
     maxZoom: number = 14,
     onProgress?: (downloaded: number, total: number, percentage: number) => void,
     onComplete?: (success: boolean) => void
@@ -132,6 +143,12 @@ export class MapCacheService {
 
   logApi('CACHE', `Starting download of ${totalTiles} tiles for zoom levels ${minZoom}-${maxZoom}`);
 
+      // Descarregar refugis primer
+      logApi('CACHE', 'Downloading refuges list...');
+      const refugesDownloaded = await this.downloadRefuges();
+      const refugesCount = refugesDownloaded ? (await this.getOfflineRefuges())?.length || 0 : 0;
+      logApi('CACHE', `Refuges downloaded: ${refugesCount}`);
+
       // Crear metadata inicial
       const metadata: CacheMetadata = {
         version: '1.0.0',
@@ -141,7 +158,8 @@ export class MapCacheService {
         maxZoom,
         totalTiles,
         downloadedTiles: 0,
-        isComplete: false
+        isComplete: false,
+        refugesCount
       };
 
       await this.saveMetadata(metadata);
@@ -249,6 +267,7 @@ export class MapCacheService {
         await FileSystem.deleteAsync(this.CACHE_DIR);
       }
       await AsyncStorage.removeItem(this.METADATA_KEY);
+      await AsyncStorage.removeItem(this.REFUGES_KEY);
   logApi('CACHE', 'Cache cleared successfully');
     } catch (error) {
       logApi('ERROR', `Error clearing cache: ${error}`);
@@ -296,6 +315,62 @@ export class MapCacheService {
         metadata: null,
         sizeInMB: 0
       };
+    }
+  }
+
+  /**
+   * Descarrega la llista bàsica de tots els refugis
+   */
+  static async downloadRefuges(): Promise<boolean> {
+    try {
+      const url = `${this.API_BASE_URL}/refuges/`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        logApi('ERROR', `Error downloading refuges: ${response.status}`);
+        return false;
+      }
+      
+      const data = await response.json();
+      
+      if (!data || !data.results || !Array.isArray(data.results)) {
+        logApi('ERROR', 'Invalid refuges data structure');
+        return false;
+      }
+
+      // Extreure només la informació bàsica
+      const basicRefuges: BasicRefugeInfo[] = data.results.map((refuge: any) => ({
+        id: refuge.id,
+        name: refuge.name,
+        surname: refuge.surname || null,
+        coord: {
+          lat: refuge.coord?.lat || 0,
+          long: refuge.coord?.long || 0
+        },
+        geohash: refuge.geohash || null
+      }));
+
+      // Guardar a AsyncStorage
+      await AsyncStorage.setItem(this.REFUGES_KEY, JSON.stringify(basicRefuges));
+      logApi('CACHE', `Saved ${basicRefuges.length} refuges to offline cache`);
+      
+      return true;
+    } catch (error) {
+      logApi('ERROR', `Error downloading refuges: ${error}`);
+      return false;
+    }
+  }
+
+  /**
+   * Obté la llista de refugis descarregats offline
+   */
+  static async getOfflineRefuges(): Promise<BasicRefugeInfo[] | null> {
+    try {
+      const data = await AsyncStorage.getItem(this.REFUGES_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      logApi('ERROR', `Error getting offline refuges: ${error}`);
+      return null;
     }
   }
 }

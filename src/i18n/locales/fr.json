@@ -371,6 +371,25 @@
       "poor": "Pauvre"
     }
   },
+  "layers": {
+    "title": "Couches et Affichage",
+    "representation": {
+      "title": "Représentation des refuges",
+      "subtitle": "Choisissez comment afficher les refuges sur la carte",
+      "markers": "Marqueurs",
+      "markersDesc": "Afficher chaque refuge avec un marqueur individuel sur la carte",
+      "heatmap": "Carte de chaleur",
+      "heatmapDesc": "Afficher la densité des refuges avec des couleurs. Les marqueurs apparaissent avec le zoom",
+      "cluster": "Groupements",
+      "clusterDesc": "Grouper les refuges proches en un nombre. Les marqueurs apparaissent avec le zoom"
+    },
+    "mapLayer": {
+      "title": "Couche de carte",
+      "subtitle": "Sélectionnez le type de carte",
+      "opentopoDesc": "Carte topographique avec courbes de niveau et relief",
+      "openstreetDesc": "Carte routière avec informations générales"
+    }
+  },
   "alerts": {
     "navigation": "Navigation vers {{name}}",
     "favoriteUpdated": "Favori mis à jour",

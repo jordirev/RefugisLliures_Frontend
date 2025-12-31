@@ -6,8 +6,6 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
-  ProgressBarAndroid,
-  Platform,
 } from 'react-native';
 import { MapCacheService } from '../services/MapCacheService';
 import { CustomAlert } from './CustomAlert';
@@ -63,7 +61,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
     try {
       const success = await MapCacheService.downloadTilesForArea(
         MapCacheService.PYRENEES_BOUNDS,
-        8, // Min zoom
+        6, // Min zoom
         14, // Max zoom
         (downloaded, total, percentage) => {
           setDownloadProgress(percentage);
@@ -173,6 +171,15 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
                       {new Date(cacheStatus.metadata.downloadDate).toLocaleDateString()}
                     </Text>
                   </View>
+                  
+                  {cacheStatus.metadata.refugesCount !== undefined && (
+                    <View style={styles.infoRow}>
+                      <Text style={styles.infoLabel}>Refugis descarregats:</Text>
+                      <Text style={styles.infoValue}>
+                        {cacheStatus.metadata.refugesCount}
+                      </Text>
+                    </View>
+                  )}
                 </>
               )}
             </View>
@@ -187,18 +194,9 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
               <Text style={styles.progressStats}>
                 {downloadStats.downloaded} / {downloadStats.total} tiles
               </Text>
-              {Platform.OS === 'android' ? (
-                <ProgressBarAndroid
-                  styleAttr="Horizontal"
-                  indeterminate={false}
-                  progress={downloadProgress / 100}
-                  color="#10b981"
-                />
-              ) : (
-                <View style={styles.progressBarContainer}>
-                  <View style={[styles.progressBar, { width: `${downloadProgress}%` }]} />
-                </View>
-              )}
+              <View style={styles.progressBarContainer}>
+                <View style={[styles.progressBar, { width: `${downloadProgress}%` }]} />
+              </View>
             </View>
           )}
 
@@ -240,9 +238,10 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
             <Text style={styles.infoBoxTitle}>ℹ️ Informació</Text>
             <Text style={styles.infoBoxText}>
               • Els mapes offline permeten utilitzar l'app sense connexió{'\n'}
-              • Es descarreguen els nivells de zoom 8-14 dels Pirineus{'\n'}
+              • Es descarreguen els nivells de zoom 6-14 dels Pirineus{'\n'}
+              • Es guarda la llista completa de refugis{'\n'}
               • La descàrrega pot trigar 5-15 minuts depenent de la connexió{'\n'}
-              • Mida aproximada: 50-150 MB
+              • Mida aproximada: 80-200 MB
             </Text>
           </View>
         </View>

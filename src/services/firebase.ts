@@ -16,7 +16,8 @@ import {
   updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
-  verifyBeforeUpdateEmail
+  verifyBeforeUpdateEmail,
+  fetchSignInMethodsForEmail
 } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
 
@@ -78,5 +79,6 @@ export {
   reauthenticateWithCredential,
   EmailAuthProvider,
   verifyBeforeUpdateEmail,
+  fetchSignInMethodsForEmail,
   type FirebaseUser
 };

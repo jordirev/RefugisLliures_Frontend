@@ -372,6 +372,25 @@
       "poor": "Pobre"
     }
   },
+  "layers": {
+    "title": "Capes i Visualització",
+    "representation": {
+      "title": "Representació dels refugis",
+      "subtitle": "Tria com veure els refugis al mapa",
+      "markers": "Marcadors",
+      "markersDesc": "Mostra cada refugi amb un marcador individual al mapa",
+      "heatmap": "Mapa de calor",
+      "heatmapDesc": "Mostra la densitat de refugis amb colors. Els marcadors apareixen amb el zoom",
+      "cluster": "Agrupacions",
+      "clusterDesc": "Agrupa refugis propers en un número. Els marcadors apareixen amb el zoom"
+    },
+    "mapLayer": {
+      "title": "Capa del mapa",
+      "subtitle": "Selecciona el tipus de mapa",
+      "opentopoDesc": "Mapa topogràfic amb corbes de nivell i relleu",
+      "openstreetDesc": "Mapa de carrer amb informació general"
+    }
+  },
   "alerts": {
     "navigation": "Navegant a {{name}}",
     "favoriteUpdated": "Favorit actualitzat",

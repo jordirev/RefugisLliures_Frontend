@@ -368,6 +368,25 @@
       "poor": "Pobre"
     }
   },
+  "layers": {
+    "title": "Capas y Visualización",
+    "representation": {
+      "title": "Representación de los refugios",
+      "subtitle": "Elige cómo ver los refugios en el mapa",
+      "markers": "Marcadores",
+      "markersDesc": "Muestra cada refugio con un marcador individual en el mapa",
+      "heatmap": "Mapa de calor",
+      "heatmapDesc": "Muestra la densidad de refugios con colores. Los marcadores aparecen con el zoom",
+      "cluster": "Agrupaciones",
+      "clusterDesc": "Agrupa refugios cercanos en un número. Los marcadores aparecen con el zoom"
+    },
+    "mapLayer": {
+      "title": "Capa del mapa",
+      "subtitle": "Selecciona el tipo de mapa",
+      "opentopoDesc": "Mapa topográfico con curvas de nivel y relieve",
+      "openstreetDesc": "Mapa de calle con información general"
+    }
+  },
   "alerts": {
     "navigation": "Navegando a {{name}}",
     "favoriteUpdated": "Favorito actualizado",

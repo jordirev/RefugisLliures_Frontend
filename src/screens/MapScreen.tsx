@@ -10,6 +10,8 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { useRefuges } from '../hooks/useRefugesQuery';
+import { MapCacheService } from '../services/MapCacheService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -27,10 +29,12 @@ export function MapScreen({
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const { isOfflineMode } = useAuth();
   
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [offlineRefuges, setOfflineRefuges] = useState<Location[]>([]);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   
   const [filters, setFilters] = useState<Filters>({
@@ -72,30 +76,69 @@ export function MapScreen({
   // Utilitzar React Query per carregar refugis
   const { data: allLocations = [], isLoading, isError } = useRefuges(filterParams);
 
+  // Carregar refugis offline si estem en mode offline
+  useEffect(() => {
+    if (isOfflineMode) {
+      const loadOfflineRefuges = async () => {
+        try {
+          const refuges = await MapCacheService.getOfflineRefuges();
+          if (refuges && refuges.length > 0) {
+            // Convertir els refugis bàsics a format Location
+            const locations: Location[] = refuges.map(refuge => ({
+              id: refuge.id,
+              name: refuge.name,
+              surname: refuge.surname,
+              coord: refuge.coord,
+              geohash: refuge.geohash,
+              // Camps opcionals que no tenim en mode offline
+              altitude: undefined,
+              places: undefined,
+              info_comp: undefined,
+              description: undefined,
+              links: undefined,
+              type: undefined,
+              modified_at: undefined,
+              region: undefined
+            }));
+            setOfflineRefuges(locations);
+          }
+        } catch (error) {
+          console.error('Error loading offline refuges:', error);
+        }
+      };
+      loadOfflineRefuges();
+    } else {
+      setOfflineRefuges([]);
+    }
+  }, [isOfflineMode]);
+
+  // Utilitzar refugis offline si estem en mode offline, sinó utilitzar els de React Query
+  const locationsSource = isOfflineMode ? offlineRefuges : allLocations;
+
   // Mostrar alertes quan hi ha errors o no resultats
   useEffect(() => {
-    if (isError) {
+    if (isError && !isOfflineMode) {
       showAlert(t('common.error'), t('map.errorLoading'));
-    } else if (!isLoading && filterParams && allLocations.length === 0) {
+    } else if (!isLoading && filterParams && locationsSource.length === 0 && !isOfflineMode) {
       showAlert(
         t('map.noResults.title'),
         t('map.noResults.message'),
         [{ text: t('common.ok'), onPress: hideAlert }]
       );
     }
-  }, [isError, isLoading, filterParams, allLocations.length]);
+  }, [isError, isLoading, filterParams, locationsSource.length, isOfflineMode]);
 
   // Filtrar refugis localment pel seu nom basant-se en searchQuery 
   // (utilitzat per a llista de suggeriments a la searchbar i mapa)
   const filteredLocations = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) {
-      return allLocations;
+      return locationsSource;
     }
     const lower = searchQuery.toLowerCase();
-    return allLocations.filter(loc => 
+    return locationsSource.filter(loc => 
       loc.name && loc.name.toLowerCase().includes(lower)
     );
-  }, [searchQuery, allLocations]);
+  }, [searchQuery, locationsSource]);
 
   // Suggestions d'autocomplete local (només noms únics dels refugis filtrats)
   const suggestions = useMemo(() => {
@@ -128,12 +171,12 @@ export function MapScreen({
   // Quan l'usuari selecciona un suggeriment
   const handleSuggestionSelect = useCallback((name: string) => {
     setSearchQuery(name);
-    // Trobar el refugi seleccionat - les dades ja estan disponibles a allLocations
-    const selectedRefuge = allLocations.find(loc => loc.name === name);
+    // Trobar el refugi seleccionat - les dades ja estan disponibles a locationsSource
+    const selectedRefuge = locationsSource.find(loc => loc.name === name);
     if (selectedRefuge) {
       onLocationSelect(selectedRefuge);
     }
-  }, [allLocations, onLocationSelect]);
+  }, [locationsSource, onLocationSelect]);
 
   // Si l'usuari prem el botó 'back' d'Android mentre hi ha text a la cerca,
   // esborrar la cerca i consumir l'esdeveniment (no fer el back navegacional).

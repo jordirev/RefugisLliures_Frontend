@@ -21,7 +21,6 @@ export function mapUserFromDTO(userDTO: UserDTO): User {
   return {
     uid: userDTO.uid,
     username: userDTO.username,
-    email: userDTO.email,
     avatar_metadata: mapAvatarMetadataFromDTO(userDTO.avatar_metadata) || null,
     language: userDTO.language,
     favourite_refuges: userDTO.favourite_refuges || [],

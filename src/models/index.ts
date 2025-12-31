@@ -77,7 +77,6 @@ export interface AvatarMetadata {
 export interface User {
   uid: string;
   username: string;
-  email: string;
   avatar_metadata?: AvatarMetadata | null;
   language: string;
   favourite_refuges?: string[];

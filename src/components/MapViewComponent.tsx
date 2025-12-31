@@ -2,14 +2,15 @@ import React, { useState, useCallback, memo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import * as ExpoLocation from 'expo-location';
 import { Location } from '../models';
-import { LeafletWebMap } from './LeafletWebMap';
+import { LeafletWebMap, RepresentationType, MapLayerType } from './LeafletWebMap';
 import { OfflineMapManager } from './OfflineMapManager';
+import { LayerSelector } from './LayerSelector';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 
 import LayersIcon from '../assets/icons/layers.svg';
-import CompassIcon from '../assets/icons/compass3.png';
+import DownloadIcon from '../assets/icons/download2.svg';
 import TargetIcon from '../assets/icons/target.png';
 
 interface MapViewComponentProps {
@@ -23,7 +24,10 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showOfflineManager, setShowOfflineManager] = useState(false);
+  const [showLayerSelector, setShowLayerSelector] = useState(false);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const [representation, setRepresentation] = useState<RepresentationType>('markers');
+  const [mapLayer, setMapLayer] = useState<MapLayerType>('opentopomap');
 
   // Centre dels Pirineus
   const initialRegion = {
@@ -43,17 +47,19 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
         center={[initialRegion.latitude, initialRegion.longitude]}
         zoom={8}
         userLocation={userLocation}
+        representation={representation}
+        mapLayer={mapLayer}
       />
 
       {/* Botons de control */}
       <View style={styles.controls}>
         {/* Brúixola */}
         <TouchableOpacity 
-          testID="compass-button"
+          testID="download-button"
           style={styles.controlButton}
-          onPress={() => {/* TODO: Implementar orientació de brúixola */}}
+          onPress={() => setShowOfflineManager(true)}
         >
-          <Image source={CompassIcon} style={{ width: 72, height: 72, transform: [{ rotate: '30deg' }] }} />
+          <DownloadIcon width={22} height={22} color="#4A5565" />
           {/*<CompassIcon width={24} height={24} color="#4A5565" strokeWidth="3" />*/}
         </TouchableOpacity>
 
@@ -109,7 +115,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
         <TouchableOpacity 
           testID="layers-button"
           style={styles.controlButton}
-          onPress={() => setShowOfflineManager(true)}
+          onPress={() => setShowLayerSelector(true)}
         >
           <LayersIcon width={16} height={16} color="#4A5565" />
         </TouchableOpacity>
@@ -119,6 +125,16 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
       <OfflineMapManager
         visible={showOfflineManager}
         onClose={() => setShowOfflineManager(false)}
+      />
+      
+      {/* Selector de capes */}
+      <LayerSelector
+        isOpen={showLayerSelector}
+        onClose={() => setShowLayerSelector(false)}
+        representation={representation}
+        mapLayer={mapLayer}
+        onRepresentationChange={setRepresentation}
+        onMapLayerChange={setMapLayer}
       />
       
       {/* CustomAlert */}

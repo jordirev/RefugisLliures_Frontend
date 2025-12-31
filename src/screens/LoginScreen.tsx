@@ -14,6 +14,7 @@ import {
 import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import NetInfo from '@react-native-community/netinfo';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
@@ -33,7 +34,7 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, enterOfflineMode } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
@@ -81,6 +82,29 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     setIsLoading(true);
     
     try {
+      // Comprovar connexió abans d'intentar el login
+      const netState = await NetInfo.fetch();
+      
+      // Si no hi ha connexió, oferir mode offline
+      if (!netState.isConnected) {
+        setIsLoading(false);
+        showAlert(
+          'Sense connexió',
+          'No hi ha connexió a Internet. Vols entrar en mode offline? Podràs veure els mapes descarregats però les funcionalitats estaran limitades.',
+          [
+            { text: 'Cancel·lar', style: 'cancel' },
+            { 
+              text: 'Mode Offline', 
+              onPress: () => {
+                enterOfflineMode();
+              },
+              style: 'default'
+            }
+          ]
+        );
+        return;
+      }
+
       // Login amb el context (que utilitza AuthService internament)
       await login(email.trim(), password);
       
@@ -130,9 +154,31 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       // Obtenir el codi d'error
       const errorCode = error?.code || 'unknown';
 
-      // Si les credencials són incorrectes (error específic d'autenticació),
-      // mostrem el missatge inline (vermell) sota el camp de contrasenya en lloc d'una alerta.
-      if (errorCode === 'auth/invalid-credential') {
+      // Comprovar si és un error de xarxa
+      const isNetworkError = 
+        errorCode === 'auth/network-request-failed' || 
+        error?.message?.toLowerCase().includes('network') ||
+        error?.message?.toLowerCase().includes('connection');
+
+      if (isNetworkError) {
+        // Si és error de xarxa, oferir mode offline
+        showAlert(
+          'Error de connexió',
+          'No s\'ha pogut connectar amb el servidor. Vols entrar en mode offline? Podràs veure els mapes descarregats però les funcionalitats estaran limitades.',
+          [
+            { text: 'Cancel·lar', style: 'cancel' },
+            { 
+              text: 'Mode Offline', 
+              onPress: () => {
+                enterOfflineMode();
+              },
+              style: 'default'
+            }
+          ]
+        );
+      } else if (errorCode === 'auth/invalid-credential') {
+        // Si les credencials són incorrectes (error específic d'autenticació),
+        // mostrem el missatge inline (vermell) sota el camp de contrasenya en lloc d'una alerta.
         const errorMessage = t('login.errors.invalidCredentials') || 'Credencials no vàlides';
         setPasswordError(errorMessage);
         // focus al camp de password perquè l'usuari pugui corregir-lo

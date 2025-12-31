@@ -358,6 +358,25 @@
       "poor": "Poor"
     }
   },
+  "layers": {
+    "title": "Layers & Display",
+    "representation": {
+      "title": "Shelter representation",
+      "subtitle": "Choose how to view shelters on the map",
+      "markers": "Markers",
+      "markersDesc": "Show each shelter with an individual marker on the map",
+      "heatmap": "Heatmap",
+      "heatmapDesc": "Show shelter density with colors. Markers appear with zoom",
+      "cluster": "Clusters",
+      "clusterDesc": "Group nearby shelters in a number. Markers appear with zoom"
+    },
+    "mapLayer": {
+      "title": "Map layer",
+      "subtitle": "Select the map type",
+      "opentopoDesc": "Topographic map with contour lines and relief",
+      "openstreetDesc": "Street map with general information"
+    }
+  },
   "alerts": {
     "navigation": "Navigating to {{name}}",
     "favoriteUpdated": "Favorite updated",

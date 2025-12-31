@@ -11,7 +11,6 @@ export interface AvatarMetadataDTO {
 export interface UserDTO {
     uid: string;
     username: string;
-    email: string;
     avatar_metadata?: AvatarMetadataDTO | null;
     language: string;
     favourite_refuges?: string[] | null;

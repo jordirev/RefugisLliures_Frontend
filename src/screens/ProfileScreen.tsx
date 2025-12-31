@@ -133,7 +133,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
               ) : (
                 <Text style={styles.avatarText}>
                   {(() => {
-                    const name = displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || '';
+                    const name = displayUser?.username || firebaseUser?.displayName || '';
                     const parts = name.trim().split(/\s+/);
                     if (parts.length === 0) return '';
                     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -147,7 +147,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
             <Text style={styles.nameText}>
-              {displayUser?.username || firebaseUser?.displayName || displayUser?.email || firebaseUser?.email || ''}
+              {displayUser?.username || firebaseUser?.displayName || ''}
             </Text>
             <Text style={styles.subtitleText}>
               {(() => {
