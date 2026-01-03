@@ -738,5 +738,29 @@
     "warnings": {
       "someFilesFailedToUpload": "Some files could not be uploaded successfully"
     }
+  },
+  "helpSupport": {
+    "title": "Help & support",
+    "intro": "For any bug or error in the app, you can send an email to:",
+    "emailCopied": "Email copied",
+    "emailCopiedMessage": "The email address has been copied to the clipboard",
+    "beSpecific": "Please be specific about the scenario in which the error occurs and, if possible, provide photos.",
+    "warning": {
+      "title": "Warning:",
+      "message": "Requests to modify shelter information will not be attended. To do so, create an edit proposal for the shelter on the shelter details screen."
+    }
+  },
+  "aboutApp": {
+    "title": "About the app",
+    "description": {
+      "intro": "Refugis Lliures was created with the aim of providing accurate, reliable, and extensive information about free shelters in the Pyrenees, as well as preserving their condition by facilitating volunteer gatherings to renovate them.",
+      "sources": "The app combines the two largest sources of free shelter information available on the internet to date:",
+      "userContributions": "along with information provided by the app's users themselves."
+    },
+    "creator": {
+      "title": "About the creator:",
+      "greeting": "Hello! My name is Jordi Reverter and I am the creator of Refugis Lliures, the most complete app for free shelters in the Pyrenees to date.",
+      "description": "This app has been the result of my Final Degree Project at the Polytechnic University of Catalonia (UPC), where I was able to combine my two passions: the mountains and software. Since I was very young, the mountains have occupied a very important place in my life and, especially, free shelters. In them I have lived great experiences and shared many moments with people passionate about the mountains and that is why I decided to make this app and contribute my grain of sand to this world of the mountains. I hope it can be useful to you and accompany you on your next outings!"
+    }
   }
 }

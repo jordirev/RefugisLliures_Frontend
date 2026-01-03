@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
   },
   calendarHeader: {
     flexDirection: 'row',

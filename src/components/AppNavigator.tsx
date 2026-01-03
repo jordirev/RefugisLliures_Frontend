@@ -9,6 +9,8 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
 import { EditProfileScreen } from '../screens/EditProfileScreen';
+import { HelpSupportScreen } from '../screens/HelpSupportScreen';
+import { AboutTheAppScreen } from '../screens/AboutTheAppScreen';
 import { CreateRenovationScreen } from '../screens/CreateRenovationScreen';
 import { CreateRefugeScreen } from '../screens/CreateRefugeScreen';
 import { EditRefugeScreen } from '../screens/EditRefugeScreen';
@@ -196,6 +198,8 @@ export function AppNavigator() {
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+        <Stack.Screen name="AboutTheApp" component={AboutTheAppScreen} />
         <Stack.Screen name="CreateRenovation" component={CreateRenovationScreen} />
         <Stack.Screen name="CreateRefuge" component={CreateRefugeScreen} />
         <Stack.Screen name="EditRefuge" component={EditRefugeScreen} />

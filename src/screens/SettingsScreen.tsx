@@ -81,14 +81,6 @@ export function SettingsScreen() {
       >
         <View style={styles.content}>
         <View style={styles.section}>          
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>{t('profile.settings.preferences')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.menuItem}
             onPress={() => navigation.navigate('EditProfile')}
@@ -144,11 +136,17 @@ export function SettingsScreen() {
           {/* Separador */}
           <View style={styles.separator} />
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('HelpSupport')}
+          >
             <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('AboutTheApp')}
+          >
             <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
           </TouchableOpacity>
 

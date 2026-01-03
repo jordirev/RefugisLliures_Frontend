@@ -748,5 +748,29 @@
     "warnings": {
       "someFilesFailedToUpload": "Algunos archivos no se pudieron subir correctamente"
     }
+  },
+  "helpSupport": {
+    "title": "Ayuda y soporte",
+    "intro": "Para cualquier fallo o error en la app, podéis enviar un correo electrónico a:",
+    "emailCopied": "Correo copiado",
+    "emailCopiedMessage": "La dirección de correo se ha copiado al portapapeles",
+    "beSpecific": "Por favor, sed específicos en el escenario en el que ocurre el error y, si es posible, aportad fotos.",
+    "warning": {
+      "title": "Atención:",
+      "message": "No se atenderá a propuestas de modificación de la información de un refugio. Para hacerlo, crea una propuesta de edición del refugio en la pantalla de la ficha del refugio."
+    }
+  },
+  "aboutApp": {
+    "title": "Sobre la app",
+    "description": {
+      "intro": "Refugios Libres ha nacido con el objetivo de aportar información precisa, fiable y extensa sobre los refugios libres del Pirineo, además de preservar su estado facilitando los encuentros de voluntarios para reformarlos.",
+      "sources": "La app combina las dos fuentes de información más grandes de refugios libres que hay en internet hasta el momento:",
+      "userContributions": "junto con la información aportada por los propios usuarios de la app."
+    },
+    "creator": {
+      "title": "Información del creador:",
+      "greeting": "¡Hola! Me llamo Jordi Reverter y soy el creador de Refugios Libres, la app más completa hasta el momento de refugios libres del Pirineo.",
+      "description": "Esta app ha sido fruto de mi Trabajo de Fin de Grado en la Universitat Politècnica de Catalunya (UPC), donde he podido combinar mis dos pasiones: la montaña y el software. Desde muy pequeño la montaña ha ocupado un espacio muy importante en mi vida y, sobre todo, los refugios libres. En estos he vivido grandes experiencias y compartido muchos momentos con gente apasionada de la montaña y es por eso que decidí hacer esta app y poder aportar mi granito de arena en este mundo de la montaña. Espero que os pueda ser de utilidad y os acompañe en vuestras próximas salidas!"
+    }
   }
 }

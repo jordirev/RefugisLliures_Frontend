@@ -752,5 +752,29 @@
     "warnings": {
       "someFilesFailedToUpload": "Certains fichiers n'ont pas pu être téléversés avec succès"
     }
+  },
+  "helpSupport": {
+    "title": "Aide et assistance",
+    "intro": "Pour toute panne ou erreur dans l'application, vous pouvez envoyer un email à :",
+    "emailCopied": "Email copié",
+    "emailCopiedMessage": "L'adresse email a été copiée dans le presse-papiers",
+    "beSpecific": "Veuillez être précis sur le scénario dans lequel l'erreur se produit et, si possible, fournir des photos.",
+    "warning": {
+      "title": "Attention :",
+      "message": "Les demandes de modification des informations d'un refuge ne seront pas traitées. Pour cela, créez une proposition de modification du refuge sur l'écran des détails du refuge."
+    }
+  },
+  "aboutApp": {
+    "title": "À propos de l'application",
+    "description": {
+      "intro": "Refugis Lliures est née dans le but de fournir des informations précises, fiables et complètes sur les refuges libres des Pyrénées, ainsi que de préserver leur état en facilitant les rassemblements de volontaires pour les rénover.",
+      "sources": "L'application combine les deux plus grandes sources d'informations sur les refuges libres disponibles sur Internet à ce jour :",
+      "userContributions": "ainsi que les informations fournies par les utilisateurs de l'application eux-mêmes."
+    },
+    "creator": {
+      "title": "À propos du créateur :",
+      "greeting": "Bonjour ! Je m'appelle Jordi Reverter et je suis le créateur de Refugis Lliures, l'application la plus complète à ce jour sur les refuges libres des Pyrénées.",
+      "description": "Cette application a été le résultat de mon Projet de Fin d'Études à l'Université Polytechnique de Catalogne (UPC), où j'ai pu combiner mes deux passions : la montagne et le logiciel. Depuis mon plus jeune âge, la montagne a occupé une place très importante dans ma vie et, surtout, les refuges libres. J'y ai vécu de grandes expériences et partagé de nombreux moments avec des gens passionnés par la montagne et c'est pourquoi j'ai décidé de créer cette application et d'apporter ma pierre à l'édifice dans ce monde de la montagne. J'espère qu'elle pourra vous être utile et vous accompagner lors de vos prochaines sorties !"
+    }
   }
 }

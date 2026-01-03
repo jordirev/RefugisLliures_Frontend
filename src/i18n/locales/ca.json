@@ -753,5 +753,29 @@
     "warnings": {
       "someFilesFailedToUpload": "Alguns fitxers no s'han pogut pujar correctament"
     }
+  },
+  "helpSupport": {
+    "title": "Ajuda i suport",
+    "intro": "Per a qualsevol fallada o error en l'app, podeu enviar un correu electrònic a:",
+    "emailCopied": "Correu copiat",
+    "emailCopiedMessage": "L'adreça de correu s'ha copiat al porta-retalls",
+    "beSpecific": "Sisplau, sigueu específics en l'escenari en què succeeix l'error i, si és possible, aporteu fotos.",
+    "warning": {
+      "title": "Atenció:",
+      "message": "No s'atendrà a propostes de modificació de la informació d'un refugi. Per fer-ho, crea una proposta d'edició del refugi a la pantalla de la fitxa del refugi."
+    }
+  },
+  "aboutApp": {
+    "title": "Sobre l'app",
+    "description": {
+      "intro": "Refugis Lliures ha nascut amb l'objectiu d'aportar informació precisa, fiable i extensa sobre els refugis lliures del Pirineu, a més de preservar el seu estat facilitant les trobades de voluntaris per a reformar-los.",
+      "sources": "L'app combina les dues fonts d'informació més grans de refugis lliures que hi ha a internet fins al moment:",
+      "userContributions": "juntament amb la informació aportada pels propis usuaris de l'app."
+    },
+    "creator": {
+      "title": "Informació del creador:",
+      "greeting": "Hola! Em dic Jordi Reverter i sóc el creador de Refugis Lliures, l'app més completa fins al moment de refugis lliures del Pirineu.",
+      "description": "Aquesta app ha sigut fruit del meu Treball de Fi de Grau a la Universitat Politècnica de Catalunya (UPC), on he pogut combinar les meves dues passions: la muntanya i el software. Des de ben petit que la muntanya ha ocupat un espai molt important en la meva vida i, sobretot, els refugis lliures. En aquests he viscut grans experiències i compartit molts moments amb gent apassionada de la muntanya i és per això que vaig decidir fer aquesta app i poder aportar el meu gra de sorra en aquest món de la muntanya. Espero que us pugui ser d'utilitat i us acompanyi a les vostres properes sortides!"
+    }
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -205,7 +205,11 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
               <Text style={styles.title}>{t('visited.title')}</Text>
               <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
             </View>
-            {visitedRefuges && visitedRefuges.length > 0 ? (
+            {isLoadingVisited ? (
+              <View style={styles.emptyVisitedContainer}>
+                <ActivityIndicator size="large" color="#FF6000" />
+              </View>
+            ) : visitedRefuges && visitedRefuges.length > 0 ? (
               <View style={styles.visitedList}>
                 {visitedRefuges.map((refuge, index) => (
                   <RefugeCard
@@ -239,6 +243,12 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   headerFixed: {
     position: 'absolute',

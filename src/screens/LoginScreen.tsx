@@ -23,6 +23,7 @@ import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { app } from '../services/firebase';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -331,6 +332,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
               style={styles.logo}
               resizeMode="contain"
             />
+            <Text style={styles.appName}> Refugis Lliures </Text>
             <Text style={styles.title}>{t('login.title')}</Text>
             <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
           </LinearGradient>
@@ -525,26 +527,34 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    paddingTop: 10,
-    paddingBottom: 50,
+    paddingTop: 5,
+    paddingBottom: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
+    width: 180,
+    height: 180,
+    marginBottom: -30,
+    marginTop: 20,
   },
-  title: {
-    fontSize: 32,
+  appName: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 8,
+    marginBottom: 50,
+    letterSpacing: 2,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     opacity: 0.9,
   },

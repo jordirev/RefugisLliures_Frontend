@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
@@ -70,7 +70,12 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         </SafeAreaView>
       </View>
 
-      <FlatList
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF6000" />
+        </View>
+      ) : (
+        <FlatList
         ref={flatListRef}
         data={favoriteLocations}
         style={styles.container}
@@ -98,7 +103,8 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         }}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => (item.id ? String(item.id) : String(index))}
-      />
+        />
+      )}
 
       {/* CustomAlert */}
       {alertConfig && (
@@ -121,6 +127,12 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   headerFixed: {
     position: 'absolute',
