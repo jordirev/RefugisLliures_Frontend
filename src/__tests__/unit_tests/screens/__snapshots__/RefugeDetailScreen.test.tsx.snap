@@ -82,8 +82,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
   <RCTScrollView
     contentContainerStyle={
       {
-        "paddingHorizontal": 16,
-        "paddingVertical": 24,
+        "paddingBottom": 24,
       }
     }
     showsVerticalScrollIndicator={false}
@@ -98,39 +97,529 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         style={
           {
             "height": 320,
-            "marginBottom": 16,
             "position": "relative",
+            "width": "100%",
           }
         }
       >
-        <Image
-          resizeMode="cover"
-          source={
-            {
-              "uri": "https://example.com/image.jpg",
-            }
-          }
+        <RCTScrollView
+          horizontal={true}
+          onScroll={[Function]}
+          pagingEnabled={true}
+          scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View>
+            <View
+              style={
+                {
+                  "height": 320,
+                  "position": "relative",
+                  "width": 750,
+                }
+              }
+            >
+              <Image
+                resizeMode="cover"
+                source={
+                  {
+                    "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                  }
+                }
+                style={
+                  {
+                    "alignSelf": "stretch",
+                    "height": 320,
+                    "width": 750,
+                  }
+                }
+              />
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "rgba(0, 0, 0, 0.4)",
+                    "bottom": 0,
+                    "gap": 16,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "paddingHorizontal": 32,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+              >
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": undefined,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 14,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 20,
+                        "width": 20,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.viewAll
+                  </Text>
+                </View>
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": false,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 12,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 30,
+                        "width": 30,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.addPhoto
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </RCTScrollView>
+        <View
           style={
             {
-              "alignSelf": "stretch",
-              "borderRadius": 12,
-              "height": "100%",
-              "width": "100%",
+              "alignItems": "center",
+              "bottom": 16,
+              "flexDirection": "row",
+              "gap": 6,
+              "justifyContent": "center",
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
             }
           }
-        />
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "rgba(200, 200, 200, 0.5)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 6,
+                },
+                {
+                  "backgroundColor": "rgba(255, 255, 255, 0.9)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 16,
+                },
+              ]
+            }
+          />
+        </View>
       </View>
       <View
         style={
           {
-            "marginBottom": 24,
+            "paddingHorizontal": 16,
+            "paddingTop": 16,
           }
         }
       >
         <View
           style={
             {
-              "marginBottom": 16,
+              "marginBottom": 24,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginBottom": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "fontSize": 24,
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Refugi de Colomers
+            </Text>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                  "flexWrap": "wrap",
+                }
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "alignSelf": "flex-start",
+                      "borderRadius": 8,
+                      "justifyContent": "center",
+                      "overflow": "hidden",
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 2,
+                    },
+                    {
+                      "backgroundColor": "#E6F8EE",
+                      "borderColor": "#7EE0B0",
+                      "borderWidth": 1.25,
+                    },
+                    {
+                      "marginRight": 8,
+                    },
+                  ]
+                }
+                testID="badge-container"
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "fontFamily": "Arimo",
+                        "fontSize": 12,
+                        "fontWeight": "400",
+                        "lineHeight": 16,
+                      },
+                      {
+                        "color": "#14532D",
+                      },
+                      undefined,
+                    ]
+                  }
+                >
+                  refuge.type.noGuarded
+                </Text>
+              </View>
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "alignSelf": "flex-start",
+                      "borderRadius": 8,
+                      "justifyContent": "center",
+                      "overflow": "hidden",
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 2,
+                    },
+                    {
+                      "backgroundColor": "#E5E7EB",
+                      "borderColor": "#9CA3AF",
+                      "borderWidth": 1.25,
+                    },
+                    undefined,
+                  ]
+                }
+                testID="badge-container"
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "fontFamily": "Arimo",
+                        "fontSize": 12,
+                        "fontWeight": "400",
+                        "lineHeight": 16,
+                      },
+                      {
+                        "color": "#374151",
+                      },
+                      undefined,
+                    ]
+                  }
+                >
+                  refuge.condition.unknown
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              {
+                "flexDirection": "row",
+                "gap": 16,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.altitude
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                2135m
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.capacity
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                50
+              </Text>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.occupation
+              </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                      "fontSize": 14,
+                      "fontWeight": "600",
+                      "marginTop": 4,
+                      "textAlign": "center",
+                    },
+                    {
+                      "fontSize": 12,
+                    },
+                  ]
+                }
+              >
+                refuge.details.seeOccupation
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
             }
           }
         >
@@ -138,345 +627,240 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
             style={
               {
                 "color": "#111827",
-                "fontSize": 24,
-                "fontWeight": "bold",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
               }
             }
           >
-            Refugi de Colomers
+            refuge.details.description
           </Text>
-          <View
-            style={
-              {
-                "flexDirection": "row",
-                "flexWrap": "wrap",
-              }
-            }
-          >
-            <View
+          <View>
+            <Text
+              numberOfLines={4}
               style={
-                [
-                  {
-                    "alignItems": "center",
-                    "alignSelf": "flex-start",
-                    "borderRadius": 8,
-                    "justifyContent": "center",
-                    "overflow": "hidden",
-                    "paddingHorizontal": 8,
-                    "paddingVertical": 2,
-                  },
-                  {
-                    "backgroundColor": "#D1FAE5",
-                    "borderColor": "#34D399",
-                    "borderWidth": 1.25,
-                  },
-                  {
-                    "marginRight": 8,
-                  },
-                ]
-              }
-              testID="badge-container"
-            >
-              <Text
-                style={
-                  [
-                    {
-                      "fontFamily": "Arimo",
-                      "fontSize": 12,
-                      "fontWeight": "400",
-                      "lineHeight": 16,
-                    },
-                    {
-                      "color": "#065F46",
-                    },
-                    undefined,
-                  ]
+                {
+                  "color": "#51555eff",
+                  "fontSize": 14,
+                  "lineHeight": 22,
+                  "textAlign": "justify",
                 }
-              >
-                refuge.type.noGuarded
-              </Text>
-            </View>
-            <View
-              style={
-                [
-                  {
-                    "alignItems": "center",
-                    "alignSelf": "flex-start",
-                    "borderRadius": 8,
-                    "justifyContent": "center",
-                    "overflow": "hidden",
-                    "paddingHorizontal": 8,
-                    "paddingVertical": 2,
-                  },
-                  {
-                    "backgroundColor": "#E5E7EB",
-                    "borderColor": "#9CA3AF",
-                    "borderWidth": 1.25,
-                  },
-                  undefined,
-                ]
               }
-              testID="badge-container"
             >
-              <Text
-                style={
-                  [
-                    {
-                      "fontFamily": "Arimo",
-                      "fontSize": 12,
-                      "fontWeight": "400",
-                      "lineHeight": 16,
-                    },
-                    {
-                      "color": "#374151",
-                    },
-                    undefined,
-                  ]
-                }
-              >
-                refuge.condition.unknown
-              </Text>
-            </View>
+              Un refugi preciós situat als Pirineus
+            </Text>
           </View>
         </View>
         <View
           style={
             {
-              "flexDirection": "row",
-              "gap": 16,
+              "marginBottom": 24,
             }
           }
         >
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.altitude
-            </Text>
-            <Text
-              style={
-                {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
-                }
-              }
-            >
-              2135m
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.capacity
-            </Text>
-            <Text
-              style={
-                {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
-                }
-              }
-            >
-              50
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.occupation
-            </Text>
-            <Text
-              style={
-                [
-                  {
-                    "color": "#111827",
-                    "fontSize": 14,
-                    "fontWeight": "600",
-                    "marginTop": 4,
-                    "textAlign": "center",
-                  },
-                  {
-                    "fontSize": 12,
-                  },
-                ]
-              }
-            >
-              refuge.details.seeOccupation
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.description
-        </Text>
-        <View>
           <Text
-            numberOfLines={4}
             style={
               {
-                "color": "#51555eff",
-                "fontSize": 14,
-                "lineHeight": 22,
-                "textAlign": "justify",
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
               }
             }
           >
-            Un refugi preciós situat als Pirineus
+            refuge.details.localisation
           </Text>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.localisation
-        </Text>
-        <View
-          style={
-            {
-              "alignItems": "center",
-              "backgroundColor": "#f9fafb",
-              "borderRadius": 12,
-              "flexDirection": "row",
-              "gap": 12,
-              "padding": 16,
-            }
-          }
-        >
           <View
             style={
               {
                 "alignItems": "center",
-                "flex": 1,
+                "backgroundColor": "#f9fafb",
+                "borderRadius": 12,
                 "flexDirection": "row",
                 "gap": 12,
+                "padding": 16,
               }
             }
           >
-            <test-file-stub
-              color="#FF6900"
-              height={16}
-              width={16}
-            />
-            <Text
+            <View
               style={
                 {
-                  "color": "#6b7280",
+                  "alignItems": "center",
                   "flex": 1,
-                  "fontSize": 12,
+                  "flexDirection": "row",
+                  "gap": 12,
                 }
               }
             >
-              (42.6497, 0.94560)
-            </Text>
+              <test-file-stub
+                color="#FF6900"
+                height={16}
+                width={16}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "flex": 1,
+                    "fontSize": 12,
+                  }
+                }
+              >
+                (42.6497, 0.94560)
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                }
+              }
+            >
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-gpx-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  GPX
+                </Text>
+              </View>
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-kml-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  KML
+                </Text>
+              </View>
+            </View>
           </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            refuge.details.prepareRoute
+          </Text>
           <View
             style={
               {
                 "flexDirection": "row",
+                "gap": 16,
               }
             }
           >
@@ -511,32 +895,42 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
               style={
                 {
                   "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
+                  "padding": 16,
                 }
               }
-              testID="download-gpx-button"
+              testID="weather-button"
             >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
+              <Image
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 48,
+                    "transform": [
+                      {
+                        "scaleX": -1,
+                      },
+                    ],
+                    "width": 48,
+                  }
+                }
               />
               <Text
                 style={
                   {
-                    "color": "#4A5565",
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
                     "fontSize": 12,
-                    "fontWeight": "500",
+                    "fontWeight": "400",
+                    "marginTop": 8,
                   }
                 }
               >
-                GPX
+                refuge.details.weather
               </Text>
             </View>
             <View
@@ -570,61 +964,45 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
               style={
                 {
                   "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
+                  "padding": 16,
                 }
               }
-              testID="download-kml-button"
+              testID="routes-button"
             >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
+              <Image
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 48,
+                    "width": 48,
+                  }
+                }
               />
               <Text
                 style={
                   {
-                    "color": "#4A5565",
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
                     "fontSize": 12,
-                    "fontWeight": "500",
+                    "fontWeight": "400",
+                    "marginTop": 8,
                   }
                 }
               >
-                KML
+                refuge.details.nearbyRoutes
               </Text>
             </View>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.prepareRoute
-        </Text>
         <View
           style={
             {
-              "flexDirection": "row",
-              "gap": 16,
+              "marginBottom": 24,
             }
           }
         >
@@ -659,140 +1037,147 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
             style={
               {
                 "alignItems": "center",
-                "backgroundColor": "#f9fafb",
+                "backgroundColor": "#F9FAFB",
                 "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
+                "flexDirection": "row",
+                "gap": 12,
                 "opacity": 1,
                 "padding": 16,
               }
             }
-            testID="weather-button"
           >
             <Image
               source="test-file-stub"
               style={
                 {
-                  "height": 48,
-                  "transform": [
-                    {
-                      "scaleX": -1,
-                    },
-                  ],
-                  "width": 48,
+                  "height": 24,
+                  "width": 24,
                 }
               }
             />
             <Text
               style={
                 {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
+                  "color": "#111827",
+                  "flex": 1,
+                  "fontSize": 14,
                   "fontWeight": "400",
-                  "marginTop": 8,
                 }
               }
             >
-              refuge.details.weather
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "opacity": 1,
-                "padding": 16,
-              }
-            }
-            testID="routes-button"
-          >
-            <Image
-              source="test-file-stub"
-              style={
-                {
-                  "height": 48,
-                  "width": 48,
-                }
-              }
-            />
-            <Text
-              style={
-                {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
-                  "fontWeight": "400",
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.nearbyRoutes
+              doubts.title
             </Text>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "borderRadius": 8,
-            "marginVertical": 12,
-            "padding": 12,
-          }
-        }
-      >
-        <Text
+        <View
           style={
             {
-              "color": "#f04b2eff",
-              "fontSize": 10,
-              "fontWeight": "500",
-              "justifyContent": "center",
-              "textAlign": "center",
+              "marginBottom": 24,
             }
           }
         >
-          refuge.details.information_not_precise
-        </Text>
-      </View>
-      <View
-        style={
-          {
-            "height": 10,
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            experiences.title
+          </Text>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#F9FAFB",
+                "borderRadius": 12,
+                "flexDirection": "row",
+                "gap": 12,
+                "opacity": 1,
+                "padding": 16,
+              }
+            }
+          >
+            <test-file-stub
+              color="#FF6000"
+              height={24}
+              width={24}
+            />
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "flex": 1,
+                  "fontSize": 14,
+                  "fontWeight": "400",
+                }
+              }
+            >
+              experiences.addFirst
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "borderRadius": 8,
+              "marginVertical": 12,
+              "padding": 12,
+            }
           }
-        }
-      />
+        >
+          <Text
+            style={
+              {
+                "color": "#f04b2eff",
+                "fontSize": 10,
+                "fontWeight": "500",
+                "justifyContent": "center",
+                "textAlign": "center",
+              }
+            }
+          >
+            refuge.details.information_not_precise
+          </Text>
+        </View>
+        <View
+          style={
+            {
+              "height": 10,
+            }
+          }
+        />
+      </View>
     </View>
   </RCTScrollView>
   <View
@@ -803,10 +1188,11 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "flexDirection": "row",
           "position": "absolute",
           "right": 16,
+          "top": 18,
           "zIndex": 2000,
         },
         {
-          "top": 16,
+          "top": 18,
         },
       ]
     }
@@ -993,7 +1379,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         },
         "shadowOpacity": 0.1,
         "shadowRadius": 8,
-        "top": 16,
+        "top": 18,
         "width": 40,
         "zIndex": 3000,
       }
@@ -1098,8 +1484,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
   <RCTScrollView
     contentContainerStyle={
       {
-        "paddingHorizontal": 16,
-        "paddingVertical": 24,
+        "paddingBottom": 24,
       }
     }
     showsVerticalScrollIndicator={false}
@@ -1114,39 +1499,529 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         style={
           {
             "height": 320,
-            "marginBottom": 16,
             "position": "relative",
+            "width": "100%",
           }
         }
       >
-        <Image
-          resizeMode="cover"
-          source={
-            {
-              "uri": "https://example.com/image.jpg",
-            }
-          }
+        <RCTScrollView
+          horizontal={true}
+          onScroll={[Function]}
+          pagingEnabled={true}
+          scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View>
+            <View
+              style={
+                {
+                  "height": 320,
+                  "position": "relative",
+                  "width": 750,
+                }
+              }
+            >
+              <Image
+                resizeMode="cover"
+                source={
+                  {
+                    "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                  }
+                }
+                style={
+                  {
+                    "alignSelf": "stretch",
+                    "height": 320,
+                    "width": 750,
+                  }
+                }
+              />
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "rgba(0, 0, 0, 0.4)",
+                    "bottom": 0,
+                    "gap": 16,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "paddingHorizontal": 32,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+              >
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": undefined,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 14,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 20,
+                        "width": 20,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.viewAll
+                  </Text>
+                </View>
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": false,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 12,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 30,
+                        "width": 30,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.addPhoto
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </RCTScrollView>
+        <View
           style={
             {
-              "alignSelf": "stretch",
-              "borderRadius": 12,
-              "height": "100%",
-              "width": "100%",
+              "alignItems": "center",
+              "bottom": 16,
+              "flexDirection": "row",
+              "gap": 6,
+              "justifyContent": "center",
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
             }
           }
-        />
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "rgba(200, 200, 200, 0.5)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 6,
+                },
+                {
+                  "backgroundColor": "rgba(255, 255, 255, 0.9)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 16,
+                },
+              ]
+            }
+          />
+        </View>
       </View>
       <View
         style={
           {
-            "marginBottom": 24,
+            "paddingHorizontal": 16,
+            "paddingTop": 16,
           }
         }
       >
         <View
           style={
             {
-              "marginBottom": 16,
+              "marginBottom": 24,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginBottom": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "fontSize": 24,
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Refugi de Colomers
+            </Text>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                  "flexWrap": "wrap",
+                }
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "alignSelf": "flex-start",
+                      "borderRadius": 8,
+                      "justifyContent": "center",
+                      "overflow": "hidden",
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 2,
+                    },
+                    {
+                      "backgroundColor": "#E6F8EE",
+                      "borderColor": "#7EE0B0",
+                      "borderWidth": 1.25,
+                    },
+                    {
+                      "marginRight": 8,
+                    },
+                  ]
+                }
+                testID="badge-container"
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "fontFamily": "Arimo",
+                        "fontSize": 12,
+                        "fontWeight": "400",
+                        "lineHeight": 16,
+                      },
+                      {
+                        "color": "#14532D",
+                      },
+                      undefined,
+                    ]
+                  }
+                >
+                  refuge.type.noGuarded
+                </Text>
+              </View>
+              <View
+                style={
+                  [
+                    {
+                      "alignItems": "center",
+                      "alignSelf": "flex-start",
+                      "borderRadius": 8,
+                      "justifyContent": "center",
+                      "overflow": "hidden",
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 2,
+                    },
+                    {
+                      "backgroundColor": "#E5E7EB",
+                      "borderColor": "#9CA3AF",
+                      "borderWidth": 1.25,
+                    },
+                    undefined,
+                  ]
+                }
+                testID="badge-container"
+              >
+                <Text
+                  style={
+                    [
+                      {
+                        "fontFamily": "Arimo",
+                        "fontSize": 12,
+                        "fontWeight": "400",
+                        "lineHeight": 16,
+                      },
+                      {
+                        "color": "#374151",
+                      },
+                      undefined,
+                    ]
+                  }
+                >
+                  refuge.condition.unknown
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={
+              {
+                "flexDirection": "row",
+                "gap": 16,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.altitude
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                2135m
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.capacity
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                50
+              </Text>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.occupation
+              </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                      "fontSize": 14,
+                      "fontWeight": "600",
+                      "marginTop": 4,
+                      "textAlign": "center",
+                    },
+                    {
+                      "fontSize": 12,
+                    },
+                  ]
+                }
+              >
+                refuge.details.seeOccupation
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
             }
           }
         >
@@ -1154,345 +2029,240 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
             style={
               {
                 "color": "#111827",
-                "fontSize": 24,
-                "fontWeight": "bold",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
               }
             }
           >
-            Refugi de Colomers
+            refuge.details.description
           </Text>
-          <View
-            style={
-              {
-                "flexDirection": "row",
-                "flexWrap": "wrap",
-              }
-            }
-          >
-            <View
+          <View>
+            <Text
+              numberOfLines={4}
               style={
-                [
-                  {
-                    "alignItems": "center",
-                    "alignSelf": "flex-start",
-                    "borderRadius": 8,
-                    "justifyContent": "center",
-                    "overflow": "hidden",
-                    "paddingHorizontal": 8,
-                    "paddingVertical": 2,
-                  },
-                  {
-                    "backgroundColor": "#D1FAE5",
-                    "borderColor": "#34D399",
-                    "borderWidth": 1.25,
-                  },
-                  {
-                    "marginRight": 8,
-                  },
-                ]
-              }
-              testID="badge-container"
-            >
-              <Text
-                style={
-                  [
-                    {
-                      "fontFamily": "Arimo",
-                      "fontSize": 12,
-                      "fontWeight": "400",
-                      "lineHeight": 16,
-                    },
-                    {
-                      "color": "#065F46",
-                    },
-                    undefined,
-                  ]
+                {
+                  "color": "#51555eff",
+                  "fontSize": 14,
+                  "lineHeight": 22,
+                  "textAlign": "justify",
                 }
-              >
-                refuge.type.noGuarded
-              </Text>
-            </View>
-            <View
-              style={
-                [
-                  {
-                    "alignItems": "center",
-                    "alignSelf": "flex-start",
-                    "borderRadius": 8,
-                    "justifyContent": "center",
-                    "overflow": "hidden",
-                    "paddingHorizontal": 8,
-                    "paddingVertical": 2,
-                  },
-                  {
-                    "backgroundColor": "#E5E7EB",
-                    "borderColor": "#9CA3AF",
-                    "borderWidth": 1.25,
-                  },
-                  undefined,
-                ]
               }
-              testID="badge-container"
             >
-              <Text
-                style={
-                  [
-                    {
-                      "fontFamily": "Arimo",
-                      "fontSize": 12,
-                      "fontWeight": "400",
-                      "lineHeight": 16,
-                    },
-                    {
-                      "color": "#374151",
-                    },
-                    undefined,
-                  ]
-                }
-              >
-                refuge.condition.unknown
-              </Text>
-            </View>
+              Un refugi preciós situat als Pirineus
+            </Text>
           </View>
         </View>
         <View
           style={
             {
-              "flexDirection": "row",
-              "gap": 16,
+              "marginBottom": 24,
             }
           }
         >
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.altitude
-            </Text>
-            <Text
-              style={
-                {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
-                }
-              }
-            >
-              2135m
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.capacity
-            </Text>
-            <Text
-              style={
-                {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
-                }
-              }
-            >
-              50
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.occupation
-            </Text>
-            <Text
-              style={
-                [
-                  {
-                    "color": "#111827",
-                    "fontSize": 14,
-                    "fontWeight": "600",
-                    "marginTop": 4,
-                    "textAlign": "center",
-                  },
-                  {
-                    "fontSize": 12,
-                  },
-                ]
-              }
-            >
-              refuge.details.seeOccupation
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.description
-        </Text>
-        <View>
           <Text
-            numberOfLines={4}
             style={
               {
-                "color": "#51555eff",
-                "fontSize": 14,
-                "lineHeight": 22,
-                "textAlign": "justify",
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
               }
             }
           >
-            Un refugi preciós situat als Pirineus
+            refuge.details.localisation
           </Text>
-        </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.localisation
-        </Text>
-        <View
-          style={
-            {
-              "alignItems": "center",
-              "backgroundColor": "#f9fafb",
-              "borderRadius": 12,
-              "flexDirection": "row",
-              "gap": 12,
-              "padding": 16,
-            }
-          }
-        >
           <View
             style={
               {
                 "alignItems": "center",
-                "flex": 1,
+                "backgroundColor": "#f9fafb",
+                "borderRadius": 12,
                 "flexDirection": "row",
                 "gap": 12,
+                "padding": 16,
               }
             }
           >
-            <test-file-stub
-              color="#FF6900"
-              height={16}
-              width={16}
-            />
-            <Text
+            <View
               style={
                 {
-                  "color": "#6b7280",
+                  "alignItems": "center",
                   "flex": 1,
-                  "fontSize": 12,
+                  "flexDirection": "row",
+                  "gap": 12,
                 }
               }
             >
-              (42.6497, 0.94560)
-            </Text>
+              <test-file-stub
+                color="#FF6900"
+                height={16}
+                width={16}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "flex": 1,
+                    "fontSize": 12,
+                  }
+                }
+              >
+                (42.6497, 0.94560)
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                }
+              }
+            >
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-gpx-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  GPX
+                </Text>
+              </View>
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-kml-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  KML
+                </Text>
+              </View>
+            </View>
           </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            refuge.details.prepareRoute
+          </Text>
           <View
             style={
               {
                 "flexDirection": "row",
+                "gap": 16,
               }
             }
           >
@@ -1527,32 +2297,42 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
               style={
                 {
                   "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
+                  "padding": 16,
                 }
               }
-              testID="download-gpx-button"
+              testID="weather-button"
             >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
+              <Image
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 48,
+                    "transform": [
+                      {
+                        "scaleX": -1,
+                      },
+                    ],
+                    "width": 48,
+                  }
+                }
               />
               <Text
                 style={
                   {
-                    "color": "#4A5565",
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
                     "fontSize": 12,
-                    "fontWeight": "500",
+                    "fontWeight": "400",
+                    "marginTop": 8,
                   }
                 }
               >
-                GPX
+                refuge.details.weather
               </Text>
             </View>
             <View
@@ -1586,61 +2366,45 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
               style={
                 {
                   "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
                   "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
+                  "padding": 16,
                 }
               }
-              testID="download-kml-button"
+              testID="routes-button"
             >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
+              <Image
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 48,
+                    "width": 48,
+                  }
+                }
               />
               <Text
                 style={
                   {
-                    "color": "#4A5565",
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
                     "fontSize": 12,
-                    "fontWeight": "500",
+                    "fontWeight": "400",
+                    "marginTop": 8,
                   }
                 }
               >
-                KML
+                refuge.details.nearbyRoutes
               </Text>
             </View>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.prepareRoute
-        </Text>
         <View
           style={
             {
-              "flexDirection": "row",
-              "gap": 16,
+              "marginBottom": 24,
             }
           }
         >
@@ -1675,140 +2439,147 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
             style={
               {
                 "alignItems": "center",
-                "backgroundColor": "#f9fafb",
+                "backgroundColor": "#F9FAFB",
                 "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
+                "flexDirection": "row",
+                "gap": 12,
                 "opacity": 1,
                 "padding": 16,
               }
             }
-            testID="weather-button"
           >
             <Image
               source="test-file-stub"
               style={
                 {
-                  "height": 48,
-                  "transform": [
-                    {
-                      "scaleX": -1,
-                    },
-                  ],
-                  "width": 48,
+                  "height": 24,
+                  "width": 24,
                 }
               }
             />
             <Text
               style={
                 {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
+                  "color": "#111827",
+                  "flex": 1,
+                  "fontSize": 14,
                   "fontWeight": "400",
-                  "marginTop": 8,
                 }
               }
             >
-              refuge.details.weather
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "opacity": 1,
-                "padding": 16,
-              }
-            }
-            testID="routes-button"
-          >
-            <Image
-              source="test-file-stub"
-              style={
-                {
-                  "height": 48,
-                  "width": 48,
-                }
-              }
-            />
-            <Text
-              style={
-                {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
-                  "fontWeight": "400",
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.nearbyRoutes
+              doubts.title
             </Text>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "borderRadius": 8,
-            "marginVertical": 12,
-            "padding": 12,
-          }
-        }
-      >
-        <Text
+        <View
           style={
             {
-              "color": "#f04b2eff",
-              "fontSize": 10,
-              "fontWeight": "500",
-              "justifyContent": "center",
-              "textAlign": "center",
+              "marginBottom": 24,
             }
           }
         >
-          refuge.details.information_not_precise
-        </Text>
-      </View>
-      <View
-        style={
-          {
-            "height": 10,
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            experiences.title
+          </Text>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#F9FAFB",
+                "borderRadius": 12,
+                "flexDirection": "row",
+                "gap": 12,
+                "opacity": 1,
+                "padding": 16,
+              }
+            }
+          >
+            <test-file-stub
+              color="#FF6000"
+              height={24}
+              width={24}
+            />
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "flex": 1,
+                  "fontSize": 14,
+                  "fontWeight": "400",
+                }
+              }
+            >
+              experiences.addFirst
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "borderRadius": 8,
+              "marginVertical": 12,
+              "padding": 12,
+            }
           }
-        }
-      />
+        >
+          <Text
+            style={
+              {
+                "color": "#f04b2eff",
+                "fontSize": 10,
+                "fontWeight": "500",
+                "justifyContent": "center",
+                "textAlign": "center",
+              }
+            }
+          >
+            refuge.details.information_not_precise
+          </Text>
+        </View>
+        <View
+          style={
+            {
+              "height": 10,
+            }
+          }
+        />
+      </View>
     </View>
   </RCTScrollView>
   <View
@@ -1819,10 +2590,11 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "flexDirection": "row",
           "position": "absolute",
           "right": 16,
+          "top": 18,
           "zIndex": 2000,
         },
         {
-          "top": 16,
+          "top": 18,
         },
       ]
     }
@@ -2010,7 +2782,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         },
         "shadowOpacity": 0.1,
         "shadowRadius": 8,
-        "top": 16,
+        "top": 18,
         "width": 40,
         "zIndex": 3000,
       }
@@ -2115,8 +2887,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
   <RCTScrollView
     contentContainerStyle={
       {
-        "paddingHorizontal": 16,
-        "paddingVertical": 24,
+        "paddingBottom": 24,
       }
     }
     showsVerticalScrollIndicator={false}
@@ -2131,39 +2902,444 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         style={
           {
             "height": 320,
-            "marginBottom": 16,
             "position": "relative",
+            "width": "100%",
           }
         }
       >
-        <Image
-          resizeMode="cover"
-          source={
-            {
-              "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-            }
-          }
+        <RCTScrollView
+          horizontal={true}
+          onScroll={[Function]}
+          pagingEnabled={true}
+          scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View>
+            <View
+              style={
+                {
+                  "height": 320,
+                  "position": "relative",
+                  "width": 750,
+                }
+              }
+            >
+              <Image
+                resizeMode="cover"
+                source={
+                  {
+                    "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                  }
+                }
+                style={
+                  {
+                    "alignSelf": "stretch",
+                    "height": 320,
+                    "width": 750,
+                  }
+                }
+              />
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "rgba(0, 0, 0, 0.4)",
+                    "bottom": 0,
+                    "gap": 16,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "paddingHorizontal": 32,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+              >
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": undefined,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 14,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 20,
+                        "width": 20,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.viewAll
+                  </Text>
+                </View>
+                <View
+                  accessibilityState={
+                    {
+                      "busy": undefined,
+                      "checked": undefined,
+                      "disabled": false,
+                      "expanded": undefined,
+                      "selected": undefined,
+                    }
+                  }
+                  accessibilityValue={
+                    {
+                      "max": undefined,
+                      "min": undefined,
+                      "now": undefined,
+                      "text": undefined,
+                    }
+                  }
+                  accessible={true}
+                  collapsable={false}
+                  focusable={true}
+                  onClick={[Function]}
+                  onResponderGrant={[Function]}
+                  onResponderMove={[Function]}
+                  onResponderRelease={[Function]}
+                  onResponderTerminate={[Function]}
+                  onResponderTerminationRequest={[Function]}
+                  onStartShouldSetResponder={[Function]}
+                  style={
+                    {
+                      "alignItems": "center",
+                      "backgroundColor": "rgba(128, 128, 128, 0.7)",
+                      "borderRadius": 8,
+                      "flexDirection": "row",
+                      "gap": 12,
+                      "justifyContent": "center",
+                      "maxWidth": 280,
+                      "opacity": 1,
+                      "paddingHorizontal": 24,
+                      "paddingVertical": 12,
+                      "width": "100%",
+                    }
+                  }
+                >
+                  <Image
+                    source="test-file-stub"
+                    style={
+                      {
+                        "height": 30,
+                        "width": 30,
+                      }
+                    }
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={
+                      {
+                        "color": "#FFFFFF",
+                        "fontSize": 16,
+                        "fontWeight": "600",
+                      }
+                    }
+                  >
+                    refuge.gallery.addPhoto
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </RCTScrollView>
+        <View
           style={
             {
-              "alignSelf": "stretch",
-              "borderRadius": 12,
-              "height": "100%",
-              "width": "100%",
+              "alignItems": "center",
+              "bottom": 16,
+              "flexDirection": "row",
+              "gap": 6,
+              "justifyContent": "center",
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
             }
           }
-        />
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "rgba(200, 200, 200, 0.5)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 6,
+                },
+                {
+                  "backgroundColor": "rgba(255, 255, 255, 0.9)",
+                  "borderRadius": 3,
+                  "height": 6,
+                  "width": 16,
+                },
+              ]
+            }
+          />
+        </View>
       </View>
       <View
         style={
           {
-            "marginBottom": 24,
+            "paddingHorizontal": 16,
+            "paddingTop": 16,
           }
         }
       >
         <View
           style={
             {
-              "marginBottom": 16,
+              "marginBottom": 24,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "marginBottom": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "fontSize": 24,
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Refugi Mínim
+            </Text>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                  "flexWrap": "wrap",
+                }
+              }
+            />
+          </View>
+          <View
+            style={
+              {
+                "flexDirection": "row",
+                "gap": 16,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.altitude
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                N/A
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.capacity
+              </Text>
+              <Text
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "marginTop": 4,
+                    "textAlign": "center",
+                  }
+                }
+              >
+                undefined
+              </Text>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "padding": 16,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={24}
+                width={24}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 12,
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.occupation
+              </Text>
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                      "fontSize": 14,
+                      "fontWeight": "600",
+                      "marginTop": 4,
+                      "textAlign": "center",
+                    },
+                    {
+                      "fontSize": 12,
+                    },
+                  ]
+                }
+              >
+                refuge.details.seeOccupation
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
             }
           }
         >
@@ -2171,561 +3347,522 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
             style={
               {
                 "color": "#111827",
-                "fontSize": 24,
-                "fontWeight": "bold",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
               }
             }
           >
-            Refugi Mínim
+            refuge.details.localisation
+          </Text>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#f9fafb",
+                "borderRadius": 12,
+                "flexDirection": "row",
+                "gap": 12,
+                "padding": 16,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "flex": 1,
+                  "flexDirection": "row",
+                  "gap": 12,
+                }
+              }
+            >
+              <test-file-stub
+                color="#FF6900"
+                height={16}
+                width={16}
+              />
+              <Text
+                style={
+                  {
+                    "color": "#6b7280",
+                    "flex": 1,
+                    "fontSize": 12,
+                  }
+                }
+              >
+                (42.0000, 1.00000)
+              </Text>
+            </View>
+            <View
+              style={
+                {
+                  "flexDirection": "row",
+                }
+              }
+            >
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-gpx-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  GPX
+                </Text>
+              </View>
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "alignItems": "center",
+                    "backgroundColor": "transparent",
+                    "borderRadius": 6,
+                    "flexDirection": "row",
+                    "gap": 4,
+                    "opacity": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 6,
+                  }
+                }
+                testID="download-kml-button"
+              >
+                <test-file-stub
+                  color="#4A5565"
+                  height={14}
+                  width={14}
+                />
+                <Text
+                  style={
+                    {
+                      "color": "#4A5565",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    }
+                  }
+                >
+                  KML
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            refuge.details.prepareRoute
           </Text>
           <View
             style={
               {
                 "flexDirection": "row",
-                "flexWrap": "wrap",
-              }
-            }
-          />
-        </View>
-        <View
-          style={
-            {
-              "flexDirection": "row",
-              "gap": 16,
-            }
-          }
-        >
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
+                "gap": 16,
               }
             }
           >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
+            <View
+              accessibilityState={
                 {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
                 }
               }
-            >
-              refuge.details.altitude
-            </Text>
-            <Text
-              style={
+              accessibilityValue={
                 {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
                 }
               }
-            >
-              N/A
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
               style={
                 {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "padding": 16,
                 }
               }
+              testID="weather-button"
             >
-              refuge.details.capacity
-            </Text>
-            <Text
-              style={
-                {
-                  "color": "#111827",
-                  "fontSize": 14,
-                  "fontWeight": "600",
-                  "marginTop": 4,
-                  "textAlign": "center",
-                }
-              }
-            >
-              undefined
-            </Text>
-          </View>
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "padding": 16,
-              }
-            }
-          >
-            <test-file-stub
-              color="#FF6900"
-              height={24}
-              width={24}
-            />
-            <Text
-              style={
-                {
-                  "color": "#6b7280",
-                  "fontSize": 12,
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.occupation
-            </Text>
-            <Text
-              style={
-                [
+              <Image
+                source="test-file-stub"
+                style={
                   {
-                    "color": "#111827",
-                    "fontSize": 14,
-                    "fontWeight": "600",
-                    "marginTop": 4,
-                    "textAlign": "center",
-                  },
+                    "height": 48,
+                    "transform": [
+                      {
+                        "scaleX": -1,
+                      },
+                    ],
+                    "width": 48,
+                  }
+                }
+              />
+              <Text
+                style={
                   {
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
                     "fontSize": 12,
-                  },
-                ]
+                    "fontWeight": "400",
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.weather
+              </Text>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
               }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#f9fafb",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "padding": 16,
+                }
+              }
+              testID="routes-button"
             >
-              refuge.details.seeOccupation
-            </Text>
+              <Image
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 48,
+                    "width": 48,
+                  }
+                }
+              />
+              <Text
+                style={
+                  {
+                    "color": "#000000ff",
+                    "fontFamily": "Arimo",
+                    "fontSize": 12,
+                    "fontWeight": "400",
+                    "marginTop": 8,
+                  }
+                }
+              >
+                refuge.details.nearbyRoutes
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.description
-        </Text>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.localisation
-        </Text>
         <View
           style={
             {
-              "alignItems": "center",
-              "backgroundColor": "#f9fafb",
-              "borderRadius": 12,
-              "flexDirection": "row",
-              "gap": 12,
-              "padding": 16,
+              "marginBottom": 24,
             }
           }
         >
           <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
             style={
               {
                 "alignItems": "center",
-                "flex": 1,
+                "backgroundColor": "#F9FAFB",
+                "borderRadius": 12,
                 "flexDirection": "row",
                 "gap": 12,
+                "opacity": 1,
+                "padding": 16,
+              }
+            }
+          >
+            <Image
+              source="test-file-stub"
+              style={
+                {
+                  "height": 24,
+                  "width": 24,
+                }
+              }
+            />
+            <Text
+              style={
+                {
+                  "color": "#111827",
+                  "flex": 1,
+                  "fontSize": 14,
+                  "fontWeight": "400",
+                }
+              }
+            >
+              doubts.title
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "marginBottom": 24,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#111827",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 12,
+              }
+            }
+          >
+            experiences.title
+          </Text>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#F9FAFB",
+                "borderRadius": 12,
+                "flexDirection": "row",
+                "gap": 12,
+                "opacity": 1,
+                "padding": 16,
               }
             }
           >
             <test-file-stub
-              color="#FF6900"
-              height={16}
-              width={16}
+              color="#FF6000"
+              height={24}
+              width={24}
             />
             <Text
               style={
                 {
-                  "color": "#6b7280",
+                  "color": "#111827",
                   "flex": 1,
-                  "fontSize": 12,
+                  "fontSize": 14,
+                  "fontWeight": "400",
                 }
               }
             >
-              (42.0000, 1.00000)
+              experiences.addFirst
             </Text>
           </View>
-          <View
-            style={
-              {
-                "flexDirection": "row",
-              }
-            }
-          >
-            <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
-                  "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
-                }
-              }
-              testID="download-gpx-button"
-            >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
-              />
-              <Text
-                style={
-                  {
-                    "color": "#4A5565",
-                    "fontSize": 12,
-                    "fontWeight": "500",
-                  }
-                }
-              >
-                GPX
-              </Text>
-            </View>
-            <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "borderRadius": 6,
-                  "flexDirection": "row",
-                  "gap": 4,
-                  "opacity": 1,
-                  "paddingHorizontal": 8,
-                  "paddingVertical": 6,
-                }
-              }
-              testID="download-kml-button"
-            >
-              <test-file-stub
-                color="#4A5565"
-                height={14}
-                width={14}
-              />
-              <Text
-                style={
-                  {
-                    "color": "#4A5565",
-                    "fontSize": 12,
-                    "fontWeight": "500",
-                  }
-                }
-              >
-                KML
-              </Text>
-            </View>
-          </View>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "marginBottom": 24,
-          }
-        }
-      >
-        <Text
-          style={
-            {
-              "color": "#111827",
-              "fontSize": 16,
-              "fontWeight": "600",
-              "marginBottom": 12,
-            }
-          }
-        >
-          refuge.details.prepareRoute
-        </Text>
         <View
           style={
             {
-              "flexDirection": "row",
-              "gap": 16,
+              "borderRadius": 8,
+              "marginVertical": 12,
+              "padding": 12,
             }
           }
         >
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
+          <Text
             style={
               {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
+                "color": "#f04b2eff",
+                "fontSize": 10,
+                "fontWeight": "500",
                 "justifyContent": "center",
-                "opacity": 1,
-                "padding": 16,
+                "textAlign": "center",
               }
             }
-            testID="weather-button"
           >
-            <Image
-              source="test-file-stub"
-              style={
-                {
-                  "height": 48,
-                  "transform": [
-                    {
-                      "scaleX": -1,
-                    },
-                  ],
-                  "width": 48,
-                }
-              }
-            />
-            <Text
-              style={
-                {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
-                  "fontWeight": "400",
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.weather
-            </Text>
-          </View>
-          <View
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "#f9fafb",
-                "borderRadius": 12,
-                "flex": 1,
-                "justifyContent": "center",
-                "opacity": 1,
-                "padding": 16,
-              }
-            }
-            testID="routes-button"
-          >
-            <Image
-              source="test-file-stub"
-              style={
-                {
-                  "height": 48,
-                  "width": 48,
-                }
-              }
-            />
-            <Text
-              style={
-                {
-                  "color": "#000000ff",
-                  "fontFamily": "Arimo",
-                  "fontSize": 12,
-                  "fontWeight": "400",
-                  "marginTop": 8,
-                }
-              }
-            >
-              refuge.details.nearbyRoutes
-            </Text>
-          </View>
+            refuge.details.information_not_precise
+          </Text>
         </View>
-      </View>
-      <View
-        style={
-          {
-            "borderRadius": 8,
-            "marginVertical": 12,
-            "padding": 12,
-          }
-        }
-      >
-        <Text
+        <View
           style={
             {
-              "color": "#f04b2eff",
-              "fontSize": 10,
-              "fontWeight": "500",
-              "justifyContent": "center",
-              "textAlign": "center",
+              "height": 10,
             }
           }
-        >
-          refuge.details.information_not_precise
-        </Text>
+        />
       </View>
-      <View
-        style={
-          {
-            "height": 10,
-          }
-        }
-      />
     </View>
   </RCTScrollView>
   <View
@@ -2736,10 +3873,11 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
           "flexDirection": "row",
           "position": "absolute",
           "right": 16,
+          "top": 18,
           "zIndex": 2000,
         },
         {
-          "top": 16,
+          "top": 18,
         },
       ]
     }
@@ -2927,7 +4065,7 @@ exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb e
         },
         "shadowOpacity": 0.1,
         "shadowRadius": 8,
-        "top": 16,
+        "top": 18,
         "width": 40,
         "zIndex": 3000,
       }

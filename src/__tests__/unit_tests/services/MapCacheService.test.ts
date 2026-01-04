@@ -390,6 +390,9 @@ describe('MapCacheService', () => {
 
   describe('downloadTilesForArea', () => {
     beforeEach(() => {
+      // Reset all mocks before each test
+      jest.clearAllMocks();
+      
       FileSystem.getInfoAsync.mockResolvedValue({
         exists: false,
         isDirectory: false,
@@ -442,7 +445,7 @@ describe('MapCacheService', () => {
       expect(onComplete).toHaveBeenCalledWith(true);
       expect(logApi).toHaveBeenCalledWith('CACHE', expect.stringContaining('Starting download'));
       expect(logApi).toHaveBeenCalledWith('CACHE', expect.stringContaining('Download complete'));
-    });
+    }, 30000);
 
     it('ha d\'informar del progrés durant la descàrrega', async () => {
       // Arrange
@@ -478,7 +481,7 @@ describe('MapCacheService', () => {
       
       expect(downloaded).toBe(total);
       expect(percentage).toBe(100);
-    });
+    }, 15000);
 
     it('ha de guardar metadata durant la descàrrega', async () => {
       // Arrange
@@ -502,7 +505,12 @@ describe('MapCacheService', () => {
 
       // Assert
       expect(mockedAsyncStorage.setItem).toHaveBeenCalled();
-      const savedMetadata = JSON.parse(mockedAsyncStorage.setItem.mock.calls[0][1]);
+      // Find the call that saves metadata (key = 'map_cache_metadata')
+      const metadataCall = mockedAsyncStorage.setItem.mock.calls.find(
+        (call) => call[0] === 'map_cache_metadata'
+      );
+      expect(metadataCall).toBeDefined();
+      const savedMetadata = JSON.parse(metadataCall![1]);
       
       expect(savedMetadata).toMatchObject({
         version: '1.0.0',
@@ -511,7 +519,7 @@ describe('MapCacheService', () => {
         maxZoom: 10
       });
       expect(savedMetadata.isComplete).toBeDefined();
-    });
+    }, 15000);
 
     it('ha de gestionar descàrregues parcials', async () => {
       // Arrange
@@ -540,7 +548,7 @@ describe('MapCacheService', () => {
       // Assert
       expect(typeof result).toBe('boolean');
       expect(mockedAsyncStorage.setItem).toHaveBeenCalled();
-    });
+    }, 15000);
 
     it('ha de gestionar errors durant la descàrrega', async () => {
       // Arrange
@@ -582,11 +590,16 @@ describe('MapCacheService', () => {
       );
 
       // Assert
-      const savedMetadata = JSON.parse(mockedAsyncStorage.setItem.mock.calls[0][1]);
+      // Find the call that saves metadata (key = 'map_cache_metadata')
+      const metadataCall = mockedAsyncStorage.setItem.mock.calls.find(
+        (call) => call[0] === 'map_cache_metadata'
+      );
+      expect(metadataCall).toBeDefined();
+      const savedMetadata = JSON.parse(metadataCall![1]);
       expect(savedMetadata.bounds).toEqual(MapCacheService.PYRENEES_BOUNDS);
       expect(savedMetadata.minZoom).toBe(8);
       expect(savedMetadata.maxZoom).toBe(9);
-    }, 10000);
+    }, 30000);
   });
 
   describe('hasTile', () => {

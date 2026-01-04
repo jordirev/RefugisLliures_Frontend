@@ -10,6 +10,73 @@
  * - Casos límit
  */
 
+// Mock d'expo-image-picker (ha d'anar ABANS dels imports)
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  launchCameraAsync: jest.fn(),
+  requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  requestCameraPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  MediaTypeOptions: {
+    Images: 'Images',
+    Videos: 'Videos',
+    All: 'All',
+  },
+}));
+
+// Mock d'expo-file-system/legacy
+jest.mock('expo-file-system/legacy', () => ({
+  documentDirectory: '/mock/documents/',
+  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
+  EncodingType: {
+    UTF8: 'utf8',
+  },
+}));
+
+// Mock d'expo-sharing
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Mock d'expo-video
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+  })),
+}));
+
+// Mock de PhotoViewerModal
+jest.mock('../../../components/PhotoViewerModal', () => ({
+  PhotoViewerModal: () => null,
+}));
+
+// Mock de RefugeOccupationModal
+jest.mock('../../../components/RefugeOccupationModal', () => ({
+  RefugeOccupationModal: () => null,
+}));
+
+// Mock de useRefugeVisitsQuery
+jest.mock('../../../hooks/useRefugeVisitsQuery', () => ({
+  useRefugeVisits: () => ({
+    data: [],
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+}));
+
+// Mock de @react-navigation/native
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({
+    navigate: jest.fn(),
+    goBack: jest.fn(),
+  }),
+  useFocusEffect: jest.fn((callback) => callback()),
+}));
+
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { RefugeDetailScreen } from '../../../screens/RefugeDetailScreen';
@@ -45,6 +112,35 @@ jest.mock('../../../hooks/useTranslation', () => ({
   }),
 }));
 
+// Mock de useAuth
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    firebaseUser: { uid: 'test-uid' },
+    backendUser: null,
+    favouriteRefugeIds: [],
+    visitedRefugeIds: [],
+    setFavouriteRefugeIds: jest.fn(),
+    setVisitedRefugeIds: jest.fn(),
+    isLoading: false,
+    isAuthenticated: true,
+    isOfflineMode: false,
+    authToken: 'mock-token',
+    login: jest.fn(),
+    loginWithGoogle: jest.fn(),
+    signup: jest.fn(),
+    logout: jest.fn(),
+    deleteAccount: jest.fn(),
+    refreshToken: jest.fn(),
+    reloadUser: jest.fn(),
+    refreshUserData: jest.fn(),
+    changePassword: jest.fn(),
+    changeEmail: jest.fn(),
+    updateUsername: jest.fn(),
+    enterOfflineMode: jest.fn(),
+    exitOfflineMode: jest.fn(),
+  }),
+}));
+
 // Mock de useFavourite
 jest.mock('../../../hooks/useFavourite', () => ({
   __esModule: true,
@@ -55,6 +151,69 @@ jest.mock('../../../hooks/useFavourite', () => ({
 jest.mock('../../../hooks/useVisited', () => ({
   __esModule: true,
   default: jest.fn(),
+}));
+
+// Mock de useRefugesQuery - amb dades controlables
+const mockUseRefuge = jest.fn();
+jest.mock('../../../hooks/useRefugesQuery', () => ({
+  useRefuge: () => mockUseRefuge(),
+  useAllRefuges: () => ({
+    data: [],
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+}));
+
+// Mock de useUsersQuery
+jest.mock('../../../hooks/useUsersQuery', () => ({
+  useFavouriteRefuges: () => ({
+    data: [],
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+  useAddFavouriteRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useRemoveFavouriteRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useAddVisitedRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useRemoveVisitedRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+}));
+
+// Mock de useExperiencesQuery
+jest.mock('../../../hooks/useExperiencesQuery', () => ({
+  useExperiences: () => ({
+    data: [],
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+  useDeleteExperience: () => ({
+    mutate: jest.fn(),
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useUpdateExperience: () => ({
+    mutate: jest.fn(),
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useCreateExperience: () => ({
+    mutate: jest.fn(),
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
 }));
 
 // Mock de useCustomAlert
@@ -99,6 +258,14 @@ describe('RefugeDetailScreen Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
+    // Set default useRefuge mock to return refuge data
+    mockUseRefuge.mockReturnValue({
+      data: { ...baseRefuge },
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
+    
     mockUseFavourite.mockReturnValue({
       isFavourite: false,
       toggleFavourite: mockToggleFavourite,
@@ -120,7 +287,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar el nom del refugi', () => {
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -133,7 +300,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar la descripció', () => {
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -146,7 +313,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar l\'altitud', () => {
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -160,7 +327,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar el nombre de places', () => {
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -173,7 +340,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar les coordenades', () => {
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -196,7 +363,7 @@ describe('RefugeDetailScreen Component', () => {
 
       const { UNSAFE_root } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -215,7 +382,7 @@ describe('RefugeDetailScreen Component', () => {
 
       const { UNSAFE_root } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -230,7 +397,7 @@ describe('RefugeDetailScreen Component', () => {
 
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -251,7 +418,7 @@ describe('RefugeDetailScreen Component', () => {
 
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -271,7 +438,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de cridar onBack quan es fa click al botó', () => {
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -289,7 +456,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de mostrar alerta de confirmació per descarregar GPX', () => {
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -309,7 +476,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de mostrar alerta de confirmació per descarregar KML', () => {
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -331,7 +498,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar el botó de Windy', () => {
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -349,7 +516,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de renderitzar el botó de Wikiloc', () => {
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -365,52 +532,19 @@ describe('RefugeDetailScreen Component', () => {
     });
   });
 
-  describe.skip('Botó d\'edició', () => {
-    it('hauria de cridar onEdit si es proporciona', () => {
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-          onEdit={mockOnEdit}
-        />
-      );
-      
-      const editButton = getByTestId('edit-button');
-      fireEvent.press(editButton);
-      
-      expect(mockOnEdit).toHaveBeenCalledWith(baseRefuge);
-    });
-
-    it('hauria de mostrar alerta si onEdit no es proporciona', () => {
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-      
-      const editButton = getByTestId('edit-button');
-      fireEvent.press(editButton);
-      
-      expect(mockShowAlert).toHaveBeenCalledWith(
-        'Editar',
-        'Editant Refugi de Colomers'
-      );
-    });
-  });
-
   describe('Descripció expandible', () => {
     it('hauria de mostrar botó "Llegir més" si la descripció és llarga', () => {
       const longDescription = 'A'.repeat(300);
-      const refugeWithLongDesc = { ...baseRefuge, description: longDescription };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, description: longDescription },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={refugeWithLongDesc}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -424,11 +558,16 @@ describe('RefugeDetailScreen Component', () => {
 
   describe('Casos límit', () => {
     it('hauria de gestionar refugi sense descripció', () => {
-      const refugeWithoutDesc = { ...baseRefuge, description: undefined };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, description: undefined },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { queryByText } = render(
         <RefugeDetailScreen
-          refuge={refugeWithoutDesc}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -439,11 +578,16 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar refugi sense altitud', () => {
-      const refugeWithoutAltitude = { ...baseRefuge, altitude: undefined };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, altitude: undefined },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { queryByText } = render(
         <RefugeDetailScreen
-          refuge={refugeWithoutAltitude}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -454,11 +598,16 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar refugi sense imatge', () => {
-      const refugeWithoutImage = { ...baseRefuge, imageUrl: undefined };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, imageUrl: undefined },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { UNSAFE_root } = render(
         <RefugeDetailScreen
-          refuge={refugeWithoutImage}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -470,11 +619,16 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar refugi amb altitud 0', () => {
-      const refugeAtSeaLevel = { ...baseRefuge, altitude: 0 };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, altitude: 0 },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { getByText } = render(
         <RefugeDetailScreen
-          refuge={refugeAtSeaLevel}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -486,27 +640,37 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar refugi sense id', () => {
-      const refugeWithoutId = { ...baseRefuge, id: undefined };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, id: undefined },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { UNSAFE_root } = render(
         <RefugeDetailScreen
-          refuge={refugeWithoutId}
+          refugeId=""
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
         />
       );
       
-      expect(mockUseFavourite).toHaveBeenCalledWith(undefined);
+      expect(mockUseFavourite).toHaveBeenCalledWith('');
       expect(UNSAFE_root).toBeTruthy();
     });
 
     it('hauria de gestionar noms amb caràcters especials per descàrregues', () => {
-      const refugeSpecialName = { ...baseRefuge, name: 'Refugi d\'Amitges / Test' };
+      mockUseRefuge.mockReturnValue({
+        data: { ...baseRefuge, name: 'Refugi d\'Amitges / Test' },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
       
       const { getByTestId } = render(
         <RefugeDetailScreen
-          refuge={refugeSpecialName}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -525,7 +689,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de aplicar safe area insets correctament', () => {
       const { UNSAFE_root } = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -540,7 +704,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de coincidir amb el snapshot amb totes les dades', () => {
       const tree = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -558,9 +722,16 @@ describe('RefugeDetailScreen Component', () => {
         coord: { long: 1, lat: 42 },
       };
       
+      mockUseRefuge.mockReturnValue({
+        data: minimalRefuge,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      });
+      
       const tree = render(
         <RefugeDetailScreen
-          refuge={minimalRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
@@ -579,377 +750,13 @@ describe('RefugeDetailScreen Component', () => {
 
       const tree = render(
         <RefugeDetailScreen
-          refuge={baseRefuge}
+          refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
         />
       ).toJSON();
       
-      expect(tree).toMatchSnapshot();
-    });
-  });
-
-  describe.skip('Funcionalitat de refugis visitats', () => {
-    it('hauria de cridar useVisited amb l\'ID del refugi', () => {
-      render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      expect(mockUseVisited).toHaveBeenCalledWith(baseRefuge.id);
-    });
-
-    it('hauria de mostrar el botó de visitat com a no marcat inicialment', () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: false,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      expect(visitedButton).toBeTruthy();
-    });
-
-    it('hauria de mostrar el botó de visitat com a marcat si el refugi està visitat', () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: true,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      expect(visitedButton).toBeTruthy();
-    });
-
-    it('hauria de cridar toggleVisited quan es prem el botó', async () => {
-      mockToggleVisited.mockResolvedValue(undefined);
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      fireEvent.press(visitedButton);
-
-      await waitFor(() => {
-        expect(mockToggleVisited).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    it('hauria de mostrar estat de processament mentre s\'està marcant com a visitat', () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: false,
-        toggleVisited: mockToggleVisited,
-        isProcessing: true,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      expect(visitedButton).toBeTruthy();
-      // El botó hauria de mostrar un indicador de càrrega o estar desactivat
-    });
-
-    it('hauria de gestionar errors en marcar com a visitat', async () => {
-      const error = new Error('Network error');
-      mockToggleVisited.mockRejectedValue(error);
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      fireEvent.press(visitedButton);
-
-      await waitFor(() => {
-        expect(mockToggleVisited).toHaveBeenCalled();
-      });
-
-      // Hauria de mostrar un error o mantenir l'estat anterior
-      expect(mockShowAlert).toHaveBeenCalled();
-    });
-
-    it('hauria de canviar l\'estat visual quan es marca com a visitat', async () => {
-      let isVisitedState = false;
-      
-      mockUseVisited.mockImplementation(() => ({
-        isVisited: isVisitedState,
-        toggleVisited: async () => {
-          isVisitedState = true;
-          return Promise.resolve();
-        },
-        isProcessing: false,
-      }));
-
-      const { getByTestId, rerender } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      fireEvent.press(visitedButton);
-
-      await waitFor(() => {
-        expect(visitedButton).toBeTruthy();
-      });
-    });
-
-    it('no hauria de permetre múltiples clicks mentre està processant', async () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: false,
-        toggleVisited: mockToggleVisited,
-        isProcessing: true,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const visitedButton = getByTestId('visited-button');
-      
-      // Intentar fer múltiples clicks
-      fireEvent.press(visitedButton);
-      fireEvent.press(visitedButton);
-      fireEvent.press(visitedButton);
-
-      // No hauria de cridar toggleVisited mentre està processant
-      expect(mockToggleVisited).not.toHaveBeenCalled();
-    });
-  });
-
-  describe.skip('Integració favorits i visitats', () => {
-    it('hauria de permetre que un refugi sigui favorit i visitat alhora', () => {
-      mockUseFavourite.mockReturnValue({
-        isFavourite: true,
-        toggleFavourite: mockToggleFavourite,
-        isProcessing: false,
-      });
-
-      mockUseVisited.mockReturnValue({
-        isVisited: true,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      expect(getByTestId('favorite-button')).toBeTruthy();
-      expect(getByTestId('visited-button')).toBeTruthy();
-    });
-
-    it.skip('hauria de mantenir estats independents per favorit i visitat', async () => {
-      mockUseFavourite.mockReturnValue({
-        isFavourite: false,
-        toggleFavourite: mockToggleFavourite,
-        isProcessing: false,
-      });
-
-      mockUseVisited.mockReturnValue({
-        isVisited: true,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const favoriteButton = getByTestId('favorite-button');
-      // const visitedButton = getByTestId('visited-button');
-
-      // Marcar com a favorit no hauria d'afectar visitat
-      fireEvent.press(favoriteButton);
-
-      await waitFor(() => {
-        expect(mockToggleFavourite).toHaveBeenCalled();
-        expect(mockToggleVisited).not.toHaveBeenCalled();
-      });
-    });
-
-    it.skip('hauria de gestionar errors independentment per cada funció', async () => {
-      const favoriteError = new Error('Favorite error');
-      const visitedError = new Error('Visited error');
-
-      mockToggleFavourite.mockRejectedValue(favoriteError);
-      mockToggleVisited.mockRejectedValue(visitedError);
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      const favoriteButton = getByTestId('favorite-button');
-      // const visitedButton = getByTestId('visited-button');
-
-      // Error en favorit no hauria d'afectar visitat
-      fireEvent.press(favoriteButton);
-      await waitFor(() => {
-        expect(mockToggleFavourite).toHaveBeenCalled();
-      });
-
-      // TODO: Implement visited button feature
-      // I viceversa
-      // fireEvent.press(visitedButton);
-      // await waitFor(() => {
-      //   expect(mockToggleVisited).toHaveBeenCalled();
-      // });
-    });
-
-    it.skip('hauria de poder processar ambdós estats simultàniament', () => {
-      mockUseFavourite.mockReturnValue({
-        isFavourite: false,
-        toggleFavourite: mockToggleFavourite,
-        isProcessing: true,
-      });
-
-      mockUseVisited.mockReturnValue({
-        isVisited: false,
-        toggleVisited: mockToggleVisited,
-        isProcessing: true,
-      });
-
-      const { getByTestId } = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      // Ambdós botons haurien d'estar en estat de processament
-      expect(getByTestId('favorite-button')).toBeTruthy();
-      // TODO: Implement visited button feature
-      // expect(getByTestId('visited-button')).toBeTruthy();
-    });
-  });
-
-  describe.skip('Snapshot amb refugis visitats', () => {
-    it('hauria de coincidir amb el snapshot amb refugi visitat', () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: true,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const tree = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      ).toJSON();
-
-      expect(tree).toMatchSnapshot();
-    });
-
-    it('hauria de coincidir amb el snapshot amb refugi favorit i visitat', () => {
-      mockUseFavourite.mockReturnValue({
-        isFavourite: true,
-        toggleFavourite: mockToggleFavourite,
-        isProcessing: false,
-      });
-
-      mockUseVisited.mockReturnValue({
-        isVisited: true,
-        toggleVisited: mockToggleVisited,
-        isProcessing: false,
-      });
-
-      const tree = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      ).toJSON();
-
-      expect(tree).toMatchSnapshot();
-    });
-
-    it('hauria de coincidir amb el snapshot amb visitat processant', () => {
-      mockUseVisited.mockReturnValue({
-        isVisited: false,
-        toggleVisited: mockToggleVisited,
-        isProcessing: true,
-      });
-
-      const tree = render(
-        <RefugeDetailScreen
-          refuge={baseRefuge}
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      ).toJSON();
-
       expect(tree).toMatchSnapshot();
     });
   });
