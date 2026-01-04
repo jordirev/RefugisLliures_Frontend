@@ -13,6 +13,10 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
+  // Force exit to handle worker processes that don't exit cleanly
+  forceExit: true,
+  // Run tests in a single worker to reduce open handle issues
+  maxWorkers: '50%',
   moduleNameMapper: {
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',

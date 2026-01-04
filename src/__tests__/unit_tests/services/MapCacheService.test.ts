@@ -389,9 +389,33 @@ describe('MapCacheService', () => {
   });
 
   describe('downloadTilesForArea', () => {
+    // Mock global fetch for downloadRefuges
+    const mockFetch = jest.fn();
+    const originalFetch = global.fetch;
+
+    beforeAll(() => {
+      global.fetch = mockFetch;
+      jest.useFakeTimers();
+    });
+
+    afterAll(() => {
+      global.fetch = originalFetch;
+      jest.useRealTimers();
+    });
+
     beforeEach(() => {
       // Reset all mocks before each test
       jest.clearAllMocks();
+      
+      // Mock fetch for downloadRefuges
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            { id: 1, name: 'Refugi Test', coord: { lat: 42.5, long: 1.5 }, geohash: 'sp3e' }
+          ]
+        })
+      });
       
       FileSystem.getInfoAsync.mockResolvedValue({
         exists: false,
@@ -408,6 +432,7 @@ describe('MapCacheService', () => {
         md5: ''
       });
       mockedAsyncStorage.setItem.mockResolvedValue(undefined);
+      mockedAsyncStorage.getItem.mockResolvedValue(null);
     });
 
     it('ha de descarregar tots els tiles d\'una àrea amb èxit', async () => {
@@ -430,14 +455,19 @@ describe('MapCacheService', () => {
       const onProgress = jest.fn();
       const onComplete = jest.fn();
 
-      // Act
-      const result = await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10,
         onProgress,
         onComplete
       );
+
+      // Advance all timers to completion
+      await jest.runAllTimersAsync();
+      
+      const result = await resultPromise;
 
       // Assert
       expect(result).toBe(true);
@@ -466,13 +496,16 @@ describe('MapCacheService', () => {
 
       const onProgress = jest.fn();
 
-      // Act
-      await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10,
         onProgress
       );
+
+      await jest.runAllTimersAsync();
+      await resultPromise;
 
       // Assert
       expect(onProgress).toHaveBeenCalled();
@@ -500,8 +533,11 @@ describe('MapCacheService', () => {
         modificationTime: Date.now()
       });
 
-      // Act
-      await MapCacheService.downloadTilesForArea(smallBounds, 10, 10);
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(smallBounds, 10, 10);
+
+      await jest.runAllTimersAsync();
+      await resultPromise;
 
       // Assert
       expect(mockedAsyncStorage.setItem).toHaveBeenCalled();
@@ -538,12 +574,15 @@ describe('MapCacheService', () => {
         modificationTime: Date.now()
       });
 
-      // Act
-      const result = await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10
       );
+
+      await jest.runAllTimersAsync();
+      const result = await resultPromise;
 
       // Assert
       expect(typeof result).toBe('boolean');
@@ -583,11 +622,14 @@ describe('MapCacheService', () => {
       });
 
       // Act - with reduced zoom to speed up test
-      await MapCacheService.downloadTilesForArea(
+      const resultPromise = MapCacheService.downloadTilesForArea(
         MapCacheService.PYRENEES_BOUNDS,
         8,
         9
       );
+
+      await jest.runAllTimersAsync();
+      await resultPromise;
 
       // Assert
       // Find the call that saves metadata (key = 'map_cache_metadata')

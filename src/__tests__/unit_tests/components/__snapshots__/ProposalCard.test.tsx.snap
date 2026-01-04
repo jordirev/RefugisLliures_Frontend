@@ -1,0 +1,361 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProposalCard Component Snapshots hauria de coincidir amb el snapshot amb status approved 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#FFFFFF",
+      "borderColor": "#E5E7EB",
+      "borderRadius": 12,
+      "borderWidth": 1,
+      "elevation": 3,
+      "marginBottom": 12,
+      "opacity": 1,
+      "padding": 16,
+      "shadowColor": "#000000ff",
+      "shadowOffset": {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 4,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "flex-start",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "marginBottom": 12,
+      }
+    }
+  >
+    <Text
+      ellipsizeMode="tail"
+      numberOfLines={1}
+      style={
+        {
+          "color": "#111827",
+          "flex": 1,
+          "fontFamily": "Arimo",
+          "fontSize": 18,
+          "fontWeight": "700",
+          "marginRight": 12,
+        }
+      }
+    >
+      Refugi Original
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#99a1afff",
+          "fontSize": 12,
+          "fontWeight": "400",
+        }
+      }
+    >
+      15/06/2025
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 8,
+        "marginBottom": 12,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#FEF3C7",
+            "borderColor": "#FCD34D",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#92400E",
+            },
+            undefined,
+          ]
+        }
+      >
+        proposals.actions.update
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#D1FAE5",
+            "borderColor": "#6EE7B7",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#065F46",
+            },
+            undefined,
+          ]
+        }
+      >
+        proposals.status.approved
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`ProposalCard Component Snapshots hauria de coincidir amb el snapshot en mode bàsic 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "backgroundColor": "#FFFFFF",
+      "borderColor": "#E5E7EB",
+      "borderRadius": 12,
+      "borderWidth": 1,
+      "elevation": 3,
+      "marginBottom": 12,
+      "opacity": 1,
+      "padding": 16,
+      "shadowColor": "#000000ff",
+      "shadowOffset": {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.1,
+      "shadowRadius": 4,
+    }
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "flex-start",
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "marginBottom": 12,
+      }
+    }
+  >
+    <Text
+      ellipsizeMode="tail"
+      numberOfLines={1}
+      style={
+        {
+          "color": "#111827",
+          "flex": 1,
+          "fontFamily": "Arimo",
+          "fontSize": 18,
+          "fontWeight": "700",
+          "marginRight": 12,
+        }
+      }
+    >
+      Refugi Original
+    </Text>
+    <Text
+      style={
+        {
+          "color": "#99a1afff",
+          "fontSize": 12,
+          "fontWeight": "400",
+        }
+      }
+    >
+      15/06/2025
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 8,
+        "marginBottom": 12,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#DBEAFE",
+            "borderColor": "#93C5FD",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#1E40AF",
+            },
+            undefined,
+          ]
+        }
+      >
+        proposals.actions.create
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#E0E7FF",
+            "borderColor": "#A5B4FC",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#3730A3",
+            },
+            undefined,
+          ]
+        }
+      >
+        proposals.status.pending
+      </Text>
+    </View>
+  </View>
+</View>
+`;

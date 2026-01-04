@@ -11,6 +11,36 @@
  * - Interacció entre components
  */
 
+// Mock expo-video ABANS de les importacions
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    seekTo: jest.fn(),
+  })),
+}));
+
+// Mock expo-image-picker ABANS de les importacions
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  launchCameraAsync: jest.fn(),
+  requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  MediaTypeOptions: { Images: 'Images' },
+}));
+
+// Mock AuthContext ABANS de les importacions
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: '1', email: 'test@test.com', username: 'TestUser' },
+    isAuthenticated: true,
+    isLoading: false,
+    login: jest.fn(),
+    logout: jest.fn(),
+  }),
+}));
+
 import React from 'react';
 import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
 import { setupMSW } from '../setup/mswServer';

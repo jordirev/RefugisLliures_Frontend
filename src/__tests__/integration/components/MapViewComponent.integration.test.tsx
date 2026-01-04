@@ -4,7 +4,7 @@
  * Cobertura:
  * - Renderització del mapa amb ubicacions
  * - Selecció d'ubicacions
- * - Botons de control (compass, target, layers)
+ * - Botons de control (download, target, layers)
  * - Permisos d'ubicació i gestió d'errors
  * - Gestor de mapes offline
  * - Centrar la ubicació de l'usuari
@@ -57,7 +57,7 @@ jest.mock('../../../components/OfflineMapManager', () => ({
 
 // Mock de les icones
 jest.mock('../../../assets/icons/layers.svg', () => 'LayersIcon');
-jest.mock('../../../assets/icons/compass3.png', () => 'CompassIcon');
+jest.mock('../../../assets/icons/download2.svg', () => 'DownloadIcon');
 jest.mock('../../../assets/icons/target.png', () => 'TargetIcon');
 
 // Mock de useTranslation
@@ -134,8 +134,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      // 3 botons: compass, target, layers
-      expect(getByTestId('compass-button')).toBeTruthy();
+      // 3 botons: download, target, layers
+      expect(getByTestId('download-button')).toBeTruthy();
       expect(getByTestId('target-button')).toBeTruthy();
       expect(getByTestId('layers-button')).toBeTruthy();
     });
@@ -156,7 +156,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
     });
   });
 
-  describe('Botó de capes (Offline Map Manager)', () => {
+  describe('Botó de descàrrega (Offline Map Manager)', () => {
     it('hauria d\'obrir el gestor de mapes offline en fer clic', async () => {
       const { getByTestId, queryByTestId } = renderWithProviders(
         <MapViewComponent
@@ -169,9 +169,9 @@ describe('MapViewComponent - Tests d\'integració', () => {
       // Inicialment no hauria d'estar visible
       expect(queryByTestId('offline-map-manager')).toBeNull();
 
-      // Clicar el botó de capes
-      const layersButton = getByTestId('layers-button');
-      fireEvent.press(layersButton);
+      // Clicar el botó de descàrrega
+      const downloadButton = getByTestId('download-button');
+      fireEvent.press(downloadButton);
 
       await waitFor(() => {
         expect(queryByTestId('offline-map-manager')).toBeTruthy();
@@ -188,8 +188,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
       );
 
       // Obrir el gestor
-      const layersButton = getByTestId('layers-button');
-      fireEvent.press(layersButton);
+      const downloadButton = getByTestId('download-button');
+      fireEvent.press(downloadButton);
 
       await waitFor(() => {
         expect(getByTestId('offline-map-manager')).toBeTruthy();

@@ -1,0 +1,231 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProposalCommentInput Component Snapshots hauria de coincidir amb el snapshot per mode create 1`] = `
+<View
+  style={
+    {
+      "width": "100%",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <TextInput
+      maxLength={500}
+      multiline={true}
+      numberOfLines={4}
+      onChangeText={[Function]}
+      placeholder="createRefuge.adminCommentPlaceholder"
+      placeholderTextColor="#9CA3AF"
+      style={
+        [
+          {
+            "backgroundColor": "#F9FAFB",
+            "borderColor": "transparent",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "color": "#1F2937",
+            "fontSize": 14,
+            "minHeight": 120,
+            "paddingBottom": 40,
+            "paddingHorizontal": 14,
+            "paddingVertical": 12,
+          },
+          undefined,
+        ]
+      }
+      textAlignVertical="top"
+      value=""
+    />
+    <Text
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "bottom": 12,
+            "color": "#9CA3AF",
+            "fontSize": 12,
+            "position": "absolute",
+            "right": 12,
+          },
+          false,
+        ]
+      }
+    >
+      0
+      /
+      500
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`ProposalCommentInput Component Snapshots hauria de coincidir amb el snapshot per mode delete amb error 1`] = `
+<View
+  style={
+    {
+      "width": "100%",
+    }
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#374151",
+        "fontSize": 14,
+        "fontWeight": "600",
+        "marginBottom": 8,
+      }
+    }
+  >
+    deleteRefuge.commentLabel
+  </Text>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <TextInput
+      maxLength={500}
+      multiline={true}
+      numberOfLines={4}
+      onChangeText={[Function]}
+      placeholder="deleteRefuge.commentPlaceholder"
+      placeholderTextColor="#9CA3AF"
+      style={
+        [
+          {
+            "backgroundColor": "#F9FAFB",
+            "borderColor": "transparent",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "color": "#1F2937",
+            "fontSize": 14,
+            "minHeight": 120,
+            "paddingBottom": 40,
+            "paddingHorizontal": 14,
+            "paddingVertical": 12,
+          },
+          {
+            "borderColor": "#EF4444",
+            "borderWidth": 1.5,
+          },
+        ]
+      }
+      textAlignVertical="top"
+      value=""
+    />
+    <Text
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "bottom": 12,
+            "color": "#9CA3AF",
+            "fontSize": 12,
+            "position": "absolute",
+            "right": 12,
+          },
+          {
+            "color": "#EF4444",
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      0
+      /
+      500
+       (editRefuge.minChars)
+    </Text>
+  </View>
+  <Text
+    style={
+      {
+        "color": "#EF4444",
+        "fontSize": 12,
+        "fontWeight": "500",
+        "marginTop": 4,
+      }
+    }
+  >
+    Camp obligatori
+  </Text>
+</View>
+`;
+
+exports[`ProposalCommentInput Component Snapshots hauria de coincidir amb el snapshot per mode edit amb warning 1`] = `
+<View
+  style={
+    {
+      "width": "100%",
+    }
+  }
+>
+  <View
+    style={
+      {
+        "position": "relative",
+      }
+    }
+  >
+    <TextInput
+      maxLength={500}
+      multiline={true}
+      numberOfLines={4}
+      onChangeText={[Function]}
+      placeholder="editRefuge.adminCommentPlaceholder"
+      placeholderTextColor="#9CA3AF"
+      style={
+        [
+          {
+            "backgroundColor": "#F9FAFB",
+            "borderColor": "transparent",
+            "borderRadius": 8,
+            "borderWidth": 1,
+            "color": "#1F2937",
+            "fontSize": 14,
+            "minHeight": 120,
+            "paddingBottom": 40,
+            "paddingHorizontal": 14,
+            "paddingVertical": 12,
+          },
+          undefined,
+        ]
+      }
+      textAlignVertical="top"
+      value="Curt"
+    />
+    <Text
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "bottom": 12,
+            "color": "#9CA3AF",
+            "fontSize": 12,
+            "position": "absolute",
+            "right": 12,
+          },
+          {
+            "color": "#EF4444",
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      4
+      /
+      500
+       (editRefuge.minChars)
+    </Text>
+  </View>
+</View>
+`;

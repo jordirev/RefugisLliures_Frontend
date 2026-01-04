@@ -157,3 +157,8 @@ global.console = {
   warn: jest.fn(),
   error: jest.fn(),
 };
+
+// Cleanup after each test to prevent open handles
+afterEach(() => {
+  jest.clearAllMocks();
+});
