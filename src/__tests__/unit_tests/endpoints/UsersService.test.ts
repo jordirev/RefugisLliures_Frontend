@@ -48,6 +48,15 @@ jest.mock('../../../services/mappers', () => ({
       altitude: dto.altitud,
     }));
   }),
+  mapperUserRefugiInfoDTO: jest.fn((dto: any): Location => ({
+    id: dto.id,
+    name: dto.nom,
+    coord: { long: dto.longitud, lat: dto.latitud },
+    region: dto.comarca,
+    places: dto.places,
+    condition: dto.estat,
+    altitude: dto.altitud,
+  })),
   mapUserFromDTO: jest.fn((dto: UserDTO): User => ({
     uid: dto.uid,
     username: dto.username,
@@ -862,9 +871,18 @@ describe('UsersService', () => {
     ];
 
     it('hauria d\'afegir un refugi als favorits correctament', async () => {
+      const mockRefugeResponse = {
+        id: "2",
+        nom: 'Refugi d\'Amitges',
+        longitud: 0.9876,
+        latitud: 42.5678,
+        comarca: 'Pallars Sobirà',
+        places: 60,
+      };
+      
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockUpdatedFavorites),
+        json: jest.fn().mockResolvedValue(mockRefugeResponse),
       } as unknown as Response;
 
       mockApiPost.mockResolvedValue(mockResponse);
@@ -873,10 +891,10 @@ describe('UsersService', () => {
 
       expect(mockApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/favorite-refuges/',
-        { refuge_id: 2 }
+        { refuge_id: "2" }
       );
       expect(result).not.toBeNull();
-      expect(result).toHaveLength(2);
+      expect(result?.id).toBe("2");
     });
 
     it('hauria de gestionar refugi ja favorit (400)', async () => {
@@ -925,26 +943,15 @@ describe('UsersService', () => {
 
       const result = await UsersService.addFavouriteRefuge('user123', "1");
 
-      expect(result).toEqual([]);
+      expect(result).toBeNull();
     });
   });
 
   describe('removeFavouriteRefuge', () => {
-    const mockUpdatedFavorites = [
-      {
-        id: "1",
-        nom: 'Refugi de Colomers',
-        longitud: 0.9456,
-        latitud: 42.6497,
-        comarca: 'Val d\'Aran',
-        places: 50,
-      },
-    ];
-
     it('hauria d\'eliminar un refugi dels favorits correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockUpdatedFavorites),
+        json: jest.fn().mockResolvedValue({}),
       } as unknown as Response;
 
       mockApiDelete.mockResolvedValue(mockResponse);
@@ -954,21 +961,20 @@ describe('UsersService', () => {
       expect(mockApiDelete).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/favorite-refuges/2/'
       );
-      expect(result).not.toBeNull();
-      expect(result).toHaveLength(1);
+      expect(result).toBe(true);
     });
 
-    it('hauria de retornar array buit si s\'elimina l\'últim favorit', async () => {
+    it('hauria de retornar true quan s\'elimina correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue([]),
+        json: jest.fn().mockResolvedValue({}),
       } as unknown as Response;
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
       const result = await UsersService.removeFavouriteRefuge('user123', "1");
 
-      expect(result).toEqual([]);
+      expect(result).toBe(true);
     });
 
     it('hauria de gestionar refugi no trobat en favorits (404)', async () => {
@@ -982,7 +988,7 @@ describe('UsersService', () => {
 
     const result = await UsersService.removeFavouriteRefuge('user123', "999");
 
-      expect(result).toBeNull();
+      expect(result).toBe(false);
     });
 
     it('hauria de gestionar errors de xarxa', async () => {
@@ -990,7 +996,7 @@ describe('UsersService', () => {
 
     const result = await UsersService.removeFavouriteRefuge('user123', "1");
 
-      expect(result).toBeNull();
+      expect(result).toBe(false);
     });
   });
 
@@ -1072,9 +1078,18 @@ describe('UsersService', () => {
     ];
 
     it('hauria d\'afegir un refugi als visitats correctament', async () => {
+      const mockRefugeResponse = {
+        id: "2",
+        nom: 'Refugi d\'Amitges',
+        longitud: 0.9876,
+        latitud: 42.5678,
+        comarca: 'Pallars Sobirà',
+        places: 60,
+      };
+      
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockUpdatedVisited),
+        json: jest.fn().mockResolvedValue(mockRefugeResponse),
       } as unknown as Response;
 
       mockApiPost.mockResolvedValue(mockResponse);
@@ -1083,10 +1098,10 @@ describe('UsersService', () => {
 
       expect(mockApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/visited-refuges/',
-        { refuge_id: 2 }
+        { refuge_id: "2" }
       );
       expect(result).not.toBeNull();
-      expect(result).toHaveLength(2);
+      expect(result?.id).toBe("2");
     });
 
     it('hauria de gestionar refugi ja visitat (400)', async () => {
@@ -1113,21 +1128,10 @@ describe('UsersService', () => {
   });
 
   describe('removeVisitedRefuge', () => {
-    const mockUpdatedVisited = [
-      {
-        id: "1",
-        nom: 'Refugi de Colomers',
-        longitud: 0.9456,
-        latitud: 42.6497,
-        comarca: 'Val d\'Aran',
-        places: 50,
-      },
-    ];
-
     it('hauria d\'eliminar un refugi dels visitats correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue(mockUpdatedVisited),
+        json: jest.fn().mockResolvedValue({}),
       } as unknown as Response;
 
       mockApiDelete.mockResolvedValue(mockResponse);
@@ -1137,21 +1141,20 @@ describe('UsersService', () => {
       expect(mockApiDelete).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/users/user123/visited-refuges/2/'
       );
-      expect(result).not.toBeNull();
-      expect(result).toHaveLength(1);
+      expect(result).toBe(true);
     });
 
-    it('hauria de retornar array buit si s\'elimina l\'últim refugi visitat', async () => {
+    it('hauria de retornar true quan s\'elimina correctament', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue([]),
+        json: jest.fn().mockResolvedValue({}),
       } as unknown as Response;
 
       mockApiDelete.mockResolvedValue(mockResponse);
 
       const result = await UsersService.removeVisitedRefuge('user123', "1");
 
-      expect(result).toEqual([]);
+      expect(result).toBe(true);
     });
 
     it('hauria de gestionar errors de xarxa', async () => {
@@ -1159,7 +1162,7 @@ describe('UsersService', () => {
 
       const result = await UsersService.removeVisitedRefuge('user123', "1");
 
-      expect(result).toBeNull();
+      expect(result).toBe(false);
     });
   });
 });

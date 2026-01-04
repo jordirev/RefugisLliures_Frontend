@@ -452,6 +452,8 @@
     "googleButton": "Continuar con Google",
     "noAccount": "¿No tienes cuenta?",
     "signUpLink": "Regístrate",
+    "termsText": "Al registrarte o iniciar sesión, aceptas los ",
+    "termsLink": "términos y servicios",
     "errors": {
       "emptyEmail": "Por favor, introduce tu correo electrónico",
       "invalidEmail": "El formato del correo electrónico no es válido",
@@ -771,6 +773,100 @@
       "title": "Información del creador:",
       "greeting": "¡Hola! Me llamo Jordi Reverter y soy el creador de Refugios Libres, la app más completa hasta el momento de refugios libres del Pirineo.",
       "description": "Esta app ha sido fruto de mi Trabajo de Fin de Grado en la Universitat Politècnica de Catalunya (UPC), donde he podido combinar mis dos pasiones: la montaña y el software. Desde muy pequeño la montaña ha ocupado un espacio muy importante en mi vida y, sobre todo, los refugios libres. En estos he vivido grandes experiencias y compartido muchos momentos con gente apasionada de la montaña y es por eso que decidí hacer esta app y poder aportar mi granito de arena en este mundo de la montaña. Espero que os pueda ser de utilidad y os acompañe en vuestras próximas salidas!"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Términos y Condiciones de Uso",
+    "updateDate": "Fecha de la última actualización: 4 de enero de 2026",
+    "acceptButton": "Aceptar y Cerrar",
+    "acceptance": {
+      "title": "1. Aceptación de los Términos",
+      "content": "Al descargar, instalar o utilizar la aplicación RefugisLliures, aceptas quedar vinculado por estos términos. Si no estás de acuerdo con alguna parte de estos, no podrás acceder al servicio."
+    },
+    "description": {
+      "title": "2. Descripción del Servicio",
+      "content": "RefugisLliures es una plataforma para la visualización y gestión de datos sobre refugios libres. El servicio utiliza datos en tiempo real y funcionalidades de mapa para mejorar la experiencia del usuario en entornos de montaña."
+    },
+    "permissions": {
+      "title": "3. Uso de Permisos y Dispositivo",
+      "intro": "Para el correcto funcionamiento de la aplicación, se requieren los siguientes permisos:",
+      "location": {
+        "title": "Ubicación:",
+        "content": "Para mostrar tu posición en el mapa respecto a los refugios."
+      },
+      "media": {
+        "title": "Multimedia/Cámara:",
+        "content": "Para permitir la subida de fotos de los refugios."
+      },
+      "network": {
+        "title": "Estado de la red:",
+        "content": "Para gestionar la sincronización de datos con Firebase y Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. Responsabilidad del Usuario",
+      "content": "El usuario se compromete a hacer un uso lícito de la app. Dado que la información trata sobre refugios de montaña, RefugisLliures no se hace responsable de la precisión exacta de las coordenadas ni del estado físico de los refugios. El uso de la app no sustituye las herramientas de navegación profesionales ni el sentido común en actividades de riesgo."
+    },
+    "privacy": {
+      "title": "Política de Privacidad (Adaptada al RGPD)",
+      "dataController": {
+        "title": "1. Responsable del Tratamiento",
+        "content": "El responsable del tratamiento de tus datos es el titular del proyecto RefugisLliures (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Datos que Recogemos",
+        "intro": "Recogemos los datos estrictamente necesarios para el funcionamiento de la app:",
+        "identification": {
+          "title": "Datos de Identificación:",
+          "content": "Nombre y correo electrónico a través de Firebase Authentication."
+        },
+        "location": {
+          "title": "Datos de Ubicación:",
+          "content": "Solo si el usuario da el consentimiento explícito."
+        },
+        "userContent": {
+          "title": "Contenido del Usuario:",
+          "content": "Fotografías enviadas por el usuario (almacenadas en Cloudflare)."
+        },
+        "usage": {
+          "title": "Datos de Uso:",
+          "content": "Estadísticas anónimas a través de Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Finalidad del Tratamiento",
+        "intro": "Los datos se utilizan exclusivamente para:",
+        "point1": "Gestionar tu perfil de usuario y autenticación.",
+        "point2": "Permitirte interactuar con los refugios (añadir fotos, comentarios, etc.).",
+        "point3": "Mejorar la aplicación mediante análisis estadísticos."
+      },
+      "thirdParties": {
+        "title": "4. Terceros y Transferencia de Datos",
+        "intro": "No compartimos tus datos con terceros con fines comerciales. Sin embargo, utilizamos los siguientes proveedores de servicios (subencargados) que cumplen con el marco del RGPD:",
+        "firebase": {
+          "title": "Firebase (Google):",
+          "content": "Para la base de datos y autenticación."
+        },
+        "cloudflare": {
+          "title": "Cloudflare:",
+          "content": "Para la optimización y almacenamiento de contenido multimedia."
+        },
+        "analytics": {
+          "title": "Google Analytics:",
+          "content": "Para el seguimiento de errores y métricas de uso."
+        }
+      },
+      "rights": {
+        "title": "5. Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)",
+        "intro": "Como usuario, tienes derecho a:",
+        "point1": "Saber qué datos tenemos de ti.",
+        "point2": "Solicitar la rectificación o eliminación de tus datos (incluyendo tu cuenta de Firebase).",
+        "point3": "Limitar el tratamiento de los datos."
+      },
+      "security": {
+        "title": "6. Seguridad",
+        "content": "Todos los datos se transmiten de forma segura mediante protocolos HTTPS y se almacenan en infraestructuras con altos estándares de seguridad (Firebase/Cloudflare)."
+      }
     }
   }
 }

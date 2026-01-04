@@ -454,8 +454,8 @@
     "orContinueWith": "ou",
     "googleButton": "Continuer avec Google",
     "noAccount": "Vous n'avez pas de compte ?",
-    "signUpLink": "S'inscrire",
-    "errors": {
+    "signUpLink": "S'inscrire",    "termsText": "En vous inscrivant ou en vous connectant, vous acceptez les ",
+    "termsLink": "conditions d'utilisation",    "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer votre mot de passe",
@@ -775,6 +775,100 @@
       "title": "À propos du créateur :",
       "greeting": "Bonjour ! Je m'appelle Jordi Reverter et je suis le créateur de Refugis Lliures, l'application la plus complète à ce jour sur les refuges libres des Pyrénées.",
       "description": "Cette application a été le résultat de mon Projet de Fin d'Études à l'Université Polytechnique de Catalogne (UPC), où j'ai pu combiner mes deux passions : la montagne et le logiciel. Depuis mon plus jeune âge, la montagne a occupé une place très importante dans ma vie et, surtout, les refuges libres. J'y ai vécu de grandes expériences et partagé de nombreux moments avec des gens passionnés par la montagne et c'est pourquoi j'ai décidé de créer cette application et d'apporter ma pierre à l'édifice dans ce monde de la montagne. J'espère qu'elle pourra vous être utile et vous accompagner lors de vos prochaines sorties !"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Conditions Générales d'Utilisation",
+    "updateDate": "Date de dernière mise à jour : 4 janvier 2026",
+    "acceptButton": "Accepter et Fermer",
+    "acceptance": {
+      "title": "1. Acceptation des Conditions",
+      "content": "En téléchargeant, installant ou utilisant l'application RefugisLliures, vous acceptez d'être lié par ces conditions. Si vous n'êtes pas d'accord avec une partie de ces conditions, vous ne pourrez pas accéder au service."
+    },
+    "description": {
+      "title": "2. Description du Service",
+      "content": "RefugisLliures est une plateforme de visualisation et de gestion de données sur les refuges libres. Le service utilise des données en temps réel et des fonctionnalités de cartographie pour améliorer l'expérience utilisateur en environnement montagnard."
+    },
+    "permissions": {
+      "title": "3. Utilisation des Permissions et du Dispositif",
+      "intro": "Pour le bon fonctionnement de l'application, les permissions suivantes sont requises :",
+      "location": {
+        "title": "Localisation :",
+        "content": "Pour afficher votre position sur la carte par rapport aux refuges."
+      },
+      "media": {
+        "title": "Multimédia/Caméra :",
+        "content": "Pour permettre le téléversement de photos des refuges."
+      },
+      "network": {
+        "title": "État du réseau :",
+        "content": "Pour gérer la synchronisation des données avec Firebase et Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. Responsabilité de l'Utilisateur",
+      "content": "L'utilisateur s'engage à faire un usage licite de l'application. Étant donné que les informations concernent des refuges de montagne, RefugisLliures n'est pas responsable de l'exactitude des coordonnées ni de l'état physique des refuges. L'utilisation de l'application ne remplace pas les outils de navigation professionnels ni le bon sens dans les activités à risque."
+    },
+    "privacy": {
+      "title": "Politique de Confidentialité (Conforme au RGPD)",
+      "dataController": {
+        "title": "1. Responsable du Traitement",
+        "content": "Le responsable du traitement de vos données est le titulaire du projet RefugisLliures (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Données que Nous Collectons",
+        "intro": "Nous collectons uniquement les données strictement nécessaires au fonctionnement de l'application :",
+        "identification": {
+          "title": "Données d'Identification :",
+          "content": "Nom et adresse email via Firebase Authentication."
+        },
+        "location": {
+          "title": "Données de Localisation :",
+          "content": "Uniquement si l'utilisateur donne son consentement explicite."
+        },
+        "userContent": {
+          "title": "Contenu de l'Utilisateur :",
+          "content": "Photographies soumises par l'utilisateur (stockées sur Cloudflare)."
+        },
+        "usage": {
+          "title": "Données d'Usage :",
+          "content": "Statistiques anonymes via Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Finalité du Traitement",
+        "intro": "Les données sont utilisées exclusivement pour :",
+        "point1": "Gérer votre profil utilisateur et l'authentification.",
+        "point2": "Vous permettre d'interagir avec les refuges (ajouter des photos, des commentaires, etc.).",
+        "point3": "Améliorer l'application grâce à des analyses statistiques."
+      },
+      "thirdParties": {
+        "title": "4. Tiers et Transfert de Données",
+        "intro": "Nous ne partageons pas vos données avec des tiers à des fins commerciales. Cependant, nous utilisons les fournisseurs de services suivants (sous-traitants) qui sont conformes au cadre du RGPD :",
+        "firebase": {
+          "title": "Firebase (Google) :",
+          "content": "Pour la base de données et l'authentification."
+        },
+        "cloudflare": {
+          "title": "Cloudflare :",
+          "content": "Pour l'optimisation et le stockage de contenu multimédia."
+        },
+        "analytics": {
+          "title": "Google Analytics :",
+          "content": "Pour le suivi des erreurs et les métriques d'utilisation."
+        }
+      },
+      "rights": {
+        "title": "5. Droits ARCO (Accès, Rectification, Annulation et Opposition)",
+        "intro": "En tant qu'utilisateur, vous avez le droit de :",
+        "point1": "Savoir quelles données nous avons sur vous.",
+        "point2": "Demander la rectification ou la suppression de vos données (y compris votre compte Firebase).",
+        "point3": "Limiter le traitement de vos données."
+      },
+      "security": {
+        "title": "6. Sécurité",
+        "content": "Toutes les données sont transmises de manière sécurisée via les protocoles HTTPS et stockées dans des infrastructures aux normes de sécurité élevées (Firebase/Cloudflare)."
+      }
     }
   }
 }

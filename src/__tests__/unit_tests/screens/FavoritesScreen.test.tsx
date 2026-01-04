@@ -9,6 +9,16 @@
  * - Casos límit
  */
 
+// Mock d'expo-video (ha d'anar ABANS dels imports)
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+  })),
+}));
+
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { FavoritesScreen } from '../../../screens/FavoritesScreen';
@@ -42,6 +52,7 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: mockNavigate,
   }),
+  useFocusEffect: jest.fn((callback) => callback()),
 }));
 
 // Mock de RefugisService
@@ -58,6 +69,33 @@ jest.mock('../../../hooks/useCustomAlert', () => ({
     alertConfig: null,
     showAlert: jest.fn(),
     hideAlert: jest.fn(),
+  }),
+}));
+
+// Mock de useUsersQuery - useFavouriteRefuges
+const mockFavouriteRefugesData: any[] = [];
+jest.mock('../../../hooks/useUsersQuery', () => ({
+  useFavouriteRefuges: () => ({
+    data: mockFavouriteRefugesData,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }),
+  useAddFavouriteRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useRemoveFavouriteRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useAddVisitedRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
+  useRemoveVisitedRefuge: () => ({
+    mutateAsync: jest.fn().mockResolvedValue({}),
+    isPending: false,
   }),
 }));
 
@@ -107,12 +145,15 @@ describe('FavoritesScreen Component', () => {
     jest.clearAllMocks();
     
     mockUseAuth.mockReturnValue({
-      favouriteRefuges: mockFavouriteRefuges,
       firebaseUser: { uid: 'test-uid' } as any,
       backendUser: null,
-      visitedRefuges: [],
+      favouriteRefugeIds: ['1', '2', '3'],
+      visitedRefugeIds: [],
+      setFavouriteRefugeIds: jest.fn(),
+      setVisitedRefugeIds: jest.fn(),
       isLoading: false,
       isAuthenticated: true,
+      isOfflineMode: false,
       authToken: 'mock-token',
       login: jest.fn(),
       loginWithGoogle: jest.fn(),
@@ -121,16 +162,17 @@ describe('FavoritesScreen Component', () => {
       deleteAccount: jest.fn(),
       refreshToken: jest.fn(),
       reloadUser: jest.fn(),
+      refreshUserData: jest.fn(),
       changePassword: jest.fn(),
       changeEmail: jest.fn(),
       updateUsername: jest.fn(),
-      getFavouriteRefuges: jest.fn(),
-      addFavouriteRefuge: jest.fn(),
-      removeFavouriteRefuge: jest.fn(),
-      getVisitedRefuges: jest.fn(),
-      addVisitedRefuge: jest.fn(),
-      removeVisitedRefuge: jest.fn(),
+      enterOfflineMode: jest.fn(),
+      exitOfflineMode: jest.fn(),
     });
+    
+    // Update useFavouriteRefuges mock data
+    mockFavouriteRefugesData.length = 0;
+    mockFavouriteRefugesData.push(...mockFavouriteRefuges);
   });
 
   describe('Renderització bàsica', () => {

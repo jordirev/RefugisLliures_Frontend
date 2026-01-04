@@ -17,6 +17,15 @@ import { RefugeCard } from '../../../components/RefugeCard';
 import { Location } from '../../../models';
 import useFavourite from '../../../hooks/useFavourite';
 
+// Mock de expo-video
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+  })),
+}));
+
 const mockUseFavourite = useFavourite as jest.MockedFunction<typeof useFavourite>;
 
 // Mock de useTranslation
@@ -275,11 +284,10 @@ describe('RefugeCard Component', () => {
       
       const favoriteButton = getByTestId('favorite-button');
       
-      // No hauria de llançar error
-      await expect(async () => {
-        fireEvent.press(favoriteButton);
-        await waitFor(() => expect(mockToggleFavourite).toHaveBeenCalled());
-      }).resolves.not.toThrow();
+      // No hauria de llançar error quan es prem el botó sense onToggleFavorite
+      fireEvent.press(favoriteButton);
+      await waitFor(() => expect(mockToggleFavourite).toHaveBeenCalled());
+      // Si arriba aquí sense error, el test passa
     });
 
     it('hauria de cridar useFavourite amb el refugeId correcte', () => {

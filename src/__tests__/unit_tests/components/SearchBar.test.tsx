@@ -205,19 +205,20 @@ describe('SearchBar Component', () => {
       expect(getByText('Refugi 3')).toBeTruthy();
     });
 
-    it('hauria de mostrar màxim 6 suggeriments', () => {
+    it('hauria de mostrar tots els suggeriments dins un ScrollView', () => {
       const suggestions = [
         'Refugi 1', 'Refugi 2', 'Refugi 3', 'Refugi 4',
         'Refugi 5', 'Refugi 6', 'Refugi 7', 'Refugi 8',
       ];
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <SearchBar {...defaultProps} suggestions={suggestions} />
       );
       
+      // El component ara mostra tots els suggeriments dins un ScrollView
       expect(getByText('Refugi 1')).toBeTruthy();
       expect(getByText('Refugi 6')).toBeTruthy();
-      expect(queryByText('Refugi 7')).toBeNull();
-      expect(queryByText('Refugi 8')).toBeNull();
+      expect(getByText('Refugi 7')).toBeTruthy();
+      expect(getByText('Refugi 8')).toBeTruthy();
     });
 
     it('hauria de cridar onSuggestionSelect quan es selecciona un suggeriment', () => {

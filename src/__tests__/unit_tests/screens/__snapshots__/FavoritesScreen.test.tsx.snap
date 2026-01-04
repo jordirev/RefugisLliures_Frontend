@@ -221,7 +221,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
               resizeMode="cover"
               source={
                 {
-                  "uri": "https://example.com/image1.jpg",
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
                 }
               }
               style={
@@ -508,7 +508,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
               resizeMode="cover"
               source={
                 {
-                  "uri": "https://example.com/image2.jpg",
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
                 }
               }
               style={
@@ -1082,7 +1082,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
             }
           >
              
-            (0)
+            (3)
           </Text>
         </Text>
       </View>
@@ -1102,7 +1102,54 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
         },
       ]
     }
-    data={[]}
+    data={
+      [
+        {
+          "altitude": 2135,
+          "condition": "bé",
+          "coord": {
+            "lat": 42.6497,
+            "long": 0.9456,
+          },
+          "id": 1,
+          "imageUrl": "https://example.com/image1.jpg",
+          "isFavorite": true,
+          "name": "Refugi de Colomers",
+          "places": 50,
+          "region": "Val d'Aran",
+          "type": 1,
+        },
+        {
+          "altitude": 2380,
+          "condition": "excel·lent",
+          "coord": {
+            "lat": 42.5678,
+            "long": 0.9876,
+          },
+          "id": 2,
+          "imageUrl": "https://example.com/image2.jpg",
+          "isFavorite": true,
+          "name": "Refugi d'Amitges",
+          "places": 60,
+          "region": "Pallars Sobirà",
+          "type": 1,
+        },
+        {
+          "altitude": 2010,
+          "condition": "normal",
+          "coord": {
+            "lat": 42.789,
+            "long": 0.789,
+          },
+          "id": 3,
+          "isFavorite": true,
+          "name": "Refugi de Restanca",
+          "places": 40,
+          "region": "Val d'Aran",
+          "type": 1,
+        },
+      ]
+    }
     getItem={[Function]}
     getItemCount={[Function]}
     keyExtractor={[Function]}
@@ -1128,54 +1175,865 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
   >
     <View>
       <View
-        style={
-          [
-            {
-              "alignItems": "center",
-              "backgroundColor": "transparent",
-              "justifyContent": "center",
-              "padding": 32,
-            },
-            {
-              "minHeight": 1222,
-            },
-          ]
-        }
+        onFocusCapture={[Function]}
+        onLayout={[Function]}
+        style={null}
       >
-        <test-file-stub
-          height={64}
-          style={
+        <View
+          accessibilityState={
             {
-              "fontSize": 64,
-              "marginBottom": 16,
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
             }
           }
-          width={64}
-        />
-        <Text
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             {
-              "color": "#111827",
-              "fontSize": 18,
-              "fontWeight": "400",
-              "marginBottom": 8,
+              "backgroundColor": "#fff",
+              "borderRadius": 18,
+              "elevation": 4,
+              "marginHorizontal": 16,
+              "marginVertical": 8,
+              "opacity": 1,
+              "overflow": "hidden",
+              "position": "relative",
+              "shadowColor": "#000",
+              "shadowOffset": {
+                "height": 2,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 8,
             }
           }
         >
-          No tens favorits
-        </Text>
-        <Text
+          <View
+            style={
+              {
+                "backgroundColor": "#f3f4f6",
+                "height": 216,
+                "position": "relative",
+                "width": "100%",
+              }
+            }
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+              testID="refuge-image"
+            />
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": false,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "borderRadius": 18,
+                  "height": 36,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 8,
+                  "top": 8,
+                  "width": 36,
+                }
+              }
+              testID="favorite-button"
+            >
+              <test-file-stub
+                height={24}
+                width={24}
+              />
+            </View>
+          </View>
+          <View
+            pointerEvents="box-none"
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "transparent",
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "backgroundColor": "#ffffff",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "marginTop": 4,
+                }
+              }
+            >
+              <Text
+                numberOfLines={1}
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 4,
+                    "marginRight": 60,
+                  }
+                }
+              >
+                Refugi de Colomers
+              </Text>
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "paddingRight": 64,
+                  }
+                }
+              >
+                <Text
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                  style={
+                    {
+                      "color": "#6b7280",
+                      "flexShrink": 1,
+                      "flexWrap": "wrap",
+                      "fontSize": 13,
+                    }
+                  }
+                >
+                  Val d'Aran
+                </Text>
+                <Text
+                  style={
+                    {
+                      "color": "#9ca3af",
+                      "fontSize": 12,
+                      "marginHorizontal": 6,
+                    }
+                  }
+                >
+                  •
+                </Text>
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    }
+                  }
+                >
+                  <test-file-stub
+                    height={16}
+                    width={16}
+                  />
+                  <Text
+                    style={
+                      {
+                        "color": "#6b7280",
+                        "fontSize": 13,
+                        "lineHeight": 16,
+                      }
+                    }
+                  >
+                     
+                    50
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#fff",
+                  "borderColor": "#e5e7eb",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "bottom": 12,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "marginRight": -4,
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 16,
+                  "width": 40,
+                  "zIndex": 5,
+                }
+              }
+              testID="map-button"
+            >
+              <Image
+                resizeMode="stretch"
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 18,
+                    "width": 16,
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+      <View
+        onFocusCapture={[Function]}
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
           style={
             {
-              "color": "#6b7280",
-              "fontSize": 14,
-              "lineHeight": 24,
-              "textAlign": "center",
+              "backgroundColor": "#fff",
+              "borderRadius": 18,
+              "elevation": 4,
+              "marginHorizontal": 16,
+              "marginVertical": 8,
+              "opacity": 1,
+              "overflow": "hidden",
+              "position": "relative",
+              "shadowColor": "#000",
+              "shadowOffset": {
+                "height": 2,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 8,
             }
           }
         >
-          Afegeix refugis als teus favorits per veure'ls aquí
-        </Text>
+          <View
+            style={
+              {
+                "backgroundColor": "#f3f4f6",
+                "height": 216,
+                "position": "relative",
+                "width": "100%",
+              }
+            }
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+              testID="refuge-image"
+            />
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": false,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "borderRadius": 18,
+                  "height": 36,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 8,
+                  "top": 8,
+                  "width": 36,
+                }
+              }
+              testID="favorite-button"
+            >
+              <test-file-stub
+                height={24}
+                width={24}
+              />
+            </View>
+          </View>
+          <View
+            pointerEvents="box-none"
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "transparent",
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "backgroundColor": "#ffffff",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "marginTop": 4,
+                }
+              }
+            >
+              <Text
+                numberOfLines={1}
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 4,
+                    "marginRight": 60,
+                  }
+                }
+              >
+                Refugi d'Amitges
+              </Text>
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "paddingRight": 64,
+                  }
+                }
+              >
+                <Text
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                  style={
+                    {
+                      "color": "#6b7280",
+                      "flexShrink": 1,
+                      "flexWrap": "wrap",
+                      "fontSize": 13,
+                    }
+                  }
+                >
+                  Pallars Sobirà
+                </Text>
+                <Text
+                  style={
+                    {
+                      "color": "#9ca3af",
+                      "fontSize": 12,
+                      "marginHorizontal": 6,
+                    }
+                  }
+                >
+                  •
+                </Text>
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    }
+                  }
+                >
+                  <test-file-stub
+                    height={16}
+                    width={16}
+                  />
+                  <Text
+                    style={
+                      {
+                        "color": "#6b7280",
+                        "fontSize": 13,
+                        "lineHeight": 16,
+                      }
+                    }
+                  >
+                     
+                    60
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#fff",
+                  "borderColor": "#e5e7eb",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "bottom": 12,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "marginRight": -4,
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 16,
+                  "width": 40,
+                  "zIndex": 5,
+                }
+              }
+              testID="map-button"
+            >
+              <Image
+                resizeMode="stretch"
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 18,
+                    "width": 16,
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+      <View
+        onFocusCapture={[Function]}
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "backgroundColor": "#fff",
+              "borderRadius": 18,
+              "elevation": 4,
+              "marginHorizontal": 16,
+              "marginVertical": 8,
+              "opacity": 1,
+              "overflow": "hidden",
+              "position": "relative",
+              "shadowColor": "#000",
+              "shadowOffset": {
+                "height": 2,
+                "width": 0,
+              },
+              "shadowOpacity": 0.1,
+              "shadowRadius": 8,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "backgroundColor": "#f3f4f6",
+                "height": 216,
+                "position": "relative",
+                "width": "100%",
+              }
+            }
+          >
+            <Image
+              resizeMode="cover"
+              source={
+                {
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+              testID="refuge-image"
+            />
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": false,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "borderRadius": 18,
+                  "height": 36,
+                  "justifyContent": "center",
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 8,
+                  "top": 8,
+                  "width": 36,
+                }
+              }
+              testID="favorite-button"
+            >
+              <test-file-stub
+                height={24}
+                width={24}
+              />
+            </View>
+          </View>
+          <View
+            pointerEvents="box-none"
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "transparent",
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingHorizontal": 16,
+                "paddingVertical": 12,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "backgroundColor": "#ffffff",
+                  "borderRadius": 12,
+                  "flex": 1,
+                  "marginTop": 4,
+                }
+              }
+            >
+              <Text
+                numberOfLines={1}
+                style={
+                  {
+                    "color": "#111827",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 4,
+                    "marginRight": 60,
+                  }
+                }
+              >
+                Refugi de Restanca
+              </Text>
+              <View
+                style={
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "paddingRight": 64,
+                  }
+                }
+              >
+                <Text
+                  ellipsizeMode="tail"
+                  numberOfLines={2}
+                  style={
+                    {
+                      "color": "#6b7280",
+                      "flexShrink": 1,
+                      "flexWrap": "wrap",
+                      "fontSize": 13,
+                    }
+                  }
+                >
+                  Val d'Aran
+                </Text>
+                <Text
+                  style={
+                    {
+                      "color": "#9ca3af",
+                      "fontSize": 12,
+                      "marginHorizontal": 6,
+                    }
+                  }
+                >
+                  •
+                </Text>
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                    }
+                  }
+                >
+                  <test-file-stub
+                    height={16}
+                    width={16}
+                  />
+                  <Text
+                    style={
+                      {
+                        "color": "#6b7280",
+                        "fontSize": 13,
+                        "lineHeight": 16,
+                      }
+                    }
+                  >
+                     
+                    40
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onClick={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "#fff",
+                  "borderColor": "#e5e7eb",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "bottom": 12,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "marginRight": -4,
+                  "opacity": 1,
+                  "position": "absolute",
+                  "right": 16,
+                  "width": 40,
+                  "zIndex": 5,
+                }
+              }
+              testID="map-button"
+            >
+              <Image
+                resizeMode="stretch"
+                source="test-file-stub"
+                style={
+                  {
+                    "height": 18,
+                    "width": 16,
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
       </View>
     </View>
   </RCTScrollView>

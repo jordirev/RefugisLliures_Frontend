@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchBar Component Snapshot testing hauria de coincidir amb el snapshot amb searchQuery amb text 1`] = `
 <View
@@ -600,6 +600,7 @@ exports[`SearchBar Component Snapshot testing hauria de coincidir amb el snapsho
         "elevation": 2,
         "marginBottom": 8,
         "marginTop": -8,
+        "maxHeight": 240,
         "paddingVertical": 4,
         "shadowColor": "rgba(0,0,0,0.08)",
         "shadowOffset": {
@@ -611,104 +612,116 @@ exports[`SearchBar Component Snapshot testing hauria de coincidir amb el snapsho
       }
     }
   >
-    <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": undefined,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
+    <RCTScrollView
+      nestedScrollEnabled={true}
+      showsVerticalScrollIndicator={false}
       style={
         {
-          "borderBottomColor": "#F0F0F0",
-          "borderBottomWidth": 1,
-          "opacity": 1,
-          "paddingHorizontal": 16,
-          "paddingVertical": 8,
+          "maxHeight": 240,
         }
       }
     >
-      <Text
-        style={
-          {
-            "color": "#616774",
-            "fontSize": 15,
+      <View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
           }
-        }
-      >
-        Refugi 1
-      </Text>
-    </View>
-    <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": undefined,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
-      style={
-        {
-          "borderBottomColor": "#F0F0F0",
-          "borderBottomWidth": 1,
-          "opacity": 1,
-          "paddingHorizontal": 16,
-          "paddingVertical": 8,
-        }
-      }
-    >
-      <Text
-        style={
-          {
-            "color": "#616774",
-            "fontSize": 15,
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
           }
-        }
-      >
-        Refugi 2
-      </Text>
-    </View>
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "borderBottomColor": "#F0F0F0",
+              "borderBottomWidth": 1,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 8,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#616774",
+                "fontSize": 15,
+              }
+            }
+          >
+            Refugi 1
+          </Text>
+        </View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "borderBottomColor": "#F0F0F0",
+              "borderBottomWidth": 1,
+              "opacity": 1,
+              "paddingHorizontal": 16,
+              "paddingVertical": 8,
+            }
+          }
+        >
+          <Text
+            style={
+              {
+                "color": "#616774",
+                "fontSize": 15,
+              }
+            }
+          >
+            Refugi 2
+          </Text>
+        </View>
+      </View>
+    </RCTScrollView>
   </View>
   <View
     accessibilityState={

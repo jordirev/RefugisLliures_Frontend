@@ -62,11 +62,10 @@ describe('RefugisService', () => {
       const result = await RefugisService.getRefugiById("1");
 
       expect(mockApiGet).toHaveBeenCalledWith(
-        'https://refugislliures-backend.onrender.com/api/refuges/1/',
-        { skipAuth: true }
+        'https://refugislliures-backend.onrender.com/api/refuges/1/'
       );
       expect(result).not.toBeNull();
-      expect(result?.id).toBe(1);
+      expect(result?.id).toBe("1");
       expect(result?.name).toBe('Refugi Test');
     });
 
@@ -112,7 +111,7 @@ describe('RefugisService', () => {
       expect(result).toBeNull();
     });
 
-    it('hauria de cridar apiGet amb skipAuth: true', async () => {
+    it('hauria de cridar apiGet només amb la URL', async () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue(mockRefugiDTO),
@@ -123,9 +122,9 @@ describe('RefugisService', () => {
       await RefugisService.getRefugiById("1");
 
       expect(mockApiGet).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ skipAuth: true })
+        expect.any(String)
       );
+      expect(mockApiGet).toHaveBeenCalledTimes(1);
     });
 
     it('hauria de gestionar resposta amb dades buides', async () => {
@@ -196,14 +195,9 @@ describe('RefugisService', () => {
         altitude_max: 3000,
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('altitude_min=2000'),
-        expect.any(Object)
-      );
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('altitude_max=3000'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('altitude_min=2000');
+      expect(callUrl).toContain('altitude_max=3000');
     });
 
     it('hauria de aplicar filtres de places', async () => {
@@ -219,14 +213,9 @@ describe('RefugisService', () => {
         places_max: 50,
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('places_min=10'),
-        expect.any(Object)
-      );
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('places_max=50'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('places_min=10');
+      expect(callUrl).toContain('places_max=50');
     });
 
     it('hauria de aplicar filtre de tipus', async () => {
@@ -241,10 +230,8 @@ describe('RefugisService', () => {
         type: 'cabane ouverte',
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('type=cabane+ouverte'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('type=cabane%20ouverte');
     });
 
     it('hauria de aplicar filtre de condició', async () => {
@@ -259,10 +246,8 @@ describe('RefugisService', () => {
         condition: 'bé',
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('condition=b%C3%A9'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('condition=b%C3%A9');
     });
 
     it('hauria de aplicar filtre de cerca per nom', async () => {
@@ -277,10 +262,8 @@ describe('RefugisService', () => {
         search: 'Refugi Test',
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('name=Refugi+Test'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('name=Refugi%20Test');
     });
 
     it('hauria de prioritzar cerca sobre altres filtres', async () => {
@@ -386,7 +369,7 @@ describe('RefugisService', () => {
       expect(callUrl).toContain('altitude_max=3000');
       expect(callUrl).toContain('places_min=10');
       expect(callUrl).toContain('places_max=50');
-      expect(callUrl).toContain('type=cabane+ouverte');
+      expect(callUrl).toContain('type=cabane%20ouverte');
       expect(callUrl).toContain('condition=b%C3%A9');
     });
 
@@ -402,13 +385,11 @@ describe('RefugisService', () => {
         altitude_min: 0,
       });
 
-      expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringContaining('altitude_min=0'),
-        expect.any(Object)
-      );
+      const callUrl = mockApiGet.mock.calls[0][0] as string;
+      expect(callUrl).toContain('altitude_min=0');
     });
 
-    it('hauria de cridar apiGet amb skipAuth: true', async () => {
+    it('hauria de cridar apiGet només amb la URL', async () => {
       const mockResponse = {
         ok: true,
         json: jest.fn().mockResolvedValue(mockRefugisResponse),
@@ -419,9 +400,9 @@ describe('RefugisService', () => {
       await RefugisService.getRefugis();
 
       expect(mockApiGet).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ skipAuth: true })
+        expect.any(String)
       );
+      expect(mockApiGet).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -24,6 +24,7 @@ import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { app } from '../services/firebase';
+import { TermsAndConditionsModal } from '../components/TermsAndConditionsModal';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
@@ -44,6 +45,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const passwordInputRef = useRef<any>(null);
   
   // Verificar si Google Sign In està disponible
@@ -497,10 +499,30 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                   </Text>
                 </TouchableOpacity>
               )}
+
+              {/* Text de termes i serveis */}
+              <View style={styles.termsContainer}>
+                <Text style={styles.termsText}>
+                  {t('login.termsText')}
+                </Text>
+                <TouchableOpacity 
+                  testID="terms-link"
+                  onPress={() => setShowTermsModal(true)}
+                >
+                  <Text style={styles.termsLink}>{t('login.termsLink')}</Text>
+                </TouchableOpacity>
+                <Text style={styles.termsText}>.</Text>
+              </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
       
+      {/* Modal de Termes i Condicions */}
+      <TermsAndConditionsModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+
       {/* CustomAlert */}
       {alertConfig && (
         <CustomAlert
@@ -537,14 +559,14 @@ const styles = StyleSheet.create({
   logo: {
     width: 180,
     height: 180,
-    marginBottom: -30,
-    marginTop: 20,
+    marginBottom: -20,
+    marginTop: 0,
   },
   appName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 50,
+    marginBottom: 30,
     letterSpacing: 2,
   },
   title: {
@@ -689,5 +711,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 8,
+  },
+  termsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 24,
+    paddingHorizontal: 10,
+  },
+  termsText: {
+    color: '#6b7280',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  termsLink: {
+    color: '#2563eb',
+    fontSize: 13,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });

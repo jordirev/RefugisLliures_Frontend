@@ -442,6 +442,8 @@
     "googleButton": "Continue with Google",
     "noAccount": "Don't have an account?",
     "signUpLink": "Sign up",
+    "termsText": "By signing up or logging in, you accept the ",
+    "termsLink": "terms of service",
     "errors": {
       "emptyEmail": "Please enter your email address",
       "invalidEmail": "The email address format is not valid",
@@ -761,6 +763,100 @@
       "title": "About the creator:",
       "greeting": "Hello! My name is Jordi Reverter and I am the creator of Refugis Lliures, the most complete app for free shelters in the Pyrenees to date.",
       "description": "This app has been the result of my Final Degree Project at the Polytechnic University of Catalonia (UPC), where I was able to combine my two passions: the mountains and software. Since I was very young, the mountains have occupied a very important place in my life and, especially, free shelters. In them I have lived great experiences and shared many moments with people passionate about the mountains and that is why I decided to make this app and contribute my grain of sand to this world of the mountains. I hope it can be useful to you and accompany you on your next outings!"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Terms and Conditions of Use",
+    "updateDate": "Last updated: January 4, 2026",
+    "acceptButton": "Accept and Close",
+    "acceptance": {
+      "title": "1. Acceptance of Terms",
+      "content": "By downloading, installing, or using the RefugisLliures application, you agree to be bound by these terms. If you do not agree with any part of these terms, you will not be able to access the service."
+    },
+    "description": {
+      "title": "2. Service Description",
+      "content": "RefugisLliures is a platform for viewing and managing data about free shelters. The service uses real-time data and map functionalities to enhance the user experience in mountain environments."
+    },
+    "permissions": {
+      "title": "3. Use of Permissions and Device",
+      "intro": "For the proper functioning of the application, the following permissions are required:",
+      "location": {
+        "title": "Location:",
+        "content": "To show your position on the map relative to the shelters."
+      },
+      "media": {
+        "title": "Media/Camera:",
+        "content": "To allow uploading photos of the shelters."
+      },
+      "network": {
+        "title": "Network status:",
+        "content": "To manage data synchronization with Firebase and Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. User Responsibility",
+      "content": "The user agrees to use the app lawfully. Given that the information concerns mountain shelters, RefugisLliures is not responsible for the exact accuracy of the coordinates or the physical condition of the shelters. The use of the app does not replace professional navigation tools or common sense in risky activities."
+    },
+    "privacy": {
+      "title": "Privacy Policy (GDPR Compliant)",
+      "dataController": {
+        "title": "1. Data Controller",
+        "content": "The data controller is the holder of the RefugisLliures project (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Data We Collect",
+        "intro": "We collect only the data strictly necessary for the operation of the app:",
+        "identification": {
+          "title": "Identification Data:",
+          "content": "Name and email address through Firebase Authentication."
+        },
+        "location": {
+          "title": "Location Data:",
+          "content": "Only if the user gives explicit consent."
+        },
+        "userContent": {
+          "title": "User Content:",
+          "content": "Photographs submitted by the user (stored on Cloudflare)."
+        },
+        "usage": {
+          "title": "Usage Data:",
+          "content": "Anonymous statistics through Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Purpose of Processing",
+        "intro": "The data is used exclusively for:",
+        "point1": "Managing your user profile and authentication.",
+        "point2": "Allowing you to interact with shelters (add photos, comments, etc.).",
+        "point3": "Improving the application through statistical analysis."
+      },
+      "thirdParties": {
+        "title": "4. Third Parties and Data Transfer",
+        "intro": "We do not share your data with third parties for commercial purposes. However, we use the following service providers (subprocessors) that comply with the GDPR framework:",
+        "firebase": {
+          "title": "Firebase (Google):",
+          "content": "For database and authentication."
+        },
+        "cloudflare": {
+          "title": "Cloudflare:",
+          "content": "For optimization and storage of multimedia content."
+        },
+        "analytics": {
+          "title": "Google Analytics:",
+          "content": "For error tracking and usage metrics."
+        }
+      },
+      "rights": {
+        "title": "5. ARCO Rights (Access, Rectification, Cancellation and Opposition)",
+        "intro": "As a user, you have the right to:",
+        "point1": "Know what data we have about you.",
+        "point2": "Request the rectification or deletion of your data (including your Firebase account).",
+        "point3": "Limit the processing of your data."
+      },
+      "security": {
+        "title": "6. Security",
+        "content": "All data is transmitted securely using HTTPS protocols and stored in infrastructures with high security standards (Firebase/Cloudflare)."
+      }
     }
   }
 }
