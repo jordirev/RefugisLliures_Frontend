@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TabsNavigator Component Amb selectedLocation snapshot test amb selectedLocation 1`] = `
+<Navigator
+  screenOptions={
+    {
+      "headerShown": false,
+      "tabBarShowLabel": false,
+      "tabBarStyle": {
+        "backgroundColor": "#ffffff",
+        "borderTopWidth": 0,
+        "elevation": 0,
+        "height": 60,
+        "paddingBottom": 0,
+        "shadowOpacity": 0,
+      },
+    }
+  }
+>
+  <Screen
+    name="Map"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Favorites"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Renovations"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Profile"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+</Navigator>
+`;
+
+exports[`TabsNavigator Component Renderització bàsica snapshot test 1`] = `
+<Navigator
+  screenOptions={
+    {
+      "headerShown": false,
+      "tabBarShowLabel": false,
+      "tabBarStyle": {
+        "backgroundColor": "#ffffff",
+        "borderTopWidth": 0,
+        "elevation": 0,
+        "height": 60,
+        "paddingBottom": 0,
+        "shadowOpacity": 0,
+      },
+    }
+  }
+>
+  <Screen
+    name="Map"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Favorites"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Renovations"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+  <Screen
+    name="Profile"
+    options={
+      {
+        "tabBarIcon": [Function],
+      }
+    }
+  />
+</Navigator>
+`;

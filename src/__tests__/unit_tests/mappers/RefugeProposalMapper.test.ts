@@ -156,6 +156,88 @@ describe('RefugeProposalMapper', () => {
       expect(result.refuge_snapshot).toBeTruthy();
       expect(result.refuge_snapshot.name).toBe('Refugi Parcial');
     });
+
+    it('hauria de mapejar snapshot amb coord i name complets', () => {
+      const proposalDTO: RefugeProposalDTO = {
+        id: 'proposal-6',
+        refuge_id: 'refuge-full',
+        refuge_snapshot: {
+          id: 'refuge-full',
+          name: 'Refugi Complet',
+          coord: { lat: 42.5, lon: 1.5 },
+          altitude: 2000,
+          places: 50,
+          massif: 'Pirineus',
+          departement: 'Lleida',
+          type: 'non gardé',
+          etat: 2,
+          geojsonId: 'geo-456',
+          modified_at: '2025-01-01T00:00:00Z',
+          images_metadata: [],
+        },
+        action: 'update',
+        payload: { altitude: 2100 },
+        comment: null,
+        status: 'pending',
+        creator_uid: 'user-xyz',
+        created_at: '2025-06-22T12:00:00Z',
+        reviewer_uid: null,
+        reviewed_at: null,
+        rejection_reason: null,
+      };
+
+      const result = mapRefugeProposalFromDTO(proposalDTO);
+
+      expect(result.refuge_snapshot).not.toBeNull();
+      expect(result.refuge_snapshot.name).toBe('Refugi Complet');
+    });
+
+    it('hauria de gestionar error en el mapeig', () => {
+      // Crear un DTO que pugui causar un error
+      const invalidDTO = {
+        id: 'proposal-error',
+        refuge_id: null,
+        refuge_snapshot: null,
+        action: 'create',
+        payload: null,
+        comment: null,
+        status: 'pending',
+        creator_uid: 'user-err',
+        created_at: '2025-06-23T00:00:00Z',
+        reviewer_uid: null,
+        reviewed_at: null,
+        rejection_reason: null,
+      } as RefugeProposalDTO;
+
+      // El mapeig hauria de funcionar sense errors
+      const result = mapRefugeProposalFromDTO(invalidDTO);
+      expect(result.id).toBe('proposal-error');
+    });
+
+    it('hauria de gestionar snapshot sense name però amb coord', () => {
+      const proposalDTO: RefugeProposalDTO = {
+        id: 'proposal-7',
+        refuge_id: 'refuge-noname',
+        refuge_snapshot: {
+          coord: { lat: 42.5, lon: 1.5 },
+          // sense name
+        } as any,
+        action: 'update',
+        payload: { places: 25 },
+        comment: null,
+        status: 'pending',
+        creator_uid: 'user-noname',
+        created_at: '2025-06-24T00:00:00Z',
+        reviewer_uid: null,
+        reviewed_at: null,
+        rejection_reason: null,
+      };
+
+      const result = mapRefugeProposalFromDTO(proposalDTO);
+
+      // Hauria de retornar el snapshot parcial
+      expect(result.refuge_snapshot).toBeTruthy();
+    });
   });
 
   describe('mapRefugeProposalsFromDTO', () => {
