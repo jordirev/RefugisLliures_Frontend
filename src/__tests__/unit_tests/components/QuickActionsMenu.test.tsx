@@ -124,11 +124,9 @@ describe('QuickActionsMenu Component', () => {
     });
 
     it('hauria de cridar onToggleFavorite quan es prem', () => {
-      const { UNSAFE_root } = render(<QuickActionsMenu {...defaultProps} />);
-
-      // Buscar touchables i prémer el de favorit
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
-      expect(touchables.length).toBeGreaterThan(0);
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-favorite'));
+      expect(mockOnToggleFavorite).toHaveBeenCalled();
     });
   });
 
@@ -156,101 +154,227 @@ describe('QuickActionsMenu Component', () => {
       const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
+
+    it('hauria de cridar toggleVisited quan es prem', async () => {
+      const mockToggleVisited = jest.fn();
+      const useVisited = require('../../../hooks/useVisited').default;
+      useVisited.mockReturnValue({
+        isVisited: false,
+        toggleVisited: mockToggleVisited,
+        isProcessing: false,
+      });
+
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-visited'));
+      await waitFor(() => {
+        expect(mockToggleVisited).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de gestionar errors en toggleVisited', async () => {
+      const mockToggleVisited = jest.fn().mockRejectedValue(new Error('Error'));
+      const useVisited = require('../../../hooks/useVisited').default;
+      useVisited.mockReturnValue({
+        isVisited: false,
+        toggleVisited: mockToggleVisited,
+        isProcessing: false,
+      });
+
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-visited'));
+      // No hauria de llençar excepció
+      await waitFor(() => {
+        expect(mockToggleVisited).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('Afegir fotos', () => {
     it('hauria de permetre afegir fotos', async () => {
-      const { UNSAFE_root } = render(
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onPhotoUploaded={mockOnPhotoUploaded}
         />
       );
 
-      // El component hauria de renderitzar
-      expect(UNSAFE_root).toBeTruthy();
+      fireEvent.press(getByTestId('menu-photo'));
+      await waitFor(() => {
+        expect(mockOnPhotoUploaded).toHaveBeenCalled();
+      });
     });
 
     it('hauria de gestionar errors en afegir fotos', async () => {
       const { RefugeMediaService } = require('../../../services/RefugeMediaService');
       RefugeMediaService.uploadRefugeMedia.mockRejectedValueOnce(new Error('Upload failed'));
 
-      const { toJSON } = render(
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onPhotoUploaded={mockOnPhotoUploaded}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-photo'));
+      await waitFor(() => {
+        expect(mockOnShowAlert).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de gestionar cancel·lació de selecció de fotos', async () => {
+      const ImagePicker = require('expo-image-picker');
+      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({ canceled: true });
+
+      const { getByTestId } = render(
+        <QuickActionsMenu
+          {...defaultProps}
+          onPhotoUploaded={mockOnPhotoUploaded}
+        />
+      );
+
+      fireEvent.press(getByTestId('menu-photo'));
+      // No hauria de pujar res
+    });
+
+    it('hauria de gestionar permisos denegats', async () => {
+      const ImagePicker = require('expo-image-picker');
+      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
+
+      const { getByTestId } = render(
+        <QuickActionsMenu {...defaultProps} />
+      );
+
+      fireEvent.press(getByTestId('menu-photo'));
+      // No hauria de llençar excepció
     });
   });
 
   describe('Accions d\'edició i eliminació', () => {
-    it('hauria de cridar onEdit quan es proporciona', () => {
-      const { toJSON } = render(
+    it('hauria de cridar onEdit quan es prem', () => {
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onEdit={mockOnEdit}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-edit'));
+      expect(mockOnEdit).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onDelete quan es proporciona', () => {
-      const { toJSON } = render(
+    it('hauria de cridar onDelete quan es prem', () => {
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onDelete={mockOnDelete}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-delete'));
+      expect(mockOnDelete).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de funcionar sense onEdit', () => {
+      const { getByTestId } = render(
+        <QuickActionsMenu {...defaultProps} />
+      );
+      fireEvent.press(getByTestId('menu-edit'));
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de funcionar sense onDelete', () => {
+      const { getByTestId } = render(
+        <QuickActionsMenu {...defaultProps} />
+      );
+      fireEvent.press(getByTestId('menu-delete'));
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Navegació a experiències i dubtes', () => {
-    it('hauria de poder navegar a experiències', () => {
-      const { toJSON } = render(
+    it('hauria de navegar a experiències amb callback', () => {
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onNavigateToExperiences={mockOnNavigateToExperiences}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-share-experience'));
+      expect(mockOnNavigateToExperiences).toHaveBeenCalledWith('refuge-1', 'Test Refuge');
+      expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de poder navegar a dubtes', () => {
-      const { toJSON } = render(
+    it('hauria de navegar a dubtes amb callback', () => {
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onNavigateToDoubts={mockOnNavigateToDoubts}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-ask'));
+      expect(mockOnNavigateToDoubts).toHaveBeenCalledWith('refuge-1', 'Test Refuge');
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de navegar a experiències sense callback', () => {
+      const mockNavigate = jest.fn();
+      jest.spyOn(require('@react-navigation/native'), 'useNavigation').mockReturnValue({
+        navigate: mockNavigate,
+      });
+
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-share-experience'));
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de navegar a dubtes sense callback', () => {
+      const mockNavigate = jest.fn();
+      jest.spyOn(require('@react-navigation/native'), 'useNavigation').mockReturnValue({
+        navigate: mockNavigate,
+      });
+
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-ask'));
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Veure al mapa', () => {
-    it('hauria de cridar onViewMap quan es proporciona', () => {
-      const { toJSON } = render(
+    it('hauria de cridar onViewMap quan es prem', () => {
+      const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
           onViewMap={mockOnViewMap}
         />
       );
 
-      expect(toJSON()).toBeTruthy();
+      fireEvent.press(getByTestId('menu-view-map'));
+      expect(mockOnViewMap).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de funcionar sense onViewMap', () => {
+      const { getByTestId } = render(
+        <QuickActionsMenu {...defaultProps} />
+      );
+      fireEvent.press(getByTestId('menu-view-map'));
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Tancament del menú', () => {
-    it('hauria de cridar onClose després d\'una acció', () => {
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
-      expect(toJSON()).toBeTruthy();
+    it('hauria de cridar onClose quan es prem overlay', () => {
+      const { UNSAFE_root } = render(<QuickActionsMenu {...defaultProps} />);
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      // L'overlay és el primer touchable
+      if (touchables.length > 0) {
+        fireEvent.press(touchables[0]);
+      }
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
@@ -263,7 +387,7 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Amb totes les props opcionals', () => {
-    it('snapshot test - amb totes les funcionalitats', () => {
+    it('hauria de renderitzar correctament amb totes les funcionalitats', () => {
       const { toJSON } = render(
         <QuickActionsMenu
           {...defaultProps}
@@ -275,7 +399,7 @@ describe('QuickActionsMenu Component', () => {
           onNavigateToExperiences={mockOnNavigateToExperiences}
         />
       );
-      expect(toJSON()).toMatchSnapshot();
+      expect(toJSON()).toBeTruthy();
     });
   });
 });

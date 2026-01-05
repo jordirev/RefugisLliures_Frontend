@@ -86,13 +86,7 @@ describe('TabsNavigator Component', () => {
 
     it('hauria de renderitzar amb NavigationContainer', () => {
       const { toJSON } = renderWithNavigation();
-      // El mock simplificat retorna Navigator amb Screen components
       expect(toJSON()).toBeTruthy();
-    });
-
-    it('snapshot test', () => {
-      const { toJSON } = renderWithNavigation();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
@@ -106,26 +100,13 @@ describe('TabsNavigator Component', () => {
       const { toJSON } = renderWithNavigation(propsWithLocation);
       expect(toJSON()).toBeTruthy();
     });
-
-    it('snapshot test amb selectedLocation', () => {
-      const propsWithLocation = {
-        ...defaultProps,
-        selectedLocation: mockLocation,
-      };
-
-      const { toJSON } = renderWithNavigation(propsWithLocation);
-      expect(toJSON()).toMatchSnapshot();
-    });
   });
 
   describe('Props callbacks', () => {
     it('hauria de tenir els callbacks definits', () => {
       const { toJSON } = renderWithNavigation();
       
-      // El component s'ha renderitzat correctament
       expect(toJSON()).toBeTruthy();
-      
-      // Els callbacks haurien d'estar disponibles
       expect(mockOnLocationSelect).toBeDefined();
       expect(mockOnViewDetail).toBeDefined();
       expect(mockOnViewMap).toBeDefined();

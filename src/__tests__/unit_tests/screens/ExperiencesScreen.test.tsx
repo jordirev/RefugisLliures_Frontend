@@ -241,4 +241,184 @@ describe('ExperiencesScreen', () => {
     // The actual mutation would be called after confirmation
     expect(useDeleteExperience).toHaveBeenCalled();
   });
+
+  describe('Creació d\'experiències', () => {
+    it('hauria de cridar createExperience quan s\'envia', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: [] });
+      });
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { getByPlaceholderText } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      // El placeholder real és 'experiences.placeholder' segons l'output del test
+      const input = getByPlaceholderText('experiences.placeholder');
+      fireEvent.changeText(input, 'Nova experiència de prova');
+
+      expect(useCreateExperience).toHaveBeenCalled();
+    });
+
+    it('hauria de gestionar errors en crear experiència', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onError?.({ message: 'Error de creació' });
+      });
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de mostrar indicador de càrrega quan isPending és true', () => {
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: jest.fn(),
+        isPending: true,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Edició d\'experiències', () => {
+    it('hauria de cridar updateExperience quan s\'edita', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: [] });
+      });
+      (useUpdateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { getByTestId } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('edit-btn')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('edit-btn'));
+      expect(useUpdateExperience).toHaveBeenCalled();
+    });
+
+    it('hauria de gestionar errors en editar experiència', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onError?.({ message: 'Error d\'edició' });
+      });
+      (useUpdateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Navegació', () => {
+    it('hauria de navegar enrere quan es prem el botó back', async () => {
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      if (touchables.length > 0) {
+        fireEvent.press(touchables[0]);
+      }
+
+      expect(mockGoBack).toHaveBeenCalled();
+    });
+  });
+
+  describe('Fotos', () => {
+    it('hauria de poder eliminar fotos existents', async () => {
+      const mockDeleteMedia = jest.fn();
+      (useDeleteRefugeMedia as jest.Mock).mockReturnValue({
+        mutate: mockDeleteMedia,
+      });
+      
+      const experienceWithPhotos = {
+        ...mockExperience,
+        photos: [{ id: 'photo-1', url: 'https://example.com/photo.jpg' }],
+      };
+      
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [experienceWithPhotos],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+      expect(useDeleteRefugeMedia).toHaveBeenCalled();
+    });
+  });
+
+  describe('Múltiples experiències', () => {
+    it('hauria de mostrar múltiples experiències', async () => {
+      const multipleExperiences = [
+        mockExperience,
+        { ...mockExperience, id: 'experience-2', text: 'Segona experiència' },
+      ];
+      
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: multipleExperiences,
+        isLoading: false,
+      });
+
+      const { getAllByTestId } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await waitFor(() => {
+        const experiences = getAllByTestId('user-experience');
+        expect(experiences.length).toBe(2);
+      });
+    });
+  });
 });
