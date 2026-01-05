@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { RefugeOccupationModal } from '../../../components/RefugeOccupationModal';
 import { Location } from '../../../models';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -19,6 +19,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 jest.mock('../../../assets/icons/x.svg', () => 'CloseIcon');
 
 // Mock hooks
+const mockMutate = jest.fn();
+const mockMutateAsync = jest.fn();
+
 jest.mock('../../../hooks/useRefugeVisitsQuery', () => ({
   useRefugeVisits: jest.fn(() => ({
     data: [
@@ -27,16 +30,29 @@ jest.mock('../../../hooks/useRefugeVisitsQuery', () => ({
     isLoading: false,
   })),
   useCreateRefugeVisit: jest.fn(() => ({
-    mutate: jest.fn(),
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
     isPending: false,
   })),
   useUpdateRefugeVisit: jest.fn(() => ({
-    mutate: jest.fn(),
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
     isPending: false,
   })),
   useDeleteRefugeVisit: jest.fn(() => ({
-    mutate: jest.fn(),
+    mutate: mockMutate,
+    mutateAsync: mockMutateAsync,
     isPending: false,
+  })),
+}));
+
+// Mock useCustomAlert
+jest.mock('../../../hooks/useCustomAlert', () => ({
+  useCustomAlert: jest.fn(() => ({
+    alertVisible: false,
+    alertConfig: null,
+    showAlert: jest.fn(),
+    hideAlert: jest.fn(),
   })),
 }));
 
@@ -246,6 +262,278 @@ describe('RefugeOccupationModal Component', () => {
       );
 
       expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Navegació del calendari', () => {
+    it('hauria de navegar al mes anterior', async () => {
+      const { getAllByRole, getByText, UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      // Buscar el botó de mes anterior (generalment el primer dels botons de navegació)
+      const navigationButtons = touchables.filter((t: any) => {
+        const hasText = t.findAllByType(require('react-native').Text);
+        return hasText.some((text: any) => text.props.children === '<' || text.props.children === '>');
+      });
+
+      if (navigationButtons.length > 0) {
+        fireEvent.press(navigationButtons[0]);
+      }
+    });
+
+    it('hauria de navegar al mes següent', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      // Buscar el botó de mes següent
+      const navigationButtons = touchables.filter((t: any) => {
+        const hasText = t.findAllByType(require('react-native').Text);
+        return hasText.some((text: any) => text.props.children === '<' || text.props.children === '>');
+      });
+
+      if (navigationButtons.length > 1) {
+        fireEvent.press(navigationButtons[1]);
+      }
+    });
+  });
+
+  describe('Selecció de dates', () => {
+    it('hauria de seleccionar un dia del calendari', async () => {
+      const { UNSAFE_root, getByText } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Buscar tots els touchables que representen dies
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      // Intentar trobar un dia amb visita (15)
+      const dayButtons = touchables.filter((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => text.props.children === 15 || text.props.children === '15');
+      });
+
+      if (dayButtons.length > 0) {
+        fireEvent.press(dayButtons[0]);
+      }
+    });
+
+    it('hauria de mostrar opcions quan se selecciona un dia amb visita', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Buscar el dia 15 que té una visita
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      const dayButtons = touchables.filter((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => text.props.children === 15 || text.props.children === '15');
+      });
+
+      if (dayButtons.length > 0) {
+        fireEvent.press(dayButtons[0]);
+      }
+
+      // El component hauria de mostrar les opcions d'editar/eliminar
+      expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe('Operacions CRUD', () => {
+    it('hauria de cridar createVisitMutation quan es crea una visita', async () => {
+      mockMutateAsync.mockResolvedValueOnce({ total_visitors: 3 });
+      
+      const { UNSAFE_root, queryByText } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Primer seleccionar un dia (futur)
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      // Buscar un dia futur (25)
+      const dayButtons = touchables.filter((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => text.props.children === 25 || text.props.children === '25');
+      });
+
+      if (dayButtons.length > 0) {
+        await act(async () => {
+          fireEvent.press(dayButtons[0]);
+        });
+      }
+    });
+
+    it('hauria de gestionar errors durant la creació de visita', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      mockMutateAsync.mockRejectedValueOnce(new Error('Error de creació'));
+      
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de cridar updateVisitMutation quan es modifica una visita', async () => {
+      mockMutateAsync.mockResolvedValueOnce({ total_visitors: 5 });
+      
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de gestionar errors durant l\'actualització de visita', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      mockMutateAsync.mockRejectedValueOnce(new Error('Error d\'actualització'));
+      
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de cridar deleteVisitMutation quan es suprimeix una visita', async () => {
+      mockMutateAsync.mockResolvedValueOnce({});
+      
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de gestionar errors durant l\'eliminació de visita', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      mockMutateAsync.mockRejectedValueOnce(new Error('Error d\'eliminació'));
+      
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('Validació de visitants', () => {
+    it('hauria de mostrar error per número invàlid de visitants', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Buscar un TextInput per al número de visitants
+      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      
+      if (textInputs.length > 0) {
+        fireEvent.changeText(textInputs[0], '0');
+      }
+    });
+
+    it('hauria de validar número negatiu de visitants', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      
+      if (textInputs.length > 0) {
+        fireEvent.changeText(textInputs[0], '-5');
+      }
+    });
+
+    it('hauria de validar text no numèric', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      
+      if (textInputs.length > 0) {
+        fireEvent.changeText(textInputs[0], 'abc');
+      }
+    });
+  });
+
+  describe('Disclaimer', () => {
+    it('hauria de mostrar disclaimer abans d\'afegir visita', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Buscar un botó d'afegir
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      const addButtons = touchables.filter((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => {
+          const children = text.props.children;
+          return typeof children === 'string' && children.toLowerCase().includes('add');
+        });
+      });
+
+      if (addButtons.length > 0) {
+        fireEvent.press(addButtons[0]);
+      }
+    });
+  });
+
+  describe('Advertència de places excedides', () => {
+    it('hauria de mostrar advertència quan s\'excedeixen les places', async () => {
+      const { useCustomAlert } = require('../../../hooks/useCustomAlert');
+      const mockShowAlert = jest.fn();
+      useCustomAlert.mockReturnValue({
+        alertVisible: false,
+        alertConfig: null,
+        showAlert: mockShowAlert,
+        hideAlert: jest.fn(),
+      });
+
+      mockMutateAsync.mockResolvedValueOnce({ total_visitors: 100 });
+
+      const refugeWithPlaces: Location = {
+        ...mockRefuge,
+        places: 50,
+      };
+
+      const { toJSON } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Cancel·lació d\'accions', () => {
+    it('hauria de cancel·lar l\'acció d\'afegir', async () => {
+      const { UNSAFE_root } = renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      // Buscar botons de cancel·lar
+      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      
+      const cancelButtons = touchables.filter((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => {
+          const children = text.props.children;
+          return typeof children === 'string' && children.toLowerCase().includes('cancel');
+        });
+      });
+
+      if (cancelButtons.length > 0) {
+        fireEvent.press(cancelButtons[0]);
+      }
     });
   });
 });

@@ -396,5 +396,360 @@ describe('UserExperience Component', () => {
       );
       expect(toJSON()).toMatchSnapshot();
     });
+
+    it('hauria de mostrar botons d\'edició i eliminar quan l\'usuari és el creador', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      expect(getByText('common.edit')).toBeTruthy();
+      expect(getByText('common.delete')).toBeTruthy();
+    });
+
+    it('hauria de cridar onDelete quan es prem el botó d\'eliminar', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      fireEvent.press(getByText('common.delete'));
+      expect(mockOnDelete).toHaveBeenCalled();
+    });
+
+    it('hauria d\'entrar en mode edició quan es prem el botó editar', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText, getByDisplayValue } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      fireEvent.press(getByText('common.edit'));
+      
+      // Hauria de mostrar l'input d'edició
+      expect(getByDisplayValue(mockExperience.comment)).toBeTruthy();
+      expect(getByText('common.cancel')).toBeTruthy();
+      expect(getByText('experiences.addPhotos')).toBeTruthy();
+    });
+
+    it('hauria de cancel·lar l\'edició quan es prem cancel·lar', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText, queryByDisplayValue } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      // Entrar en mode edició
+      fireEvent.press(getByText('common.edit'));
+      expect(getByText('common.cancel')).toBeTruthy();
+
+      // Cancel·lar
+      fireEvent.press(getByText('common.cancel'));
+      
+      // Hauria de tornar al mode normal
+      expect(queryByDisplayValue(mockExperience.comment)).toBeNull();
+      expect(getByText('common.edit')).toBeTruthy();
+    });
+
+    it('hauria de permetre modificar el comentari', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText, getByDisplayValue } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      // Entrar en mode edició
+      fireEvent.press(getByText('common.edit'));
+      
+      const input = getByDisplayValue(mockExperience.comment);
+      fireEvent.changeText(input, 'Nou comentari modificat');
+      
+      expect(getByDisplayValue('Nou comentari modificat')).toBeTruthy();
+      // El botó confirm hauria d'aparèixer perquè hi ha canvis
+      expect(getByText('common.confirm')).toBeTruthy();
+    });
+
+    it('hauria de cridar onEdit quan es confirma l\'edició', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText, getByDisplayValue } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      // Entrar en mode edició
+      fireEvent.press(getByText('common.edit'));
+      
+      const input = getByDisplayValue(mockExperience.comment);
+      fireEvent.changeText(input, 'Comentari actualitzat');
+      
+      fireEvent.press(getByText('common.confirm'));
+      
+      expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, 'Comentari actualitzat', []);
+    });
+
+    it('hauria de gestionar afegir fotos durant l\'edició', async () => {
+      const ImagePicker = require('expo-image-picker');
+      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
+        canceled: false,
+        assets: [
+          { uri: 'file://test-photo.jpg', type: 'image' },
+        ],
+      });
+
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      // Entrar en mode edició
+      fireEvent.press(getByText('common.edit'));
+      
+      // Afegir foto
+      await waitFor(async () => {
+        fireEvent.press(getByText('experiences.addPhotos'));
+      });
+      
+      await waitFor(() => {
+        expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de gestionar el cas de permís denegat silenciosament', async () => {
+      const ImagePicker = require('expo-image-picker');
+      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
+
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      fireEvent.press(getByText('common.edit'));
+      fireEvent.press(getByText('experiences.addPhotos'));
+
+      await waitFor(() => {
+        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de mostrar el comptador de caràcters durant l\'edició', () => {
+      const experienceByCurrentUser: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      fireEvent.press(getByText('common.edit'));
+      
+      // Hauria de mostrar el comptador de caràcters
+      expect(getByText(`${mockExperience.comment.length} / 2000`)).toBeTruthy();
+    });
+  });
+
+  describe('Format de data addicional', () => {
+    it('hauria de formatar dates amb hora correctament', () => {
+      const experienceWithTime: Experience = {
+        ...mockExperience,
+        modified_at: '2025-03-20T14:30:00.000Z',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceWithTime}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      expect(getByText('20-03-2025')).toBeTruthy();
+    });
+
+    it('hauria de gestionar data undefined', () => {
+      const experienceWithUndefinedDate: Experience = {
+        ...mockExperience,
+        modified_at: 'undefined',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceWithUndefinedDate}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      expect(getByText('Sense data')).toBeTruthy();
+    });
+
+    it('hauria de parsejar altres formats de data', () => {
+      const experienceWithDifferentFormat: Experience = {
+        ...mockExperience,
+        modified_at: 'March 20, 2025',
+      };
+
+      const { getByText } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceWithDifferentFormat}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      expect(getByText('20-03-2025')).toBeTruthy();
+    });
+  });
+
+  describe('Scroll de fotos', () => {
+    it('hauria de gestionar el scroll de la galeria', () => {
+      const experienceWithMultiplePhotos: Experience = {
+        ...mockExperience,
+        images_metadata: [
+          { key: 'img-1', url: 'https://example.com/photo1.jpg', uploaded_at: '2025-06-15T10:30:00Z', creator_uid: 'user-1' },
+          { key: 'img-2', url: 'https://example.com/photo2.jpg', uploaded_at: '2025-06-15T10:30:00Z', creator_uid: 'user-1' },
+          { key: 'img-3', url: 'https://example.com/photo3.jpg', uploaded_at: '2025-06-15T10:30:00Z', creator_uid: 'user-1' },
+        ],
+      };
+
+      const { UNSAFE_root } = render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceWithMultiplePhotos}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      const scrollView = UNSAFE_root.findAllByType(require('react-native').ScrollView)[0];
+      
+      // Simular scroll
+      fireEvent.scroll(scrollView, {
+        nativeEvent: {
+          contentOffset: { x: 120, y: 0 },
+        },
+      });
+    });
+  });
+
+  describe('Helper function isVideo', () => {
+    it('hauria d\'identificar vídeos MP4', () => {
+      const videoExperience: Experience = {
+        ...mockExperience,
+        images_metadata: [
+          { key: 'vid-1', url: 'https://example.com/video.mp4', uploaded_at: '2025-06-15T10:30:00Z', creator_uid: 'user-1' },
+        ],
+      };
+
+      const { getByTestId } = render(
+        <UserExperience
+          user={mockUser}
+          experience={videoExperience}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      expect(getByTestId('video-thumbnail')).toBeTruthy();
+    });
+
+    it('hauria d\'identificar vídeos MOV', () => {
+      const videoExperience: Experience = {
+        ...mockExperience,
+        images_metadata: [
+          { key: 'vid-1', url: 'https://example.com/video.mov', uploaded_at: '2025-06-15T10:30:00Z', creator_uid: 'user-1' },
+        ],
+      };
+
+      const { getByTestId } = render(
+        <UserExperience
+          user={mockUser}
+          experience={videoExperience}
+          onPhotoPress={mockOnPhotoPress}
+        />
+      );
+
+      expect(getByTestId('video-thumbnail')).toBeTruthy();
+    });
   });
 });

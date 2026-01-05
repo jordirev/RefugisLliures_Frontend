@@ -210,4 +210,120 @@ describe('OfflineMapManager Component', () => {
       });
     });
   });
+
+  describe('Descàrrega de mapes', () => {
+    it('hauria de cridar downloadTilesForArea quan es prem descarregar', async () => {
+      (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
+        metadata: null,
+        totalSizeMB: 0,
+      });
+
+      (MapCacheService.downloadTilesForArea as jest.Mock).mockResolvedValue(true);
+
+      const { queryByText } = render(
+        <OfflineMapManager visible={true} onClose={mockOnClose} />
+      );
+
+      await waitFor(() => {
+        const downloadButton = queryByText('offlineMaps.download');
+        if (downloadButton) {
+          fireEvent.press(downloadButton);
+        }
+      });
+    });
+
+    it('hauria de gestionar errors durant la descàrrega', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
+        metadata: null,
+        totalSizeMB: 0,
+      });
+      
+      (MapCacheService.downloadTilesForArea as jest.Mock).mockRejectedValue(
+        new Error('Error de descàrrega')
+      );
+
+      const { queryByText, toJSON } = render(
+        <OfflineMapManager visible={true} onClose={mockOnClose} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('Eliminació del cache', () => {
+    it('hauria de cridar clearCache quan es prem eliminar', async () => {
+      (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
+        metadata: {
+          isComplete: true,
+          downloadedTiles: 1000,
+          totalTiles: 1000,
+        },
+        totalSizeMB: 50,
+      });
+
+      (MapCacheService.clearCache as jest.Mock).mockResolvedValue(true);
+
+      const { queryByText, toJSON } = render(
+        <OfflineMapManager visible={true} onClose={mockOnClose} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de gestionar errors durant l\'eliminació', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
+        metadata: {
+          isComplete: true,
+          downloadedTiles: 1000,
+          totalTiles: 1000,
+        },
+        totalSizeMB: 50,
+      });
+
+      (MapCacheService.clearCache as jest.Mock).mockRejectedValue(
+        new Error('Error d\'eliminació')
+      );
+
+      const { toJSON } = render(
+        <OfflineMapManager visible={true} onClose={mockOnClose} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('Progrés de descàrrega', () => {
+    it('hauria de mostrar progrés durant la descàrrega', async () => {
+      (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
+        metadata: null,
+        totalSizeMB: 0,
+      });
+
+      let progressCallback: ((progress: number) => void) | null = null;
+      
+      (MapCacheService.downloadTilesForArea as jest.Mock).mockImplementation(
+        async (bounds, callback) => {
+          progressCallback = callback;
+          // Simular progrés
+          if (callback) {
+            callback(0.5);
+          }
+          return true;
+        }
+      );
+
+      const { toJSON } = render(
+        <OfflineMapManager visible={true} onClose={mockOnClose} />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
 });

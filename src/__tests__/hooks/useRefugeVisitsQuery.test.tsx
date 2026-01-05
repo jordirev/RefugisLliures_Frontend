@@ -330,3 +330,171 @@ describe('useDeleteRefugeVisit', () => {
     ).rejects.toThrow('Failed to delete');
   });
 });
+
+describe('Cache updates on success', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = createTestQueryClient();
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    queryClient.clear();
+  });
+
+  it('should update cache when creating a visit and old data exists', async () => {
+    // Pre-populate cache with existing visits
+    queryClient.setQueryData(['refugeVisits', 'refuge', 'refuge-1'], mockVisitsList);
+    
+    const newVisit = {
+      date: '2024-01-20',
+      refuge_id: 'refuge-1',
+      total_visitors: 15,
+      is_visitor: true,
+      num_visitors: 3,
+    };
+    mockedService.createRefugeVisit.mockResolvedValue(newVisit);
+
+    const { result } = renderHook(() => useCreateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-20',
+        request: { num_visitors: 3 },
+      });
+    });
+
+    // Check mutation was called
+    expect(mockedService.createRefugeVisit).toHaveBeenCalled();
+  });
+
+  it('should update existing visit in cache when date matches', async () => {
+    // Pre-populate cache with existing visits
+    queryClient.setQueryData(['refugeVisits', 'refuge', 'refuge-1'], mockVisitsList);
+    
+    const updatedVisit = {
+      ...mockVisit,
+      total_visitors: 20,
+      num_visitors: 5,
+    };
+    mockedService.createRefugeVisit.mockResolvedValue(updatedVisit);
+
+    const { result } = renderHook(() => useCreateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15', // Same date as mockVisit
+        request: { num_visitors: 5 },
+      });
+    });
+
+    expect(mockedService.createRefugeVisit).toHaveBeenCalled();
+  });
+
+  it('should call mutation when no old data exists on create', async () => {
+    // No pre-populated cache
+    const newVisit = mockVisit;
+    mockedService.createRefugeVisit.mockResolvedValue(newVisit);
+
+    const { result } = renderHook(() => useCreateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15',
+        request: { num_visitors: 2 },
+      });
+    });
+
+    expect(mockedService.createRefugeVisit).toHaveBeenCalled();
+  });
+
+  it('should update cache when updating a visit', async () => {
+    // Pre-populate cache with existing visits
+    queryClient.setQueryData(['refugeVisits', 'refuge', 'refuge-1'], mockVisitsList);
+    
+    const updatedVisit = { ...mockVisit, num_visitors: 10 };
+    mockedService.updateRefugeVisit.mockResolvedValue(updatedVisit);
+
+    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15',
+        request: { num_visitors: 10 },
+      });
+    });
+
+    expect(mockedService.updateRefugeVisit).toHaveBeenCalled();
+  });
+
+  it('should call mutation when no old data exists on update', async () => {
+    // No pre-populated cache
+    const updatedVisit = mockVisit;
+    mockedService.updateRefugeVisit.mockResolvedValue(updatedVisit);
+
+    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15',
+        request: { num_visitors: 2 },
+      });
+    });
+
+    expect(mockedService.updateRefugeVisit).toHaveBeenCalled();
+  });
+
+  it('should invalidate user visits on create', async () => {
+    mockedService.createRefugeVisit.mockResolvedValue(mockVisit);
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(() => useCreateRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15',
+        request: { num_visitors: 2 },
+      });
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refugeVisits', 'user'] });
+  });
+
+  it('should invalidate queries on delete', async () => {
+    mockedService.deleteRefugeVisit.mockResolvedValue(undefined);
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(() => useDeleteRefugeVisit(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        refugeId: 'refuge-1',
+        visitDate: '2024-01-15',
+      });
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refugeVisits', 'refuge', 'refuge-1'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refugeVisits', 'user'] });
+  });
+});

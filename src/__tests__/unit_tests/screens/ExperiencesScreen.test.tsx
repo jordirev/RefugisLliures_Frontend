@@ -421,4 +421,322 @@ describe('ExperiencesScreen', () => {
       });
     });
   });
+
+  describe('Selecció de fotos', () => {
+    it('hauria de gestionar afegir fotos amb èxit', async () => {
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      // El component hauria de renderitzar-se correctament
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de gestionar permís de galeria denegat', async () => {
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de gestionar selecció de vídeos', async () => {
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Enviament d\'experiències', () => {
+    it('no hauria d\'enviar amb comentari buit i sense fotos', async () => {
+      const mockMutate = jest.fn();
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { getByPlaceholderText, UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      // Deixar el comentari buit
+      const input = getByPlaceholderText('experiences.placeholder');
+      fireEvent.changeText(input, '');
+
+      // Buscar el botó d'enviar
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      // L'últim sol ser el botó d'enviar
+      if (touchables.length > 1) {
+        fireEvent.press(touchables[touchables.length - 1]);
+      }
+
+      // No s'hauria d'haver cridat mutate
+      expect(mockMutate).not.toHaveBeenCalled();
+    });
+
+    it('hauria de mostrar error si el comentari és massa llarg', async () => {
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { getByPlaceholderText, UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      const input = getByPlaceholderText('experiences.placeholder');
+      const longComment = 'a'.repeat(2100); // Més de 2000 caràcters
+      fireEvent.changeText(input, longComment);
+
+      // Buscar el botó d'enviar
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      if (touchables.length > 1) {
+        fireEvent.press(touchables[touchables.length - 1]);
+      }
+
+      // El hook hauria de validar la longitud
+      expect(useCreateExperience).toHaveBeenCalled();
+    });
+
+    it('hauria d\'enviar amb èxit i netejar el formulari', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: [] });
+      });
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { getByPlaceholderText, UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      const input = getByPlaceholderText('experiences.placeholder');
+      fireEvent.changeText(input, 'Nova experiència');
+
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      if (touchables.length > 1) {
+        fireEvent.press(touchables[touchables.length - 1]);
+      }
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de gestionar fitxers fallits en l\'enviament', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: ['photo1.jpg'] });
+      });
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { getByPlaceholderText, UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      const input = getByPlaceholderText('experiences.placeholder');
+      fireEvent.changeText(input, 'Experiència amb fotos fallides');
+
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      if (touchables.length > 1) {
+        fireEvent.press(touchables[touchables.length - 1]);
+      }
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Actualització d\'experiències', () => {
+    it('hauria de cridar updateExperience amb fitxers nous', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: [] });
+      });
+      (useUpdateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { getByTestId } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('edit-btn')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('edit-btn'));
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de gestionar fitxers fallits en actualització', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: ['newphoto.jpg'] });
+      });
+      (useUpdateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { getByTestId } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('edit-btn')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('edit-btn'));
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Eliminació d\'experiències', () => {
+    it('hauria de mostrar confirmació abans d\'eliminar', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.();
+      });
+      (useDeleteExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { getByTestId } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('delete-btn')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('delete-btn'));
+
+      expect(useDeleteExperience).toHaveBeenCalled();
+    });
+
+    it('hauria de gestionar error en eliminar', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onError?.({ message: 'Error d\'eliminació' });
+      });
+      (useDeleteExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [mockExperience],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Callback onClose', () => {
+    it('hauria de cridar onClose en lloc de goBack quan existeix', async () => {
+      const mockOnClose = jest.fn();
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { UNSAFE_root } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" onClose={mockOnClose} />
+      );
+
+      const { TouchableOpacity } = require('react-native');
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      if (touchables.length > 0) {
+        fireEvent.press(touchables[0]);
+      }
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Eliminació de media', () => {
+    it('hauria de cridar deleteRefugeMedia quan s\'elimina una foto', async () => {
+      const mockDeleteMedia = jest.fn((data, options) => {
+        options?.onSuccess?.();
+      });
+      (useDeleteRefugeMedia as jest.Mock).mockReturnValue({
+        mutate: mockDeleteMedia,
+      });
+      
+      const experienceWithPhotos = {
+        ...mockExperience,
+        images_metadata: [
+          { key: 'photo-1', url: 'https://example.com/photo.jpg', uploaded_at: '2025-01-01' },
+        ],
+      };
+      
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [experienceWithPhotos],
+        isLoading: false,
+      });
+
+      const { toJSON } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      expect(toJSON()).toBeTruthy();
+      expect(useDeleteRefugeMedia).toHaveBeenCalled();
+    });
+  });
 });

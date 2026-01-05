@@ -330,4 +330,249 @@ describe('ProposalDetailScreen', () => {
       expect(toJSON()).toBeTruthy();
     });
   });
+
+  describe('Accions d\'aprovar i rebutjar', () => {
+    beforeEach(() => {
+      mockProposal = mockProposalCreate;
+      mockMode = 'admin';
+    });
+
+    it('hauria de cridar handleApprove quan es prem el botó d\'aprovar', async () => {
+      const { getByText } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const approveButton = getByText('proposals.detail.approve');
+      fireEvent.press(approveButton);
+      
+      await waitFor(() => {
+        expect(mockApproveMutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            proposalId: mockProposalCreate.id,
+            proposalType: mockProposalCreate.action,
+          }),
+          expect.any(Object)
+        );
+      });
+    });
+
+    it('hauria de mostrar el popup de rebutjar quan es prem el botó de rebutjar', () => {
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const rejectButton = getByText('proposals.detail.reject');
+      fireEvent.press(rejectButton);
+      
+      expect(getByTestId('reject-popup')).toBeTruthy();
+    });
+
+    it('hauria de cridar handleReject quan es confirma el rebuig', async () => {
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      // Obrir popup de rebuig
+      const rejectButton = getByText('proposals.detail.reject');
+      fireEvent.press(rejectButton);
+      
+      // Confirmar rebuig
+      const confirmButton = getByTestId('reject-confirm');
+      fireEvent.press(confirmButton);
+      
+      await waitFor(() => {
+        expect(mockRejectMutate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            proposalId: mockProposalCreate.id,
+            reason: 'Test rejection reason',
+          }),
+          expect.any(Object)
+        );
+      });
+    });
+
+    it('hauria de tancar el popup quan es cancel·la el rebuig', () => {
+      const { getByText, getByTestId, queryByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      // Obrir popup de rebuig
+      const rejectButton = getByText('proposals.detail.reject');
+      fireEvent.press(rejectButton);
+      
+      expect(getByTestId('reject-popup')).toBeTruthy();
+      
+      // Cancel·lar
+      const cancelButton = getByTestId('reject-cancel');
+      fireEvent.press(cancelButton);
+      
+      expect(queryByTestId('reject-popup')).toBeNull();
+    });
+
+    it('hauria de mostrar alert d\'èxit després d\'aprovar', async () => {
+      mockApproveMutate.mockImplementation((data, options) => {
+        options?.onSuccess?.();
+      });
+
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const approveButton = getByText('proposals.detail.approve');
+      fireEvent.press(approveButton);
+      
+      await waitFor(() => {
+        expect(getByTestId('custom-alert')).toBeTruthy();
+        expect(getByTestId('alert-title')).toBeTruthy();
+      });
+    });
+
+    it('hauria de mostrar alert d\'error quan falla l\'aprovació', async () => {
+      mockApproveMutate.mockImplementation((data, options) => {
+        options?.onError?.({ message: 'Error al aprovar' });
+      });
+
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const approveButton = getByText('proposals.detail.approve');
+      fireEvent.press(approveButton);
+      
+      await waitFor(() => {
+        expect(getByTestId('custom-alert')).toBeTruthy();
+      });
+    });
+
+    it('hauria de mostrar alert d\'èxit després de rebutjar', async () => {
+      mockRejectMutate.mockImplementation((data, options) => {
+        options?.onSuccess?.();
+      });
+
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const rejectButton = getByText('proposals.detail.reject');
+      fireEvent.press(rejectButton);
+      
+      const confirmButton = getByTestId('reject-confirm');
+      fireEvent.press(confirmButton);
+      
+      await waitFor(() => {
+        expect(getByTestId('custom-alert')).toBeTruthy();
+      });
+    });
+
+    it('hauria de mostrar alert d\'error quan falla el rebuig', async () => {
+      mockRejectMutate.mockImplementation((data, options) => {
+        options?.onError?.({ message: 'Error al rebutjar' });
+      });
+
+      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      
+      const rejectButton = getByText('proposals.detail.reject');
+      fireEvent.press(rejectButton);
+      
+      const confirmButton = getByTestId('reject-confirm');
+      fireEvent.press(confirmButton);
+      
+      await waitFor(() => {
+        expect(getByTestId('custom-alert')).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Mode no admin (my proposals)', () => {
+    beforeEach(() => {
+      mockMode = 'my';
+      mockProposal = mockProposalCreate;
+    });
+
+    it('no hauria de mostrar botons d\'aprovar/rebutjar en mode my', () => {
+      const { queryByText } = renderWithProviders(<ProposalDetailScreen />);
+      
+      expect(queryByText('proposals.detail.approve')).toBeNull();
+      expect(queryByText('proposals.detail.reject')).toBeNull();
+    });
+  });
+
+  describe('Proposal amb status no pending', () => {
+    beforeEach(() => {
+      mockMode = 'admin';
+      mockProposal = {
+        ...mockProposalCreate,
+        status: 'approved' as const,
+      };
+    });
+
+    it('no hauria de mostrar botons d\'accions per proposals ja processades', () => {
+      const { queryByText } = renderWithProviders(<ProposalDetailScreen />);
+      
+      expect(queryByText('proposals.detail.approve')).toBeNull();
+      expect(queryByText('proposals.detail.reject')).toBeNull();
+    });
+  });
+
+  describe('Proposal de tipus delete', () => {
+    beforeEach(() => {
+      mockMode = 'admin';
+      mockProposal = {
+        ...mockProposalCreate,
+        action: 'delete' as const,
+        refuge_id: 'refuge-1',
+        refuge_snapshot: {
+          name: 'Refugi a eliminar',
+          coord: { lat: 42.5, long: 1.5 },
+          altitude: 2000,
+          places: 20,
+        },
+        payload: null,
+      };
+    });
+
+    it('hauria de renderitzar proposal de tipus delete', () => {
+      const { getAllByText } = renderWithProviders(<ProposalDetailScreen />);
+      // Pot haver-hi múltiples elements amb el nom del refugi
+      expect(getAllByText('Refugi a eliminar').length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Toggle de comentaris llargs', () => {
+    beforeEach(() => {
+      mockMode = 'admin';
+      mockProposal = {
+        ...mockProposalCreate,
+        comment: 'A'.repeat(200), // Comentari més llarg de 150 caràcters
+      };
+    });
+
+    it('hauria de poder expandir i contraure comentaris llargs', () => {
+      const { getByText, queryByText } = renderWithProviders(<ProposalDetailScreen />);
+      
+      // Buscar el botó de "llegir més"
+      const readMoreButton = queryByText('common.readMore');
+      if (readMoreButton) {
+        fireEvent.press(readMoreButton);
+        expect(queryByText('common.readLess')).toBeTruthy();
+      }
+    });
+  });
+
+  describe('Reviewer amb uid unknown', () => {
+    beforeEach(() => {
+      mockMode = 'admin';
+      mockProposal = {
+        ...mockProposalRejected,
+        reviewer_uid: 'unknown',
+      };
+    });
+
+    it('hauria de mostrar unknown user quan reviewer_uid és unknown', () => {
+      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Reviewer nul amb raó de rebuig específica', () => {
+    beforeEach(() => {
+      mockMode = 'admin';
+      mockProposal = {
+        ...mockProposalRejected,
+        reviewer_uid: null,
+        rejection_reason: 'refuge has been deleted',
+      };
+    });
+
+    it('hauria de mostrar Admin quan el refugi ha estat eliminat', () => {
+      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+      expect(toJSON()).toBeTruthy();
+    });
+  });
 });

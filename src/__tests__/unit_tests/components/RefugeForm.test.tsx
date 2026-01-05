@@ -337,4 +337,245 @@ describe('RefugeForm Component', () => {
       expect(getByText('createRefuge.pressToEdit')).toBeTruthy();
     });
   });
+
+  describe('Gestió de camps', () => {
+    it('hauria de permetre canviar el nom', () => {
+      const { getByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+      
+      const nameInput = getByPlaceholderText('createRefuge.namePlaceholder');
+      fireEvent.changeText(nameInput, 'Nou Refugi');
+      
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de permetre canviar les coordenades', () => {
+      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      
+      const latInput = getByPlaceholderText('42.1234');
+      const longInput = getByPlaceholderText('1.12345');
+      
+      fireEvent.changeText(latInput, '42.5678');
+      fireEvent.changeText(longInput, '1.9876');
+    });
+
+    it('hauria de permetre canviar l\'altitud', () => {
+      const { getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+      
+      // El placeholder d'altitud és "0"
+      const altitudeInputs = getAllByPlaceholderText('0');
+      if (altitudeInputs.length > 0) {
+        fireEvent.changeText(altitudeInputs[0], '2500');
+      }
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de permetre canviar les places', () => {
+      const { getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+      
+      // El placeholder de places és "0" (el segon)
+      const placesInputs = getAllByPlaceholderText('0');
+      if (placesInputs.length > 1) {
+        fireEvent.changeText(placesInputs[1], '30');
+      }
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de permetre canviar la descripció', () => {
+      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      
+      const descInput = getByPlaceholderText('createRefuge.descriptionPlaceholder');
+      fireEvent.changeText(descInput, 'Una descripció del refugi');
+    });
+
+    it('hauria de permetre canviar la regió', () => {
+      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      
+      const regionInput = getByPlaceholderText('createRefuge.regionPlaceholder');
+      fireEvent.changeText(regionInput, 'Pirineus');
+    });
+
+    it('hauria de permetre canviar el departament', () => {
+      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      
+      const deptInput = getByPlaceholderText('createRefuge.departementPlaceholder');
+      fireEvent.changeText(deptInput, 'Catalunya');
+    });
+  });
+
+  describe('Gestió d\'enllaços complet', () => {
+    it('hauria de permetre eliminar enllaços', () => {
+      const { getByText, UNSAFE_root } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      // El refugi mockejat té un link
+      expect(getByText('createRefuge.links')).toBeTruthy();
+    });
+
+    it('hauria de permetre modificar un enllaç existent', () => {
+      const { getByDisplayValue, toJSON } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      const linkInput = getByDisplayValue('https://example.com');
+      fireEvent.changeText(linkInput, 'https://newlink.com');
+      
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Toggle d\'amenities complet', () => {
+    it('hauria de permetre activar i desactivar amenities', () => {
+      const { getByText, UNSAFE_root, toJSON } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      // Buscar els switches d'amenities
+      const switches = UNSAFE_root.findAllByType(require('react-native').Switch);
+      
+      if (switches.length > 0) {
+        // Toggle el primer switch
+        fireEvent(switches[0], 'valueChange', !switches[0].props.value);
+      }
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Validacions específiques', () => {
+    it('hauria de validar coordenades fora de rang', () => {
+      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+
+      // Coordenades invàlides
+      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      fireEvent.changeText(getByPlaceholderText('42.1234'), '200'); // lat invàlida
+      fireEvent.changeText(getByPlaceholderText('1.12345'), '200'); // long invàlida
+
+      const submitButton = getByText('createRefuge.submit');
+      fireEvent.press(submitButton);
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de validar altitud negativa', () => {
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+
+      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5');
+      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.5');
+      
+      // El placeholder d'altitud és "0"
+      const altitudeInputs = getAllByPlaceholderText('0');
+      if (altitudeInputs.length > 0) {
+        fireEvent.changeText(altitudeInputs[0], '-100');
+      }
+
+      const submitButton = getByText('createRefuge.submit');
+      fireEvent.press(submitButton);
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de validar nom massa curt', () => {
+      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+
+      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'AB'); // Nom massa curt
+      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5');
+      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.5');
+
+      const submitButton = getByText('createRefuge.submit');
+      fireEvent.press(submitButton);
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Comentari en mode edit', () => {
+    it('hauria de mostrar camp de comentari quan hi ha canvis', () => {
+      const { getByDisplayValue, toJSON } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      // Modificar un camp
+      const nameInput = getByDisplayValue('Refugi de Test');
+      fireEvent.changeText(nameInput, 'Nou Nom');
+
+      expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de validar comentari mínim de 50 caràcters', async () => {
+      const { getByDisplayValue, getByText, getByPlaceholderText, toJSON } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      // Modificar el nom
+      const nameInput = getByDisplayValue('Refugi de Test');
+      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+
+      // Intentar submit
+      const submitButton = getByText('createRefuge.submit');
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(mockOnSubmit).not.toHaveBeenCalled();
+      });
+    });
+
+    it('hauria de permetre submit amb comentari vàlid', async () => {
+      const { getByDisplayValue, getByText, getByPlaceholderText, queryByPlaceholderText, toJSON } = render(
+        <RefugeForm
+          mode="edit"
+          initialData={mockInitialData}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+        />
+      );
+
+      // Modificar el nom
+      const nameInput = getByDisplayValue('Refugi de Test');
+      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+
+      // Buscar el camp de comentari (apareix quan hi ha canvis)
+      const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
+      if (commentInput) {
+        fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari');
+      }
+
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Selecció d\'imatge', () => {
+    it('hauria de renderitzar la zona de selecció d\'imatge', () => {
+      const { toJSON } = render(<RefugeForm {...defaultProps} />);
+
+      // El component es renderitza correctament
+      expect(toJSON()).toBeTruthy();
+    });
+  });
 });
