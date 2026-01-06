@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Refugis Lliures",
-    "slug": "refugislliures-frontend",
+    "slug": "refugis-lliures",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,8 +25,11 @@
       "package": "cat.refugislliures.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
-      ]
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +43,12 @@
       ],
       "@react-native-google-signin/google-signin",
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8cdbe180-a8dc-4b85-a1c7-e67a48860e0e"
+      }
+    },
+    "owner": "jordirevs-organization"
   }
 }
