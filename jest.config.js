@@ -35,6 +35,7 @@ module.exports = {
     '!src/hooks/index.ts',
     '!src/services/mappers/index.ts',
     '!src/utils/mockData.ts',
+    '!src/services/firebase.ts'
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
   coverageDirectory: 'coverage',

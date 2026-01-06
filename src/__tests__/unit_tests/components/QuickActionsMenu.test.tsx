@@ -379,10 +379,43 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Format de coordenades', () => {
-    it('hauria de formatar les coordenades correctament', () => {
+    it('hauria de renderitzar el component amb coordenades', () => {
+      // Nota: formatCoord és una funció interna que pot ser utilitzada per futures funcionalitats
       const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
-      // El component hauria de poder formatar les coordenades internament
       expect(toJSON()).toBeTruthy();
+    });
+
+    it('hauria de renderitzar amb diferents coordenades', () => {
+      const refugeWithDifferentCoords: Location = {
+        ...mockRefuge,
+        coord: { lat: 0.0001, long: -123.45678 },
+      };
+      const { toJSON } = render(
+        <QuickActionsMenu {...defaultProps} refuge={refugeWithDifferentCoords} />
+      );
+      expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Error handling de toggleVisited', () => {
+    it('hauria de logar error quan toggleVisited falla', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const mockToggleVisited = jest.fn().mockRejectedValue(new Error('Toggle error'));
+      const useVisited = require('../../../hooks/useVisited').default;
+      useVisited.mockReturnValue({
+        isVisited: false,
+        toggleVisited: mockToggleVisited,
+        isProcessing: false,
+      });
+
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      fireEvent.press(getByTestId('menu-visited'));
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Error toggling visited:', expect.any(Error));
+      });
+
+      consoleSpy.mockRestore();
     });
   });
 

@@ -696,7 +696,7 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
                   {
                     "busy": undefined,
                     "checked": undefined,
-                    "disabled": false,
+                    "disabled": true,
                     "expanded": undefined,
                     "selected": undefined,
                   }
@@ -711,7 +711,7 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
                 }
                 accessible={true}
                 collapsable={false}
-                focusable={true}
+                focusable={false}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
                 onResponderMove={[Function]}
@@ -723,6 +723,7 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
                   {
                     "alignItems": "center",
                     "aspectRatio": 1,
+                    "backgroundColor": "#F3F4F6",
                     "borderRadius": 8,
                     "justifyContent": "center",
                     "marginBottom": 4,
@@ -739,7 +740,9 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
                         "fontSize": 14,
                         "fontWeight": "500",
                       },
-                      false,
+                      {
+                        "color": "#9CA3AF",
+                      },
                       undefined,
                       undefined,
                       false,

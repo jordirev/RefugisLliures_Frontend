@@ -192,31 +192,21 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
             }
           }
         >
-          <View
+          <Image
+            source={
+              {
+                "uri": "https://example.com/avatar.jpg",
+              }
+            }
             style={
               {
-                "alignItems": "center",
-                "backgroundColor": "#FF6900",
                 "borderRadius": 10,
                 "height": 20,
-                "justifyContent": "center",
                 "marginRight": 6,
                 "width": 20,
               }
             }
-          >
-            <Text
-              style={
-                {
-                  "color": "#FFFFFF",
-                  "fontSize": 10,
-                  "fontWeight": "bold",
-                }
-              }
-            >
-              T
-            </Text>
-          </View>
+          />
           <Text
             style={
               {
@@ -255,6 +245,8 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
   </View>
 </Modal>
 `;
+
+exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal no visible 1`] = `null`;
 
 exports[`VideoThumbnail Component snapshot test 1`] = `
 <View

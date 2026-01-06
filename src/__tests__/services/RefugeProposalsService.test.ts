@@ -36,7 +36,7 @@ const mockProposalDTO = {
 // Mock location data with coord for create proposals
 const mockLocation = {
   name: 'New Refuge',
-  coord: '42.5,1.5',  // Required for create proposals
+  coord: { lat: 42.5, long: 1.5 },
   latitude: 42.5,
   longitude: 1.5,
   altitude: 2000,
@@ -99,6 +99,18 @@ describe('RefugeProposalsService', () => {
         .rejects.toThrow('Invalid data');
     });
 
+    it('should handle validation error (400) with empty error', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.proposalCreateRefuge(mockLocation))
+        .rejects.toThrow('Dades invàlides per crear la proposta');
+    });
+
     it('should handle unauthorized error (401)', async () => {
       mockedApiClient.apiPost.mockResolvedValue({
         ok: false,
@@ -133,6 +145,32 @@ describe('RefugeProposalsService', () => {
 
       await expect(RefugeProposalsService.proposalCreateRefuge(mockLocation))
         .rejects.toThrow('Error 400: Bad Request');
+    });
+
+    it('should handle unknown error status', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 418,
+        statusText: 'I\'m a teapot',
+        json: async () => ({ error: 'Custom error' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.proposalCreateRefuge(mockLocation))
+        .rejects.toThrow('Custom error');
+    });
+
+    it('should handle network error', async () => {
+      mockedApiClient.apiPost.mockRejectedValue(new Error('Network error'));
+
+      await expect(RefugeProposalsService.proposalCreateRefuge(mockLocation))
+        .rejects.toThrow('Network error');
+    });
+
+    it('should handle non-Error rejection', async () => {
+      mockedApiClient.apiPost.mockRejectedValue('string error');
+
+      await expect(RefugeProposalsService.proposalCreateRefuge(mockLocation))
+        .rejects.toThrow('No s\'ha pogut crear la proposta de refugi');
     });
   });
 
@@ -177,6 +215,19 @@ describe('RefugeProposalsService', () => {
       );
     });
 
+    it('should list proposals with both filters', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: true,
+        json: async () => [mockProposalDTO],
+      } as Response);
+
+      await RefugeProposalsService.listProposals('approved', 'refuge-1');
+
+      expect(mockedApiClient.apiGet).toHaveBeenCalledWith(
+        expect.stringMatching(/status=approved.*refuge-id=refuge-1|refuge-id=refuge-1.*status=approved/)
+      );
+    });
+
     it('should return empty array for non-array response', async () => {
       mockedApiClient.apiGet.mockResolvedValue({
         ok: true,
@@ -198,6 +249,61 @@ describe('RefugeProposalsService', () => {
 
       await expect(RefugeProposalsService.listProposals())
         .rejects.toThrow('No tens permisos');
+    });
+
+    it('should handle validation error (400)', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => ({ error: 'Invalid filter' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.listProposals())
+        .rejects.toThrow('Invalid filter');
+    });
+
+    it('should handle unauthorized error (401)', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.listProposals())
+        .rejects.toThrow('No estàs autenticat');
+    });
+
+    it('should handle server error (500)', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.listProposals())
+        .rejects.toThrow('Error del servidor');
+    });
+
+    it('should handle unknown error status', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 502,
+        statusText: 'Bad Gateway',
+        json: async () => ({ error: 'Gateway error' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.listProposals())
+        .rejects.toThrow('Gateway error');
+    });
+
+    it('should handle non-Error rejection', async () => {
+      mockedApiClient.apiGet.mockRejectedValue('string error');
+
+      await expect(RefugeProposalsService.listProposals())
+        .rejects.toThrow('No s\'han pogut carregar les propostes de refugis');
     });
   });
 
@@ -240,6 +346,18 @@ describe('RefugeProposalsService', () => {
       expect(result).toEqual([]);
     });
 
+    it('should handle validation error (400)', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => ({ error: 'Invalid status' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.listMyProposals())
+        .rejects.toThrow('Invalid status');
+    });
+
     it('should handle unauthorized error (401)', async () => {
       mockedApiClient.apiGet.mockResolvedValue({
         ok: false,
@@ -263,6 +381,25 @@ describe('RefugeProposalsService', () => {
       await expect(RefugeProposalsService.listMyProposals())
         .rejects.toThrow('Error del servidor');
     });
+
+    it('should handle unknown error status', async () => {
+      mockedApiClient.apiGet.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+        json: async () => ({ error: 'Service down' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.listMyProposals())
+        .rejects.toThrow('Service down');
+    });
+
+    it('should handle non-Error rejection', async () => {
+      mockedApiClient.apiGet.mockRejectedValue('string error');
+
+      await expect(RefugeProposalsService.listMyProposals())
+        .rejects.toThrow('No s\'han pogut carregar les teves propostes de refugis');
+    });
   });
 
   describe('approveProposal', () => {
@@ -279,6 +416,30 @@ describe('RefugeProposalsService', () => {
         {}
       );
       expect(result).toBe(true);
+    });
+
+    it('should handle validation error (400)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => ({ error: 'Invalid proposal' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.approveProposal('invalid'))
+        .rejects.toThrow('Invalid proposal');
+    });
+
+    it('should handle unauthorized error (401)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.approveProposal('proposal-1'))
+        .rejects.toThrow('No estàs autenticat');
     });
 
     it('should handle not found error (404)', async () => {
@@ -316,6 +477,37 @@ describe('RefugeProposalsService', () => {
       await expect(RefugeProposalsService.approveProposal('proposal-1'))
         .rejects.toThrow('No tens permisos');
     });
+
+    it('should handle server error (500)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.approveProposal('proposal-1'))
+        .rejects.toThrow('Error del servidor');
+    });
+
+    it('should handle unknown error status', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 502,
+        statusText: 'Bad Gateway',
+        json: async () => ({ error: 'Gateway error' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.approveProposal('proposal-1'))
+        .rejects.toThrow('Gateway error');
+    });
+
+    it('should handle non-Error rejection', async () => {
+      mockedApiClient.apiPost.mockRejectedValue('string error');
+
+      await expect(RefugeProposalsService.approveProposal('proposal-1'))
+        .rejects.toThrow('No s\'ha pogut aprovar la proposta de refugi');
+    });
   });
 
   describe('rejectProposal', () => {
@@ -348,6 +540,30 @@ describe('RefugeProposalsService', () => {
       );
     });
 
+    it('should handle validation error (400)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        json: async () => ({ error: 'Invalid reason' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1', 'reason'))
+        .rejects.toThrow('Invalid reason');
+    });
+
+    it('should handle unauthorized error (401)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1'))
+        .rejects.toThrow('No estàs autenticat');
+    });
+
     it('should handle not found error (404)', async () => {
       mockedApiClient.apiPost.mockResolvedValue({
         ok: false,
@@ -370,6 +586,49 @@ describe('RefugeProposalsService', () => {
 
       await expect(RefugeProposalsService.rejectProposal('proposal-1'))
         .rejects.toThrow('ja ha estat revisada');
+    });
+
+    it('should handle forbidden error (403)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1'))
+        .rejects.toThrow('No tens permisos');
+    });
+
+    it('should handle server error (500)', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: async () => ({}),
+      } as Response);
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1'))
+        .rejects.toThrow('Error del servidor');
+    });
+
+    it('should handle unknown error status', async () => {
+      mockedApiClient.apiPost.mockResolvedValue({
+        ok: false,
+        status: 502,
+        statusText: 'Bad Gateway',
+        json: async () => ({ error: 'Gateway error' }),
+      } as Response);
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1'))
+        .rejects.toThrow('Gateway error');
+    });
+
+    it('should handle non-Error rejection', async () => {
+      mockedApiClient.apiPost.mockRejectedValue('string error');
+
+      await expect(RefugeProposalsService.rejectProposal('proposal-1'))
+        .rejects.toThrow('No s\'ha pogut rebutjar la proposta de refugi');
     });
   });
 

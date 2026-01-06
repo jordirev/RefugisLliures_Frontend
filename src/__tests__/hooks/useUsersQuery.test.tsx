@@ -18,6 +18,7 @@ import {
   useUserExists,
 } from '../../hooks/useUsersQuery';
 import { UsersService } from '../../services/UsersService';
+import { queryKeys } from '../../config/queryClient';
 
 // Mock the UsersService
 jest.mock('../../services/UsersService');
@@ -29,7 +30,7 @@ const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      gcTime: 0,
+      gcTime: Infinity, // Prevent garbage collection during tests
     },
     mutations: {
       retry: false,
@@ -190,6 +191,104 @@ describe('useAddFavouriteRefuge', () => {
     expect(mockedService.addFavouriteRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
   });
 
+  it('should optimistically update user cache on mutate', async () => {
+    // Pre-populate user cache
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    mockedService.addFavouriteRefuge.mockResolvedValue(mockRefuge);
+
+    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    const updatedUser = queryClient.getQueryData<any>(['users', 'detail', 'user-123']);
+    expect(updatedUser.favourite_refuges).toContain('refuge-new');
+  });
+
+  it('should add refuge to cache on success', async () => {
+    const newRefuge = { ...mockRefuge, id: 'refuge-new' };
+    mockedService.addFavouriteRefuge.mockResolvedValue(newRefuge);
+    
+    // Pre-populate refuges cache
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], [mockRefuge]);
+
+    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'favouriteRefuges']);
+    expect(cachedRefuges).toHaveLength(2);
+  });
+
+  it('should not duplicate refuge in cache if already exists', async () => {
+    mockedService.addFavouriteRefuge.mockResolvedValue(mockRefuge);
+    
+    // Pre-populate with same refuge
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], [mockRefuge]);
+
+    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'favouriteRefuges']);
+    expect(cachedRefuges).toHaveLength(1);
+  });
+
+  it('should rollback on error', async () => {
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], [mockRefuge]);
+    
+    mockedService.addFavouriteRefuge.mockRejectedValue(new Error('Failed'));
+
+    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+      })
+    ).rejects.toThrow();
+
+    // Verify rollback
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'favouriteRefuges']);
+    expect(cachedRefuges).toHaveLength(1);
+  });
+
+  it('should update user favourite_refuges on success', async () => {
+    const newRefuge = { ...mockRefuge, id: 'refuge-new' };
+    mockedService.addFavouriteRefuge.mockResolvedValue(newRefuge);
+    
+    // Pre-populate user cache
+    queryClient.setQueryData(['users', 'detail', 'user-123'], {
+      ...mockUser,
+      favourite_refuges: ['refuge-1'],
+    });
+
+    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    const updatedUser = queryClient.getQueryData<any>(['users', 'detail', 'user-123']);
+    expect(updatedUser.favourite_refuges).toContain('refuge-new');
+  });
+
   it('should handle error when adding favourite', async () => {
     mockedService.addFavouriteRefuge.mockRejectedValue(new Error('Failed to add'));
 
@@ -229,6 +328,86 @@ describe('useRemoveFavouriteRefuge', () => {
     });
 
     expect(mockedService.removeFavouriteRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
+  });
+
+  it('should optimistically remove refuge from cache on mutate', async () => {
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], mockRefugesList);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    mockedService.removeFavouriteRefuge.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'favouriteRefuges']);
+    expect(cachedRefuges?.find(r => r.id === 'refuge-1')).toBeUndefined();
+  });
+
+  it('should update user cache on success', async () => {
+    mockedService.removeFavouriteRefuge.mockResolvedValue(true);
+    
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], mockRefugesList);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], {
+      ...mockUser,
+      favourite_refuges: ['refuge-1', 'refuge-2'],
+    });
+
+    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    const updatedUser = queryClient.getQueryData<any>(['users', 'detail', 'user-123']);
+    expect(updatedUser.favourite_refuges).not.toContain('refuge-1');
+  });
+
+  it('should rollback on error', async () => {
+    // Pre-populate caches
+    const originalRefuges = [...mockRefugesList];
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], originalRefuges);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    
+    mockedService.removeFavouriteRefuge.mockRejectedValue(new Error('Failed'));
+
+    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+      })
+    ).rejects.toThrow();
+
+    // Verify rollback
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'favouriteRefuges']);
+    expect(cachedRefuges).toHaveLength(2);
+  });
+
+  it('should handle when success returns false', async () => {
+    mockedService.removeFavouriteRefuge.mockResolvedValue(false);
+    
+    queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], mockRefugesList);
+
+    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    // Cache should not be modified if success is false
+    expect(mockedService.removeFavouriteRefuge).toHaveBeenCalled();
   });
 
   it('should handle error when removing favourite', async () => {
@@ -309,6 +488,105 @@ describe('useAddVisitedRefuge', () => {
     expect(mockedService.addVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
   });
 
+  it('should optimistically update user cache on mutate', async () => {
+    // Pre-populate user cache
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    mockedService.addVisitedRefuge.mockResolvedValue(mockRefuge);
+
+    const { result } = renderHook(() => useAddVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    // Verify mutation was called
+    expect(mockedService.addVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-new');
+  });
+
+  it('should add refuge to visited cache on success', async () => {
+    const newRefuge = { ...mockRefuge, id: 'refuge-new' };
+    mockedService.addVisitedRefuge.mockResolvedValue(newRefuge);
+    
+    // Pre-populate refuges cache
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], [mockRefuge]);
+
+    const { result } = renderHook(() => useAddVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    // Verify mutation was called
+    expect(mockedService.addVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-new');
+  });
+
+  it('should not duplicate refuge in visited cache if already exists', async () => {
+    mockedService.addVisitedRefuge.mockResolvedValue(mockRefuge);
+    
+    // Pre-populate with same refuge
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], [mockRefuge]);
+
+    const { result } = renderHook(() => useAddVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    // The mutation should have been called
+    expect(mockedService.addVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
+  });
+
+  it('should rollback on error', async () => {
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], [mockRefuge]);
+    
+    mockedService.addVisitedRefuge.mockRejectedValue(new Error('Failed'));
+
+    const { result } = renderHook(() => useAddVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+      })
+    ).rejects.toThrow();
+
+    // Verify rollback - cache should still have only original refuge
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'visitedRefuges']);
+    expect(cachedRefuges).toHaveLength(1);
+  });
+
+  it('should update user visited_refuges on success', async () => {
+    const newRefuge = { ...mockRefuge, id: 'refuge-new' };
+    mockedService.addVisitedRefuge.mockResolvedValue(newRefuge);
+    
+    // Pre-populate user cache with visited_refuges
+    const userWithVisited = {
+      ...mockUser,
+      visited_refuges: ['refuge-1'],
+    };
+    queryClient.setQueryData(['users', 'detail', 'user-123'], userWithVisited);
+
+    const { result } = renderHook(() => useAddVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-new' });
+    });
+
+    // The mutation should have succeeded
+    expect(mockedService.addVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-new');
+  });
+
   it('should handle error when adding visited', async () => {
     mockedService.addVisitedRefuge.mockRejectedValue(new Error('Failed to add'));
 
@@ -348,6 +626,89 @@ describe('useRemoveVisitedRefuge', () => {
     });
 
     expect(mockedService.removeVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
+  });
+
+  it('should optimistically remove refuge from visited cache on mutate', async () => {
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], mockRefugesList);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], {
+      ...mockUser,
+      visited_refuges: ['refuge-1', 'refuge-2'],
+    });
+    mockedService.removeVisitedRefuge.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'visitedRefuges']);
+    expect(cachedRefuges?.find(r => r.id === 'refuge-1')).toBeUndefined();
+  });
+
+  it('should update user visited cache on success', async () => {
+    mockedService.removeVisitedRefuge.mockResolvedValue(true);
+    
+    // Pre-populate caches
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], mockRefugesList);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], {
+      ...mockUser,
+      visited_refuges: ['refuge-1', 'refuge-2'],
+    });
+
+    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    // The mutation should have succeeded
+    expect(mockedService.removeVisitedRefuge).toHaveBeenCalledWith('user-123', 'refuge-1');
+  });
+
+  it('should rollback visited on error', async () => {
+    // Pre-populate caches
+    const originalRefuges = [...mockRefugesList];
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], originalRefuges);
+    queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
+    
+    mockedService.removeVisitedRefuge.mockRejectedValue(new Error('Failed'));
+
+    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await expect(
+      act(async () => {
+        await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+      })
+    ).rejects.toThrow();
+
+    // Verify rollback
+    const cachedRefuges = queryClient.getQueryData<any[]>(['users', 'user-123', 'visitedRefuges']);
+    expect(cachedRefuges).toHaveLength(2);
+  });
+
+  it('should handle when success returns false', async () => {
+    mockedService.removeVisitedRefuge.mockResolvedValue(false);
+    
+    queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], mockRefugesList);
+
+    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ uid: 'user-123', refugeId: 'refuge-1' });
+    });
+
+    // Cache should not be modified if success is false
+    expect(mockedService.removeVisitedRefuge).toHaveBeenCalled();
   });
 
   it('should handle error when removing visited', async () => {

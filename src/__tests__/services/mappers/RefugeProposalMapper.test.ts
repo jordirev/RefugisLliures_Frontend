@@ -129,6 +129,138 @@ describe('RefugeProposalMapper', () => {
       expect(result.status).toBe('rejected');
       expect(result.rejection_reason).toBe('Insufficient information provided');
     });
+
+    it('should handle snapshot with partial data missing name', () => {
+      const dtoWithPartialSnapshot = {
+        ...validProposalDTO,
+        refuge_snapshot: {
+          id: 'refuge-1',
+          // missing name and coord
+          altitude: 2000,
+        },
+      };
+
+      const result = mapRefugeProposalFromDTO(dtoWithPartialSnapshot as any);
+
+      // Should return the partial object as-is since it doesn't have required fields
+      expect(result.refuge_snapshot).toBeDefined();
+      expect(result.refuge_snapshot?.id).toBe('refuge-1');
+    });
+
+    it('should handle snapshot with coord but no name', () => {
+      const dtoWithCoordOnly = {
+        ...validProposalDTO,
+        refuge_snapshot: {
+          id: 'refuge-1',
+          coord: { long: 1.5, lat: 42.5 },
+          // missing name
+        },
+      };
+
+      const result = mapRefugeProposalFromDTO(dtoWithCoordOnly as any);
+
+      expect(result.refuge_snapshot).toBeDefined();
+      expect(result.refuge_snapshot?.coord).toEqual({ long: 1.5, lat: 42.5 });
+    });
+
+    it('should handle error during snapshot mapping and return original dto', () => {
+      // Create a DTO that will cause mapRefugiFromDTO to throw
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      const problematicDTO = {
+        ...validProposalDTO,
+        refuge_snapshot: {
+          name: 'Test',
+          coord: { long: 1.5, lat: 42.5 },
+          // This is a valid snapshot that should be mapped
+        },
+      };
+
+      const result = mapRefugeProposalFromDTO(problematicDTO as any);
+      
+      expect(result.refuge_snapshot).toBeDefined();
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle empty DTO gracefully without throwing', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Create an empty DTO - the mapper returns an object with undefined values
+      const emptyDTO = {} as any;
+
+      const result = mapRefugeProposalFromDTO(emptyDTO);
+      
+      // The mapper should not throw, but return an object with undefined values
+      expect(result).toBeDefined();
+      expect(result.id).toBeUndefined();
+      expect(result.action).toBeUndefined();
+      consoleSpy.mockRestore();
+    });
+
+    it('should preserve payload as raw object for deleted vs missing fields', () => {
+      const dtoWithPayload = {
+        ...validProposalDTO,
+        payload: {
+          name: 'New Name',
+          description: null, // explicitly deleted
+          // altitude is missing (not deleted)
+        },
+      };
+
+      const result = mapRefugeProposalFromDTO(dtoWithPayload);
+
+      expect(result.payload).toEqual({
+        name: 'New Name',
+        description: null,
+      });
+    });
+
+    it('should handle undefined optional fields', () => {
+      const dtoWithUndefined = {
+        id: 'proposal-1',
+        refuge_id: 'refuge-1',
+        refuge_snapshot: null,
+        action: 'edit',
+        payload: {},
+        comment: undefined,
+        status: 'pending',
+        creator_uid: 'user-123',
+        created_at: '2024-01-15T10:00:00Z',
+        reviewer_uid: undefined,
+        reviewed_at: undefined,
+        rejection_reason: undefined,
+      };
+
+      const result = mapRefugeProposalFromDTO(dtoWithUndefined as any);
+
+      expect(result.comment).toBeUndefined();
+      expect(result.reviewer_uid).toBeUndefined();
+      expect(result.reviewed_at).toBeUndefined();
+      expect(result.rejection_reason).toBeUndefined();
+    });
+
+    it('should handle complete refuge_snapshot with all fields', () => {
+      const dtoWithCompleteSnapshot = {
+        ...validProposalDTO,
+        refuge_snapshot: {
+          id: 'refuge-1',
+          name: 'Complete Refuge',
+          coord: { long: 1.5, lat: 42.5 },
+          altitude: 2500,
+          places: 30,
+          description: 'A complete refuge',
+          type: 'refuge',
+          condition: 'good',
+          region: 'Pyrenees',
+          departement: 'Lleida',
+        },
+      };
+
+      const result = mapRefugeProposalFromDTO(dtoWithCompleteSnapshot as any);
+
+      expect(result.refuge_snapshot).toBeDefined();
+      expect(result.refuge_snapshot?.name).toBe('Complete Refuge');
+    });
   });
 
   describe('mapRefugeProposalsFromDTO', () => {
@@ -152,6 +284,42 @@ describe('RefugeProposalMapper', () => {
     it('should return empty array for empty input', () => {
       const result = mapRefugeProposalsFromDTO([]);
       expect(result).toEqual([]);
+    });
+
+    it('should handle array with single proposal', () => {
+      const result = mapRefugeProposalsFromDTO([validProposalDTO]);
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('proposal-1');
+    });
+
+    it('should handle array with multiple actions', () => {
+      const proposals = [
+        { ...validProposalDTO, id: 'p1', action: 'create' },
+        { ...validProposalDTO, id: 'p2', action: 'edit' },
+        { ...validProposalDTO, id: 'p3', action: 'delete' },
+      ];
+
+      const result = mapRefugeProposalsFromDTO(proposals);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].action).toBe('create');
+      expect(result[1].action).toBe('edit');
+      expect(result[2].action).toBe('delete');
+    });
+
+    it('should handle array with different statuses', () => {
+      const proposals = [
+        { ...validProposalDTO, id: 'p1', status: 'pending' },
+        { ...validProposalDTO, id: 'p2', status: 'approved' },
+        { ...validProposalDTO, id: 'p3', status: 'rejected' },
+      ];
+
+      const result = mapRefugeProposalsFromDTO(proposals);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].status).toBe('pending');
+      expect(result[1].status).toBe('approved');
+      expect(result[2].status).toBe('rejected');
     });
   });
 });

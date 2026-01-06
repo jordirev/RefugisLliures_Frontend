@@ -374,6 +374,25 @@ describe('ChangeEmailScreen - Unit Tests', () => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', 'Error canviant el correu');
       });
     });
+
+    it('should handle auth/invalid-email error', async () => {
+      const { getByTestId, getByText } = render(<ChangeEmailScreen />);
+
+      const passwordInput = getByTestId('password-input');
+      const emailInput = getByTestId('new-email-input');
+      const submitButton = getByTestId('submit-button');
+
+      fireEvent.changeText(passwordInput, 'password123');
+      fireEvent.changeText(emailInput, 'newemail@example.com');
+
+      mockChangeEmail.mockRejectedValueOnce({ code: 'auth/invalid-email' });
+
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(getByText('Correu no vàlid')).toBeTruthy();
+      });
+    });
   });
 
   describe('Form State Management', () => {
@@ -490,6 +509,92 @@ describe('ChangeEmailScreen - Unit Tests', () => {
 
       await waitFor(() => {
         expect(mockChangeEmail).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Password Visibility Toggle', () => {
+    it('should toggle password visibility when eye icon is pressed', async () => {
+      const { getByTestId } = render(<ChangeEmailScreen />);
+
+      const toggleButton = getByTestId('toggle-password-visibility');
+      const passwordInput = getByTestId('password-input');
+
+      // Initial state should be secure text entry
+      expect(passwordInput.props.secureTextEntry).toBe(true);
+
+      // Toggle visibility
+      fireEvent.press(toggleButton);
+
+      await waitFor(() => {
+        expect(passwordInput.props.secureTextEntry).toBe(false);
+      });
+
+      // Toggle back
+      fireEvent.press(toggleButton);
+
+      await waitFor(() => {
+        expect(passwordInput.props.secureTextEntry).toBe(true);
+      });
+    });
+  });
+
+  describe('Email clearing on empty input', () => {
+    it('should clear email error when input is cleared', async () => {
+      const { getByTestId, queryByText } = render(<ChangeEmailScreen />);
+
+      const emailInput = getByTestId('new-email-input');
+
+      // Enter invalid email
+      fireEvent.changeText(emailInput, 'invalid');
+      await waitFor(() => {
+        expect(queryByText('Correu no vàlid')).toBeTruthy();
+      });
+
+      // Clear the input
+      fireEvent.changeText(emailInput, '');
+      await waitFor(() => {
+        expect(queryByText('Correu no vàlid')).toBeNull();
+      });
+    });
+  });
+
+  describe('Current email display', () => {
+    it('should display the current email from firebaseUser', () => {
+      const { getByDisplayValue } = render(<ChangeEmailScreen />);
+      
+      // Verify current email is displayed
+      expect(getByDisplayValue('current@example.com')).toBeTruthy();
+    });
+  });
+
+  describe('Password input changes', () => {
+    it('should clear password error when typing in password field', async () => {
+      const { getByTestId } = render(<ChangeEmailScreen />);
+
+      const passwordInput = getByTestId('password-input');
+      const emailInput = getByTestId('new-email-input');
+      const submitButton = getByTestId('submit-button');
+
+      // Set valid email first
+      fireEvent.changeText(emailInput, 'new@example.com');
+      fireEvent.changeText(passwordInput, 'password123');
+
+      // Mock wrong password error
+      mockChangeEmail.mockRejectedValueOnce({ code: 'auth/wrong-password' });
+      
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(getByTestId('password-input')).toBeTruthy();
+      });
+
+      // Now type again to clear error
+      fireEvent.changeText(passwordInput, 'newpassword');
+
+      // Error should be cleared when typing
+      await waitFor(() => {
+        expect(passwordInput.props.value).toBe('newpassword');
       });
     });
   });

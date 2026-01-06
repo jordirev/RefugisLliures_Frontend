@@ -288,4 +288,101 @@ describe('RefugeProposalMapper', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('Gestió d\'errors', () => {
+    it('hauria de gestionar error en mapSnapshotFromDTO i retornar el dto original', () => {
+      // Mockem mapRefugiFromDTO per que llenci un error
+      const RefugiMapper = require('../../../services/mappers/RefugiMapper');
+      const originalMapRefugiFromDTO = RefugiMapper.mapRefugiFromDTO;
+      
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      RefugiMapper.mapRefugiFromDTO = jest.fn(() => {
+        throw new Error('Error de mapeig de refugi');
+      });
+
+      const proposalDTO: RefugeProposalDTO = {
+        id: 'proposal-error-snapshot',
+        refuge_id: 'refuge-error',
+        refuge_snapshot: {
+          id: 'refuge-error',
+          name: 'Refugi amb Error',
+          coord: { lat: 42.5, lon: 1.5 }, // Té coord i name, per tant cridarà mapRefugiFromDTO
+          altitude: 2000,
+          places: 50,
+          massif: 'Pirineus',
+          departement: 'Lleida',
+          type: 'non gardé',
+          etat: 2,
+          geojsonId: 'geo-789',
+          modified_at: '2025-01-01T00:00:00Z',
+          images_metadata: [],
+        },
+        action: 'update',
+        payload: { altitude: 2100 },
+        comment: null,
+        status: 'pending',
+        creator_uid: 'user-error',
+        created_at: '2025-06-25T00:00:00Z',
+        reviewer_uid: null,
+        reviewed_at: null,
+        rejection_reason: null,
+      };
+
+      const result = mapRefugeProposalFromDTO(proposalDTO);
+
+      // Hauria de retornar el dto original quan hi ha error
+      expect(result.refuge_snapshot).toBeTruthy();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[RefugeProposalMapper] Error mapping snapshot:',
+        expect.any(Error)
+      );
+
+      // Restaurar
+      RefugiMapper.mapRefugiFromDTO = originalMapRefugiFromDTO;
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de llençar error quan el mapeig principal falla', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Creem un DTO amb un proxy que falli quan s'accedeix a propietats
+      const handler = {
+        get(target: any, prop: string) {
+          if (prop === 'id') {
+            // Primer accés retorna el valor normal
+            return 'proposal-proxy';
+          }
+          // En el segon accés (durant l'assignació), llancem error
+          if (prop === 'refuge_id') {
+            throw new Error('Error accedint a refuge_id');
+          }
+          return target[prop];
+        }
+      };
+      
+      const baseDTO = {
+        id: 'proposal-proxy',
+        refuge_id: 'refuge-proxy',
+        refuge_snapshot: null,
+        action: 'create',
+        payload: {},
+        comment: null,
+        status: 'pending',
+        creator_uid: 'user-proxy',
+        created_at: '2025-06-26T00:00:00Z',
+        reviewer_uid: null,
+        reviewed_at: null,
+        rejection_reason: null,
+      };
+      
+      const faultyDTO = new Proxy(baseDTO, handler) as unknown as RefugeProposalDTO;
+
+      expect(() => mapRefugeProposalFromDTO(faultyDTO)).toThrow('Error accedint a refuge_id');
+      
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
 });

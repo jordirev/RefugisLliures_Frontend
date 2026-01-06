@@ -177,4 +177,105 @@ describe('LayerSelector Component', () => {
       expect(toJSON()).toBeTruthy();
     });
   });
+
+  describe('Botó Aplicar', () => {
+    it('hauria de cridar onRepresentationChange, onMapLayerChange i onClose quan es prem Aplicar', () => {
+      const { getByText } = render(<LayerSelector {...defaultProps} />);
+
+      const applyButton = getByText('common.apply');
+      fireEvent.press(applyButton);
+
+      expect(mockOnRepresentationChange).toHaveBeenCalledWith('markers');
+      expect(mockOnMapLayerChange).toHaveBeenCalledWith('opentopomap');
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de aplicar els canvis de representació locals', () => {
+      const { getByText, UNSAFE_getAllByType } = render(
+        <LayerSelector {...defaultProps} representation="markers" />
+      );
+
+      // Seleccionar una opció de representació diferent (cluster)
+      const touchables = UNSAFE_getAllByType(require('react-native').TouchableOpacity);
+      // Les opcions de representació són les primeres després del botó tancar
+      // Normalment: overlay, tancar, opció1, opció2, opció-mapa1, opció-mapa2, cancel, apply
+      // Troba l'opció de representació (índex 2 o 3)
+      if (touchables.length >= 5) {
+        fireEvent.press(touchables[3]); // Segona opció de representació (cluster)
+      }
+
+      const applyButton = getByText('common.apply');
+      fireEvent.press(applyButton);
+
+      expect(mockOnRepresentationChange).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('hauria de aplicar els canvis de capa de mapa locals', () => {
+      const { getByText } = render(
+        <LayerSelector {...defaultProps} mapLayer="opentopomap" />
+      );
+
+      // Seleccionar OpenStreetMap
+      const osmOption = getByText('OpenStreetMap');
+      fireEvent.press(osmOption);
+
+      const applyButton = getByText('common.apply');
+      fireEvent.press(applyButton);
+
+      expect(mockOnMapLayerChange).toHaveBeenCalledWith('openstreetmap');
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Botó Cancel·lar', () => {
+    it('hauria de cridar onClose quan es prem Cancel·lar', () => {
+      const { getByText } = render(<LayerSelector {...defaultProps} />);
+
+      const cancelButton = getByText('common.cancel');
+      fireEvent.press(cancelButton);
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('NO hauria de aplicar canvis quan es prem Cancel·lar', () => {
+      const { getByText } = render(<LayerSelector {...defaultProps} />);
+
+      // Canviar selecció
+      const osmOption = getByText('OpenStreetMap');
+      fireEvent.press(osmOption);
+
+      // Cancel·lar
+      const cancelButton = getByText('common.cancel');
+      fireEvent.press(cancelButton);
+
+      // No hauria de cridar onChange
+      expect(mockOnRepresentationChange).not.toHaveBeenCalled();
+      expect(mockOnMapLayerChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Selecció d\'opcions de representació', () => {
+    it('hauria de permetre seleccionar l\'opció de cluster', () => {
+      const { UNSAFE_getAllByType, getByText } = render(
+        <LayerSelector {...defaultProps} representation="markers" />
+      );
+
+      // Trobem totes les TouchableOpacity i fem click a l'opció de cluster
+      const touchables = UNSAFE_getAllByType(require('react-native').TouchableOpacity);
+      
+      // L'ordre típic és: overlay, close, markers-option, cluster-option, osm-option, topo-option, cancel, apply
+      // Cluster hauria de ser l'índex 3 (la segona opció de representació)
+      if (touchables.length >= 4) {
+        fireEvent.press(touchables[3]);
+      }
+
+      // Aplicar
+      const applyButton = getByText('common.apply');
+      fireEvent.press(applyButton);
+
+      // Com que hem canviat a cluster, el callback hauria de rebre 'cluster'
+      expect(mockOnRepresentationChange).toHaveBeenCalled();
+    });
+  });
 });

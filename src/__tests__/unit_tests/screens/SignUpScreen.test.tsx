@@ -16,25 +16,18 @@
  * - Snapshot tests
  */
 
+// Store the backHandler callback for testing
+let backHandlerCallback: (() => boolean) | null = null;
+const mockBackHandlerRemove = jest.fn();
+
+// We rely on the BackHandler mock from jest.setup.js
+// The test will access the callback through the mock calls
+
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { Platform, BackHandler } from 'react-native';
 import { SignUpScreen } from '../../../screens/SignUpScreen';
 import i18n from '../../../i18n';
-
-// Store the backHandler callback for testing
-let backHandlerCallback: (() => boolean) | null = null;
-
-// Mock BackHandler.addEventListener
-const mockBackHandlerRemove = jest.fn();
-const mockBackHandlerAddEventListener = jest.spyOn(BackHandler, 'addEventListener').mockImplementation(
-  (eventName: string, handler: () => boolean) => {
-    if (eventName === 'hardwareBackPress') {
-      backHandlerCallback = handler;
-    }
-    return { remove: mockBackHandlerRemove };
-  }
-);
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -1069,9 +1062,14 @@ describe('SignUpScreen - Unit Tests', () => {
   // BACK HANDLER (Android)
   // ============================================
   describe('BackHandler (Android)', () => {
-    beforeEach(() => {
-      backHandlerCallback = null;
-    });
+    // The global beforeEach already resets backHandlerCallback
+    
+    // Helper to get the captured callback from mock calls
+    const getBackHandlerCallback = (): (() => boolean) | undefined => {
+      const mockCalls = (BackHandler.addEventListener as jest.Mock).mock.calls;
+      const backPressCall = mockCalls.find(call => call[0] === 'hardwareBackPress');
+      return backPressCall?.[1];
+    };
 
     it('hauria de registrar el listener de back', () => {
       render(
@@ -1081,7 +1079,7 @@ describe('SignUpScreen - Unit Tests', () => {
         />
       );
 
-      expect(mockBackHandlerAddEventListener).toHaveBeenCalledWith(
+      expect(BackHandler.addEventListener).toHaveBeenCalledWith(
         'hardwareBackPress',
         expect.any(Function)
       );
@@ -1095,16 +1093,19 @@ describe('SignUpScreen - Unit Tests', () => {
         />
       );
 
+      // Get the captured callback from the mock
+      const callback = getBackHandlerCallback();
+      
       // Simular back press a la pantalla d'idioma
-      if (backHandlerCallback) {
-        const result = backHandlerCallback();
+      if (callback) {
+        const result = callback();
         expect(result).toBe(true);
         expect(mockOnBackToLogin).toHaveBeenCalled();
       }
     });
 
     it('hauria de tornar a la selecció d\'idioma des del formulari', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, queryByText } = render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1118,15 +1119,34 @@ describe('SignUpScreen - Unit Tests', () => {
         expect(getByTestId('username-input')).toBeTruthy();
       });
 
-      // Ara simular back press - hauria de tornar a idioma
-      if (backHandlerCallback) {
-        const result = backHandlerCallback();
-        expect(result).toBe(true);
-      }
+      // Get the LATEST captured callback from the mock
+      // (after advancing to username step, a new callback should be registered)
+      const getLatestCallback = (): (() => boolean) | undefined => {
+        const mockCalls = (BackHandler.addEventListener as jest.Mock).mock.calls;
+        // Get the last call's callback
+        const lastCall = mockCalls[mockCalls.length - 1];
+        if (lastCall && lastCall[0] === 'hardwareBackPress') {
+          return lastCall[1];
+        }
+        return undefined;
+      };
+      
+      const callback = getLatestCallback();
+      
+      // Verify the callback exists and works
+      expect(callback).toBeDefined();
+      
+      // Simular back press - hauria de tornar a idioma
+      await act(async () => {
+        if (callback) {
+          const result = callback();
+          expect(result).toBe(true);
+        }
+      });
 
       await waitFor(() => {
-        expect(getByText('Selecciona el teu idioma')).toBeTruthy();
-      });
+        expect(queryByText('Selecciona el teu idioma')).toBeTruthy();
+      }, { timeout: 2000 });
     });
   });
 

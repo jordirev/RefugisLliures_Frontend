@@ -190,31 +190,44 @@ describe('CreateRenovationScreen', () => {
       });
     });
 
-    it('hauria de gestionar error genèric correctament', () => {
-      // Verifiquem que el component té els callbacks d'error definits
-      mockMutate.mockImplementation((data, options) => {
-        // Verifiquem que onError està definit
-        expect(options.onError).toBeDefined();
-        expect(options.onSuccess).toBeDefined();
-      });
-
+    it('hauria de gestionar error genèric correctament', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Just verify that the mutate is called with error handler
       const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
       
-      // El test verifica que el mutate es crida amb els callbacks correctes
       fireEvent.press(getByTestId('submit-button'));
-      expect(mockMutate).toHaveBeenCalled();
+      
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.objectContaining({
+            onError: expect.any(Function),
+          })
+        );
+      });
+      
+      consoleError.mockRestore();
     });
 
-    it('hauria de gestionar error de solapament (409) correctament', () => {
-      // Verifiquem que el component passa els callbacks necessaris
-      mockMutate.mockImplementation((data, options) => {
-        expect(options.onError).toBeDefined();
-      });
-
+    it('hauria de gestionar error de solapament (409) correctament', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Just verify that the mutate is called with error handler
       const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
       
       fireEvent.press(getByTestId('submit-button'));
-      expect(mockMutate).toHaveBeenCalled();
+      
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.objectContaining({
+            onError: expect.any(Function),
+          })
+        );
+      });
+      
+      consoleError.mockRestore();
     });
   });
 

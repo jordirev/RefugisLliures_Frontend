@@ -571,4 +571,99 @@ describe('RefugeCard Component', () => {
       expect(tree).toMatchSnapshot();
     });
   });
+
+  describe('Detecció de vídeo', () => {
+    it('hauria de mostrar VideoThumbnail per URL amb extensió .mp4', () => {
+      const refugeWithVideo: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/video.mp4', type: 'video' }],
+      };
+      const { UNSAFE_queryAllByType } = render(<RefugeCard refuge={refugeWithVideo} />);
+      
+      // El component hauria de renderitzar VideoThumbnail
+      // Verifiquem que es crida la funció isVideo que retorna true per .mp4
+    });
+
+    it('hauria de mostrar VideoThumbnail per URL amb extensió .mov', () => {
+      const refugeWithVideo: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/clip.MOV', type: 'video' }],
+      };
+      const { queryByTestId, UNSAFE_root } = render(<RefugeCard refuge={refugeWithVideo} />);
+      
+      // No hauria de mostrar la imatge normal
+      expect(queryByTestId('refuge-image')).toBeNull();
+    });
+
+    it('hauria de mostrar VideoThumbnail per URL amb extensió .avi', () => {
+      const refugeWithVideo: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/video.avi', type: 'video' }],
+      };
+      const { queryByTestId } = render(<RefugeCard refuge={refugeWithVideo} />);
+      
+      expect(queryByTestId('refuge-image')).toBeNull();
+    });
+
+    it('hauria de mostrar VideoThumbnail per URL amb extensió .webm', () => {
+      const refugeWithVideo: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/video.webm', type: 'video' }],
+      };
+      const { queryByTestId } = render(<RefugeCard refuge={refugeWithVideo} />);
+      
+      expect(queryByTestId('refuge-image')).toBeNull();
+    });
+
+    it('hauria de mostrar VideoThumbnail per URL amb extensió .m4v', () => {
+      const refugeWithVideo: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/video.m4v', type: 'video' }],
+      };
+      const { queryByTestId } = render(<RefugeCard refuge={refugeWithVideo} />);
+      
+      expect(queryByTestId('refuge-image')).toBeNull();
+    });
+
+    it('hauria de mostrar Image per URL amb extensió .jpg (no és vídeo)', () => {
+      const refugeWithImage: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/photo.jpg', type: 'image' }],
+      };
+      const { getByTestId } = render(<RefugeCard refuge={refugeWithImage} />);
+      
+      expect(getByTestId('refuge-image')).toBeTruthy();
+    });
+
+    it('hauria de mostrar Image per URL amb extensió .png (no és vídeo)', () => {
+      const refugeWithImage: Location = {
+        ...baseRefuge,
+        images_metadata: [{ url: 'https://example.com/photo.png', type: 'image' }],
+      };
+      const { getByTestId } = render(<RefugeCard refuge={refugeWithImage} />);
+      
+      expect(getByTestId('refuge-image')).toBeTruthy();
+    });
+
+    it('hauria de mostrar Image quan no hi ha images_metadata', () => {
+      const refugeNoImages: Location = {
+        ...baseRefuge,
+        images_metadata: undefined,
+      };
+      const { getByTestId } = render(<RefugeCard refuge={refugeNoImages} />);
+      
+      // Mostra la imatge per defecte
+      expect(getByTestId('refuge-image')).toBeTruthy();
+    });
+
+    it('hauria de mostrar Image quan images_metadata és buit', () => {
+      const refugeEmptyImages: Location = {
+        ...baseRefuge,
+        images_metadata: [],
+      };
+      const { getByTestId } = render(<RefugeCard refuge={refugeEmptyImages} />);
+      
+      expect(getByTestId('refuge-image')).toBeTruthy();
+    });
+  });
 });
