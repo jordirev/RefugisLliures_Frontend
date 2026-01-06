@@ -47,6 +47,9 @@ coverage/
 .env.production.local
 .env*.local
 
+# === Google Services ===
+google-services.json
+
 # === TypeScript ===
 *.tsbuildinfo
 
