@@ -83,6 +83,7 @@ jest.mock('../../../hooks/useCustomAlert', () => ({
 // Mock react-query
 let mockCreatorData: any = { uid: 'user-1', username: 'TestUser', avatar_metadata: { url: 'https://example.com/avatar.jpg' } };
 let mockIsLoading = false;
+const mockInvalidateQueries = jest.fn();
 jest.mock('@tanstack/react-query', () => ({
   useQuery: jest.fn(({ queryKey, queryFn, enabled }) => {
     if (enabled === false) {
@@ -93,6 +94,9 @@ jest.mock('@tanstack/react-query', () => ({
       isLoading: mockIsLoading,
     };
   }),
+  useQueryClient: jest.fn(() => ({
+    invalidateQueries: mockInvalidateQueries,
+  })),
 }));
 
 // Mock SVG icons

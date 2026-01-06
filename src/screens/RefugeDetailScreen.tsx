@@ -638,7 +638,7 @@ export function RefugeDetailScreen({
       },
       {
         onSuccess: () => {
-          showAlert(t('common.success'), t('experiences.updateExperience.success') || 'Experiència actualitzada correctament');
+          showAlert(t('common.success'), t('experiences.updateSuccess') || 'Experiència actualitzada correctament');
         },
         onError: (error: any) => {
           showAlert(

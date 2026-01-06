@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Filters } from '../models';
 import XIcon from '../assets/icons/x.svg';
 import FilterIcon from '../assets/icons/filters.svg';
@@ -313,6 +314,7 @@ export function FilterPanel({
               <Text style={styles.applyButtonText}>{t('filters.applyFilters')}</Text>
             </TouchableOpacity>
           </View>
+          <SafeAreaView edges={['bottom']} />
   </View>
         </TouchableWithoutFeedback>
       </TouchableOpacity>

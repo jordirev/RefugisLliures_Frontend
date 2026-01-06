@@ -703,6 +703,7 @@ exports[`LayerSelector Component Renderització bàsica snapshot test - modal ob
           </Text>
         </View>
       </View>
+      <View />
     </View>
   </View>
 </Modal>

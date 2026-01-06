@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { MapCacheService } from '../services/MapCacheService';
 import { CustomAlert } from './CustomAlert';
@@ -139,7 +140,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
           </TouchableOpacity>
         </View>
 
-        <View style={styles.content}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
           {/* Estat del cache */}
           <View style={styles.statusContainer}>
             <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]} />
@@ -244,7 +245,7 @@ export function OfflineMapManager({ visible, onClose }: OfflineMapManagerProps) 
               • Mida aproximada: 80-200 MB
             </Text>
           </View>
-        </View>
+        </ScrollView>
       </View>
       
       {/* CustomAlert */}
@@ -294,8 +295,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6b7280',
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
     padding: 20,
   },
   statusContainer: {

@@ -17,6 +17,7 @@ import { ImageMetadata } from '../models';
 import { RefugeMediaService } from '../services/RefugeMediaService';
 import { UsersService } from '../services/UsersService';
 import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 
@@ -95,6 +96,7 @@ export function PhotoViewerModal({
   hideMetadata = false,
 }: PhotoViewerModalProps) {
   const { firebaseUser } = useAuth();
+  const queryClient = useQueryClient();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const scrollViewRef = useRef<ScrollView>(null);
   const [deleting, setDeleting] = useState(false);
@@ -154,6 +156,13 @@ export function PhotoViewerModal({
             try {
               setDeleting(true);
               await RefugeMediaService.deleteRefugeMedia(refugeId, currentPhoto.key);
+              
+              // Invalidar queries d'experiències per refrescar les dades
+              queryClient.invalidateQueries({ queryKey: ['experiences', 'refuge', refugeId] });
+              // També invalidar el refugi i els seus media
+              queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
+              queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
+              
               if (onPhotoDeleted) {
                 onPhotoDeleted();
               }

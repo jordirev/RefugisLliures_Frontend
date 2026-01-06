@@ -16,17 +16,8 @@ export async function fetchWithLog(input: RequestInfo, init?: RequestInit) {
   const method = (init && init.method) ? init.method : 'GET';
   const urlStr = typeof input === 'string' ? input : (input as Request).url;
 
-  let bodySummary: string | undefined;
-  try {
-    if (init && init.body) {
-      if (typeof init.body === 'string') bodySummary = init.body;
-      else bodySummary = JSON.stringify(init.body);
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  logApi(method, urlStr, bodySummary ? `body=${bodySummary}` : undefined);
+  // Log només el mètode i la URL, sense el body per seguretat (pot contenir tokens o dades sensibles)
+  logApi(method, urlStr, undefined);
 
   // Use the original fetch implementation captured at module load time to avoid
   // recursive calls if global.fetch is replaced with this function.

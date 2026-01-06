@@ -71,7 +71,6 @@ export class AuthService {
 
       // 3. Enviar email de verificació
       await sendEmailVerification(firebaseUser);
-      console.log('Email de verificació enviat a:', signUpData.email);
 
       // 4. Obtenir el token d'autenticació
       const token = await firebaseUser.getIdToken();
@@ -90,12 +89,6 @@ export class AuthService {
         await firebaseUser.delete();
         throw new Error('Error creant l\'usuari al backend');
       }
-
-      console.log('Usuari creat correctament:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName
-      });
 
       // 6. Tancar la sessió perquè l'usuari hagi de fer login després de verificar el correu
       await signOut(auth);
@@ -123,12 +116,6 @@ export class AuthService {
       );
 
       const firebaseUser = userCredential.user;
-
-      console.log('Usuari autenticat:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        emailVerified: firebaseUser.emailVerified
-      });
 
       return firebaseUser;
     } catch (error: any) {
@@ -176,13 +163,6 @@ export class AuthService {
       // 6. Autenticar amb Firebase
       const userCredential = await signInWithCredential(auth, googleCredential);
       const firebaseUser = userCredential.user;
-
-      console.log('Usuari autenticat amb Google:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
-      });
 
       // 7. Obtenir el token d'autenticació de Firebase
       const token = await firebaseUser.getIdToken();
@@ -243,7 +223,6 @@ export class AuthService {
   static async resetPassword(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
-      console.log('Email de recuperació enviat a:', email);
     } catch (error: any) {
       console.error('Error enviant email de recuperació:', error);
       throw error;
@@ -267,7 +246,6 @@ export class AuthService {
       }
 
       await sendEmailVerification(targetUser);
-      console.log('Email de verificació reenviat a:', targetUser.email);
     } catch (error: any) {
       console.error('Error reenviant email de verificació:', error);
       throw error;
