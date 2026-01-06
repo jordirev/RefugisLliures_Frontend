@@ -598,4 +598,55 @@ describe('ChangeEmailScreen - Unit Tests', () => {
       });
     });
   });
+
+  describe('Android BackHandler', () => {
+    let originalPlatform: any;
+    let backPressCallback: (() => boolean) | null = null;
+
+    beforeEach(() => {
+      originalPlatform = require('react-native').Platform;
+      backPressCallback = null;
+      
+      jest.spyOn(require('react-native').BackHandler, 'addEventListener').mockImplementation((event, callback) => {
+        backPressCallback = callback;
+        return { remove: jest.fn() };
+      });
+    });
+
+    afterEach(() => {
+      require('react-native').Platform.OS = originalPlatform.OS;
+    });
+
+    it('should register BackHandler on Android', () => {
+      require('react-native').Platform.OS = 'android';
+      
+      const { BackHandler } = require('react-native');
+      render(<ChangeEmailScreen />);
+
+      expect(BackHandler.addEventListener).toHaveBeenCalledWith('hardwareBackPress', expect.any(Function));
+    });
+
+    it('should navigate to Settings on back press', () => {
+      require('react-native').Platform.OS = 'android';
+      
+      render(<ChangeEmailScreen />);
+
+      expect(backPressCallback).not.toBeNull();
+      const result = backPressCallback!();
+      
+      expect(result).toBe(true);
+      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+    });
+
+    it('should not register BackHandler on iOS', () => {
+      require('react-native').Platform.OS = 'ios';
+      
+      const { BackHandler } = require('react-native');
+      BackHandler.addEventListener.mockClear();
+      
+      render(<ChangeEmailScreen />);
+
+      expect(BackHandler.addEventListener).not.toHaveBeenCalled();
+    });
+  });
 });

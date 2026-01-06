@@ -8,12 +8,25 @@
  * - Navegació
  * - Gestió d'errors
  * - Snapshot tests
+ * - Mutation callbacks (onSuccess, onError)
  */
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { EditRenovationScreen } from '../../../screens/EditRenovationScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Mock useCustomAlert
+const mockShowAlert = jest.fn();
+const mockHideAlert = jest.fn();
+jest.mock('../../../hooks/useCustomAlert', () => ({
+  useCustomAlert: () => ({
+    showAlert: mockShowAlert,
+    hideAlert: mockHideAlert,
+    alertVisible: false,
+    alertConfig: null,
+  }),
+}));
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -37,23 +50,32 @@ jest.mock('../../../components/RenovationForm', () => ({
         {initialData && <Text testID="initial-data">Has Initial Data</Text>}
         <TouchableOpacity 
           testID="submit-button" 
-          onPress={() => onSubmit(
-            { 
-              refuge_id: '1', 
-              ini_date: '2026-01-15', 
-              fin_date: '2026-01-20', 
-              description: 'Updated', 
-              group_link: 'https://chat.whatsapp.com/test' 
-            }, 
-            true, 
-            { description: 'Updated' }
-          )}
+          onPress={() => {
+            // Capturar errors de la promesa per evitar errors no capturats
+            const result = onSubmit(
+              { 
+                refuge_id: '1', 
+                ini_date: '2026-01-15', 
+                fin_date: '2026-01-20', 
+                description: 'Updated', 
+                group_link: 'https://chat.whatsapp.com/test' 
+              }, 
+              true, 
+              { description: 'Updated' }
+            );
+            // Gestionar la promesa si existeix
+            if (result && result.catch) {
+              result.catch(() => {
+                // Error gestionat silenciosament
+              });
+            }
+          }}
         >
           <Text>Submit</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           testID="submit-no-changes-button" 
-          onPress={() => onSubmit(initialData, false, {})}
+          onPress={() => onSubmit(initialData, false, {})?.catch?.(() => {})}
         >
           <Text>Submit No Changes</Text>
         </TouchableOpacity>
@@ -351,6 +373,235 @@ describe('EditRenovationScreen', () => {
 
       const { toJSON } = renderWithProviders(<EditRenovationScreen />);
       expect(toJSON()).toBeTruthy();
+    });
+  });
+
+  describe('Mutation callbacks', () => {
+    it('hauria de navegar a detall quan onSuccess es crida', async () => {
+      const updatedRenovation = { ...mockRenovation, id: 'updated-id', description: 'Updated' };
+      mockMutate.mockImplementation((data, options) => {
+        // Cridar onSuccess directament per cobrir les línies 92-95
+        if (options?.onSuccess) {
+          options.onSuccess(updatedRenovation);
+        }
+      });
+
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', {
+          renovationId: updatedRenovation.id,
+          renovation: updatedRenovation,
+        });
+      });
+    });
+
+    it('hauria de mostrar alerta amb error de conflicte (overlappingRenovation)', async () => {
+      const overlappingError = {
+        overlappingRenovation: { id: 'overlap-1', ini_date: '2026-01-10' },
+        message: 'Conflict',
+      };
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(overlappingError);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith(
+          undefined,
+          'createRenovation.errors.overlapMessage',
+          expect.arrayContaining([
+            expect.objectContaining({ text: 'common.ok' }),
+            expect.objectContaining({ text: 'createRenovation.viewOverlappingRenovation' }),
+          ])
+        );
+      });
+
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de cridar hideAlert quan es prem OK en error de conflicte', async () => {
+      const overlappingError = {
+        overlappingRenovation: { id: 'overlap-1' },
+      };
+      
+      let capturedButtons: any[] = [];
+      mockShowAlert.mockImplementation((title, message, buttons) => {
+        capturedButtons = buttons || [];
+      });
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(overlappingError);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(capturedButtons.length).toBe(2);
+      });
+
+      // Prémer el botó OK (primer botó)
+      const okButton = capturedButtons[0];
+      if (okButton?.onPress) {
+        okButton.onPress();
+      }
+
+      expect(mockHideAlert).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de cridar handleCancel quan es prem viewOverlappingRenovation', async () => {
+      const overlappingError = {
+        overlappingRenovation: { id: 'overlap-1' },
+      };
+      
+      let capturedButtons: any[] = [];
+      mockShowAlert.mockImplementation((title, message, buttons) => {
+        capturedButtons = buttons || [];
+      });
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(overlappingError);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(capturedButtons.length).toBe(2);
+      });
+
+      // Prémer el botó viewOverlappingRenovation (segon botó)
+      const viewButton = capturedButtons[1];
+      if (viewButton?.onPress) {
+        viewButton.onPress();
+      }
+
+      expect(mockHideAlert).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de mostrar alerta amb error genèric', async () => {
+      const genericError = {
+        message: 'Generic error message',
+      };
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(genericError);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith('common.error', 'Generic error message');
+      });
+
+      consoleSpy.mockRestore();
+    });
+
+    it('hauria de mostrar missatge per defecte quan error no té message', async () => {
+      const errorWithoutMessage = {};
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(errorWithoutMessage);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith('common.error', 'renovations.errorUpdating');
+      });
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('CustomAlert buttons with icon', () => {
+    it('hauria de renderitzar el botó amb icona quan és viewOverlappingRenovation', async () => {
+      const overlappingError = {
+        overlappingRenovation: { id: 'overlap-1' },
+      };
+      
+      let capturedButtons: any[] = [];
+      mockShowAlert.mockImplementation((title, message, buttons) => {
+        capturedButtons = buttons || [];
+      });
+
+      mockMutate.mockImplementation((data, options) => {
+        if (options?.onError) {
+          options.onError(overlappingError);
+        }
+      });
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const { getByTestId } = renderWithProviders(<EditRenovationScreen />);
+
+      await waitFor(() => {
+        expect(getByTestId('submit-button')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(capturedButtons.length).toBe(2);
+        // Verificar que el segon botó té el text correcte
+        expect(capturedButtons[1].text).toBe('createRenovation.viewOverlappingRenovation');
+      });
+
+      consoleSpy.mockRestore();
     });
   });
 });

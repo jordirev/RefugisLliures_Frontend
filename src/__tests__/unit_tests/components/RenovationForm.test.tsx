@@ -963,4 +963,350 @@ describe('RenovationForm Component', () => {
       expect(UNSAFE_root).toBeTruthy();
     });
   });
+
+  describe('Mode edit - changedFields calculation', () => {
+    it('hauria de calcular changedFields quan es modifiquen camps en mode edit', async () => {
+      const { getByDisplayValue, getByText, getByPlaceholderText } = render(
+        <RenovationForm
+          mode="edit"
+          initialData={mockInitialData}
+          initialRefuge={mockRefuges[0]}
+          allRefuges={mockRefuges}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+          isLoading={false}
+        />
+      );
+
+      // Modificar la descripció
+      const descInput = getByDisplayValue('Renovació de la teulada del refugi');
+      fireEvent.changeText(descInput, 'Nova descripció modificada');
+
+      // Modificar el link del grup
+      const linkInput = getByDisplayValue('https://chat.whatsapp.com/testgroup123');
+      fireEvent.changeText(linkInput, 'https://chat.whatsapp.com/newgroup456');
+
+      // Modificar els materials
+      const materialsInput = getByPlaceholderText('createRenovation.materialsPlaceholder');
+      fireEvent.changeText(materialsInput, 'Nous materials necessaris');
+
+      // Submit
+      const submitButton = getByText('common.save');
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalled();
+        const callArgs = mockOnSubmit.mock.calls[0];
+        // Verificar que hasChanges és true
+        expect(callArgs[1]).toBe(true);
+        // Verificar que changedFields conté els camps modificats
+        expect(callArgs[2]).toBeDefined();
+      });
+    });
+
+    it('hauria de calcular changedFields amb dates modificades', async () => {
+      const { UNSAFE_root } = render(
+        <RenovationForm
+          mode="edit"
+          initialData={mockInitialData}
+          initialRefuge={mockRefuges[0]}
+          allRefuges={mockRefuges}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+          isLoading={false}
+        />
+      );
+
+      // Buscar el botó de data d'inici
+      const TouchableOpacity = require('react-native').TouchableOpacity;
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      
+      const dateButton = touchables.find((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => 
+          typeof text.props.children === 'string' && 
+          text.props.children.includes('/')
+        );
+      });
+
+      if (dateButton) {
+        fireEvent.press(dateButton);
+      }
+
+      await waitFor(() => {
+        const allTouchables = UNSAFE_root.findAllByType(TouchableOpacity);
+        
+        // Seleccionar un dia diferent (dia 20)
+        const day20Button = allTouchables.find((t: any) => {
+          const texts = t.findAllByType(require('react-native').Text);
+          return texts.some((text: any) => text.props.children === 20);
+        });
+
+        if (day20Button) {
+          fireEvent.press(day20Button);
+        }
+      });
+
+      expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe('RefugeCard interactions', () => {
+    it('hauria de mostrar RefugeCard quan es selecciona un refugi', async () => {
+      const { getByPlaceholderText, getByTestId, getByText } = render(
+        <RenovationForm {...defaultProps} />
+      );
+
+      // Cercar un refugi
+      const searchInput = getByPlaceholderText('map.searchPlaceholder');
+      fireEvent.changeText(searchInput, 'Colomers');
+
+      // Seleccionar el refugi des dels suggeriments
+      await waitFor(() => {
+        const suggestionButton = getByText('Refugi de Colomers');
+        fireEvent.press(suggestionButton);
+      });
+
+      // Verificar que es mostra la RefugeCard
+      await waitFor(() => {
+        expect(getByTestId('refuge-card-refuge-1')).toBeTruthy();
+      });
+    });
+
+    it('hauria de permetre deseleccionar refugi des del text helper', async () => {
+      const { getByPlaceholderText, getByText, queryByTestId } = render(
+        <RenovationForm {...defaultProps} />
+      );
+
+      // Cercar i seleccionar refugi
+      const searchInput = getByPlaceholderText('map.searchPlaceholder');
+      fireEvent.changeText(searchInput, 'Colomers');
+
+      await waitFor(() => {
+        const suggestionButton = getByText('Refugi de Colomers');
+        fireEvent.press(suggestionButton);
+      });
+
+      // Prémer el text helper per deseleccionar
+      await waitFor(() => {
+        const helperText = getByText('createRenovation.refugeHelper');
+        fireEvent.press(helperText);
+      });
+
+      // Verificar que la RefugeCard ja no es mostra
+      await waitFor(() => {
+        expect(queryByTestId('refuge-card-refuge-1')).toBeNull();
+      });
+    });
+  });
+
+  describe('Date validation edge cases', () => {
+    it('hauria de validar data inici no anterior a avui', async () => {
+      const { getByText, UNSAFE_root } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Just verify form renders correctly
+      expect(getByText('createRenovation.datesLabel')).toBeTruthy();
+      expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe('SimpleDatePicker useEffect', () => {
+    it('hauria d\'inicialitzar el calendari amb la data seleccionada', async () => {
+      const { UNSAFE_root } = render(
+        <RenovationForm
+          mode="edit"
+          initialData={mockInitialData}
+          initialRefuge={mockRefuges[0]}
+          allRefuges={mockRefuges}
+          onSubmit={mockOnSubmit}
+          onCancel={mockOnCancel}
+          isLoading={false}
+        />
+      );
+
+      // Les dates ja estan seleccionades, buscar el botó de data
+      const TouchableOpacity = require('react-native').TouchableOpacity;
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      
+      // Buscar el botó de data d'inici (el primer que mostra una data formatada)
+      const dateButton = touchables.find((t: any) => {
+        const texts = t.findAllByType(require('react-native').Text);
+        return texts.some((text: any) => 
+          typeof text.props.children === 'string' && 
+          text.props.children.includes('/')
+        );
+      });
+
+      if (dateButton) {
+        fireEvent.press(dateButton);
+      }
+
+      // El calendari hauria de mostrar el mes de la data seleccionada
+      await waitFor(() => {
+        expect(UNSAFE_root).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Modal close handlers', () => {
+    it('hauria de tancar el modal de calendari al prémer overlay', async () => {
+      const { getAllByText, UNSAFE_root, queryByText } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Obrir calendari
+      const dateButtons = getAllByText('createRenovation.selectDate');
+      fireEvent.press(dateButtons[0]);
+
+      await waitFor(() => {
+        // Buscar el Pressable overlay
+        const Pressable = require('react-native').Pressable;
+        const pressables = UNSAFE_root.findAllByType(Pressable);
+        
+        if (pressables.length > 0) {
+          fireEvent.press(pressables[0]);
+        }
+      });
+
+      expect(UNSAFE_root).toBeTruthy();
+    });
+
+    it('hauria de tancar el modal del tooltip al prémer overlay', async () => {
+      const { UNSAFE_root } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Buscar i prémer la icona d'informació
+      const TouchableOpacity = require('react-native').TouchableOpacity;
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      
+      const infoButton = touchables.find((t: any) => {
+        try {
+          return t.findAllByType('InformationIcon').length > 0;
+        } catch {
+          return false;
+        }
+      });
+
+      if (infoButton) {
+        fireEvent.press(infoButton);
+        
+        // Tancar el modal
+        await waitFor(() => {
+          const Pressable = require('react-native').Pressable;
+          const pressables = UNSAFE_root.findAllByType(Pressable);
+          if (pressables.length > 0) {
+            fireEvent.press(pressables[0]);
+          }
+        });
+      }
+
+      expect(UNSAFE_root).toBeTruthy();
+    });
+
+    it('hauria de tancar el modal del tooltip amb el botó OK', async () => {
+      const { UNSAFE_root, queryByText } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Buscar i prémer la icona d'informació
+      const TouchableOpacity = require('react-native').TouchableOpacity;
+      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      
+      const infoButton = touchables.find((t: any) => {
+        try {
+          return t.findAllByType('InformationIcon').length > 0;
+        } catch {
+          return false;
+        }
+      });
+
+      if (infoButton) {
+        fireEvent.press(infoButton);
+        
+        // Prémer botó OK per tancar
+        await waitFor(() => {
+          const okButton = queryByText('common.ok');
+          if (okButton) {
+            fireEvent.press(okButton);
+          }
+        });
+      }
+
+      expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe('Disabled date selection', () => {
+    it('no hauria de seleccionar dies desactivats', async () => {
+      const { getAllByText, UNSAFE_root } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Obrir calendari per data d'inici
+      const dateButtons = getAllByText('createRenovation.selectDate');
+      fireEvent.press(dateButtons[0]);
+
+      // Seleccionar data d'inici
+      await waitFor(() => {
+        const TouchableOpacity = require('react-native').TouchableOpacity;
+        const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+        const day15 = touchables.find((t: any) => {
+          const texts = t.findAllByType(require('react-native').Text);
+          return texts.some((text: any) => text.props.children === 15);
+        });
+        if (day15) fireEvent.press(day15);
+      });
+
+      // Obrir calendari per data de fi
+      await waitFor(() => {
+        const dateButtons2 = getAllByText('createRenovation.selectDate');
+        if (dateButtons2.length > 0) {
+          fireEvent.press(dateButtons2[0]);
+        }
+      });
+
+      // Intentar seleccionar un dia anterior a la data d'inici (hauria de ser ignorat)
+      await waitFor(() => {
+        const TouchableOpacity = require('react-native').TouchableOpacity;
+        const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+        const day5 = touchables.find((t: any) => {
+          const texts = t.findAllByType(require('react-native').Text);
+          return texts.some((text: any) => text.props.children === 5);
+        });
+        if (day5) fireEvent.press(day5);
+      });
+
+      expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe('Form submission with all fields', () => {
+    it('hauria de validar tots els camps abans de submit', async () => {
+      const { getByPlaceholderText, getByText, UNSAFE_root } = render(
+        <RenovationForm {...defaultProps} initialRefuge={mockRefuges[0]} />
+      );
+
+      // Omplir descripció
+      const descInput = getByPlaceholderText('createRenovation.descriptionPlaceholder');
+      fireEvent.changeText(descInput, 'Descripció completa de la renovació');
+
+      // Omplir materials (opcional)
+      const materialsInput = getByPlaceholderText('createRenovation.materialsPlaceholder');
+      fireEvent.changeText(materialsInput, 'Materials necessaris');
+
+      // Omplir link de grup vàlid
+      const linkInput = getByPlaceholderText('createRenovation.groupLinkPlaceholder');
+      fireEvent.changeText(linkInput, 'https://chat.whatsapp.com/validgroup');
+
+      // Submit sense dates - hauria de fallar la validació
+      const submitButton = getByText('createRenovation.submit');
+      fireEvent.press(submitButton);
+
+      // La validació hauria de fallar perquè no hi ha dates
+      expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+  });
 });

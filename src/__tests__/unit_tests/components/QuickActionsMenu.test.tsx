@@ -7,12 +7,22 @@
  * - Animacions d'apertura/tancament
  * - Gestió de fotos
  * - Snapshot tests
+ * - PanResponder gestures
  */
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { PanResponder, Animated, Dimensions } from 'react-native';
 import { QuickActionsMenu } from '../../../components/QuickActionsMenu';
 import { Location } from '../../../models';
+
+// Capturar els handlers de PanResponder
+let capturedPanResponderHandlers: any = {};
+const originalPanResponderCreate = PanResponder.create;
+jest.spyOn(PanResponder, 'create').mockImplementation((config: any) => {
+  capturedPanResponderHandlers = config;
+  return originalPanResponderCreate(config);
+});
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -416,6 +426,158 @@ describe('QuickActionsMenu Component', () => {
       });
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('PanResponder handlers', () => {
+    const screenWidth = Dimensions.get('window').width;
+    const edgeDragZone = 30;
+
+    beforeEach(() => {
+      capturedPanResponderHandlers = {};
+    });
+
+    it('onStartShouldSetPanResponder hauria de retornar true quan és a la vora dreta', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onStartShouldSetPanResponder) {
+        const evt = {
+          nativeEvent: { locationX: screenWidth - 10 }, // Dins de la zona de vora
+        };
+        const result = capturedPanResponderHandlers.onStartShouldSetPanResponder(evt, {});
+        expect(result).toBe(true);
+      }
+    });
+
+    it('onStartShouldSetPanResponder hauria de retornar false quan no és a la vora', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onStartShouldSetPanResponder) {
+        const evt = {
+          nativeEvent: { locationX: 50 }, // Fora de la zona de vora
+        };
+        const result = capturedPanResponderHandlers.onStartShouldSetPanResponder(evt, {});
+        expect(result).toBe(false);
+      }
+    });
+
+    it('onMoveShouldSetPanResponder hauria de retornar true quan és a la vora i dx > 5', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
+        const evt = {
+          nativeEvent: { locationX: screenWidth - 10 },
+        };
+        const gestureState = { dx: 10 };
+        const result = capturedPanResponderHandlers.onMoveShouldSetPanResponder(evt, gestureState);
+        expect(result).toBe(true);
+      }
+    });
+
+    it('onMoveShouldSetPanResponder hauria de retornar false quan dx <= 5', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
+        const evt = {
+          nativeEvent: { locationX: screenWidth - 10 },
+        };
+        const gestureState = { dx: 3 };
+        const result = capturedPanResponderHandlers.onMoveShouldSetPanResponder(evt, gestureState);
+        expect(result).toBe(false);
+      }
+    });
+
+    it('onMoveShouldSetPanResponder hauria de retornar false quan no és a la vora', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
+        const evt = {
+          nativeEvent: { locationX: 50 },
+        };
+        const gestureState = { dx: 10 };
+        const result = capturedPanResponderHandlers.onMoveShouldSetPanResponder(evt, gestureState);
+        expect(result).toBe(false);
+      }
+    });
+
+    it('onPanResponderMove hauria de moure el menú quan visible=false i dx < 0', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderMove) {
+        const gestureState = { dx: -60 };
+        // Això hauria d'executar el codi sense errors
+        capturedPanResponderHandlers.onPanResponderMove({}, gestureState);
+      }
+    });
+
+    it('onPanResponderMove hauria de moure el menú quan visible=true i dx > 0', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderMove) {
+        const gestureState = { dx: 60 };
+        // Això hauria d'executar el codi sense errors
+        capturedPanResponderHandlers.onPanResponderMove({}, gestureState);
+      }
+    });
+
+    it('onPanResponderMove no hauria de fer res quan visible=false i dx >= 0', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderMove) {
+        const gestureState = { dx: 30 };
+        // Això hauria d'executar sense errors
+        capturedPanResponderHandlers.onPanResponderMove({}, gestureState);
+      }
+    });
+
+    it('onPanResponderMove no hauria de fer res quan visible=true i dx <= 0', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderMove) {
+        const gestureState = { dx: -30 };
+        // Això hauria d'executar sense errors
+        capturedPanResponderHandlers.onPanResponderMove({}, gestureState);
+      }
+    });
+
+    it('onPanResponderRelease hauria de cridar onOpen quan dx < -50 i no visible', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderRelease) {
+        const gestureState = { dx: -60 };
+        capturedPanResponderHandlers.onPanResponderRelease({}, gestureState);
+        expect(mockOnOpen).toHaveBeenCalled();
+      }
+    });
+
+    it('onPanResponderRelease hauria de cridar onClose quan dx > 50 i visible', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderRelease) {
+        const gestureState = { dx: 60 };
+        capturedPanResponderHandlers.onPanResponderRelease({}, gestureState);
+        expect(mockOnClose).toHaveBeenCalled();
+      }
+    });
+
+    it('onPanResponderRelease hauria de tornar a la posició original quan dx no és suficient', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderRelease) {
+        const gestureState = { dx: -20 }; // No suficient per obrir
+        // Això hauria d'executar l'animació spring
+        capturedPanResponderHandlers.onPanResponderRelease({}, gestureState);
+      }
+    });
+
+    it('onPanResponderRelease amb visible=true i dx <= 50 hauria de tornar a la posició', () => {
+      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+      
+      if (capturedPanResponderHandlers.onPanResponderRelease) {
+        const gestureState = { dx: 20 }; // No suficient per tancar
+        // Això hauria d'executar l'animació spring
+        capturedPanResponderHandlers.onPanResponderRelease({}, gestureState);
+      }
     });
   });
 

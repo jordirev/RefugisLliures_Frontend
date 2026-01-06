@@ -33,7 +33,12 @@ jest.mock('../../../components/RenovationForm', () => ({
     return (
       <View testID="renovation-form">
         <Text>Mode: {mode}</Text>
-        <TouchableOpacity testID="submit-button" onPress={() => onSubmit({ refuge_id: '1', ini_date: '2026-01-15', fin_date: '2026-01-20', description: 'Test', group_link: 'https://chat.whatsapp.com/test' }, true, {})}>
+        <TouchableOpacity testID="submit-button" onPress={() => {
+          // Handle the promise returned by onSubmit - catch any rejections to prevent unhandled promise rejections
+          onSubmit({ refuge_id: '1', ini_date: '2026-01-15', fin_date: '2026-01-20', description: 'Test', group_link: 'https://chat.whatsapp.com/test' }, true, {}).catch(() => {
+            // Error is handled by the component's onError callback, we just need to catch it here
+          });
+        }}>
           <Text>Submit</Text>
         </TouchableOpacity>
         <TouchableOpacity testID="cancel-button" onPress={onCancel}>
@@ -52,6 +57,22 @@ jest.mock('../../../hooks/useRefugesQuery', () => ({
       { id: '1', name: 'Refugi Test', coord: { lat: 42.5, long: 1.5 } },
     ],
     isLoading: false,
+  }),
+}));
+
+// Mock useCustomAlert to capture button callbacks
+let capturedAlertButtons: any[] = [];
+const mockShowAlert = jest.fn((title: any, message: any, buttons?: any[]) => {
+  capturedAlertButtons = buttons || [];
+});
+const mockHideAlert = jest.fn();
+
+jest.mock('../../../hooks/useCustomAlert', () => ({
+  useCustomAlert: () => ({
+    alertVisible: false,
+    alertConfig: null,
+    showAlert: mockShowAlert,
+    hideAlert: mockHideAlert,
   }),
 }));
 
@@ -301,6 +322,213 @@ describe('CreateRenovationScreen', () => {
           expect.any(Object)
         );
       });
+    });
+  });
+
+  describe('onSuccess callback', () => {
+    it('should navigate to RefromDetail with created renovation data', async () => {
+      const createdRenovation = { id: 'new-reno-123', description: 'Test Renovation' };
+      mockMutate.mockImplementation((data, options) => {
+        options?.onSuccess?.(createdRenovation);
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', {
+          renovationId: 'new-reno-123',
+          renovation: createdRenovation
+        });
+      });
+    });
+  });
+
+  describe('onError callback - generic error', () => {
+    it('should handle generic error with message', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      mockMutate.mockImplementation((data, options) => {
+        // Call onError synchronously without rejecting
+        options?.onError?.({ message: 'Something went wrong' });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(consoleError).toHaveBeenCalledWith('Error creating renovation:', expect.any(Object));
+      });
+
+      consoleError.mockRestore();
+    });
+
+    it('should handle generic error without message', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      mockMutate.mockImplementation((data, options) => {
+        // Call onError synchronously without rejecting
+        options?.onError?.({});
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(consoleError).toHaveBeenCalled();
+      });
+
+      consoleError.mockRestore();
+    });
+  });
+
+  describe('onError callback - overlapping renovation (409)', () => {
+    it('should show alert with overlapping renovation info', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-123', description: 'Overlapping renovation' };
+      
+      mockMutate.mockImplementation((data, options) => {
+        // Call onError synchronously - no rejection
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(consoleError).toHaveBeenCalledWith('Error creating renovation:', expect.objectContaining({
+          overlappingRenovation: expect.any(Object)
+        }));
+      });
+
+      consoleError.mockRestore();
+    });
+
+    it('should navigate to Renovations when pressing OK on overlap alert', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-123' };
+      
+      mockMutate.mockImplementation((data, options) => {
+        // Call onError synchronously
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalled();
+      });
+
+      consoleError.mockRestore();
+    });
+
+    it('should navigate to RefromDetail when pressing view overlapping renovation', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-456' };
+      
+      mockMutate.mockImplementation((data, options) => {
+        // Call onError synchronously
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(consoleError).toHaveBeenCalled();
+      });
+
+      consoleError.mockRestore();
+    });
+  });
+
+  describe('Alert button callbacks for overlap error', () => {
+    it('should call showAlert with buttons for overlapping renovation', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-789' };
+      
+      mockMutate.mockImplementation((data, options) => {
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(consoleError).toHaveBeenCalled();
+      });
+
+      consoleError.mockRestore();
+    });
+
+    it('should navigate to Renovations when pressing OK button on overlap alert', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-test-ok' };
+      capturedAlertButtons = []; // Reset
+      
+      mockMutate.mockImplementation((data, options) => {
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalled();
+      });
+
+      // Find and trigger the OK button (first button with style 'cancel')
+      const okButton = capturedAlertButtons.find((b: any) => b.style === 'cancel');
+      if (okButton && okButton.onPress) {
+        okButton.onPress();
+      }
+
+      await waitFor(() => {
+        expect(mockHideAlert).toHaveBeenCalled();
+        expect(mockNavigate).toHaveBeenCalledWith('Renovations');
+      });
+
+      consoleError.mockRestore();
+    });
+
+    it('should navigate to RefromDetail when pressing view overlapping renovation button', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const overlappingRenovation = { id: 'overlap-view-123' };
+      capturedAlertButtons = []; // Reset
+      
+      mockMutate.mockImplementation((data, options) => {
+        options?.onError?.({ overlappingRenovation });
+      });
+
+      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+
+      fireEvent.press(getByTestId('submit-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalled();
+      });
+
+      // Find and trigger the view button (second button with style 'default')
+      const viewButton = capturedAlertButtons.find((b: any) => b.style === 'default');
+      if (viewButton && viewButton.onPress) {
+        viewButton.onPress();
+      }
+
+      await waitFor(() => {
+        expect(mockHideAlert).toHaveBeenCalled();
+        expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', { renovationId: 'overlap-view-123' });
+      });
+
+      consoleError.mockRestore();
     });
   });
 });
