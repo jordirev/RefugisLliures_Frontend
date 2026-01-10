@@ -193,6 +193,7 @@
     "avatar": {
       "changePhoto": "Canviar foto",
       "deletePhoto": "Eliminar foto",
+      "cropTitle": "Retallar imatge",
       "permissionDenied": "Permís denegat",
       "permissionMessage": "Necessitem permís per accedir a les teves fotos. Si us plau, activa'l des de la configuració del teu dispositiu.",
       "permissionRequired": "Permís necessari",

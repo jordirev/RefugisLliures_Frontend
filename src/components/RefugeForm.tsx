@@ -122,7 +122,10 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
   const [hasChanges, setHasChanges] = useState(false);
   
   // Track if altitude has been manually edited by user
-  const [altitudeManuallyEdited, setAltitudeManuallyEdited] = useState(false);
+  // Si estem en mode edició i ja hi ha una altitud, considerar-la com manualment editada
+  const [altitudeManuallyEdited, setAltitudeManuallyEdited] = useState(
+    mode === 'edit' && initialData?.altitude ? true : false
+  );
 
   // Auto-fetch elevation when latitude and longitude are both filled
   useEffect(() => {

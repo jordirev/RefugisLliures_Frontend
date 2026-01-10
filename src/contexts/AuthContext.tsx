@@ -4,6 +4,8 @@ import type { FirebaseUser } from '../services/AuthService';
 import { User, Location } from '../models';
 import { UsersService } from '../services/UsersService';
 import { changeLanguage, LanguageCode, LANGUAGES } from '../i18n';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../config/queryClient';
 
 interface AuthContextType {
   firebaseUser: FirebaseUser | null;
@@ -38,6 +40,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const queryClient = useQueryClient();
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [backendUser, setBackendUser] = useState<User | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -210,6 +213,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Actualitzar l'estat local
     setBackendUser(updatedUser);
+    
+    // Invalidar la cache de React Query per a aquest usuari
+    queryClient.invalidateQueries({ queryKey: queryKeys.user(firebaseUser.uid) });
   };
 
   // Entrar en mode offline (permet accés sense autenticació)

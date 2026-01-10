@@ -192,6 +192,7 @@
     "avatar": {
       "changePhoto": "Changer la photo",
       "deletePhoto": "Supprimer la photo",
+      "cropTitle": "Recadrer l'image",
       "permissionDenied": "Permission refusée",
       "permissionMessage": "Nous avons besoin de la permission d'accéder à vos photos. Veuillez l'activer depuis les paramètres de votre appareil.",
       "permissionRequired": "Permission requise",

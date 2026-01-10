@@ -187,6 +187,7 @@
       "permissionRequired": "Permission required",
       "permissionOptions": "We need access to your photos to change your profile picture. You can choose between limited access or full access to your gallery.",
       "requestPermission": "Allow access",
+      "cropTitle": "Crop Image",
       "uploadSuccess": "Photo updated",
       "uploadSuccessMessage": "Your profile photo has been updated successfully",
       "uploadError": "Failed to upload photo",

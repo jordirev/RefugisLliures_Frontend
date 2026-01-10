@@ -16,6 +16,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { SearchBar } from './SearchBar';
 import { RefugeCard } from './RefugeCard';
 import { Location } from '../models';
+import { RefugisService } from '../services/RefugisService';
 
 // Icon imports
 import InformationIcon from '../assets/icons/information-circle.svg';
@@ -111,10 +112,23 @@ export function RenovationForm({
     return Array.from(new Set(filteredRefuges.map((loc) => loc.name).filter(Boolean)));
   }, [searchQuery, filteredRefuges]);
 
-  const handleRefugeSelect = (name: string) => {
+  const handleRefugeSelect = async (name: string) => {
     const refuge = allRefuges.find((r) => r.name === name);
-    if (refuge) {
-      setSelectedRefuge(refuge);
+    if (refuge && refuge.id) {
+      // Carregar les dades completes del refugi incloent images_metadata
+      try {
+        const fullRefuge = await RefugisService.getRefugiById(refuge.id);
+        if (fullRefuge) {
+          setSelectedRefuge(fullRefuge);
+        } else {
+          // Si no es pot carregar, usar les dades bàsiques
+          setSelectedRefuge(refuge);
+        }
+      } catch (error) {
+        console.error('Error loading full refuge data:', error);
+        // Si hi ha error, usar les dades bàsiques
+        setSelectedRefuge(refuge);
+      }
       setSearchQuery('');
       setRefugeError(null);
     }

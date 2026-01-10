@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuth, AuthProvider } from '../../../contexts/AuthContext';
 import { AuthService } from '../../../services/AuthService';
 import { UsersService } from '../../../services/UsersService';
@@ -51,9 +52,25 @@ const mockBackendUser = {
 };
 
 describe('useAuth Hook', () => {
+  let queryClient: QueryClient;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
   });
+
+  const createWrapper = () => {
+    return ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>{children}</AuthProvider>
+      </QueryClientProvider>
+    );
+  };
 
   // Note: Testing error when used outside provider is difficult with renderHook
   // as it wraps in a test component. This is better tested in integration tests.
@@ -65,11 +82,7 @@ describe('useAuth Hook', () => {
         return jest.fn(); // unsubscribe function
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -87,11 +100,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -119,11 +128,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -145,11 +150,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      renderHook(() => useAuth(), { wrapper });
+      renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(changeLanguage).toHaveBeenCalledWith('ca');
@@ -169,11 +170,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -194,11 +191,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -222,11 +215,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -248,11 +237,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -273,11 +258,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -299,11 +280,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -329,11 +306,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -355,11 +328,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -381,11 +350,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -407,11 +372,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -433,11 +394,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -470,11 +427,7 @@ describe('useAuth Hook', () => {
         .mockResolvedValueOnce(mockBackendUser)
         .mockResolvedValueOnce(updatedBackendUser);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser?.username).toBe('testuser');
@@ -499,11 +452,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -525,11 +474,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -554,11 +499,7 @@ describe('useAuth Hook', () => {
       });
       (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser).toBeTruthy();
@@ -585,11 +526,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -610,11 +547,7 @@ describe('useAuth Hook', () => {
       });
       (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser).toBeTruthy();
@@ -641,11 +574,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -675,11 +604,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <AuthProvider>{children}</AuthProvider>
-      );
-
-      const { result } = renderHook(() => useAuth(), { wrapper });
+      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       // Esperar a que es processi el primer intent
       await act(async () => {
@@ -709,3 +634,4 @@ describe('useAuth Hook', () => {
   // ja que ara es gestionen amb hooks separats (useFavourite i useVisited)
   // i no formen part de l'AuthContext.
 });
+

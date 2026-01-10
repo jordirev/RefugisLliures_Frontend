@@ -34,6 +34,19 @@ jest.mock('expo-image-picker', () => ({
   UIImagePickerPresentationStyle: { FULL_SCREEN: 0 },
 }));
 
+// Mock react-native-image-crop-picker - Definir abans dels imports
+const mockImageCropPicker = {
+  openPicker: jest.fn().mockResolvedValue({
+    path: 'file://test/cropped-image.jpg',
+    mime: 'image/jpeg',
+  }),
+};
+
+jest.mock('react-native-image-crop-picker', () => ({
+  __esModule: true,
+  default: mockImageCropPicker,
+}));
+
 // Importar ImagePicker per fer assertions
 import * as ImagePicker from 'expo-image-picker';
 
@@ -88,12 +101,18 @@ describe('AvatarPopup Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockAlertState.lastButtons = [];
+    // Reset Platform.OS to default (non-web) for most tests
+    require('react-native').Platform.OS = 'android';
     // Reset mocks to default values
     ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValue({ status: 'granted' });
     ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ status: 'granted' });
     ImagePicker.launchImageLibraryAsync.mockResolvedValue({
       canceled: false,
       assets: [{ uri: 'file://test/image.jpg', type: 'image' }],
+    });
+    mockImageCropPicker.openPicker.mockResolvedValue({
+      path: 'file://test/cropped-image.jpg',
+      mime: 'image/jpeg',
     });
     (UsersService.uploadAvatar as jest.Mock).mockResolvedValue({ url: 'https://example.com/new-avatar.jpg' });
     (UsersService.deleteAvatar as jest.Mock).mockResolvedValue(undefined);
@@ -201,10 +220,9 @@ describe('AvatarPopup Component', () => {
       const changeButton = getByText('profile.avatar.changePhoto');
       fireEvent.press(changeButton);
 
-      // La funció de selecció d'imatge s'hauria d'haver cridat
+      // En mòbil (Android/iOS), s'utilitza ImageCropPicker
       await waitFor(() => {
-        const ImagePicker = require('expo-image-picker');
-        expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
+        expect(mockImageCropPicker.openPicker).toHaveBeenCalled();
       });
     });
   });
@@ -236,8 +254,18 @@ describe('AvatarPopup Component', () => {
     });
   });
 
-  describe('Gestió de permisos', () => {
-    it('hauria de demanar permisos si no estan concedits', async () => {
+  describe('Gestió de permisos (Web)', () => {
+    beforeEach(() => {
+      // Set Platform.OS to web for these tests
+      require('react-native').Platform.OS = 'web';
+    });
+
+    afterEach(() => {
+      // Reset to default
+      require('react-native').Platform.OS = 'android';
+    });
+
+    it('hauria de demanar permisos si no estan concedits (web)', async () => {
       ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'undetermined' });
 
       const { getByText } = render(<AvatarPopup {...defaultProps} />);
@@ -250,7 +278,7 @@ describe('AvatarPopup Component', () => {
       });
     });
 
-    it('hauria de mostrar alerta si el permís és denegat', async () => {
+    it('hauria de mostrar alerta si el permís és denegat (web)', async () => {
       ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
       ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
 
@@ -268,7 +296,7 @@ describe('AvatarPopup Component', () => {
       });
     });
 
-    it('hauria de continuar si el permís és concedit després de demanar-lo', async () => {
+    it('hauria de continuar si el permís és concedit després de demanar-lo (web)', async () => {
       ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'undetermined' });
       ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
 
@@ -284,7 +312,29 @@ describe('AvatarPopup Component', () => {
   });
 
   describe('Selecció d\'imatge cancel·lada', () => {
-    it('hauria de no fer res si l\'usuari cancel·la la selecció', async () => {
+    it('hauria de no fer res si l\'usuari cancel·la la selecció (mòbil)', async () => {
+      // En react-native-image-crop-picker, la cancel·lació llança un error amb codi E_PICKER_CANCELLED
+      mockImageCropPicker.openPicker.mockRejectedValueOnce({ code: 'E_PICKER_CANCELLED' });
+
+      const { getByText } = render(
+        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
+      );
+
+      const changeButton = getByText('profile.avatar.changePhoto');
+      fireEvent.press(changeButton);
+
+      await waitFor(() => {
+        expect(mockImageCropPicker.openPicker).toHaveBeenCalled();
+      });
+
+      // No hauria de pujar cap imatge
+      expect(UsersService.uploadAvatar).not.toHaveBeenCalled();
+      // No hauria de mostrar cap alerta d'error
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('hauria de no fer res si l\'usuari cancel·la la selecció (web)', async () => {
+      require('react-native').Platform.OS = 'web';
       ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
         canceled: true,
         assets: [],

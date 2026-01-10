@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
 import { useTranslation } from '../hooks/useTranslation';
 import { UsersService } from '../services/UsersService';
 import { useCustomAlert } from '../hooks/useCustomAlert';
@@ -53,76 +54,121 @@ export function AvatarPopup({
 
   const handleChangePhoto = async () => {
     try {
-      // 1. Verificar l'estat actual dels permisos
-      const currentPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+      // Comprovar si s'està executant amb Expo Go
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
       
-      let isGranted = currentPermission.status === 'granted';
+      // Per web, utilitzar expo-image-picker
+      if (Platform.OS === 'web') {
+        const currentPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+        let isGranted = currentPermission.status === 'granted';
 
-      // 2. Si no està concedit, demanar-lo explícitament
-      if (!isGranted) {
-        const requestResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        isGranted = requestResult.status === 'granted';
+        if (!isGranted) {
+          const requestResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          isGranted = requestResult.status === 'granted';
+        }
+
+        if (!isGranted) {
+          showAlert(
+            t('common.error'),
+            t('profile.avatar.permissionMessage'),
+            [{ text: t('common.ok'), onPress: hideAlert }]
+          );
+          return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        });
+
+        if (result.canceled) {
+          return;
+        }
+
+        const selectedImage = result.assets[0];
+        setIsUploading(true);
+
+        try {
+          const fileUri = selectedImage.uri;
+          const fileName = fileUri.split('/').pop() || 'avatar.jpg';
+          const fileType = selectedImage.type === 'image' 
+            ? `image/${fileName.split('.').pop()}`
+            : 'image/jpeg';
+
+          const response = await fetch(fileUri);
+          const blob = await response.blob();
+          const file = new File([blob], fileName, { type: fileType });
+
+          await UsersService.uploadAvatar(uid, file);
+          
+          if (onAvatarUpdated) {
+            onAvatarUpdated();
+          }
+          
+          showAlert(
+            t('profile.avatar.uploadSuccess'),
+            t('profile.avatar.uploadSuccessMessage'),
+            [{ text: t('common.ok'), onPress: () => { hideAlert(); onClose(); } }]
+          );
+        } catch (error: any) {
+          console.error('Error uploading avatar:', error);
+          showAlert(
+            t('common.error'),
+            error.message || t('profile.avatar.uploadError'),
+            [{ text: t('common.ok'), onPress: hideAlert }]
+          );
+        } finally {
+          setIsUploading(false);
+        }
+        return;
       }
 
-      // 3. Si després de demanar-lo encara no és 'granted', denegar accés
-      if (!isGranted) {
+      // Mòbil: comprovar si és Expo Go
+      if (isExpoGo) {
         showAlert(
-          t('common.error'),
-          t('profile.avatar.permissionMessage'),
+          t('profile.avatar.expoGoTitle', { defaultValue: 'Funcionalitat no disponible' }),
+          t('profile.avatar.expoGoMessage', { defaultValue: 'La funcionalitat de canviar avatar amb cropper personalitzat no està disponible amb Expo Go. Si us plau, utilitza un Development Build per accedir a aquesta funcionalitat.' }),
           [{ text: t('common.ok'), onPress: hideAlert }]
         );
         return;
       }
 
-      // 4. Accedir a la galeria només si tenim permís
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-        ...(Platform.OS === 'ios' && {
-          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
-        }),
+      // Development Build: utilitzar react-native-image-crop-picker amb colors visibles
+      const ImageCropPicker = require('react-native-image-crop-picker').default;
+      const image = await ImageCropPicker.openPicker({
+        width: 400,
+        height: 400,
+        cropping: true,
+        cropperCircleOverlay: true,
+        cropperToolbarTitle: t('profile.avatar.cropTitle', { defaultValue: 'Retalla la imatge' }),
+        // Colors clars per fer els botons visibles
+        cropperStatusBarColor: '#FFFFFF',
+        cropperToolbarColor: '#FFFFFF',
+        cropperActiveWidgetColor: '#FF6900',
+        cropperToolbarWidgetColor: '#FF6900', // Color taronja per als botons
+        freeStyleCropEnabled: false,
+        compressImageQuality: 0.8,
+        includeBase64: false,
+        mediaType: 'photo',
       });
 
-      if (result.canceled) {
-        return;
-      }
-
-      const selectedImage = result.assets[0];
-      
-      // Preparar el fitxer per pujar
       setIsUploading(true);
       
       try {
-        // Crear un objecte File per React Native
-        const fileUri = selectedImage.uri;
+        const fileUri = image.path;
         const fileName = fileUri.split('/').pop() || 'avatar.jpg';
-        const fileType = selectedImage.type === 'image' 
-          ? `image/${fileName.split('.').pop()}`
-          : 'image/jpeg';
+        const fileType = image.mime || 'image/jpeg';
 
-        // Per web i React Native necessitem diferents tipus de File
-        let file: File;
-        
-        if (Platform.OS === 'web') {
-          // En web, podem crear un File directament
-          const response = await fetch(fileUri);
-          const blob = await response.blob();
-          file = new File([blob], fileName, { type: fileType });
-        } else {
-          // En React Native, utilitzem un objecte compatible amb FormData
-          file = {
-            uri: fileUri,
-            name: fileName,
-            type: fileType,
-          } as any;
-        }
+        const file = {
+          uri: fileUri,
+          name: fileName,
+          type: fileType,
+        } as any;
 
-        // Pujar l'avatar
         await UsersService.uploadAvatar(uid, file);
         
-        // Notificar l'actualització
         if (onAvatarUpdated) {
           onAvatarUpdated();
         }
@@ -143,6 +189,10 @@ export function AvatarPopup({
         setIsUploading(false);
       }
     } catch (error: any) {
+      if (error.code === 'E_PICKER_CANCELLED') {
+        return;
+      }
+      
       console.error('Error selecting image:', error);
       showAlert(
         t('common.error'),
