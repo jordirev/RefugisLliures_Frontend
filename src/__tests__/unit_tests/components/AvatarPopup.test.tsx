@@ -537,6 +537,9 @@ describe('AvatarPopup Component', () => {
 
   describe('Error en selecció d\'imatge', () => {
     it('hauria de gestionar error extern quan launchImageLibraryAsync falla', async () => {
+      // Configurar entorn web per utilitzar expo-image-picker
+      require('react-native').Platform.OS = 'web';
+      
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       (ImagePicker.launchImageLibraryAsync as jest.Mock).mockRejectedValueOnce(new Error('Picker error'));
 
@@ -557,6 +560,9 @@ describe('AvatarPopup Component', () => {
     });
 
     it('hauria de mostrar missatge per defecte quan error no té message', async () => {
+      // Configurar entorn web per utilitzar expo-image-picker
+      require('react-native').Platform.OS = 'web';
+      
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       (ImagePicker.launchImageLibraryAsync as jest.Mock).mockRejectedValueOnce({});
 
@@ -707,21 +713,29 @@ describe('AvatarPopup Component', () => {
 
   describe('Entorn Web', () => {
     const originalPlatformOS = require('react-native').Platform.OS;
+    const originalFetch = global.fetch;
 
     afterEach(() => {
       require('react-native').Platform.OS = originalPlatformOS;
+      global.fetch = originalFetch;
     });
 
     it('hauria de crear File amb fetch/blob en entorn web', async () => {
-      // Mock Platform.OS = 'web'
+      // Mock Platform.OS = 'web' ABANS de renderitzar
       require('react-native').Platform.OS = 'web';
 
-      // Mock global fetch
+      // Mock global fetch ABANS de renderitzar
       const mockBlob = new Blob(['image data'], { type: 'image/jpeg' });
       const mockFetch = jest.fn().mockResolvedValue({
         blob: jest.fn().mockResolvedValue(mockBlob),
       });
       global.fetch = mockFetch;
+
+      // Assegurar que launchImageLibraryAsync retorna un resultat vàlid
+      (ImagePicker.launchImageLibraryAsync as jest.Mock).mockResolvedValue({
+        canceled: false,
+        assets: [{ uri: 'file://test/image.jpg', type: 'image' }],
+      });
 
       const { getByText } = render(
         <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
@@ -737,9 +751,6 @@ describe('AvatarPopup Component', () => {
       await waitFor(() => {
         expect(UsersService.uploadAvatar).toHaveBeenCalledWith('user-123', expect.any(File));
       });
-
-      // Restaurar Platform.OS
-      require('react-native').Platform.OS = originalPlatformOS;
     });
   });
 });
