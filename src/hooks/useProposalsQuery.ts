@@ -35,6 +35,37 @@ export function useMyProposals(status?: RefugeProposalStatus) {
 }
 
 /**
+ * Hook personalitzat per gestionar el refresh manual directe des de l'API
+ */
+export function useRefreshProposals() {
+  const queryClient = useQueryClient();
+
+  return async (isAdminMode: boolean, status?: RefugeProposalStatus, refugeId?: string) => {
+    // Llegir directament de l'API sense cache
+    const freshData = isAdminMode
+      ? await RefugeProposalsService.listProposals(status, refugeId)
+      : await RefugeProposalsService.listMyProposals(status);
+
+    // Actualitzar la cache amb les dades fresques de la query actual
+    const queryKey = isAdminMode 
+      ? queryKeys.proposalsList({ status, refugeId })
+      : queryKeys.myProposals(status);
+    
+    queryClient.setQueryData(queryKey, freshData);
+    
+    // IMPORTANT: Invalidar TOTES les queries de proposals per forçar que es refresquin totes
+    // Això assegura que quan canviem de tab (pending -> approved -> all), totes les dades estiguin actualitzades
+    await queryClient.invalidateQueries({ 
+      queryKey: ['proposals'],
+      refetchType: 'none' // No refetch ara, ja hem actualitzat la query actual
+    });
+
+    return freshData;
+  };
+}
+
+
+/**
  * Hook to approve a proposal
  */
 export function useApproveProposal() {
@@ -53,63 +84,69 @@ export function useApproveProposal() {
       await RefugeProposalsService.approveProposal(proposalId);
       return { proposalId, proposalType, refugeId };
     },
-    onMutate: async ({ proposalId }) => {
-      // Cancel any outgoing refetches per evitar que sobreescriguin les actualitzacions optimistes
+    onMutate: async ({ proposalId, refugeId }) => {
+      // Cancel·lar qualsevol refetch per evitar sobreescriptures
       await queryClient.cancelQueries({ queryKey: ['proposals'] });
 
-      // Obtenir el uid del revisor actual
       const reviewerUid = auth.currentUser?.uid || null;
       const reviewedAt = new Date().toISOString();
-
-      // Snapshot de l'estat anterior per poder fer rollback en cas d'error
       const previousData: Record<string, any> = {};
 
-      // Actualitzar totes les llistes de proposals de manera optimista
-      // Obtenir totes les query keys de proposals que estiguin actives
+      // Obtenir totes les queries de proposals actives
       queryClient.getQueriesData({ queryKey: ['proposals'] }).forEach(([queryKey, data]) => {
-        if (Array.isArray(data)) {
-          // Guardar snapshot
-          previousData[JSON.stringify(queryKey)] = data;
+        if (!Array.isArray(data)) return;
+        
+        previousData[JSON.stringify(queryKey)] = data;
 
-          // Trobar la proposal que s'està aprovant
+        const proposal = data.find((p: RefugeProposal) => p.id === proposalId);
+        if (!proposal) return;
+
+        const updatedProposal: RefugeProposal = {
+          ...proposal,
+          status: 'approved',
+          reviewer_uid: reviewerUid,
+          reviewed_at: reviewedAt,
+        };
+
+        // Analitzar el tipus de query basant-nos en l'estructura de la queryKey
+        // queryKey pot ser: ['proposals', 'list', { status?, refugeId? }] o ['proposals', 'my', status?]
+        const keyArray = queryKey as any[];
+        const isAdminQuery = keyArray[1] === 'list';
+        const isMyQuery = keyArray[1] === 'my';
+        
+        let queryStatus: string | undefined;
+        
+        if (isAdminQuery && keyArray[2] && typeof keyArray[2] === 'object') {
+          queryStatus = keyArray[2].status;
+        } else if (isMyQuery && keyArray[2]) {
+          queryStatus = keyArray[2];
+        }
+
+        // Llista de PENDING: eliminar la proposal
+        if (queryStatus === 'pending') {
+          const newData = data.filter((p: RefugeProposal) => p.id !== proposalId);
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Llista de APPROVED: afegir la proposal actualitzada
+        else if (queryStatus === 'approved') {
+          const newData = [...data, updatedProposal];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Llista de ALL (sense filtre de status): actualitzar in-place
+        else if (queryStatus === undefined) {
           const proposalIndex = data.findIndex((p: RefugeProposal) => p.id === proposalId);
-          
           if (proposalIndex !== -1) {
-            const proposal = data[proposalIndex];
-            const updatedProposal: RefugeProposal = {
-              ...proposal,
-              status: 'approved',
-              reviewer_uid: reviewerUid,
-              reviewed_at: reviewedAt,
-            };
-
-            // Determinar si aquesta query és de pending, approved o all
-            const queryKeyStr = JSON.stringify(queryKey);
-            
-            // Si és la llista de pending, eliminar la proposal
-            if (queryKeyStr.includes('"status":"pending"') || queryKeyStr.includes('"my","pending"')) {
-              const newData = data.filter((p: RefugeProposal) => p.id !== proposalId);
-              queryClient.setQueryData(queryKey as any, newData);
-            }
-            // Si és la llista de approved, afegir la proposal actualitzada
-            else if (queryKeyStr.includes('"status":"approved"') || queryKeyStr.includes('"my","approved"')) {
-              const newData = [...data, updatedProposal];
-              queryClient.setQueryData(queryKey as any, newData);
-            }
-            // Si és la llista de all (sense filtre de status), actualitzar in-place
-            else if (queryKeyStr.includes('"list"]') || queryKeyStr.includes('"my"]')) {
-              const newData = [...data];
-              newData[proposalIndex] = updatedProposal;
-              queryClient.setQueryData(queryKey as any, newData);
-            }
+            const newData = [...data];
+            newData[proposalIndex] = updatedProposal;
+            queryClient.setQueryData(queryKey as any, newData);
           }
         }
       });
 
-      return { previousData };
+      return { previousData, refugeId };
     },
     onError: (_error, _variables, context) => {
-      // En cas d'error, restaurar l'estat anterior
+      // Restaurar l'estat anterior en cas d'error
       if (context?.previousData) {
         Object.entries(context.previousData).forEach(([queryKeyStr, data]) => {
           const queryKey = JSON.parse(queryKeyStr);
@@ -117,28 +154,62 @@ export function useApproveProposal() {
         });
       }
     },
-    onSettled: async (data) => {
-      // Després de la mutació (èxit o error), refetch per sincronitzar amb el servidor
-      // Això assegura que les dades són correctes
+    onSuccess: async (_result, variables, context) => {
+      const { proposalType, refugeId } = variables;
+
+      // PRIMER: Refetch totes les queries de proposals per sincronitzar amb el servidor
+      // Això assegura que totes les llistes (pending, approved, all) tinguin les dades correctes
       await queryClient.refetchQueries({ 
         queryKey: ['proposals'],
         type: 'active'
       });
 
-      // Invalidate refuges si la proposta afecta els refugis
-      queryClient.invalidateQueries({ queryKey: queryKeys.refuges });
+      // SEGON: Invalidar les queries relacionades amb refugis
+      const currentUserId = auth.currentUser?.uid;
 
-      // Si s'ha aprovat una proposta d'eliminació de refugi
-      if (data?.proposalType === 'delete' && data?.refugeId) {
-        // Invalidar totes les renovacions (les del refugi eliminat s'hauran eliminat)
-        queryClient.invalidateQueries({ queryKey: ['renovations'] });
-
-        // Invalidar refugis favorits i visitats (per si el refugi estava en aquestes llistes)
-        queryClient.invalidateQueries({ queryKey: ['users'] });
-
-        // Invalidar dades del user
-        queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
+      // Si és una proposta de crear refugi
+      if (proposalType === 'create') {
+        // Invalidar llista de refugis
+        queryClient.invalidateQueries({ queryKey: queryKeys.refuges });
       }
+
+      // Si és una proposta d'actualitzar refugi
+      if (proposalType === 'update') {
+        if (refugeId) {
+          // Invalidar el refugi específic
+          queryClient.invalidateQueries({ queryKey: queryKeys.refuge(refugeId) });
+        }
+        // Invalidar llista de refugis
+        queryClient.invalidateQueries({ queryKey: queryKeys.refuges });
+        
+        // SEMPRE invalidar favourites i visited per actualitzar ProfileScreen i FavouritesScreen
+        if (currentUserId) {
+          queryClient.invalidateQueries({ queryKey: queryKeys.favouriteRefuges(currentUserId) });
+          queryClient.invalidateQueries({ queryKey: queryKeys.visitedRefuges(currentUserId) });
+        }
+      }
+
+      // Si és una proposta d'eliminar refugi
+      if (proposalType === 'delete' && refugeId) {
+        // Invalidar el refugi eliminat
+        queryClient.invalidateQueries({ queryKey: queryKeys.refuge(refugeId) });
+        
+        // Invalidar refugis favorits i visitats (per si estava a la llista)
+        if (currentUserId) {
+          queryClient.invalidateQueries({ queryKey: queryKeys.favouriteRefuges(currentUserId) });
+          queryClient.invalidateQueries({ queryKey: queryKeys.visitedRefuges(currentUserId) });
+          queryClient.invalidateQueries({ queryKey: queryKeys.user(currentUserId) });
+        }
+        
+        // Invalidar totes les llistes de refugis
+        queryClient.invalidateQueries({ queryKey: queryKeys.refuges });
+        
+        // Invalidar renovacions del refugi eliminat
+        queryClient.invalidateQueries({ queryKey: queryKeys.refugeRenovations(refugeId) });
+      }
+
+      // Sempre invalidar totes les queries de users (per si el refugi estava a visited/favourites)
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
     },
   });
 }
@@ -155,55 +226,61 @@ export function useRejectProposal() {
       return { proposalId, reason };
     },
     onMutate: async ({ proposalId, reason }) => {
-      // Cancel any outgoing refetches per evitar que sobreescriguin les actualitzacions optimistes
+      // Cancel·lar qualsevol refetch per evitar sobreescriptures
       await queryClient.cancelQueries({ queryKey: ['proposals'] });
 
-      // Obtenir el uid del revisor actual
       const reviewerUid = auth.currentUser?.uid || null;
       const reviewedAt = new Date().toISOString();
-
-      // Snapshot de l'estat anterior per poder fer rollback en cas d'error
       const previousData: Record<string, any> = {};
 
-      // Actualitzar totes les llistes de proposals de manera optimista
-      // Obtenir totes les query keys de proposals que estiguin actives
+      // Obtenir totes les queries de proposals actives
       queryClient.getQueriesData({ queryKey: ['proposals'] }).forEach(([queryKey, data]) => {
-        if (Array.isArray(data)) {
-          // Guardar snapshot
-          previousData[JSON.stringify(queryKey)] = data;
+        if (!Array.isArray(data)) return;
+        
+        previousData[JSON.stringify(queryKey)] = data;
 
-          // Trobar la proposal que s'està rebutjant
+        const proposal = data.find((p: RefugeProposal) => p.id === proposalId);
+        if (!proposal) return;
+
+        const updatedProposal: RefugeProposal = {
+          ...proposal,
+          status: 'rejected',
+          reviewer_uid: reviewerUid,
+          reviewed_at: reviewedAt,
+          rejection_reason: reason || null,
+        };
+
+        // Analitzar el tipus de query basant-nos en l'estructura de la queryKey
+        // queryKey pot ser: ['proposals', 'list', { status?, refugeId? }] o ['proposals', 'my', status?]
+        const keyArray = queryKey as any[];
+        const isAdminQuery = keyArray[1] === 'list';
+        const isMyQuery = keyArray[1] === 'my';
+        
+        let queryStatus: string | undefined;
+        
+        if (isAdminQuery && keyArray[2] && typeof keyArray[2] === 'object') {
+          queryStatus = keyArray[2].status;
+        } else if (isMyQuery && keyArray[2]) {
+          queryStatus = keyArray[2];
+        }
+
+        // Llista de PENDING: eliminar la proposal
+        if (queryStatus === 'pending') {
+          const newData = data.filter((p: RefugeProposal) => p.id !== proposalId);
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Llista de REJECTED: afegir la proposal actualitzada amb la informació de rebuig
+        else if (queryStatus === 'rejected') {
+          const newData = [...data, updatedProposal];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Llista de ALL (sense filtre de status): actualitzar in-place
+        else if (queryStatus === undefined) {
           const proposalIndex = data.findIndex((p: RefugeProposal) => p.id === proposalId);
-          
           if (proposalIndex !== -1) {
-            const proposal = data[proposalIndex];
-            const updatedProposal: RefugeProposal = {
-              ...proposal,
-              status: 'rejected',
-              reviewer_uid: reviewerUid,
-              reviewed_at: reviewedAt,
-              rejection_reason: reason || null,
-            };
-
-            // Determinar si aquesta query és de pending, rejected o all
-            const queryKeyStr = JSON.stringify(queryKey);
-            
-            // Si és la llista de pending, eliminar la proposal
-            if (queryKeyStr.includes('"status":"pending"') || queryKeyStr.includes('"my","pending"')) {
-              const newData = data.filter((p: RefugeProposal) => p.id !== proposalId);
-              queryClient.setQueryData(queryKey as any, newData);
-            }
-            // Si és la llista de rejected, afegir la proposal actualitzada
-            else if (queryKeyStr.includes('"status":"rejected"') || queryKeyStr.includes('"my","rejected"')) {
-              const newData = [...data, updatedProposal];
-              queryClient.setQueryData(queryKey as any, newData);
-            }
-            // Si és la llista de all (sense filtre de status), actualitzar in-place
-            else if (queryKeyStr.includes('"list"]') || queryKeyStr.includes('"my"]')) {
-              const newData = [...data];
-              newData[proposalIndex] = updatedProposal;
-              queryClient.setQueryData(queryKey as any, newData);
-            }
+            const newData = [...data];
+            newData[proposalIndex] = updatedProposal;
+            queryClient.setQueryData(queryKey as any, newData);
           }
         }
       });
@@ -211,7 +288,7 @@ export function useRejectProposal() {
       return { previousData };
     },
     onError: (_error, _variables, context) => {
-      // En cas d'error, restaurar l'estat anterior
+      // Restaurar l'estat anterior en cas d'error
       if (context?.previousData) {
         Object.entries(context.previousData).forEach(([queryKeyStr, data]) => {
           const queryKey = JSON.parse(queryKeyStr);
@@ -219,9 +296,9 @@ export function useRejectProposal() {
         });
       }
     },
-    onSettled: async () => {
-      // Després de la mutació (èxit o error), refetch per sincronitzar amb el servidor
-      // Això assegura que les dades són correctes
+    onSuccess: async () => {
+      // Refetch totes les queries de proposals per sincronitzar amb el servidor
+      // Això assegura que totes les llistes (pending, rejected, all) tinguin les dades correctes
       await queryClient.refetchQueries({ 
         queryKey: ['proposals'],
         type: 'active'
@@ -229,6 +306,7 @@ export function useRejectProposal() {
     },
   });
 }
+
 
 /**
  * Hook to create a refuge proposal (create)
@@ -240,11 +318,40 @@ export function useCreateRefugeProposal() {
     mutationFn: async ({ payload, comment }: { payload: Location; comment?: string }) => {
       return await RefugeProposalsService.proposalCreateRefuge(payload, comment);
     },
-    onSuccess: () => {
-      // Invalidar totes les queries de proposals
-      queryClient.invalidateQueries({ 
+    onSuccess: async (newProposal) => {
+      // Actualització optimista: afegir la nova proposta a totes les llistes rellevants
+      queryClient.getQueriesData({ queryKey: ['proposals'] }).forEach(([queryKey, data]) => {
+        if (!Array.isArray(data)) return;
+        
+        // Analitzar el tipus de query basant-nos en l'estructura de la queryKey
+        const keyArray = queryKey as any[];
+        const isAdminQuery = keyArray[1] === 'list';
+        const isMyQuery = keyArray[1] === 'my';
+        
+        let queryStatus: string | undefined;
+        
+        if (isAdminQuery && keyArray[2] && typeof keyArray[2] === 'object') {
+          queryStatus = keyArray[2].status;
+        } else if (isMyQuery && keyArray[2]) {
+          queryStatus = keyArray[2];
+        }
+        
+        // Afegir a la llista de pending (la nova proposta sempre serà pending)
+        if (queryStatus === 'pending') {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Afegir a la llista de ALL (sense filtre)
+        else if (queryStatus === undefined) {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+      });
+
+      // Invalidar per sincronitzar amb el servidor en properes lectures
+      await queryClient.invalidateQueries({ 
         queryKey: ['proposals'],
-        refetchType: 'active'
+        refetchType: 'none'
       });
     },
   });
@@ -268,11 +375,40 @@ export function useUpdateRefugeProposal() {
     }) => {
       return await RefugeProposalsService.proposalEditRefuge(refugeId, payload, comment);
     },
-    onSuccess: () => {
-      // Invalidar totes les queries de proposals
-      queryClient.invalidateQueries({ 
+    onSuccess: async (newProposal) => {
+      // Actualització optimista: afegir la nova proposta a totes les llistes rellevants
+      queryClient.getQueriesData({ queryKey: ['proposals'] }).forEach(([queryKey, data]) => {
+        if (!Array.isArray(data)) return;
+        
+        // Analitzar el tipus de query basant-nos en l'estructura de la queryKey
+        const keyArray = queryKey as any[];
+        const isAdminQuery = keyArray[1] === 'list';
+        const isMyQuery = keyArray[1] === 'my';
+        
+        let queryStatus: string | undefined;
+        
+        if (isAdminQuery && keyArray[2] && typeof keyArray[2] === 'object') {
+          queryStatus = keyArray[2].status;
+        } else if (isMyQuery && keyArray[2]) {
+          queryStatus = keyArray[2];
+        }
+        
+        // Afegir a la llista de pending (la nova proposta sempre serà pending)
+        if (queryStatus === 'pending') {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Afegir a la llista de ALL (sense filtre)
+        else if (queryStatus === undefined) {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+      });
+
+      // Invalidar per sincronitzar amb el servidor en properes lectures
+      await queryClient.invalidateQueries({ 
         queryKey: ['proposals'],
-        refetchType: 'active'
+        refetchType: 'none'
       });
     },
   });
@@ -288,11 +424,40 @@ export function useDeleteRefugeProposal() {
     mutationFn: async ({ refugeId, comment }: { refugeId: string; comment?: string }) => {
       return await RefugeProposalsService.proposalDeleteRefuge(refugeId, comment);
     },
-    onSuccess: () => {
-      // Invalidar totes les queries de proposals
-      queryClient.invalidateQueries({ 
+    onSuccess: async (newProposal) => {
+      // Actualització optimista: afegir la nova proposta a totes les llistes rellevants
+      queryClient.getQueriesData({ queryKey: ['proposals'] }).forEach(([queryKey, data]) => {
+        if (!Array.isArray(data)) return;
+        
+        // Analitzar el tipus de query basant-nos en l'estructura de la queryKey
+        const keyArray = queryKey as any[];
+        const isAdminQuery = keyArray[1] === 'list';
+        const isMyQuery = keyArray[1] === 'my';
+        
+        let queryStatus: string | undefined;
+        
+        if (isAdminQuery && keyArray[2] && typeof keyArray[2] === 'object') {
+          queryStatus = keyArray[2].status;
+        } else if (isMyQuery && keyArray[2]) {
+          queryStatus = keyArray[2];
+        }
+        
+        // Afegir a la llista de pending (la nova proposta sempre serà pending)
+        if (queryStatus === 'pending') {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+        // Afegir a la llista de ALL (sense filtre)
+        else if (queryStatus === undefined) {
+          const newData = [newProposal, ...data];
+          queryClient.setQueryData(queryKey as any, newData);
+        }
+      });
+
+      // Invalidar per sincronitzar amb el servidor en properes lectures
+      await queryClient.invalidateQueries({ 
         queryKey: ['proposals'],
-        refetchType: 'active'
+        refetchType: 'none'
       });
     },
   });

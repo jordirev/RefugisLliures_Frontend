@@ -17,7 +17,7 @@ import { Badge } from '../components/Badge';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
-import { useProposals, useMyProposals } from '../hooks/useProposalsQuery';
+import { useProposals, useMyProposals, useRefreshProposals } from '../hooks/useProposalsQuery';
 
 // Icons
 import BackIcon from '../assets/icons/arrow-left.svg';
@@ -63,10 +63,15 @@ export function ProposalsScreen() {
     data: proposals = [],
     isLoading: loading,
     isError,
-    refetch,
   } = isAdminMode
     ? useProposals(statusFilter)
     : useMyProposals(statusFilter);
+
+  // Hook per fer refresh manual directe des de l'API
+  const refreshProposals = useRefreshProposals();
+
+  // State per controlar el refresh manual
+  const [refreshing, setRefreshing] = React.useState(false);
 
   // Gestionar errors
   useEffect(() => {
@@ -76,7 +81,15 @@ export function ProposalsScreen() {
   }, [isError]);
 
   const handleRefresh = async () => {
-    await refetch();
+    setRefreshing(true);
+    try {
+      // Llegir directament de l'API i actualitzar React Query
+      await refreshProposals(isAdminMode, statusFilter);
+    } catch (error) {
+      console.error('Error refreshing proposals:', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleFilterPress = (filter: StatusFilter) => {
@@ -175,7 +188,7 @@ export function ProposalsScreen() {
             ListEmptyComponent={renderEmptyState}
             refreshControl={
               <RefreshControl
-                refreshing={loading}
+                refreshing={refreshing}
                 onRefresh={handleRefresh}
                 colors={['#FF6900']}
                 tintColor="#FF6900"

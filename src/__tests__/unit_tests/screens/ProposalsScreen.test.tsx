@@ -95,6 +95,7 @@ jest.mock('../../../hooks/useProposalsQuery', () => ({
     isError: mockIsError,
     refetch: jest.fn().mockResolvedValue({}),
   }),
+  useRefreshProposals: () => jest.fn().mockResolvedValue([]),
 }));
 
 const mockNavigate = jest.fn();
