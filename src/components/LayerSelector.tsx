@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import XIcon from '../assets/icons/x.svg';
 import LayersIcon from '../assets/icons/layers.svg';
 import { useTranslation } from '../hooks/useTranslation';
@@ -40,6 +40,7 @@ export function LayerSelector({
   onMapLayerChange,
 }: LayerSelectorProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   
   const [localRepresentation, setLocalRepresentation] = useState<RepresentationType>(representation);
   const [localMapLayer, setLocalMapLayer] = useState<MapLayerType>(mapLayer);
@@ -167,7 +168,7 @@ export function LayerSelector({
             </ScrollView>
 
             {/* Botons d'acció */}
-            <View style={styles.footer}>
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={onClose}
@@ -185,7 +186,6 @@ export function LayerSelector({
                 <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
               </TouchableOpacity>
             </View>
-            <SafeAreaView edges={['bottom']} />
           </View>
         </TouchableWithoutFeedback>
       </TouchableOpacity>

@@ -549,10 +549,13 @@ describe('useDoubtsQuery Hooks', () => {
         });
       });
 
-      const cachedData = queryClient.getQueryData<any[]>(['doubts', 'refuge', 'refuge-no-cache']);
-      expect(cachedData).toBeDefined();
-      expect(cachedData).toHaveLength(1);
-      expect(cachedData?.[0].text).toBe('Nou dubte');
+      // Esperar que la cache s'actualitzi amb waitFor
+      await waitFor(() => {
+        const cachedData = queryClient.getQueryData<any[]>(['doubts', 'refuge', 'refuge-no-cache']);
+        expect(cachedData).toBeDefined();
+        expect(cachedData).toHaveLength(1);
+        expect(cachedData?.[0].text).toBe('Nou dubte');
+      });
     });
   });
 

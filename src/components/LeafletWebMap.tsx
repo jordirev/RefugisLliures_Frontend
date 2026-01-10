@@ -26,7 +26,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   center = [42.6, 0.7], // Centre dels Pirineus
   zoom = 8,
   userLocation,
-  representation = 'markers',
+  representation = 'cluster',
   mapLayer = 'opentopomap'
 }: LeafletWebMapProps) {
   const [cacheStatus, setCacheStatus] = useState<any>(null);

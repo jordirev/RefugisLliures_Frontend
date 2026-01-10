@@ -47,8 +47,13 @@ export function useRefreshProposals() {
       : await RefugeProposalsService.listMyProposals(status);
 
     // Actualitzar la cache amb les dades fresques de la query actual
+    // Netegem les propietats undefined per evitar problemes amb la comparació de query keys
+    const filters: { status?: RefugeProposalStatus; refugeId?: string } = {};
+    if (status !== undefined) filters.status = status;
+    if (refugeId !== undefined) filters.refugeId = refugeId;
+    
     const queryKey = isAdminMode 
-      ? queryKeys.proposalsList({ status, refugeId })
+      ? queryKeys.proposalsList(Object.keys(filters).length > 0 ? filters : undefined)
       : queryKeys.myProposals(status);
     
     queryClient.setQueryData(queryKey, freshData);

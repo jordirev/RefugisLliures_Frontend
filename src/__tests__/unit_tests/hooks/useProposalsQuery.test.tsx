@@ -15,6 +15,7 @@
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { queryKeys } from '../../../config/queryClient';
 import {
   useProposals,
   useMyProposals,
@@ -272,9 +273,12 @@ describe('useProposalsQuery', () => {
         await result.current(true, 'pending');
       });
 
-      // Verificar que les dades estan a la cache (la queryKey exacta depèn de com queryKeys.proposalsList la genera)
-      const cachedData = queryClient.getQueryData(['proposals', 'list', { status: 'pending' }]);
-      expect(cachedData).toEqual(mockProposals);
+      // Verificar que les dades estan a la cache (usant la funció queryKeys)
+      await waitFor(() => {
+        const queryKey = queryKeys.proposalsList({ status: 'pending' });
+        const cachedData = queryClient.getQueryData(queryKey);
+        expect(cachedData).toEqual(mockProposals);
+      });
     });
   });
 

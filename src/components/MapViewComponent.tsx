@@ -26,7 +26,7 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
   const [showOfflineManager, setShowOfflineManager] = useState(false);
   const [showLayerSelector, setShowLayerSelector] = useState(false);
   const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
-  const [representation, setRepresentation] = useState<RepresentationType>('markers');
+  const [representation, setRepresentation] = useState<RepresentationType>('cluster');
   const [mapLayer, setMapLayer] = useState<MapLayerType>('opentopomap');
 
   // Centre dels Pirineus

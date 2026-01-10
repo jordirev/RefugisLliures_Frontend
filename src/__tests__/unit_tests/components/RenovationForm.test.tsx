@@ -74,6 +74,35 @@ jest.mock('../../../components/RefugeCard', () => ({
 // Mock SVG icons
 jest.mock('../../../assets/icons/information-circle.svg', () => 'InformationIcon');
 
+// Mock RefugisService
+jest.mock('../../../services/RefugisService', () => ({
+  RefugisService: {
+    getRefugiById: jest.fn((id: string) => {
+      const mockRefuges = [
+        {
+          id: 'refuge-1',
+          name: 'Refugi de Colomers',
+          coord: { lat: 42.6497, long: 0.9456 },
+          altitude: 2135,
+          places: 50,
+          type: 'non gardé',
+          condition: 2,
+        },
+        {
+          id: 'refuge-2',
+          name: 'Refugi Amitges',
+          coord: { lat: 42.5678, long: 0.9876 },
+          altitude: 2380,
+          places: 60,
+          type: 'non gardé',
+          condition: 3,
+        },
+      ];
+      return Promise.resolve(mockRefuges.find((r) => r.id === id));
+    }),
+  },
+}));
+
 const mockOnSubmit = jest.fn().mockResolvedValue(undefined);
 const mockOnCancel = jest.fn();
 

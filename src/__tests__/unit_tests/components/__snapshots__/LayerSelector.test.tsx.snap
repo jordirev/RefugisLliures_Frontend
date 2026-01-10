@@ -586,14 +586,19 @@ exports[`LayerSelector Component Renderització bàsica snapshot test - modal ob
       </RCTScrollView>
       <View
         style={
-          {
-            "borderTopColor": "#F3F4F6",
-            "borderTopWidth": 1,
-            "flexDirection": "row",
-            "gap": 12,
-            "paddingHorizontal": 24,
-            "paddingVertical": 16,
-          }
+          [
+            {
+              "borderTopColor": "#F3F4F6",
+              "borderTopWidth": 1,
+              "flexDirection": "row",
+              "gap": 12,
+              "paddingHorizontal": 24,
+              "paddingVertical": 16,
+            },
+            {
+              "paddingBottom": 16,
+            },
+          ]
         }
       >
         <View
@@ -703,7 +708,6 @@ exports[`LayerSelector Component Renderització bàsica snapshot test - modal ob
           </Text>
         </View>
       </View>
-      <View />
     </View>
   </View>
 </Modal>
