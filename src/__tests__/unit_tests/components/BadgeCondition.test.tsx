@@ -2,7 +2,7 @@
  * Tests unitaris per al component BadgeCondition
  * 
  * Aquest fitxer cobreix:
- * - Renderització amb diferents condicions
+ * - Renderització amb diferents condicions (numèriques)
  * - Colors segons la condició
  * - Mode neutral
  * - Mode muted
@@ -13,128 +13,100 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { BadgeCondition } from '../../../components/BadgeCondition';
 
+// Mock useTranslation hook
+jest.mock('../../../hooks/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'refuge.condition.poor': 'Pobre',
+        'refuge.condition.fair': 'Correcte',
+        'refuge.condition.good': 'Bé',
+        'refuge.condition.excellent': 'Excel·lent',
+        'refuge.condition.unknown': 'Desconegut',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 describe('BadgeCondition Component', () => {
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar amb condició "bé"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" />);
+    it('hauria de renderitzar amb condició 2 (bé)', () => {
+      const { getByText } = render(<BadgeCondition condition={2} />);
       
-      expect(getByText('bé')).toBeTruthy();
+      expect(getByText('Bé')).toBeTruthy();
     });
 
     it('hauria de renderitzar "Desconegut" quan no es proporciona condició', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition />);
+      const { getByText } = render(<BadgeCondition />);
       
       expect(getByText('Desconegut')).toBeTruthy();
     });
 
     it('hauria de renderitzar amb condició undefined', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition={undefined} />);
+      const { getByText } = render(<BadgeCondition condition={undefined} />);
       
       expect(getByText('Desconegut')).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb condició buida', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="" />);
+    it('hauria de renderitzar "Desconegut" amb condició invàlida', () => {
+      const { getByText } = render(<BadgeCondition condition={99} />);
       
-      expect(getByText('')).toBeTruthy();
+      expect(getByText('Desconegut')).toBeTruthy();
     });
   });
 
-  describe('Colors segons condició "bé"', () => {
-    it('hauria d\'aplicar colors verds per condició "bé"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" />);
+  describe('Colors segons condició 2 (bé)', () => {
+    it('hauria d\'aplicar colors verds pastel per condició 2', () => {
+      const { getByTestId } = render(<BadgeCondition condition={2} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-          borderColor: '#30D270',
-        })
-      );
-    });
-
-    it('hauria d\'aplicar colors verds per condició "bo"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bo" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-        })
-      );
-    });
-
-    it('hauria d\'aplicar colors verds per condició "good"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="good" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-        })
-      );
-    });
-
-    it('hauria d\'aplicar colors verds per condició "ok"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="ok" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8',
+          backgroundColor: '#E6F8EE',
+          borderColor: '#7EE0B0',
         })
       );
     });
   });
 
-  describe('Colors segons condició "excel·lent"', () => {
-    it('hauria d\'aplicar colors verds per condició "excel·lent"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="excel·lent" />);
+  describe('Colors segons condició 3 (excel·lent)', () => {
+    it('hauria d\'aplicar colors grocs pastel per condició 3', () => {
+      const { getByTestId } = render(<BadgeCondition condition={3} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-          borderColor: '#30D270',
+          backgroundColor: '#FFF6E0',
+          borderColor: '#F7C67A',
         })
       );
     });
   });
 
-  describe('Colors segons condició "normal"', () => {
-    it('hauria d\'aplicar colors blaus per condició "normal"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="normal" />);
+  describe('Colors segons condició 1 (correcte)', () => {
+    it('hauria d\'aplicar colors blaus pastel per condició 1', () => {
+      const { getByTestId } = render(<BadgeCondition condition={1} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#e0ebffff',
-          borderColor: '#2d70ecff',
-        })
-      );
-    });
-
-    it('hauria d\'aplicar colors blaus per condició "regular"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="regular" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#e0ebffff',
+          backgroundColor: '#EAF4FF',
+          borderColor: '#A3C4FF',
         })
       );
     });
   });
 
-  describe('Colors segons condició "pobre"', () => {
-    it('hauria d\'aplicar colors vermells per condició "pobre"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="pobre" />);
+  describe('Colors segons condició 0 (pobre)', () => {
+    it('hauria d\'aplicar colors vermells pastel per condició 0', () => {
+      const { getByTestId } = render(<BadgeCondition condition={0} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#FEE2E2',
-          borderColor: '#F87171',
+          backgroundColor: '#FDE8E8',
+          borderColor: '#F4A6A6',
         })
       );
     });
@@ -142,7 +114,7 @@ describe('BadgeCondition Component', () => {
 
   describe('Colors per condició desconeguda', () => {
     it('hauria d\'aplicar colors grisos per condició desconeguda', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="desconegut" />);
+      const { getByTestId } = render(<BadgeCondition condition={99} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -153,8 +125,19 @@ describe('BadgeCondition Component', () => {
       );
     });
 
-    it('hauria d\'aplicar colors grisos per condició no reconeguda', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="altra condició" />);
+    it('hauria d\'aplicar colors grisos per condició undefined', () => {
+      const { getByTestId } = render(<BadgeCondition />);
+      
+      const badge = getByTestId('badge-container');
+      expect(badge?.props.style).toContainEqual(
+        expect.objectContaining({
+          backgroundColor: '#E5E7EB',
+        })
+      );
+    });
+
+    it('hauria d\'aplicar colors grisos per condició negativa', () => {
+      const { getByTestId } = render(<BadgeCondition condition={-1} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -167,7 +150,7 @@ describe('BadgeCondition Component', () => {
 
   describe('Mode neutral', () => {
     it('hauria d\'aplicar colors neutres quan neutral=true', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" neutral={true} />);
+      const { getByTestId } = render(<BadgeCondition condition={2} neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -179,7 +162,7 @@ describe('BadgeCondition Component', () => {
     });
 
     it('hauria de tenir opacity 0.7 en mode neutral', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" neutral={true} />);
+      const { getByTestId } = render(<BadgeCondition condition={2} neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -190,7 +173,7 @@ describe('BadgeCondition Component', () => {
     });
 
     it('hauria d\'ignorar colors de condició en mode neutral', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="pobre" neutral={true} />);
+      const { getByTestId } = render(<BadgeCondition condition={0} neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -203,9 +186,9 @@ describe('BadgeCondition Component', () => {
 
   describe('Mode muted', () => {
     it('hauria d\'aplicar textColor gris quan muted=true', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" muted={true} />);
+      const { getByText } = render(<BadgeCondition condition={2} muted={true} />);
       
-      const textElement = getByText('bé');
+      const textElement = getByText('Bé');
       expect(textElement.props.style).toContainEqual(
         expect.objectContaining({
           color: '#6B7280', // color de text muted
@@ -214,26 +197,26 @@ describe('BadgeCondition Component', () => {
     });
 
     it('hauria de mantenir colors de fons originals en mode muted', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé" muted={true} />);
+      const { getByTestId } = render(<BadgeCondition condition={2} muted={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#A2FFC8', // colors de fons originals
-          borderColor: '#30D270',
+          backgroundColor: '#E6F8EE', // colors de fons originals
+          borderColor: '#7EE0B0',
         })
       );
     });
 
-    it('hauria d\'aplicar muted a condició "pobre"', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="pobre" muted={true} />);
+    it('hauria d\'aplicar muted a condició 0 (pobre)', () => {
+      const { getByText, getByTestId } = render(<BadgeCondition condition={0} muted={true} />);
       
       const badge = getByTestId('badge-container');
-      const textElement = getByText('pobre');
+      const textElement = getByText('Pobre');
 
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#FEE2E2', // colors de fons vermells
+          backgroundColor: '#FDE8E8', // colors de fons vermells pastel
         })
       );
       expect(textElement.props.style).toContainEqual(
@@ -246,8 +229,8 @@ describe('BadgeCondition Component', () => {
 
   describe('Combinació de modes', () => {
     it('neutral hauria de tenir prioritat sobre muted', () => {
-      const { getByText, getByTestId } = render(
-        <BadgeCondition condition="bé" neutral={true} muted={true} />
+      const { getByTestId } = render(
+        <BadgeCondition condition={2} neutral={true} muted={true} />
       );
       
       const badge = getByTestId('badge-container');
@@ -264,8 +247,8 @@ describe('BadgeCondition Component', () => {
   describe('Estils personalitzats', () => {
     it('hauria d\'aplicar estils personalitzats amb la prop style', () => {
       const customStyle = { marginTop: 10 };
-      const { getByText, getByTestId } = render(
-        <BadgeCondition condition="bé" style={customStyle} />
+      const { getByTestId } = render(
+        <BadgeCondition condition={2} style={customStyle} />
       );
       
       const badge = getByTestId('badge-container');
@@ -276,15 +259,15 @@ describe('BadgeCondition Component', () => {
 
     it('hauria de combinar estils personalitzats amb estils per defecte', () => {
       const customStyle = { padding: 5 };
-      const { getByText, getByTestId } = render(
-        <BadgeCondition condition="normal" style={customStyle} />
+      const { getByTestId } = render(
+        <BadgeCondition condition={1} style={customStyle} />
       );
       
       const badge = getByTestId('badge-container');
       // React Native combines styles as an array, check for both properties separately
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#e0ebffff', // estil per defecte
+          backgroundColor: '#EAF4FF', // estil per defecte
         })
       );
       expect(badge?.props.style).toContainEqual(
@@ -295,82 +278,17 @@ describe('BadgeCondition Component', () => {
     });
   });
 
-  describe('Case insensitivity', () => {
-    it('hauria de reconèixer condicions en majúscules', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="BÉ" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-        })
-      );
-    });
-
-    it('hauria de reconèixer condicions en minúscules', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="pobre" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#FEE2E2',
-        })
-      );
-    });
-
-    it('hauria de reconèixer condicions amb barreja de majúscules i minúscules', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="ExCeL·LeNt" />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8',
-        })
-      );
-    });
-  });
-
-  describe('Casos límit', () => {
-    it('hauria de gestionar condicions amb espais', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="  bé  " />);
-      
-      expect(getByText('  bé  ')).toBeTruthy();
-    });
-
-    it('hauria de gestionar condicions amb caràcters especials', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="bé-ok" />);
-      
-      expect(getByText('bé-ok')).toBeTruthy();
-    });
-
-    it('hauria de gestionar múltiples condicions en una string', () => {
-      const { getByText, getByTestId } = render(<BadgeCondition condition="normal i bé" />);
-      
-      // Hauria de reconèixer la primera paraula clau que trobi (bé es comprova primer)
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#A2FFC8', // colors de "bé" (es comprova primer)
-        })
-      );
-    });
-  });
-
   describe('Totes les condicions', () => {
     const testCases = [
-      { condition: 'bé', expectedBg: '#A2FFC8' },
-      { condition: 'bo', expectedBg: '#A2FFC8' },
-      { condition: 'good', expectedBg: '#A2FFC8' },
-      { condition: 'ok', expectedBg: '#A2FFC8' },
-      { condition: 'excel·lent', expectedBg: '#A2FFC8' },
-      { condition: 'normal', expectedBg: '#e0ebffff' },
-      { condition: 'regular', expectedBg: '#e0ebffff' },
-      { condition: 'pobre', expectedBg: '#FEE2E2' },
+      { condition: 0, expectedBg: '#FDE8E8', name: 'pobre' },
+      { condition: 1, expectedBg: '#EAF4FF', name: 'correcte' },
+      { condition: 2, expectedBg: '#E6F8EE', name: 'bé' },
+      { condition: 3, expectedBg: '#FFF6E0', name: 'excel·lent' },
     ];
 
-    testCases.forEach(({ condition, expectedBg }) => {
-      it(`hauria d'aplicar el color correcte per "${condition}"`, () => {
-        const { getByText, getByTestId } = render(<BadgeCondition condition={condition} />);
+    testCases.forEach(({ condition, expectedBg, name }) => {
+      it(`hauria d'aplicar el color correcte per condició ${condition} (${name})`, () => {
+        const { getByTestId } = render(<BadgeCondition condition={condition} />);
         
         const badge = getByTestId('badge-container');
         expect(badge?.props.style).toContainEqual(
@@ -382,19 +300,41 @@ describe('BadgeCondition Component', () => {
     });
   });
 
+  describe('Textos traduïts', () => {
+    it('hauria de mostrar "Pobre" per condició 0', () => {
+      const { getByText } = render(<BadgeCondition condition={0} />);
+      expect(getByText('Pobre')).toBeTruthy();
+    });
+
+    it('hauria de mostrar "Correcte" per condició 1', () => {
+      const { getByText } = render(<BadgeCondition condition={1} />);
+      expect(getByText('Correcte')).toBeTruthy();
+    });
+
+    it('hauria de mostrar "Bé" per condició 2', () => {
+      const { getByText } = render(<BadgeCondition condition={2} />);
+      expect(getByText('Bé')).toBeTruthy();
+    });
+
+    it('hauria de mostrar "Excel·lent" per condició 3', () => {
+      const { getByText } = render(<BadgeCondition condition={3} />);
+      expect(getByText('Excel·lent')).toBeTruthy();
+    });
+  });
+
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb condició "bé"', () => {
-      const tree = render(<BadgeCondition condition="bé" />).toJSON();
+    it('hauria de coincidir amb el snapshot amb condició 2', () => {
+      const tree = render(<BadgeCondition condition={2} />).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
     it('hauria de coincidir amb el snapshot en mode neutral', () => {
-      const tree = render(<BadgeCondition condition="bé" neutral={true} />).toJSON();
+      const tree = render(<BadgeCondition condition={2} neutral={true} />).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
     it('hauria de coincidir amb el snapshot en mode muted', () => {
-      const tree = render(<BadgeCondition condition="bé" muted={true} />).toJSON();
+      const tree = render(<BadgeCondition condition={2} muted={true} />).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

@@ -13,9 +13,8 @@ import { useCustomAlert } from '../hooks/useCustomAlert';
 import { CustomAlert } from '../components/CustomAlert';
 import { RenovationForm, RenovationFormData } from '../components/RenovationForm';
 import { Location } from '../models';
-import { RefugisService } from '../services/RefugisService';
-import { RenovationService } from '../services/RenovationService';
-import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
+import { useRefuges, useRefuge } from '../hooks/useRefugesQuery';
+import { useRenovation, useUpdateRenovation } from '../hooks/useRenovationsQuery';
 
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
@@ -33,42 +32,30 @@ export function EditRenovationScreen() {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const insets = useSafeAreaInsets();
 
-  const [allRefuges, setAllRefuges] = useState<Location[]>([]);
-  const [initialRefuge, setInitialRefuge] = useState<Location | null>(null);
-  const [initialData, setInitialData] = useState<RenovationFormData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingData, setIsLoadingData] = useState(true);
   const [formResetKey, setFormResetKey] = useState(0);
 
   const renovationId = route.params?.renovationId;
 
+  // Load renovation data using React Query
+  const { data: renovation, isLoading: loadingRenovation } = useRenovation(renovationId);
+  
+  // Load all refuges
+  const { data: allRefuges = [], isLoading: loadingRefuges } = useRefuges();
+  
+  // Load initial refuge
+  const { data: initialRefuge } = useRefuge(renovation?.refuge_id || '');
+  
+  // Mutation for updating
+  const updateMutation = useUpdateRenovation();
+  
+  const isLoadingData = loadingRenovation || loadingRefuges;
+  const isLoading = updateMutation.isPending;
+
+  // Set initial form data when renovation loads
+  const [initialData, setInitialData] = useState<RenovationFormData | null>(null);
+  
   useEffect(() => {
-    loadData();
-  }, [renovationId]);
-
-  const loadData = async () => {
-    try {
-      setIsLoadingData(true);
-      
-      // Load refuges
-      const refuges = await RefugisService.getRefugis();
-      setAllRefuges(refuges);
-
-      // Load renovation data
-      const renovationDTO = await RenovationService.getRenovationById(renovationId);
-      if (!renovationDTO) {
-        showAlert(t('common.error'), t('renovations.notFound'));
-        navigation.goBack();
-        return;
-      }
-
-      const renovation = mapRenovationFromDTO(renovationDTO);
-      
-      // Load refuge
-      const refuge = await RefugisService.getRefugiById(renovation.refuge_id);
-      setInitialRefuge(refuge);
-
-      // Set initial form data
+    if (renovation && !initialData) {
       setInitialData({
         refuge_id: renovation.refuge_id,
         ini_date: renovation.ini_date,
@@ -77,17 +64,11 @@ export function EditRenovationScreen() {
         materials_needed: renovation.materials_needed,
         group_link: renovation.group_link,
       });
-      
-      // Increment reset key to force form reset
       setFormResetKey(prev => prev + 1);
-    } catch (error) {
-      console.error('Error loading renovation data:', error);
-      showAlert(t('common.error'), t('renovations.errorLoadingDetails'));
-      navigation.goBack();
-    } finally {
-      setIsLoadingData(false);
     }
-  };
+  }, [renovation, initialData]);
+
+
 
   const handleCancel = () => {
     navigation.navigate('RefromDetail', { 
@@ -102,48 +83,48 @@ export function EditRenovationScreen() {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const editedRenovation = await RenovationService.updateRenovation(renovationId, changedFields);
-
-      // Success - navigate to renovations detail
-      navigation.navigate('RefromDetail', { 
-        renovationId: editedRenovation.id,
-        renovation: editedRenovation
+    return new Promise<void>((resolve, reject) => {
+      updateMutation.mutate({ id: renovationId, updates: changedFields }, {
+        onSuccess: (editedRenovation) => {
+          // Success - navigate to renovations detail
+          navigation.navigate('RefromDetail', { 
+            renovationId: editedRenovation.id,
+            renovation: editedRenovation
+          });
+          resolve();
+        },
+        onError: (error: any) => {
+          console.error('Error updating renovation:', error);
+          
+          // Handle conflict (409) - overlapping renovation
+          if (error.overlappingRenovation) {
+            const overlappingRenovation = error.overlappingRenovation;
+            showAlert(
+              undefined,
+              t('createRenovation.errors.overlapMessage'),
+              [
+                {
+                  text: t('common.ok'),
+                  style: 'cancel',
+                  onPress: hideAlert,
+                },
+                {
+                  text: t('createRenovation.viewOverlappingRenovation'),
+                  style: 'default',
+                  onPress: () => {
+                    hideAlert();
+                    handleCancel();
+                  },
+                },
+              ]
+            );
+          } else {
+            showAlert(t('common.error'), error.message || t('renovations.errorUpdating'));
+          }
+          reject(error);
+        }
       });
-
-    } catch (error: any) {
-      console.error('Error updating renovation:', error);
-      
-      // Handle conflict (409) - overlapping renovation
-      if (error.overlappingRenovation) {
-        const overlappingRenovation = error.overlappingRenovation;
-        showAlert(
-          undefined,
-          t('createRenovation.errors.overlapMessage'),
-          [
-            {
-              text: t('common.ok'),
-              style: 'cancel',
-              onPress: hideAlert,
-            },
-            {
-              text: t('createRenovation.viewOverlappingRenovation'),
-              style: 'default',
-              onPress: () => {
-                hideAlert();
-                handleCancel();
-              },
-            },
-          ]
-        );
-      } else {
-        showAlert(t('common.error'), error.message || t('renovations.errorUpdating'));
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   if (isLoadingData) {

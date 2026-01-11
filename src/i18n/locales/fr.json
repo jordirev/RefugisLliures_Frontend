@@ -14,7 +14,8 @@
     "error": "Erreur",
     "success": "Succès",
     "noResults": "Aucun résultat trouvé",
-    "readMore": "Lire plus...",
+    "readMore": "Lire la suite...",
+    "readLess": "Afficher moins",
     "showLess": "Afficher moins",
     "places": "places",
     "download": "Télécharger",
@@ -28,7 +29,33 @@
     "optional": "optionnel",
     "locale": "fr",
     "you": "Vous",
-    "share": "Partager"
+    "share": "Partager",
+    "warning": "Attention",
+    "understand": "Je comprends",
+    "confirm": "Confirmer",
+    "months": {
+      "january": "Janvier",
+      "february": "Février",
+      "march": "Mars",
+      "april": "Avril",
+      "may": "Mai",
+      "june": "Juin",
+      "july": "Juillet",
+      "august": "Août",
+      "september": "Septembre",
+      "october": "Octobre",
+      "november": "Novembre",
+      "december": "Décembre"
+    },
+    "days": {
+      "sun": "Di",
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Me",
+      "thu": "Je",
+      "fri": "Ve",
+      "sat": "Sa"
+    }
   },
   "navigation": {
     "map": "Carte",
@@ -40,7 +67,11 @@
     "title": "Carte des Refuges",
     "searchPlaceholder": "Rechercher refuges...",
     "noLocationsFound": "Impossible de charger les refuges",
-    "errorLoading": "Impossible de charger les refuges"
+    "errorLoading": "Impossible de charger les refuges",
+    "noResults": {
+      "title": "Aucun résultat",
+      "message": "Il n'y a pas de refuges qui correspondent aux filtres sélectionnés"
+    }
   },
   "favorites": {
     "title": "Mes favoris",
@@ -131,6 +162,8 @@
       "language": "Langue",
       "changeEmail": "Changer l'e-mail",
       "changePassword": "Changer le mot de passe",
+      "myProposals": "Mes propositions",
+      "proposalsManagement": "Gestion des propositions",
       "help": "Aide et support",
       "about": "À propos de l'app",
       "privacy": "Confidentialité",
@@ -155,6 +188,26 @@
         "fr": "Français"
       },
       "updateError": "Impossible de mettre à jour la langue sur le serveur"
+    },
+    "avatar": {
+      "changePhoto": "Changer la photo",
+      "deletePhoto": "Supprimer la photo",
+      "cropTitle": "Recadrer l'image",
+      "permissionDenied": "Permission refusée",
+      "permissionMessage": "Nous avons besoin de la permission d'accéder à vos photos. Veuillez l'activer depuis les paramètres de votre appareil.",
+      "permissionRequired": "Permission requise",
+      "permissionOptions": "Nous avons besoin d'accéder à vos photos pour changer votre photo de profil. Vous pouvez choisir entre un accès limité ou un accès complet à votre galerie.",
+      "requestPermission": "Autoriser l'accès",
+      "uploadSuccess": "Photo mise à jour",
+      "uploadSuccessMessage": "Votre photo de profil a été mise à jour avec succès",
+      "uploadError": "Échec du téléchargement de la photo",
+      "selectError": "Échec de la sélection de l'image",
+      "deleteConfirmTitle": "Supprimer la photo de profil",
+      "deleteConfirmMessage": "Êtes-vous sûr(e) de vouloir supprimer votre photo de profil ?",
+      "deleteSuccess": "Photo supprimée",
+      "deleteSuccessMessage": "Votre photo de profil a été supprimée avec succès",
+      "deleteError": "Échec de la suppression de la photo",
+      "tapToChange": "Appuyez pour changer la photo de profil"
     }
   },
   "changePassword": {
@@ -234,7 +287,8 @@
       "weather": "Météo",
       "nearbyRoutes": "Itinéraires à proximité",
       "information_not_precise": "Les informations peuvent ne pas être exactes ou être obsolètes. Les administrateurs de l'application ne sont pas responsables de l'utilisation qui peut en être faite. \nSi vous allez en montagne, prenez les précautions nécessaires.",
-      "coordinates": "Coordonnées"
+      "coordinates": "Coordonnées",
+      "typeAndCondition": "Type et État"
     },
     "amenities": {
       "manque_un_mur": "Manque un mur",
@@ -260,7 +314,8 @@
       "ask": "Demander \ndoute",
       "shareExperience": "Partager\nl'expérience",
       "addPhoto": "Ajouter photo",
-      "editRefuge": "Modifier \nrefuge"
+      "editRefuge": "Modifier \nrefuge",
+      "deleteRefuge": "Supprimer"
     },
     "descriptions": {
       "addToFavorites": "Enregistrez ce refuge dans vos favoris",
@@ -271,6 +326,25 @@
       "shareYourExperience": "Partagez votre expérience",
       "askAboutRefuge": "Poser des questions sur le refuge",
       "uploadPhoto": "Télécharger une photo du refuge"
+    },
+    "gallery": {
+      "title": "Galerie photos du refuge",
+      "viewAll": "Voir tout",
+      "addPhoto": "Ajouter photo",
+      "noPhotos": "Il n'y a pas de photos de ce refuge.\nSoyez le premier à contribuer les vôtres!",
+      "addPhotosButton": "Ajoutez des photos"
+    },
+    "occupation": {
+      "title": "Occupation du refuge",
+      "addVisit": "Ajouter visite",
+      "editVisit": "Éditer visite",
+      "deleteVisit": "Supprimer visite",
+      "deleteConfirmation": "Êtes-vous sûr(e) de vouloir supprimer cette visite?",
+      "numVisitorsLabel": "Nombre de visiteurs",
+      "numVisitorsPlaceholder": "Ex: 4",
+      "numVisitorsError": "Le nombre de visiteurs doit être supérieur à 0",
+      "disclaimer": "Vous ne réservez pas de place au refuge. Vous indiquez seulement que vous irez à ce refuge à cette date pour que les autres utilisateurs le sachent.",
+      "placesExceeded": "L'occupation du refuge ({{total}} visiteurs) dépasse la capacité disponible ({{places}} places). Tenez-en compte avant d'y aller."
     }
   },
   "filters": {
@@ -296,6 +370,25 @@
       "good": "Bon",
       "fair": "Correct",
       "poor": "Pauvre"
+    }
+  },
+  "layers": {
+    "title": "Couches et Affichage",
+    "representation": {
+      "title": "Représentation des refuges",
+      "subtitle": "Choisissez comment afficher les refuges sur la carte",
+      "markers": "Marqueurs",
+      "markersDesc": "Afficher chaque refuge avec un marqueur individuel sur la carte",
+      "heatmap": "Carte de chaleur",
+      "heatmapDesc": "Afficher la densité des refuges avec des couleurs. Les marqueurs apparaissent avec le zoom",
+      "cluster": "Groupements",
+      "clusterDesc": "Grouper les refuges proches en un nombre. Les marqueurs apparaissent avec le zoom"
+    },
+    "mapLayer": {
+      "title": "Couche de carte",
+      "subtitle": "Sélectionnez le type de carte",
+      "opentopoDesc": "Carte topographique avec courbes de niveau et relief",
+      "openstreetDesc": "Carte routière avec informations générales"
     }
   },
   "alerts": {
@@ -362,8 +455,8 @@
     "orContinueWith": "ou",
     "googleButton": "Continuer avec Google",
     "noAccount": "Vous n'avez pas de compte ?",
-    "signUpLink": "S'inscrire",
-    "errors": {
+    "signUpLink": "S'inscrire",    "termsText": "En vous inscrivant ou en vous connectant, vous acceptez les ",
+    "termsLink": "conditions d'utilisation",    "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer votre mot de passe",
@@ -467,6 +560,316 @@
       "groupLinkInvalid": "Le lien doit être de WhatsApp ou Telegram",
       "overlapMessage": "Une rénovation est déjà planifiée pour ce refuge à ces dates.",
       "generic": "Impossible de créer la rénovation. Veuillez réessayer."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Supprimer le Refuge",
+    "warning": "Vous êtes sur le point de proposer la suppression du refuge '{{name}}'. Cette action créera une proposition qui sera examinée par un administrateur.",
+    "commentLabel": "Raison de la suppression",
+    "commentPlaceholder": "Expliquez pourquoi ce refuge devrait être supprimé.",
+    "minChars": "(minimum {{min}})",
+    "confirm": "Envoyer Proposition",
+    "success": {
+      "title": "Proposition envoyée",
+      "message": "Votre proposition de suppression a été envoyée avec succès et sera examinée par un administrateur"
+    },
+    "error": {
+      "generic": "Échec de l'envoi de la proposition de suppression. Veuillez réessayer"
+    }
+  },
+  "editRefuge": {
+    "title": "Modifier le Refuge",
+    "proposalInfo": "Ceci est une proposition de modification de refuge qui sera examinée et approuvée par un administrateur",
+    "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur.",
+    "minChars": "minimum {{min}}",
+    "success": {
+      "title": "Proposition envoyée",
+      "message": "Votre proposition de modification a été envoyée avec succès et sera examinée par un administrateur"
+    },
+    "errors": {
+      "commentRequired": "Le commentaire est obligatoire pour proposer des modifications",
+      "commentTooShort": "Le commentaire doit contenir au moins {{min}} caractères"
+    }
+  },
+  "createRefuge": {
+    "title": "Proposer un Refuge",
+    "proposalInfo": "Ceci est une proposition de création de refuge qui sera examinée et approuvée par un administrateur",
+    "coordinates": "Coordonnées",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "generalInfo": "Informations générales",
+    "namePlaceholder": "Nom du refuge",
+    "regionPlaceholder": "Région",
+    "departementPlaceholder": "Département",
+    "pressToEdit": "Appuyez pour éditer",
+    "descriptionPlaceholder": "Décrivez le refuge...",
+    "links": "Liens d'information supplémentaires",
+    "linkPlaceholder": "https://exemple.com",
+    "addLink": "Ajouter un lien",
+    "adminComment": "Commentaire pour les administrateurs",
+    "adminCommentPlaceholder": "Informations supplémentaires qui peuvent être utiles pour les administrateurs pour vérifier ce refuge",
+    "submit": "Soumettre la Proposition",
+    "photoAlert": {
+      "title": "Photos du refuge",
+      "message": "Les photos pourront être téléchargées une fois la proposition de création acceptée par un administrateur"
+    },
+    "success": {
+      "title": "Proposition soumise",
+      "message": "Votre proposition a été soumise avec succès et sera examinée par un administrateur"
+    },
+    "error": {
+      "generic": "Impossible de soumettre la proposition. Veuillez réessayer"
+    },
+    "errors": {
+      "nameRequired": "Le nom du refuge est obligatoire",
+      "nameTooLong": "Le nom ne peut pas dépasser 100 caractères",
+      "latitudeRequired": "La latitude est obligatoire",
+      "latitudeAtLeast3Decimals": "La latitude doit avoir au moins 3 décimales",
+      "longitudeRequired": "La longitude est obligatoire",
+      "longitudeAtLeast3Decimals": "La longitude doit avoir au moins 3 décimales",
+      "invalidColon": "Les coordonnées doivent utiliser un point (.) comme séparateur décimal",
+      "regionTooLong": "La région ne peut pas dépasser 100 caractères",
+      "departementTooLong": "Le département ne peut pas dépasser 100 caractères",
+      "altitudeInvalid": "L'altitude doit être un entier positif",
+      "altitudeTooHigh": "L'altitude ne peut pas dépasser 8800m",
+      "placesInvalid": "Les places doivent être un entier positif",
+      "descriptionTooLong": "La description ne peut pas dépasser 3000 caractères",
+      "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères",
+      "linkInvalid": "Le lien doit être une URL valide (commence par http://, https:// ou www.)"
+    }
+  },
+  "doubts": {
+    "title": "Section des doutes",
+    "noDoubts": "Pas encore de doutes. Soyez le premier à poser une question!",
+    "doubtPlaceholder": "Écrivez votre doute...",
+    "answerPlaceholder": "Écrivez votre réponse...",
+    "reply": "Répondre",
+    "replyingTo": "Répondre à {{name}}",
+    "deleteDoubt": {
+      "title": "Supprimer le doute",
+      "message": "Êtes-vous sûr de vouloir supprimer ce doute? Toutes ses réponses seront également supprimées.",
+      "success": "Doute supprimé avec succès"
+    },
+    "deleteAnswer": {
+      "title": "Supprimer la réponse",
+      "message": "Êtes-vous sûr de vouloir supprimer cette réponse?",
+      "success": "Réponse supprimée avec succès"
+    },
+    "errors": {
+      "createDoubtError": "Impossible de créer le doute",
+      "createAnswerError": "Impossible de créer la réponse",
+      "deleteDoubtError": "Impossible de supprimer le doute",
+      "deleteAnswerError": "Impossible de supprimer la réponse",
+      "messageTooLong": "Le message ne peut pas dépasser {{max}} caractères"
+    }
+  },
+  "proposals": {
+    "titleMy": "Mes propositions",
+    "titleAdmin": "Gestion des propositions",
+    "emptyState": "Aucune proposition disponible",
+    "filters": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "rejected": "Rejetées"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "rejected": "Rejetée"
+    },
+    "actions": {
+      "create": "Créer",
+      "update": "Modifier",
+      "delete": "Supprimer"
+    },
+    "card": {
+      "unknownRefuge": "Refuge inconnu",
+      "unknownUser": "Utilisateur inconnu",
+      "createdAt": "Créée le",
+      "reviewedAt": "Révisée le",
+      "rejectionReason": "Raison du rejet",
+      "creator": "Créateur/trice",
+      "reviewer": "Réviseur/se"
+    },
+    "detail": {
+      "title": "Détail de la proposition",
+      "comment": "Commentaire",
+      "review": "Révision",
+      "changes": "Modifications proposées",
+      "newRefuge": "Nouveau refuge",
+      "refugeToDelete": "Refuge à supprimer",
+      "current": "Actuel",
+      "new": "Nouveau",
+      "value": "Valeur",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "newType": "Nouveau type :",
+      "newCondition": "Nouvel état :",
+      "newTypeAndCondition": "Nouveau type et état :"
+    },
+    "approve": {
+      "successTitle": "Proposition approuvée",
+      "successMessage": "La proposition a été approuvée avec succès"
+    },
+    "reject": {
+      "successTitle": "Proposition rejetée",
+      "successMessage": "La proposition a été rejetée avec succès"
+    },
+    "rejectModal": {
+      "title": "Rejeter la proposition",
+      "warning": "Vous êtes sur le point de rejeter la proposition pour le refuge '{{name}}'. Veuillez expliquer la raison du rejet.",
+      "confirm": "Rejeter la proposition"
+    },
+    "errors": {
+      "loadError": "Impossible de charger les propositions",
+      "loadDetailError": "Impossible de charger les détails de la proposition",
+      "approveError": "Impossible d'approuver la proposition",
+      "rejectError": "Impossible de rejeter la proposition"
+    }
+  },
+  "experiences": {
+    "title": "Expériences",
+    "viewMore": "Voir toutes les expériences",
+    "addFirst": "Partagez votre expérience!",
+    "noExperiences": "Il n'y a pas encore d'expériences.\nSoyez le premier à partager la vôtre !",
+    "placeholder": "Partagez votre expérience...",
+    "newPhotos": "Nouvelles photos",
+    "addPhotos": "Ajouter des photos",
+    "deletePhotoInfo": "Pour supprimer une photo, appuyez dessus dans le carrousel et supprimez-la depuis le visualiseur",
+    "updateSuccess": "L'expérience a été mise à jour avec succès",
+    "deleteExperience": {
+      "title": "Supprimer l'expérience",
+      "message": "Êtes-vous sûr de vouloir supprimer cette expérience ? Cette action est irréversible.",
+      "success": "L'expérience a été supprimée avec succès"
+    },
+    "errors": {
+      "commentTooLong": "Le commentaire ne peut pas dépasser 3000 caractères",
+      "createExperienceError": "L'expérience n'a pas été créée",
+      "updateExperienceError": "L'expérience n'a pas été mise à jour",
+      "deleteExperienceError": "L'expérience n'a pas été supprimée",
+      "selectPhotosError": "Impossible de sélectionner les photos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Certains fichiers n'ont pas pu être téléversés avec succès"
+    }
+  },
+  "helpSupport": {
+    "title": "Aide et assistance",
+    "intro": "Pour toute panne ou erreur dans l'application, vous pouvez envoyer un email à :",
+    "emailCopied": "Email copié",
+    "emailCopiedMessage": "L'adresse email a été copiée dans le presse-papiers",
+    "beSpecific": "Veuillez être précis sur le scénario dans lequel l'erreur se produit et, si possible, fournir des photos.",
+    "warning": {
+      "title": "Attention :",
+      "message": "Les demandes de modification des informations d'un refuge ne seront pas traitées. Pour cela, créez une proposition de modification du refuge sur l'écran des détails du refuge."
+    }
+  },
+  "aboutApp": {
+    "title": "À propos de l'application",
+    "description": {
+      "intro": "Refugis Lliures est née dans le but de fournir des informations précises, fiables et complètes sur les refuges libres des Pyrénées, ainsi que de préserver leur état en facilitant les rassemblements de volontaires pour les rénover.",
+      "sources": "L'application combine les deux plus grandes sources d'informations sur les refuges libres disponibles sur Internet à ce jour :",
+      "userContributions": "ainsi que les informations fournies par les utilisateurs de l'application eux-mêmes."
+    },
+    "creator": {
+      "title": "À propos du créateur :",
+      "greeting": "Bonjour ! Je m'appelle Jordi Reverter et je suis le créateur de Refugis Lliures, l'application la plus complète à ce jour sur les refuges libres des Pyrénées.",
+      "description": "Cette application a été le résultat de mon Projet de Fin d'Études à l'Université Polytechnique de Catalogne (UPC), où j'ai pu combiner mes deux passions : la montagne et le logiciel. Depuis mon plus jeune âge, la montagne a occupé une place très importante dans ma vie et, surtout, les refuges libres. J'y ai vécu de grandes expériences et partagé de nombreux moments avec des gens passionnés par la montagne et c'est pourquoi j'ai décidé de créer cette application et d'apporter ma pierre à l'édifice dans ce monde de la montagne. J'espère qu'elle pourra vous être utile et vous accompagner lors de vos prochaines sorties !"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Conditions Générales d'Utilisation",
+    "updateDate": "Date de dernière mise à jour : 4 janvier 2026",
+    "acceptButton": "Accepter et Fermer",
+    "acceptance": {
+      "title": "1. Acceptation des Conditions",
+      "content": "En téléchargeant, installant ou utilisant l'application RefugisLliures, vous acceptez d'être lié par ces conditions. Si vous n'êtes pas d'accord avec une partie de ces conditions, vous ne pourrez pas accéder au service."
+    },
+    "description": {
+      "title": "2. Description du Service",
+      "content": "RefugisLliures est une plateforme de visualisation et de gestion de données sur les refuges libres. Le service utilise des données en temps réel et des fonctionnalités de cartographie pour améliorer l'expérience utilisateur en environnement montagnard."
+    },
+    "permissions": {
+      "title": "3. Utilisation des Permissions et du Dispositif",
+      "intro": "Pour le bon fonctionnement de l'application, les permissions suivantes sont requises :",
+      "location": {
+        "title": "Localisation :",
+        "content": "Pour afficher votre position sur la carte par rapport aux refuges."
+      },
+      "media": {
+        "title": "Multimédia/Caméra :",
+        "content": "Pour permettre le téléversement de photos des refuges."
+      },
+      "network": {
+        "title": "État du réseau :",
+        "content": "Pour gérer la synchronisation des données avec Firebase et Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. Responsabilité de l'Utilisateur",
+      "content": "L'utilisateur s'engage à faire un usage licite de l'application. Étant donné que les informations concernent des refuges de montagne, RefugisLliures n'est pas responsable de l'exactitude des coordonnées ni de l'état physique des refuges. L'utilisation de l'application ne remplace pas les outils de navigation professionnels ni le bon sens dans les activités à risque."
+    },
+    "privacy": {
+      "title": "Politique de Confidentialité (Conforme au RGPD)",
+      "dataController": {
+        "title": "1. Responsable du Traitement",
+        "content": "Le responsable du traitement de vos données est le titulaire du projet RefugisLliures (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Données que Nous Collectons",
+        "intro": "Nous collectons uniquement les données strictement nécessaires au fonctionnement de l'application :",
+        "identification": {
+          "title": "Données d'Identification :",
+          "content": "Nom et adresse email via Firebase Authentication."
+        },
+        "location": {
+          "title": "Données de Localisation :",
+          "content": "Uniquement si l'utilisateur donne son consentement explicite."
+        },
+        "userContent": {
+          "title": "Contenu de l'Utilisateur :",
+          "content": "Photographies soumises par l'utilisateur (stockées sur Cloudflare)."
+        },
+        "usage": {
+          "title": "Données d'Usage :",
+          "content": "Statistiques anonymes via Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Finalité du Traitement",
+        "intro": "Les données sont utilisées exclusivement pour :",
+        "point1": "Gérer votre profil utilisateur et l'authentification.",
+        "point2": "Vous permettre d'interagir avec les refuges (ajouter des photos, des commentaires, etc.).",
+        "point3": "Améliorer l'application grâce à des analyses statistiques."
+      },
+      "thirdParties": {
+        "title": "4. Tiers et Transfert de Données",
+        "intro": "Nous ne partageons pas vos données avec des tiers à des fins commerciales. Cependant, nous utilisons les fournisseurs de services suivants (sous-traitants) qui sont conformes au cadre du RGPD :",
+        "firebase": {
+          "title": "Firebase (Google) :",
+          "content": "Pour la base de données et l'authentification."
+        },
+        "cloudflare": {
+          "title": "Cloudflare :",
+          "content": "Pour l'optimisation et le stockage de contenu multimédia."
+        },
+        "analytics": {
+          "title": "Google Analytics :",
+          "content": "Pour le suivi des erreurs et les métriques d'utilisation."
+        }
+      },
+      "rights": {
+        "title": "5. Droits ARCO (Accès, Rectification, Annulation et Opposition)",
+        "intro": "En tant qu'utilisateur, vous avez le droit de :",
+        "point1": "Savoir quelles données nous avons sur vous.",
+        "point2": "Demander la rectification ou la suppression de vos données (y compris votre compte Firebase).",
+        "point3": "Limiter le traitement de vos données."
+      },
+      "security": {
+        "title": "6. Sécurité",
+        "content": "Toutes les données sont transmises de manière sécurisée via les protocoles HTTPS et stockées dans des infrastructures aux normes de sécurité élevées (Firebase/Cloudflare)."
+      }
     }
   }
 }

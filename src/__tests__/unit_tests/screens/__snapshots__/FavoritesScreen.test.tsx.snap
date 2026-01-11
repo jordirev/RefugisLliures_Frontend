@@ -86,47 +86,45 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
       [
         {
           "altitude": 2135,
-          "condition": "bé",
+          "condition": 1,
           "coord": {
             "lat": 42.6497,
             "long": 0.9456,
           },
-          "id": 1,
-          "imageUrl": "https://example.com/image1.jpg",
+          "id": "1",
           "isFavorite": true,
           "name": "Refugi de Colomers",
           "places": 50,
           "region": "Val d'Aran",
-          "type": 1,
+          "type": "non gardée",
         },
         {
           "altitude": 2380,
-          "condition": "excel·lent",
+          "condition": 3,
           "coord": {
             "lat": 42.5678,
             "long": 0.9876,
           },
-          "id": 2,
-          "imageUrl": "https://example.com/image2.jpg",
+          "id": "2",
           "isFavorite": true,
           "name": "Refugi d'Amitges",
           "places": 60,
           "region": "Pallars Sobirà",
-          "type": 1,
+          "type": "non gardée",
         },
         {
           "altitude": 2010,
-          "condition": "normal",
+          "condition": 2,
           "coord": {
             "lat": 42.789,
             "long": 0.789,
           },
-          "id": 3,
+          "id": "3",
           "isFavorite": true,
           "name": "Refugi de Restanca",
           "places": 40,
           "region": "Val d'Aran",
-          "type": 1,
+          "type": "non gardée",
         },
       ]
     }
@@ -221,7 +219,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
               resizeMode="cover"
               source={
                 {
-                  "uri": "https://example.com/image1.jpg",
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
                 }
               }
               style={
@@ -239,7 +237,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": false,
+                  "selected": true,
                 }
               }
               accessibilityValue={
@@ -508,7 +506,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
               resizeMode="cover"
               source={
                 {
-                  "uri": "https://example.com/image2.jpg",
+                  "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
                 }
               }
               style={
@@ -526,7 +524,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": false,
+                  "selected": true,
                 }
               }
               accessibilityValue={
@@ -813,7 +811,7 @@ exports[`FavoritesScreen Component Snapshot testing hauria de coincidir amb el s
                   "checked": undefined,
                   "disabled": false,
                   "expanded": undefined,
-                  "selected": false,
+                  "selected": true,
                 }
               }
               accessibilityValue={

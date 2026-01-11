@@ -1,0 +1,772 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserExperience Component Edició d'experiència snapshot test - amb experiència llarga 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 24,
+      },
+      false,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, q...
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+          }
+        }
+      >
+        common.readMore
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UserExperience Component Edició d'experiència snapshot test - amb vídeo 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 24,
+      },
+      false,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Experiència amb vídeo
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "marginLeft": 44,
+      }
+    }
+  >
+    <RCTScrollView
+      horizontal={true}
+      onScroll={[Function]}
+      pagingEnabled={true}
+      scrollEventThrottle={16}
+      showsHorizontalScrollIndicator={false}
+    >
+      <View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "height": 120,
+              "marginRight": 12,
+              "opacity": 1,
+              "width": 120,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "borderRadius": 8,
+                "height": 120,
+                "width": 120,
+              }
+            }
+            testID="video-thumbnail"
+          />
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                "borderRadius": 8,
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "borderRadius": 30,
+                  "height": 60,
+                  "justifyContent": "center",
+                  "width": 60,
+                }
+              }
+            >
+              <Text
+                style={
+                  {
+                    "color": "#e0e0e0ff",
+                    "fontSize": 32,
+                  }
+                }
+              >
+                ▶
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`UserExperience Component Mode resposta hauria d'aplicar estil de resposta quan isAnswer és true 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 24,
+      },
+      {
+        "marginLeft": 32,
+      },
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Una experiència fantàstica al refugi. Tot molt net i acollidor.
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "marginLeft": 44,
+      }
+    }
+  >
+    <RCTScrollView
+      horizontal={true}
+      onScroll={[Function]}
+      pagingEnabled={true}
+      scrollEventThrottle={16}
+      showsHorizontalScrollIndicator={false}
+    >
+      <View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "height": 120,
+              "marginRight": 12,
+              "opacity": 1,
+              "width": 120,
+            }
+          }
+        >
+          <Image
+            resizeMode="cover"
+            source={
+              {
+                "uri": "https://example.com/photo1.jpg",
+              }
+            }
+            style={
+              {
+                "borderRadius": 8,
+                "height": 120,
+                "width": 120,
+              }
+            }
+          />
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`UserExperience Component Renderització bàsica snapshot test - experiència bàsica 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 24,
+      },
+      false,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Una experiència fantàstica al refugi. Tot molt net i acollidor.
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "marginLeft": 44,
+      }
+    }
+  >
+    <RCTScrollView
+      horizontal={true}
+      onScroll={[Function]}
+      pagingEnabled={true}
+      scrollEventThrottle={16}
+      showsHorizontalScrollIndicator={false}
+    >
+      <View>
+        <View
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            {
+              "height": 120,
+              "marginRight": 12,
+              "opacity": 1,
+              "width": 120,
+            }
+          }
+        >
+          <Image
+            resizeMode="cover"
+            source={
+              {
+                "uri": "https://example.com/photo1.jpg",
+              }
+            }
+            style={
+              {
+                "borderRadius": 8,
+                "height": 120,
+                "width": 120,
+              }
+            }
+          />
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  />
+</View>
+`;

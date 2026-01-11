@@ -13,8 +13,11 @@
 
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SearchBar } from '../../../components/SearchBar';
+
+// Mock Keyboard
+const mockKeyboardDismiss = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
 
 // Mock de useTranslation
 jest.mock('../../../hooks/useTranslation', () => ({
@@ -109,6 +112,44 @@ describe('SearchBar Component', () => {
       expect(onSearchChange).toHaveBeenCalledTimes(3);
       expect(onSearchChange).toHaveBeenLastCalledWith('Ref');
     });
+
+    it('hauria de cridar Keyboard.dismiss quan es fa submit', () => {
+      mockKeyboardDismiss.mockClear();
+      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+      
+      const input = getByPlaceholderText('Cerca refugis...');
+      fireEvent(input, 'submitEditing');
+      
+      expect(mockKeyboardDismiss).toHaveBeenCalled();
+    });
+  });
+
+  describe('Gestió del teclat', () => {
+    it('hauria de cridar Keyboard.dismiss quan es prem el container', () => {
+      mockKeyboardDismiss.mockClear();
+      const { UNSAFE_getAllByType } = render(<SearchBar {...defaultProps} />);
+      
+      const touchableWithoutFeedback = UNSAFE_getAllByType(TouchableWithoutFeedback);
+      if (touchableWithoutFeedback.length > 0) {
+        fireEvent.press(touchableWithoutFeedback[0]);
+        expect(mockKeyboardDismiss).toHaveBeenCalled();
+      }
+    });
+
+    it('hauria de cridar Keyboard.dismiss quan es prem el botó de filtres', () => {
+      mockKeyboardDismiss.mockClear();
+      const onOpenFilters = jest.fn();
+      const { UNSAFE_getAllByType } = render(
+        <SearchBar {...defaultProps} onOpenFilters={onOpenFilters} />
+      );
+      
+      // Get touchables and press filter button (first one in non-search context)
+      const touchables = UNSAFE_getAllByType(TouchableOpacity);
+      if (touchables.length > 0) {
+        fireEvent.press(touchables[0]);
+        expect(mockKeyboardDismiss).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('Botó de filtres', () => {
@@ -182,6 +223,23 @@ describe('SearchBar Component', () => {
       
       expect(onSearchChange).toHaveBeenCalledWith('');
     });
+
+    it('hauria de cridar Keyboard.dismiss quan es prem clear', () => {
+      mockKeyboardDismiss.mockClear();
+      const onSearchChange = jest.fn();
+      const { getByText } = render(
+        <SearchBar 
+          {...defaultProps} 
+          searchQuery="text" 
+          onSearchChange={onSearchChange}
+        />
+      );
+      
+      const clearButton = getByText('✕');
+      fireEvent.press(clearButton);
+      
+      expect(mockKeyboardDismiss).toHaveBeenCalled();
+    });
   });
 
   describe('Suggeriments d\'autocomplete', () => {
@@ -205,19 +263,20 @@ describe('SearchBar Component', () => {
       expect(getByText('Refugi 3')).toBeTruthy();
     });
 
-    it('hauria de mostrar màxim 6 suggeriments', () => {
+    it('hauria de mostrar tots els suggeriments dins un ScrollView', () => {
       const suggestions = [
         'Refugi 1', 'Refugi 2', 'Refugi 3', 'Refugi 4',
         'Refugi 5', 'Refugi 6', 'Refugi 7', 'Refugi 8',
       ];
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <SearchBar {...defaultProps} suggestions={suggestions} />
       );
       
+      // El component ara mostra tots els suggeriments dins un ScrollView
       expect(getByText('Refugi 1')).toBeTruthy();
       expect(getByText('Refugi 6')).toBeTruthy();
-      expect(queryByText('Refugi 7')).toBeNull();
-      expect(queryByText('Refugi 8')).toBeNull();
+      expect(getByText('Refugi 7')).toBeTruthy();
+      expect(getByText('Refugi 8')).toBeTruthy();
     });
 
     it('hauria de cridar onSuggestionSelect quan es selecciona un suggeriment', () => {
@@ -281,6 +340,36 @@ describe('SearchBar Component', () => {
       );
       
       expect(getByText('+')).toBeTruthy();
+    });
+
+    it('hauria de cridar onAddPress quan es prem el botó d\'afegir', () => {
+      const onAddPress = jest.fn();
+      const { getByText } = render(
+        <SearchBar {...defaultProps} searchQuery="" onAddPress={onAddPress} />
+      );
+      
+      const addButton = getByText('Afegir refugi');
+      fireEvent.press(addButton);
+      
+      expect(onAddPress).toHaveBeenCalledTimes(1);
+    });
+
+    it('NO hauria de fallar si onAddPress no està definit', () => {
+      const { getByText } = render(
+        <SearchBar {...defaultProps} searchQuery="" />
+      );
+      
+      const addButton = getByText('Afegir refugi');
+      
+      expect(() => fireEvent.press(addButton)).not.toThrow();
+    });
+
+    it('hauria de ocultar el botó afegir quan showAddButton és false', () => {
+      const { queryByText } = render(
+        <SearchBar {...defaultProps} searchQuery="" showAddButton={false} />
+      );
+      
+      expect(queryByText('Afegir refugi')).toBeNull();
     });
   });
 

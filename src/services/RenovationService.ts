@@ -130,6 +130,18 @@ export class RenovationService {
       
       if (!response.ok) {
         const errorData: RenovationErrorResponse = await response.json();
+        
+        // Si hi ha detalls de validació, construir un missatge més informatiu
+        if (errorData.details) {
+          const detailsMessages = Object.entries(errorData.details)
+            .map(([field, messages]) => {
+              const msgArray = Array.isArray(messages) ? messages : [messages];
+              return `${field}: ${msgArray.join(', ')}`;
+            })
+            .join('\n');
+          throw new Error(`${errorData.error}\n${detailsMessages}`);
+        }
+        
         throw new Error(errorData.error || `Error ${response.status}: ${response.statusText}`);
       }
       

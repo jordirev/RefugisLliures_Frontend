@@ -1,0 +1,545 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserMessage Component Mode resposta hauria d'aplicar estils de resposta quan isAnswer és true 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 16,
+      },
+      {
+        "marginLeft": 32,
+      },
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Missatge curt de prova
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+          }
+        }
+      >
+        doubts.reply
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UserMessage Component Snapshots hauria de coincidir amb el snapshot amb missatge llarg 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 16,
+      },
+      false,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+          }
+        }
+      >
+        common.readMore
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+          }
+        }
+      >
+        doubts.reply
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UserMessage Component Snapshots hauria de coincidir amb el snapshot bàsic 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "marginBottom": 16,
+      },
+      false,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 8,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "marginRight": 12,
+        }
+      }
+    >
+      <Image
+        source={
+          {
+            "uri": "https://example.com/avatar.jpg",
+          }
+        }
+        style={
+          {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        {
+          "flex": 1,
+        }
+      }
+    >
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={1}
+        style={
+          {
+            "color": "#111827",
+            "fontSize": 16,
+            "fontWeight": "500",
+          }
+        }
+      >
+        TestUser
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "marginLeft": "auto",
+          "paddingLeft": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 12,
+            "fontWeight": "400",
+          }
+        }
+      >
+        15-06-2025
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "marginBottom": 8,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <Text
+      style={
+        {
+          "color": "#374151",
+          "fontSize": 14,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Missatge curt de prova
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "gap": 16,
+        "paddingLeft": 44,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+          "paddingVertical": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#6B7280",
+            "fontSize": 13,
+            "fontWeight": "500",
+          }
+        }
+      >
+        doubts.reply
+      </Text>
+    </View>
+  </View>
+</View>
+`;

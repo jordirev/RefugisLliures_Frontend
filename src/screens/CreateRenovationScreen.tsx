@@ -12,8 +12,8 @@ import { useCustomAlert } from '../hooks/useCustomAlert';
 import { CustomAlert } from '../components/CustomAlert';
 import { RenovationForm, RenovationFormData } from '../components/RenovationForm';
 import { Location } from '../models';
-import { RefugisService } from '../services/RefugisService';
-import { RenovationService } from '../services/RenovationService';
+import { useRefuges } from '../hooks/useRefugesQuery';
+import { useCreateRenovation } from '../hooks/useRenovationsQuery';
 
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
@@ -26,14 +26,15 @@ export function CreateRenovationScreen() {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const insets = useSafeAreaInsets();
 
-  const [allRefuges, setAllRefuges] = useState<Location[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [formResetKey, setFormResetKey] = useState(0);
 
-  // Load all refuges on mount
-  useEffect(() => {
-    loadRefuges();
-  }, []);
+  // Load all refuges using React Query
+  const { data: allRefuges = [], isLoading: loadingRefuges } = useRefuges();
+  
+  // Mutation for creating renovation
+  const createMutation = useCreateRenovation();
+  
+  const isLoading = createMutation.isPending;
 
   // Show info alert and reset form every time screen is focused
   useFocusEffect(
@@ -44,72 +45,66 @@ export function CreateRenovationScreen() {
         t('renovations.alerts.infoCreationMessage'),
         [{ text: t('common.close'), onPress: hideAlert }]
       );
-    }, [])
+    }, [t, showAlert, hideAlert])
   );
 
-  const loadRefuges = async () => {
-    try {
-      const refuges = await RefugisService.getRefugis();
-      setAllRefuges(refuges);
-    } catch (error) {
-      console.error('Error loading refuges:', error);
-    }
-  };
+
 
   const handleSubmit = async (formData: RenovationFormData, hasChanges: boolean, changedFields: Partial<RenovationFormData>) => {
-    setIsLoading(true);
-
-    try {
-      const createdRenovation = await RenovationService.createRenovation({
+    return new Promise<void>((resolve, reject) => {
+      createMutation.mutate({
         refuge_id: formData.refuge_id!,
         ini_date: formData.ini_date,
         fin_date: formData.fin_date,
         description: formData.description,
         materials_needed: formData.materials_needed,
         group_link: formData.group_link,
+      }, {
+        onSuccess: (createdRenovation) => {
+          // Success - navigate to renovations detail with the created renovation
+          navigation.navigate('RefromDetail', { 
+            renovationId: createdRenovation.id,
+            renovation: createdRenovation
+          });
+          resolve();
+        },
+        onError: (error: any) => {
+          console.error('Error creating renovation:', error);
+          
+          // Handle conflict (409) - overlapping renovation
+          if (error.overlappingRenovation) {
+            const overlappingRenovation = error.overlappingRenovation;
+            showAlert(
+              undefined,
+              t('createRenovation.errors.overlapMessage'),
+              [
+                {
+                  text: t('common.ok'),
+                  style: 'cancel',
+                  onPress: () => {
+                    hideAlert();
+                    navigation.navigate('Renovations');
+                  },
+                },
+                {
+                  text: t('createRenovation.viewOverlappingRenovation'),
+                  style: 'default',
+                  onPress: () => {
+                    hideAlert();
+                    navigation.navigate('RefromDetail', { 
+                      renovationId: overlappingRenovation.id 
+                    });
+                  },
+                },
+              ]
+            );
+          } else {
+            showAlert(t('common.error'), error.message || t('createRenovation.errors.generic'));
+          }
+          reject(error);
+        }
       });
-
-      // Success - navigate to renovations detail with the created renovation
-      navigation.navigate('RefromDetail', { 
-        renovationId: createdRenovation.id,
-        renovation: createdRenovation
-      });
-    } catch (error: any) {
-      console.error('Error creating renovation:', error);
-      
-      // Handle conflict (409) - overlapping renovation
-      if (error.overlappingRenovation) {
-        const overlappingRenovation = error.overlappingRenovation;
-        showAlert(
-          undefined,
-          t('createRenovation.errors.overlapMessage'),
-          [
-            {
-              text: t('common.ok'),
-              style: 'cancel',
-              onPress: () => {
-                hideAlert();
-                navigation.navigate('Renovations');
-              },
-            },
-            {
-              text: t('createRenovation.viewOverlappingRenovation'),
-              style: 'default',
-              onPress: () => {
-                hideAlert();
-                navigation.navigate('RefromDetail', { 
-                  renovationId: overlappingRenovation.id 
-                });
-              },
-            },
-          ]
-        );
-      } else {
-        showAlert(t('common.error'), error.message || t('createRenovation.errors.generic'));
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   const handleCancel = () => {

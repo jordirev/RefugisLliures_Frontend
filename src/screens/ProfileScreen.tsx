@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,7 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
-import { RefugisService } from '../services/RefugisService';
+import { AvatarPopup } from '../components/AvatarPopup';
+import { useUser, useVisitedRefuges } from '../hooks/useUsersQuery';
 import { Location } from '../models';
 
 // Icones
@@ -29,63 +30,34 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, isLoading, refreshUserData, visitedRefuges } = useAuth();
+  const { firebaseUser, backendUser, refreshUserData } = useAuth();
   const insets = useSafeAreaInsets();
-
-  // Recarregar les dades de l'usuari cada cop que es navega cap a la pantalla de perfil
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+  
+  // Utilitzar React Query per obtenir dades de l'usuari i refugis visitats amb cache
+  const { data: userFromQuery, isLoading: isLoadingUser, refetch: refetchUserQuery } = useUser(firebaseUser?.uid);
+  const { data: visitedRefuges = [], isLoading: isLoadingVisited } = useVisitedRefuges(firebaseUser?.uid);
+  
+  // Scroll to top when screen gains focus
   useFocusEffect(
     useCallback(() => {
-      let isActive = true;
-      
-      const loadUserData = async () => {
-        if (isActive) {
-          await refreshUserData();
-        }
-      };
-      
-      loadUserData();
-      
-      return () => {
-        isActive = false;
-      };
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
     }, [])
   );
+  
+  // Utilitzar les dades de React Query si estan disponibles, sinó usar backendUser
+  const displayUser = userFromQuery || backendUser;
 
-  // Navigation handlers
-  const handleViewMap = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before navigating
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
-        if (fullRefuge) {
-          // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
-          onViewMap(fullRefuge);
-          // Navigate to Map tab using the navigator route name and pass the selected refuge
-          navigation.navigate('Map', { selectedRefuge: fullRefuge });
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge for map:', error);
-      // Fallback to showing with current data and navigate to Map tab
-      onViewMap(refuge);
-      navigation.navigate('Map', { selectedRefuge: refuge });
-    }
+  // Navigation handlers - les dades completes ja estan disponibles des de AuthContext
+  const handleViewMap = (refuge: Location) => {
+    onViewMap(refuge);
+    navigation.navigate('Map', { selectedRefuge: refuge });
   };
 
-  const handleViewDetail = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before showing detail
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(String(refuge.id));
-        if (fullRefuge) {
-          onViewDetail(fullRefuge);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge details:', error);
-      // Fallback to showing with current data
-      onViewDetail(refuge);
-    }
+  const handleViewDetail = (refuge: Location) => {
+    onViewDetail(refuge);
   };
   
   // Empty component for visited refuges
@@ -97,6 +69,18 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
     </View>
   );
   
+  const handleAvatarPress = () => {
+    setShowAvatarPopup(true);
+  };
+  
+  const handleAvatarUpdated = () => {
+    // Refrescar les dades de l'usuari
+    refetchUserQuery();
+    if (refreshUserData) {
+      refreshUserData();
+    }
+  };
+  
   
   return (
     <View style={styles.root}>
@@ -105,6 +89,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
         <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
       </View>
       <ScrollView 
+        ref={scrollViewRef}
         style={styles.container} 
         showsVerticalScrollIndicator={false}
       >
@@ -134,30 +119,41 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           </LinearGradient>
 
           {/* Avatar overlapping the background */}
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={handleAvatarPress}
+            activeOpacity={0.8}
+          >
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {(() => {
-                  const name = backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || '';
-                  const parts = name.trim().split(/\s+/);
-                  if (parts.length === 0) return '';
-                  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-                  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-                })()}
-              </Text>
+              {displayUser?.avatar_metadata?.url ? (
+                <Image 
+                  source={{ uri: displayUser.avatar_metadata.url }} 
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <Text style={styles.avatarText}>
+                  {(() => {
+                    const name = displayUser?.username || firebaseUser?.displayName || '';
+                    const parts = name.trim().split(/\s+/);
+                    if (parts.length === 0) return '';
+                    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                  })()}
+                </Text>
+              )}
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
             <Text style={styles.nameText}>
-              {backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || ''}
+              {displayUser?.username || firebaseUser?.displayName || ''}
             </Text>
             <Text style={styles.subtitleText}>
               {(() => {
-                // Prefer backendUser data if available, otherwise use Firebase creation time
+                // Prefer displayUser data if available, otherwise use Firebase creation time
                 try {
-                  const created = backendUser?.created_at ?? firebaseUser?.metadata?.creationTime;
+                  const created = displayUser?.created_at ?? firebaseUser?.metadata?.creationTime;
                   if (created) {
                     const d = typeof created === 'number' ? new Date(created * 1000) : new Date(created);
                     if (!Number.isNaN(d.getTime())) {
@@ -182,21 +178,21 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
             <View style={styles.statsGrid}>
               <View style={styles.statsRow}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.visited_refuges?.length ?? 0}</Text>
+                  <Text style={styles.statValue}>{visitedRefuges?.length ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_renovated_refuges ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.num_renovated_refuges ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
                 </View>
               </View>
               <View style={styles.statsRow}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_shared_experiences ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.num_shared_experiences ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{backendUser?.num_uploaded_photos ?? 0}</Text>
+                  <Text style={styles.statValue}>{displayUser?.uploaded_photos_keys?.length ?? 0}</Text>
                   <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
                 </View>
               </View>
@@ -209,7 +205,11 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
               <Text style={styles.title}>{t('visited.title')}</Text>
               <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
             </View>
-            {visitedRefuges && visitedRefuges.length > 0 ? (
+            {isLoadingVisited ? (
+              <View style={styles.emptyVisitedContainer}>
+                <ActivityIndicator size="large" color="#FF6000" />
+              </View>
+            ) : visitedRefuges && visitedRefuges.length > 0 ? (
               <View style={styles.visitedList}>
                 {visitedRefuges.map((refuge, index) => (
                   <RefugeCard
@@ -226,6 +226,16 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           </View>
         </View>
       </ScrollView>
+      
+      {/* Avatar Popup */}
+      <AvatarPopup
+        visible={showAvatarPopup}
+        onClose={() => setShowAvatarPopup(false)}
+        avatarUrl={displayUser?.avatar_metadata?.url}
+        username={displayUser?.username || firebaseUser?.displayName || ''}
+        uid={firebaseUser?.uid || ''}
+        onAvatarUpdated={handleAvatarUpdated}
+      />
     </View>
   );
 }
@@ -234,14 +244,19 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
   headerFixed: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: '#ffffffff',
-    paddingHorizontal: 6,
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -261,6 +276,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6900',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontSize: 20,

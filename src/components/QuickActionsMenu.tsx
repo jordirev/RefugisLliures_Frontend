@@ -10,22 +10,30 @@ import {
   Dimensions,
   Share,
   Image,
+  Alert,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
 import useVisited from '../hooks/useVisited';
+import { RefugeMediaService } from '../services/RefugeMediaService';
 
 // Icons
 import HeartIcon from '../assets/icons/fav-white.svg';
 import HeartFilledIcon from '../assets/icons/favourite2.svg';
 const NonVisitedIcon = require('../assets/icons/non-visited.png');
 const VisitedIcon = require('../assets/icons/visited.png');
+import MapIcon from '../assets/icons/location-map-white.png';
 import MessageCircleIcon from '../assets/icons/message-circle.svg';
 import DoubtIcon from '../assets/icons/doubt.png';
-import CameraIcon from '../assets/icons/camera.svg';
+import AddPhotoIcon from '../assets/icons/addPhoto.png';
 import EditIcon from '../assets/icons/edit-white.png';
+import TrashIcon from '../assets/icons/trash.svg';
 
 interface QuickActionsMenuProps {
   visible: boolean;
@@ -35,6 +43,12 @@ interface QuickActionsMenuProps {
   isFavourite: boolean;
   onToggleFavorite: () => void;
   onShowAlert: (title: string, message: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onPhotoUploaded?: () => void;
+  onViewMap?: () => void;
+  onNavigateToDoubts?: (refugeId: string, refugeName: string) => void;
+  onNavigateToExperiences?: (refugeId: string, refugeName: string) => void;
 }
 
 export function QuickActionsMenu({
@@ -45,10 +59,18 @@ export function QuickActionsMenu({
   isFavourite,
   onToggleFavorite,
   onShowAlert,
+  onDelete,
+  onEdit,
+  onPhotoUploaded,
+  onViewMap,
+  onNavigateToDoubts,
+  onNavigateToExperiences,
 }: QuickActionsMenuProps) {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { isVisited, toggleVisited, isProcessing } = useVisited(refuge.id);
+  const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
 
   const screenWidth = Dimensions.get('window').width;
   const sideMenuWidth = Math.min(120, screenWidth * 0.40);
@@ -123,23 +145,103 @@ export function QuickActionsMenu({
   };
 
   const handleShareExperience = () => {
-    onShowAlert(
-      t('alerts.shareExperience.title'),
-      t('alerts.shareExperience.message')
-    );
     onClose();
+    if (onNavigateToExperiences) {
+      onNavigateToExperiences(refuge.id, refuge.name);
+    } else {
+      navigation.navigate('ExperiencesScreen', { refugeId: refuge.id, refugeName: refuge.name });
+    }
   };
 
   const handleAskQuestion = () => {
-    onShowAlert(
-      t('alerts.askQuestion.title'),
-      t('alerts.askQuestion.message')
-    );
+    onClose();
+    if (onNavigateToDoubts) {
+      onNavigateToDoubts(refuge.id, refuge.name);
+    } else {
+      navigation.navigate('DoubtsScreen', { refugeId: refuge.id, refugeName: refuge.name });
+    }
+  };
+
+  const handleAddPhoto = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permisos necessaris',
+          'Necessitem permisos per accedir a les teves fotos i vídeos.'
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images', 'videos'],
+        allowsMultipleSelection: true,
+        aspect: [4, 3],
+        quality: 0.8,
+        ...(Platform.OS === 'ios' && {
+          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
+        }),
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        return;
+      }
+
+      setUploadingPhotos(true);
+
+      // Prepare files for upload using URIs directly (React Native compatible)
+      const files: any[] = [];
+      for (const asset of result.assets) {
+        const fileName = asset.uri.split('/').pop() || `photo_${Date.now()}.jpg`;
+        const mimeType = asset.mimeType || 'image/jpeg';
+        
+        // Create file object compatible with React Native FormData
+        files.push({
+          uri: asset.uri,
+          type: mimeType,
+          name: fileName,
+        });
+      }
+
+      // Upload photos
+      await RefugeMediaService.uploadRefugeMedia(refuge.id, files as any);
+      
+      // Notify parent to refetch refuge data
+      if (onPhotoUploaded) {
+        onPhotoUploaded();
+      }
+      
+      onShowAlert('Èxit', `S'han pujat ${files.length} foto(s) correctament.`);
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      onShowAlert('Error', 'No s\'han pogut pujar les fotos. Intenta-ho de nou.');
+    } finally {
+      setUploadingPhotos(false);
+    }
     onClose();
   };
 
-  const handleAddPhoto = () => {
-    onShowAlert(t('alerts.addPhoto.title'), t('alerts.addPhoto.message'));
+  const handleEditRefuge = () => {
+    if (onEdit) {
+      onEdit();
+    }
+    onClose();
+  };
+
+  const handleDeleteRefuge = () => {
+    if (onDelete) {
+      onDelete();
+    }
+    onClose();
+  };
+
+  const handleViewOnMap = () => {
+    if (onViewMap) {
+      onViewMap();
+    }
     onClose();
   };
 
@@ -225,6 +327,19 @@ export function QuickActionsMenu({
 
                 <TouchableOpacity
                   style={styles.menuItem}
+                  onPress={handleViewOnMap}
+                  testID="menu-view-map"
+                >
+                  <View style={styles.menuItemIconContainer}>
+                    <Image source={MapIcon} style={{ width: 38, height: 30, marginLeft: 2 }} resizeMode="stretch" />
+                  </View>
+                  <Text style={styles.menuItemText}>
+                    {t('refuge.actions.viewOnMap')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
                   onPress={handleShareExperience}
                   testID="menu-share-experience"
                 >
@@ -253,25 +368,43 @@ export function QuickActionsMenu({
                   style={styles.menuItem}
                   onPress={handleAddPhoto}
                   testID="menu-photo"
+                  disabled={uploadingPhotos}
                 >
                   <View style={styles.menuItemIconContainer}>
-                    <CameraIcon width={24} height={24} color="#ffffff" />
+                    {uploadingPhotos ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <Image source={AddPhotoIcon} style={{ width: 38, height: 38 }} />
+                    )}
                   </View>
                   <Text style={styles.menuItemText}>
-                    {t('refuge.actions.addPhoto')}
+                    {uploadingPhotos ? t('common.loading') : t('refuge.actions.addPhoto')}
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.menuItem}
-                  onPress={handleAddPhoto}
+                  onPress={handleEditRefuge}
                   testID="menu-edit"
                 >
                   <View style={styles.menuItemIconContainer}>
-                    <Image source={EditIcon} style={{ width: 24, height: 24 }} />
+                    <Image source={EditIcon} style={{ width: 22, height: 22 }} />
                   </View>
                   <Text style={styles.menuItemText}>
                     {t('refuge.actions.editRefuge')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleDeleteRefuge}
+                  testID="menu-delete"
+                >
+                  <View style={styles.menuItemIconContainer}>
+                    <TrashIcon width={24} height={24} color="#EF4444" />
+                  </View>
+                  <Text style={[styles.menuItemText, styles.deleteText]}>
+                    {t('refuge.actions.deleteRefuge')}
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
@@ -317,7 +450,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuContent: {
-    paddingVertical: 4,
+    paddingBottom: 40,
+  },
+  deleteText: {
+    color: '#EF4444',
   },
   menuItem: {
     flexDirection: 'column',
@@ -325,7 +461,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 6,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   menuItemIconContainer: {
     marginBottom: 6,

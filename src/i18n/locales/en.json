@@ -15,6 +15,7 @@
     "success": "Success",
     "noResults": "No results found",
     "readMore": "Read more...",
+    "readLess": "Show less",
     "showLess": "Show less",
     "places": "places",
     "download": "Download",
@@ -28,7 +29,33 @@
     "optional": "optional",
     "locale": "en",
     "you": "You",
-    "share": "Share"
+    "share": "Share",
+    "warning": "Warning",
+    "understand": "I understand",
+    "confirm": "Confirm",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "days": {
+      "sun": "Su",
+      "mon": "Mo",
+      "tue": "Tu",
+      "wed": "We",
+      "thu": "Th",
+      "fri": "Fr",
+      "sat": "Sa"
+    }
   },
   "navigation": {
     "map": "Map",
@@ -40,7 +67,11 @@
     "title": "Shelter Map",
     "searchPlaceholder": "Search shelters...",
     "noLocationsFound": "Could not load shelters",
-    "errorLoading": "Could not load shelters"
+    "errorLoading": "Could not load shelters",
+    "noResults": {
+      "title": "No results",
+      "message": "There are no shelters that match the selected filters"
+    }
   },
   "favorites": {
     "title": "My favorites",
@@ -121,6 +152,8 @@
       "language": "Language",
       "changeEmail": "Change email",
       "changePassword": "Change password",
+      "myProposals": "My proposals",
+      "proposalsManagement": "Proposals management",
       "help": "Help & support",
       "about": "About the app",
       "privacy": "Privacy",
@@ -145,6 +178,26 @@
         "fr": "Français"
       },
       "updateError": "Failed to update language on the server"
+    },
+    "avatar": {
+      "changePhoto": "Change photo",
+      "deletePhoto": "Delete photo",
+      "permissionDenied": "Permission denied",
+      "permissionMessage": "We need permission to access your photos. Please enable it from your device settings.",
+      "permissionRequired": "Permission required",
+      "permissionOptions": "We need access to your photos to change your profile picture. You can choose between limited access or full access to your gallery.",
+      "requestPermission": "Allow access",
+      "cropTitle": "Crop Image",
+      "uploadSuccess": "Photo updated",
+      "uploadSuccessMessage": "Your profile photo has been updated successfully",
+      "uploadError": "Failed to upload photo",
+      "selectError": "Failed to select image",
+      "deleteConfirmTitle": "Delete profile photo",
+      "deleteConfirmMessage": "Are you sure you want to delete your profile photo?",
+      "deleteSuccess": "Photo deleted",
+      "deleteSuccessMessage": "Your profile photo has been deleted successfully",
+      "deleteError": "Failed to delete photo",
+      "tapToChange": "Tap to change profile photo"
     }
   },
   "changePassword": {
@@ -220,7 +273,9 @@
       "moreInformation": "For more information:",
       "weather": "Weather",
       "nearbyRoutes": "Nearby routes",
-      "information_not_precise": "Information may not be accurate or up to date. The app administrators are not responsible for its use. \nIf you are going to the mountains, take the necessary precautions."
+      "information_not_precise": "Information may not be accurate or up to date. The app administrators are not responsible for its use. \nIf you are going to the mountains, take the necessary precautions.",
+      "coordinates": "Coordinates",
+      "typeAndCondition": "Type and Condition"
     },
     "amenities": {
       "manque_un_mur": "One wall missing",
@@ -246,7 +301,8 @@
       "ask": "Ask doubt",
       "shareExperience": "Share\nexperience",
       "addPhoto": "Add Photo",
-      "editRefuge": "Edit refuge"
+      "editRefuge": "Edit refuge",
+      "deleteRefuge": "Delete"
     },
     "descriptions": {
       "addToFavorites": "Save this refuge to your favorites",
@@ -257,6 +313,25 @@
       "shareYourExperience": "Share your experience",
       "askAboutRefuge": "Ask questions about the refuge",
       "uploadPhoto": "Upload a photo of the refuge"
+    },
+    "gallery": {
+      "title": "Refuge photo gallery",
+      "viewAll": "View all",
+      "addPhoto": "Add photo",
+      "noPhotos": "There are no photos of this refuge.\nBe the first to contribute yours!",
+      "addPhotosButton": "Add photos"
+    },
+    "occupation": {
+      "title": "Refuge occupation",
+      "addVisit": "Add visit",
+      "editVisit": "Edit visit",
+      "deleteVisit": "Delete visit",
+      "deleteConfirmation": "Are you sure you want to delete this visit?",
+      "numVisitorsLabel": "Number of visitors",
+      "numVisitorsPlaceholder": "Ex: 4",
+      "numVisitorsError": "The number of visitors must be greater than 0",
+      "disclaimer": "You are not reserving any spot at the refuge. You are only indicating that you will go to this refuge on this date so other users know.",
+      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going."
     }
   },
   "filters": {
@@ -282,6 +357,25 @@
       "good": "Good",
       "fair": "Fair",
       "poor": "Poor"
+    }
+  },
+  "layers": {
+    "title": "Layers & Display",
+    "representation": {
+      "title": "Shelter representation",
+      "subtitle": "Choose how to view shelters on the map",
+      "markers": "Markers",
+      "markersDesc": "Show each shelter with an individual marker on the map",
+      "heatmap": "Heatmap",
+      "heatmapDesc": "Show shelter density with colors. Markers appear with zoom",
+      "cluster": "Clusters",
+      "clusterDesc": "Group nearby shelters in a number. Markers appear with zoom"
+    },
+    "mapLayer": {
+      "title": "Map layer",
+      "subtitle": "Select the map type",
+      "opentopoDesc": "Topographic map with contour lines and relief",
+      "openstreetDesc": "Street map with general information"
     }
   },
   "alerts": {
@@ -349,6 +443,8 @@
     "googleButton": "Continue with Google",
     "noAccount": "Don't have an account?",
     "signUpLink": "Sign up",
+    "termsText": "By signing up or logging in, you accept the ",
+    "termsLink": "terms of service",
     "errors": {
       "emptyEmail": "Please enter your email address",
       "invalidEmail": "The email address format is not valid",
@@ -453,6 +549,315 @@
       "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
       "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
       "generic": "Could not create renovation. Please try again."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Delete Shelter",
+    "warning": "You are about to propose the deletion of the shelter '{{name}}'. This action will create a proposal that will be reviewed by an administrator.",
+    "commentLabel": "Reason for deletion",
+    "commentPlaceholder": "Explain why this shelter should be deleted.",
+    "minChars": "(minimum {{min}})",
+    "confirm": "Send Proposal",
+    "success": {
+      "title": "Proposal sent",
+      "message": "Your deletion proposal has been successfully sent and will be reviewed by an administrator"
+    },
+    "error": {
+      "generic": "Failed to send deletion proposal. Please try again"
+    }
+  },
+  "editRefuge": {
+    "title": "Edit Shelter",
+    "proposalInfo": "This is a shelter edit proposal that will be reviewed and approved by an administrator",
+    "adminCommentPlaceholder": "Required comment for administrator",
+    "minChars": "minimum {{min}}",
+    "success": {
+      "title": "Proposal sent",
+      "message": "Your edit proposal has been successfully sent and will be reviewed by an administrator"
+    },
+    "errors": {
+      "commentRequired": "Comment is required to propose edits",
+      "commentTooShort": "Comment must be at least {{min}} characters"
+    }
+  },
+  "createRefuge": {
+    "title": "Propose Shelter",
+    "proposalInfo": "This is a shelter creation proposal that will be reviewed and approved by an administrator",
+    "coordinates": "Coordinates",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "generalInfo": "General Information",
+    "namePlaceholder": "Shelter name",
+    "regionPlaceholder": "Region",
+    "departementPlaceholder": "Province",
+    "altitudePlaceholder": "Altitude (m)",
+    "descriptionPlaceholder": "Describe the shelter...",
+    "links": "Extra information links",
+    "linkPlaceholder": "https://example.com",
+    "addLink": "Add link",
+    "adminComment": "Comment for administrators",
+    "adminCommentPlaceholder": "Extra information that may be useful for administrators to verify this shelter",
+    "submit": "Submit Proposal",
+    "photoAlert": {
+      "title": "Shelter photos",
+      "message": "Photos can be uploaded once the creation proposal is accepted by an administrator"
+    },
+    "success": {
+      "title": "Proposal submitted",
+      "message": "Your proposal has been submitted successfully and will be reviewed by an administrator"
+    },
+    "error": {
+      "generic": "Could not submit proposal. Please try again"
+    },
+    "errors": {
+      "nameRequired": "Refuge name is required",
+      "nameTooLong": "Name cannot exceed 100 characters",
+      "latitudeRequired": "Latitude is required",
+      "latitudeAtLeast3Decimals": "Latitude must have at least 3 decimal places",
+      "longitudeRequired": "Longitude is required",
+      "longitudeAtLeast3Decimals": "Longitude must have at least 3 decimal places",
+      "invalidColon": "Coordinates must use a dot (.) as decimal separator",
+      "regionTooLong": "Region cannot exceed 100 characters",
+      "departementTooLong": "Province cannot exceed 100 characters",
+      "altitudeInvalid": "Altitude must be a positive integer",
+      "altitudeTooHigh": "Altitude cannot exceed 8800m",
+      "placesInvalid": "Places must be a positive integer",
+      "descriptionTooLong": "Description cannot exceed 3000 characters",
+      "commentTooLong": "Comment cannot exceed 3000 characters",
+      "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
+    }  },
+  "doubts": {
+    "title": "Doubts section",
+    "noDoubts": "No doubts yet. Be the first to ask a question!",
+    "doubtPlaceholder": "Write your doubt...",
+    "answerPlaceholder": "Write your answer...",
+    "reply": "Reply",
+    "replyingTo": "Replying to {{name}}",
+    "deleteDoubt": {
+      "title": "Delete doubt",
+      "message": "Are you sure you want to delete this doubt? All its answers will also be deleted.",
+      "success": "Doubt deleted successfully"
+    },
+    "deleteAnswer": {
+      "title": "Delete answer",
+      "message": "Are you sure you want to delete this answer?",
+      "success": "Answer deleted successfully"
+    },
+    "errors": {
+      "createDoubtError": "Could not create doubt",
+      "createAnswerError": "Could not create answer",
+      "deleteDoubtError": "Could not delete doubt",
+      "deleteAnswerError": "Could not delete answer",
+      "messageTooLong": "Message cannot exceed {{max}} characters"
+    }
+  },
+  "proposals": {
+    "titleMy": "My proposals",
+    "titleAdmin": "Proposals management",
+    "emptyState": "No proposals available",
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "create": "Create",
+      "update": "Edit",
+      "delete": "Delete"
+    },
+    "card": {
+      "unknownRefuge": "Unknown shelter",
+      "unknownUser": "Unknown user",
+      "createdAt": "Created on",
+      "reviewedAt": "Reviewed on",
+      "rejectionReason": "Rejection reason",
+      "creator": "Creator",
+      "reviewer": "Reviewer"
+    },
+    "detail": {
+      "title": "Proposal detail",
+      "comment": "Comment",
+      "review": "Review",
+      "changes": "Proposed changes",
+      "newRefuge": "New shelter",
+      "refugeToDelete": "Shelter to delete",
+      "current": "Current",
+      "new": "New",
+      "value": "Value",
+      "approve": "Approve",
+      "reject": "Reject",
+      "newType": "New type:",
+      "newCondition": "New condition:",
+      "newTypeAndCondition": "New type and condition:"
+    },
+    "approve": {
+      "successTitle": "Proposal approved",
+      "successMessage": "The proposal has been approved successfully"
+    },
+    "reject": {
+      "successTitle": "Proposal rejected",
+      "successMessage": "The proposal has been rejected successfully"
+    },
+    "rejectModal": {
+      "title": "Reject Proposal",
+      "warning": "You are about to reject the proposal for shelter '{{name}}'. Please explain the reason for rejection.",
+      "confirm": "Reject Proposal"
+    },
+    "errors": {
+      "loadError": "Could not load proposals",
+      "loadDetailError": "Could not load proposal details",
+      "approveError": "Could not approve the proposal",
+      "rejectError": "Could not reject the proposal"
+    }  
+  },
+  "experiences": {
+    "title": "Experiences",
+    "viewMore": "View all experiences",
+    "addFirst": "Share your experience!",
+    "noExperiences": "No experiences shared yet. \nBe the first to share yours!",
+    "placeholder": "Share your experience...",
+    "newPhotos": "New photos",
+    "addPhotos": "Add photos",
+    "deletePhotoInfo": "To delete a photo, tap it in the carousel and delete it from the viewer",
+    "updateSuccess": "Experience updated successfully",
+    "deleteExperience": {
+      "title": "Delete experience",
+      "message": "Are you sure you want to delete this experience? This action cannot be undone.",
+      "success": "Experience deleted successfully"
+    },
+    "errors": {
+      "commentTooLong": "Comment cannot exceed 3000 characters",
+      "createExperienceError": "Experience has not been created",
+      "updateExperienceError": "Experience has not been updated",
+      "deleteExperienceError": "Experience has not been deleted",
+      "selectPhotosError": "Could not select photos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Some files could not be uploaded successfully"
+    }
+  },
+  "helpSupport": {
+    "title": "Help & support",
+    "intro": "For any bug or error in the app, you can send an email to:",
+    "emailCopied": "Email copied",
+    "emailCopiedMessage": "The email address has been copied to the clipboard",
+    "beSpecific": "Please be specific about the scenario in which the error occurs and, if possible, provide photos.",
+    "warning": {
+      "title": "Warning:",
+      "message": "Requests to modify shelter information will not be attended. To do so, create an edit proposal for the shelter on the shelter details screen."
+    }
+  },
+  "aboutApp": {
+    "title": "About the app",
+    "description": {
+      "intro": "Refugis Lliures was created with the aim of providing accurate, reliable, and extensive information about free shelters in the Pyrenees, as well as preserving their condition by facilitating volunteer gatherings to renovate them.",
+      "sources": "The app combines the two largest sources of free shelter information available on the internet to date:",
+      "userContributions": "along with information provided by the app's users themselves."
+    },
+    "creator": {
+      "title": "About the creator:",
+      "greeting": "Hello! My name is Jordi Reverter and I am the creator of Refugis Lliures, the most complete app for free shelters in the Pyrenees to date.",
+      "description": "This app has been the result of my Final Degree Project at the Polytechnic University of Catalonia (UPC), where I was able to combine my two passions: the mountains and software. Since I was very young, the mountains have occupied a very important place in my life and, especially, free shelters. In them I have lived great experiences and shared many moments with people passionate about the mountains and that is why I decided to make this app and contribute my grain of sand to this world of the mountains. I hope it can be useful to you and accompany you on your next outings!"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Terms and Conditions of Use",
+    "updateDate": "Last updated: January 4, 2026",
+    "acceptButton": "Accept and Close",
+    "acceptance": {
+      "title": "1. Acceptance of Terms",
+      "content": "By downloading, installing, or using the RefugisLliures application, you agree to be bound by these terms. If you do not agree with any part of these terms, you will not be able to access the service."
+    },
+    "description": {
+      "title": "2. Service Description",
+      "content": "RefugisLliures is a platform for viewing and managing data about free shelters. The service uses real-time data and map functionalities to enhance the user experience in mountain environments."
+    },
+    "permissions": {
+      "title": "3. Use of Permissions and Device",
+      "intro": "For the proper functioning of the application, the following permissions are required:",
+      "location": {
+        "title": "Location:",
+        "content": "To show your position on the map relative to the shelters."
+      },
+      "media": {
+        "title": "Media/Camera:",
+        "content": "To allow uploading photos of the shelters."
+      },
+      "network": {
+        "title": "Network status:",
+        "content": "To manage data synchronization with Firebase and Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. User Responsibility",
+      "content": "The user agrees to use the app lawfully. Given that the information concerns mountain shelters, RefugisLliures is not responsible for the exact accuracy of the coordinates or the physical condition of the shelters. The use of the app does not replace professional navigation tools or common sense in risky activities."
+    },
+    "privacy": {
+      "title": "Privacy Policy (GDPR Compliant)",
+      "dataController": {
+        "title": "1. Data Controller",
+        "content": "The data controller is the holder of the RefugisLliures project (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Data We Collect",
+        "intro": "We collect only the data strictly necessary for the operation of the app:",
+        "identification": {
+          "title": "Identification Data:",
+          "content": "Name and email address through Firebase Authentication."
+        },
+        "location": {
+          "title": "Location Data:",
+          "content": "Only if the user gives explicit consent."
+        },
+        "userContent": {
+          "title": "User Content:",
+          "content": "Photographs submitted by the user (stored on Cloudflare)."
+        },
+        "usage": {
+          "title": "Usage Data:",
+          "content": "Anonymous statistics through Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Purpose of Processing",
+        "intro": "The data is used exclusively for:",
+        "point1": "Managing your user profile and authentication.",
+        "point2": "Allowing you to interact with shelters (add photos, comments, etc.).",
+        "point3": "Improving the application through statistical analysis."
+      },
+      "thirdParties": {
+        "title": "4. Third Parties and Data Transfer",
+        "intro": "We do not share your data with third parties for commercial purposes. However, we use the following service providers (subprocessors) that comply with the GDPR framework:",
+        "firebase": {
+          "title": "Firebase (Google):",
+          "content": "For database and authentication."
+        },
+        "cloudflare": {
+          "title": "Cloudflare:",
+          "content": "For optimization and storage of multimedia content."
+        },
+        "analytics": {
+          "title": "Google Analytics:",
+          "content": "For error tracking and usage metrics."
+        }
+      },
+      "rights": {
+        "title": "5. ARCO Rights (Access, Rectification, Cancellation and Opposition)",
+        "intro": "As a user, you have the right to:",
+        "point1": "Know what data we have about you.",
+        "point2": "Request the rectification or deletion of your data (including your Firebase account).",
+        "point3": "Limit the processing of your data."
+      },
+      "security": {
+        "title": "6. Security",
+        "content": "All data is transmitted securely using HTTPS protocols and stored in infrastructures with high security standards (Firebase/Cloudflare)."
+      }
     }
   }
 }

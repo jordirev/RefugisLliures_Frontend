@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { useTranslation } from '../hooks/useTranslation';
 
 // Importar les icones SVG
@@ -11,6 +11,7 @@ interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenFilters?: () => void;
+  onAddPress?: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
   topInset?: number;
@@ -23,6 +24,7 @@ export const SearchBar = memo(function SearchBar({
   searchQuery, 
   onSearchChange, 
   onOpenFilters, 
+  onAddPress,
   suggestions = [], 
   onSuggestionSelect, 
   topInset = 0,
@@ -82,18 +84,24 @@ export const SearchBar = memo(function SearchBar({
       {/* Llista de suggeriments d'autocomplete */}
       {suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          {suggestions.slice(0, 6).map((name) => (
-            <TouchableOpacity
-              key={name}
-              style={styles.suggestionItem}
-              onPress={() => {
-                Keyboard.dismiss();
-                onSuggestionSelect && onSuggestionSelect(name);
-              }}
-            >
-              <Text style={styles.suggestionText}>{name}</Text>
-            </TouchableOpacity>
-          ))}
+          <ScrollView 
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+          >
+            {suggestions.map((name) => (
+              <TouchableOpacity
+                key={name}
+                style={styles.suggestionItem}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  onSuggestionSelect && onSuggestionSelect(name);
+                }}
+              >
+                <Text style={styles.suggestionText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       )}
       {/* Botó afegeix: només mostrar si la cerca està buida */}
@@ -101,7 +109,7 @@ export const SearchBar = memo(function SearchBar({
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            Keyboard.dismiss();
+            onAddPress && onAddPress();
             /* TODO: Implementar afegir nova ubicació */
           }}
         >
@@ -236,6 +244,10 @@ const styles = StyleSheet.create({
       shadowRadius: 4,
       elevation: 2,
       paddingVertical: 4,
+      maxHeight: 240,
+    },
+    scrollView: {
+      maxHeight: 240,
     },
     suggestionItem: {
       paddingVertical: 8,

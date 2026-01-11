@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Filters } from '../models';
 import XIcon from '../assets/icons/x.svg';
 import FilterIcon from '../assets/icons/filters.svg';
@@ -37,6 +38,7 @@ export function FilterPanel({
   maxPlaces = 30,
 }: FilterPanelProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   
   const locationTypes = [
     { id: "non gardé", label: t('refuge.type.noGuarded') },
@@ -295,7 +297,7 @@ export function FilterPanel({
           </ScrollView>
 
           {/* Botons d'acció */}
-          <View style={styles.footer}>
+          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
             <TouchableOpacity
               style={styles.clearButton}
               onPress={clearFilters}

@@ -3,6 +3,14 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Location } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
+import { VideoThumbnail } from './PhotoViewerModal';
+
+// Helper function to check if a media is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 // Icon imports
 import MapIcon from '../assets/icons/location-map.png';
@@ -29,12 +37,19 @@ export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: Ref
     >
       {/* Imatge principal */}
       <View style={styles.imageContainer}>
-        <Image
+        {refuge.images_metadata?.[0]?.url && isVideo(refuge.images_metadata[0].url) ? (
+          <VideoThumbnail
+            uri={refuge.images_metadata[0].url}
+            style={styles.image}
+          />
+        ) : (
+          <Image
             testID="refuge-image"
-            source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+            source={{ uri: refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
             style={styles.image}
             resizeMode="cover"
           />
+        )}
         {/* Botó de favorit en cantonada superior esquerra */}
         <TouchableOpacity
           testID="favorite-button"

@@ -4,6 +4,44 @@
  * Nota: Aquests tests verifiquen la configuració i estructura del navegador.
  * Les interaccions complexes entre pantalles es testen millor amb tests E2E.
  */
+
+// Mock expo-video
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+  })),
+}));
+
+// Mock expo-image-picker
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  MediaTypeOptions: {
+    Images: 'Images',
+  },
+  requestMediaLibraryPermissionsAsync: jest.fn(() => 
+    Promise.resolve({ status: 'granted' })
+  ),
+}));
+
+// Mock useProposalsQuery hooks
+jest.mock('../../../hooks/useProposalsQuery', () => ({
+  useDeleteRefugeProposal: jest.fn(() => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
+  })),
+  useAcceptRefugeProposal: jest.fn(() => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
+  })),
+  useRejectRefugeProposal: jest.fn(() => ({
+    mutateAsync: jest.fn(),
+    isPending: false,
+  })),
+}));
+
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { AppNavigator } from '../../../components/AppNavigator';
@@ -56,6 +94,10 @@ jest.mock('../../../screens/RenovationDetailScreen', () => ({
 
 jest.mock('../../../screens/RefugeDetailScreen', () => ({
   RefugeDetailScreen: () => null,
+}));
+
+jest.mock('../../../screens/ExperiencesScreen', () => ({
+  ExperiencesScreen: () => null,
 }));
 
 jest.mock('../../../components/RefugeBottomSheet', () => ({

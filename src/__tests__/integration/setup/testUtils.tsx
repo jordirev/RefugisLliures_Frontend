@@ -2,10 +2,16 @@
  * Utilitats compartides per als tests d'integració
  */
 import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react-native';
+import { render, RenderOptions, cleanup } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from '../../../contexts/AuthContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+});
 
 // Mock de l'Auth Context per tests
 interface MockAuthContextValue {
@@ -78,17 +84,34 @@ const AllTheProviders = ({ children, mockAuthValue }: AllTheProvidersProps) => {
     );
   }
 
+  // Crear un nou QueryClient per a cada test
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+        staleTime: 0,
+      },
+      mutations: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
   return (
-    <SafeAreaProvider
-      initialMetrics={{
-        frame: { x: 0, y: 0, width: 0, height: 0 },
-        insets: { top: 0, left: 0, right: 0, bottom: 0 },
-      }}
-    >
-      <NavigationContainer>
-        {children}
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 0, height: 0 },
+          insets: { top: 0, left: 0, right: 0, bottom: 0 },
+        }}
+      >
+        <NavigationContainer>
+          {children}
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 };
 
@@ -107,32 +130,51 @@ export function renderWithProviders(
   const { mockAuthValue, withNavigation = true, ...renderOptions } = options;
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    // Crear un nou QueryClient per a cada test
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+          staleTime: 0,
+        },
+        mutations: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
+
     if (!withNavigation && mockAuthValue) {
       jest.spyOn(require('../../../contexts/AuthContext'), 'useAuth').mockReturnValue(
         createMockAuthContext(mockAuthValue)
       );
       return (
-        <SafeAreaProvider
-          initialMetrics={{
-            frame: { x: 0, y: 0, width: 0, height: 0 },
-            insets: { top: 0, left: 0, right: 0, bottom: 0 },
-          }}
-        >
-          {children}
-        </SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider
+            initialMetrics={{
+              frame: { x: 0, y: 0, width: 0, height: 0 },
+              insets: { top: 0, left: 0, right: 0, bottom: 0 },
+            }}
+          >
+            {children}
+          </SafeAreaProvider>
+        </QueryClientProvider>
       );
     }
 
     if (!withNavigation) {
       return (
-        <SafeAreaProvider
-          initialMetrics={{
-            frame: { x: 0, y: 0, width: 0, height: 0 },
-            insets: { top: 0, left: 0, right: 0, bottom: 0 },
-          }}
-        >
-          {children}
-        </SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider
+            initialMetrics={{
+              frame: { x: 0, y: 0, width: 0, height: 0 },
+              insets: { top: 0, left: 0, right: 0, bottom: 0 },
+            }}
+          >
+            {children}
+          </SafeAreaProvider>
+        </QueryClientProvider>
       );
     }
 

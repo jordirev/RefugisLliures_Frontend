@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el snapshot amb condició "bé" 1`] = `
+exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el snapshot amb condició 2 1`] = `
 <View
   style={
     [
@@ -14,8 +14,8 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
         "paddingVertical": 2,
       },
       {
-        "backgroundColor": "#A2FFC8",
-        "borderColor": "#30D270",
+        "backgroundColor": "#E6F8EE",
+        "borderColor": "#7EE0B0",
         "borderWidth": 1.25,
       },
       undefined,
@@ -33,13 +33,13 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
           "lineHeight": 16,
         },
         {
-          "color": "#007931",
+          "color": "#14532D",
         },
         undefined,
       ]
     }
   >
-    bé
+    Bé
   </Text>
 </View>
 `;
@@ -58,8 +58,8 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
         "paddingVertical": 2,
       },
       {
-        "backgroundColor": "#A2FFC8",
-        "borderColor": "#30D270",
+        "backgroundColor": "#E6F8EE",
+        "borderColor": "#7EE0B0",
         "borderWidth": 1.25,
       },
       undefined,
@@ -83,7 +83,7 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
       ]
     }
   >
-    bé
+    Bé
   </Text>
 </View>
 `;
@@ -129,7 +129,7 @@ exports[`BadgeCondition Component Snapshot testing hauria de coincidir amb el sn
       ]
     }
   >
-    bé
+    Bé
   </Text>
 </View>
 `;

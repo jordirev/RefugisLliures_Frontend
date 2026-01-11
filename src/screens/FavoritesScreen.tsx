@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
 import { useAuth } from '../contexts/AuthContext';
+import { useFavouriteRefuges } from '../hooks/useUsersQuery';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RefugisService } from '../services/RefugisService';
 
 import FavouriteIcon from '../assets/icons/favRed.svg';
 import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
@@ -23,54 +23,35 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const flatListRef = useRef<FlatList>(null);
   
-  // Get favourite refuges from AuthContext (contains full Location[])
-  const { favouriteRefuges } = useAuth();
+  // Get favourite refuges from React Query
+  const { firebaseUser } = useAuth();
+  const { data: favouriteRefuges = [], isLoading } = useFavouriteRefuges(firebaseUser?.uid);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }, [])
+  );
 
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
   const insets = useSafeAreaInsets();
   const windowHeight = Dimensions.get('window').height;
 
-  // Obtenir favorits amb la propietat isFavorite (prové del context)
   const favoriteLocations = useMemo(() => {
     return favouriteRefuges.map(location => ({ ...location, isFavorite: true }));
   }, [favouriteRefuges]);
 
-  const handleViewMap = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before navigating
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(refuge.id);
-        if (fullRefuge) {
-          // Call parent's onViewMap with full data to set selectedLocation in AppNavigator
-          onViewMap(fullRefuge);
-          // Navigate to Map tab using the navigator route name and pass the selected refuge
-          (navigation as any).navigate('Map', { selectedRefuge: fullRefuge });
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge for map:', error);
-      // Fallback to showing with current data and navigate to Map tab
-      onViewMap(refuge);
-      (navigation as any).navigate('Map', { selectedRefuge: refuge });
-    }
+  const handleViewMap = (refuge: Location) => {
+    onViewMap(refuge);
+    (navigation as any).navigate('Map', { selectedRefuge: refuge });
   };
 
-  const handleViewDetail = async (refuge: Location) => {
-    try {
-      // Fetch full refuge details before showing detail
-      if (refuge.id) {
-        const fullRefuge = await RefugisService.getRefugiById(refuge.id);
-        if (fullRefuge) {
-          onViewDetail(fullRefuge);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading refuge details:', error);
-      // Fallback to showing with current data
-      onViewDetail(refuge);
-    }
+  const handleViewDetail = (refuge: Location) => {
+    onViewDetail(refuge);
   };
 
 
@@ -89,7 +70,13 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         </SafeAreaView>
       </View>
 
-      <FlatList
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF6000" />
+        </View>
+      ) : (
+        <FlatList
+        ref={flatListRef}
         data={favoriteLocations}
         style={styles.container}
         renderItem={({ item }: { item: Location }) => (
@@ -116,7 +103,8 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
         }}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => (item.id ? String(item.id) : String(index))}
-      />
+        />
+      )}
 
       {/* CustomAlert */}
       {alertConfig && (
@@ -139,6 +127,12 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
   },
   headerFixed: {
     position: 'absolute',

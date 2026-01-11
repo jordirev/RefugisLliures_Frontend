@@ -15,6 +15,7 @@
     "success": "Èxit",
     "noResults": "No s'han trobat resultats",
     "readMore": "Llegir més...",
+    "readLess": "Mostrar menys",
     "showLess": "Mostrar menys",
     "places": "places",
     "download": "Descarregar",
@@ -28,7 +29,33 @@
     "optional": "opcional",
     "locale": "ca",
     "you": "Tu",
-    "share": "Compartir"
+    "share": "Compartir",
+    "warning": "Atenció",
+    "understand": "Ho entenc",
+    "confirm": "Confirmar",
+    "months": {
+      "january": "Gener",
+      "february": "Febrer",
+      "march": "Març",
+      "april": "Abril",
+      "may": "Maig",
+      "june": "Juny",
+      "july": "Juliol",
+      "august": "Agost",
+      "september": "Setembre",
+      "october": "Octubre",
+      "november": "Novembre",
+      "december": "Desembre"
+    },
+    "days": {
+      "sun": "Dg",
+      "mon": "Dl",
+      "tue": "Dm",
+      "wed": "Dc",
+      "thu": "Dj",
+      "fri": "Dv",
+      "sat": "Ds"
+    }
   },
   "navigation": {
     "map": "Mapa",
@@ -40,7 +67,11 @@
     "title": "Mapa de Refugis",
     "searchPlaceholder": "Cercar refugis...",
     "noLocationsFound": "No s'han pogut carregar els refugis",
-    "errorLoading": "No s'han pogut carregar els refugis"
+    "errorLoading": "No s'han pogut carregar els refugis",
+    "noResults": {
+      "title": "Cap resultat",
+      "message": "No hi ha refugis que compleixin amb els filtres seleccionats"
+    }
   },
   "favorites": {
     "title": "Els meus preferits",
@@ -132,6 +163,8 @@
       "language": "Idioma",
       "changeEmail": "Canviar correu electrònic",
       "changePassword": "Canviar contrasenya",
+      "myProposals": "Les meves propostes",
+      "proposalsManagement": "Gestió de propostes",
       "help": "Ajuda i suport",
       "about": "Sobre l'app",
       "privacy": "Privacitat",
@@ -156,6 +189,26 @@
         "fr": "Français"
       },
       "updateError": "No s'ha pogut actualitzar l'idioma al servidor"
+    },
+    "avatar": {
+      "changePhoto": "Canviar foto",
+      "deletePhoto": "Eliminar foto",
+      "cropTitle": "Retallar imatge",
+      "permissionDenied": "Permís denegat",
+      "permissionMessage": "Necessitem permís per accedir a les teves fotos. Si us plau, activa'l des de la configuració del teu dispositiu.",
+      "permissionRequired": "Permís necessari",
+      "permissionOptions": "Necessitem accés a les teves fotos per canviar la imatge de perfil. Pots escollir entre accés limitat o accés complet a la galeria.",
+      "requestPermission": "Permetre accés",
+      "uploadSuccess": "Foto actualitzada",
+      "uploadSuccessMessage": "La teva foto de perfil s'ha actualitzat correctament",
+      "uploadError": "No s'ha pogut pujar la foto",
+      "selectError": "No s'ha pogut seleccionar la imatge",
+      "deleteConfirmTitle": "Eliminar foto de perfil",
+      "deleteConfirmMessage": "Estàs segur/ra que vols eliminar la teva foto de perfil?",
+      "deleteSuccess": "Foto eliminada",
+      "deleteSuccessMessage": "La teva foto de perfil s'ha eliminat correctament",
+      "deleteError": "No s'ha pogut eliminar la foto",
+      "tapToChange": "Toca per canviar la foto de perfil"
     }
   },
   "changePassword": {
@@ -235,7 +288,8 @@
       "weather": "Meteo",
       "nearbyRoutes": "Rutes a prop",
       "information_not_precise": "La informació pot no ser precisa o estar desactualitzada. Els administradors de l'aplicació no es fan responsables de l'ús que se'n pugui fer. \nSi vas a la muntanya, pren les precaucions necessaries.",
-      "coordinates": "Coordenades"
+      "coordinates": "Coordenades",
+      "typeAndCondition": "Tipus i Estat"
     },
     "amenities": {
       "manque_un_mur": "Falta un mur",
@@ -261,7 +315,8 @@
       "ask": "Preguntar \ndubte",
       "shareExperience": "Compartir\nexperiència",
       "addPhoto": "Afegir foto",
-      "editRefuge": "Editar refugi"
+      "editRefuge": "Editar refugi",
+      "deleteRefuge": "Eliminar"
     },
     "descriptions": {
       "addToFavorites": "Desa aquest refugi als teus preferits",
@@ -272,6 +327,25 @@
       "shareYourExperience": "Comparteix la teva experiència",
       "askAboutRefuge": "Pregunta dubtes sobre el refugi",
       "uploadPhoto": "Puja una foto del refugi"
+    },
+    "gallery": {
+      "title": "Galeria de fotos del refugi",
+      "viewAll": "Veure-ho tot",
+      "addPhoto": "Afegeix foto",
+      "noPhotos": "No hi ha fotos d'aquest refugi\nSigues el primer en aportar les teves!",
+      "addPhotosButton": "Afegeix fotos"
+    },
+    "occupation": {
+      "title": "Ocupació del refugi",
+      "addVisit": "Afegir visita",
+      "editVisit": "Editar visita",
+      "deleteVisit": "Eliminar visita",
+      "deleteConfirmation": "Estàs segur/a que vols eliminar aquesta visita?",
+      "numVisitorsLabel": "Nombre de visitants",
+      "numVisitorsPlaceholder": "Ex: 4",
+      "numVisitorsError": "El nombre de visitants ha de ser superior a 0",
+      "disclaimer": "No estàs reservant cap plaça al refugi. Només estàs indicant que aniràs a aquest refugi en aquesta data perquè la resta d'usuaris ho sàpiguen.",
+      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi."
     }
   },
   "filters": {
@@ -297,6 +371,25 @@
       "good": "Bé",
       "fair": "Correcte",
       "poor": "Pobre"
+    }
+  },
+  "layers": {
+    "title": "Capes i Visualització",
+    "representation": {
+      "title": "Representació dels refugis",
+      "subtitle": "Tria com veure els refugis al mapa",
+      "markers": "Marcadors",
+      "markersDesc": "Mostra cada refugi amb un marcador individual al mapa",
+      "heatmap": "Mapa de calor",
+      "heatmapDesc": "Mostra la densitat de refugis amb colors. Els marcadors apareixen amb el zoom",
+      "cluster": "Agrupacions",
+      "clusterDesc": "Agrupa refugis propers en un número. Els marcadors apareixen amb el zoom"
+    },
+    "mapLayer": {
+      "title": "Capa del mapa",
+      "subtitle": "Selecciona el tipus de mapa",
+      "opentopoDesc": "Mapa topogràfic amb corbes de nivell i relleu",
+      "openstreetDesc": "Mapa de carrer amb informació general"
     }
   },
   "alerts": {
@@ -364,6 +457,8 @@
     "googleButton": "Continuar amb Google",
     "noAccount": "No tens compte?",
     "signUpLink": "Registra't",
+    "termsText": "Al registrar-se o iniciar sessió, acceptes els ",
+    "termsLink": "termes i serveis",
     "errors": {
       "emptyEmail": "Si us plau, introdueix el teu correu electrònic",
       "invalidEmail": "El format del correu electrònic no és vàlid",
@@ -468,6 +563,316 @@
       "groupLinkInvalid": "L'enllaç ha de ser de WhatsApp o Telegram",
       "overlapMessage": "Ja existeix una reforma planificada per aquest refugi en aquestes dates.",
       "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Eliminar Refugi",
+    "warning": "Estàs a punt de proposar l'eliminació del refugi '{{name}}'. Aquesta acció crearà una proposta que serà revisada per un administrador.",
+    "commentLabel": "Raó de l'eliminació",
+    "commentPlaceholder": "Explica per què aquest refugi hauria de ser eliminat",
+    "minChars": "(mínim {{min}})",
+    "confirm": "Enviar Proposta",
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta d'eliminació ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "error": {
+      "generic": "No s'ha pogut enviar la proposta d'eliminació. Torna-ho a intentar"
+    }
+  },
+  "editRefuge": {
+    "title": "Editar Refugi",
+    "proposalInfo": "Aquesta és una proposta d'edició de refugi que serà revisada i aprovada per un administrador",
+    "adminCommentPlaceholder": "Comentari obligatori per a l'administrador",
+    "minChars": "mínim {{min}}",
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta d'edició ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "errors": {
+      "commentRequired": "El comentari és obligatori per proposar edicions",
+      "commentTooShort": "El comentari ha de tenir almenys {{min}} caràcters"
+    }
+  },
+  "createRefuge": {
+    "title": "Proposar Refugi",
+    "proposalInfo": "Aquesta és una proposta de creació de refugi que serà revisada i aprovada per un administrador",
+    "coordinates": "Coordenades",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "generalInfo": "Informació general",
+    "namePlaceholder": "Nom del refugi",
+    "regionPlaceholder": "Comunitat autònoma",
+    "departementPlaceholder": "Província",
+    "pressToEdit": "Prem per editar",
+    "descriptionPlaceholder": "Descriu el refugi...",
+    "links": "Enllaços d'informació extra",
+    "linkPlaceholder": "https://exemple.com",
+    "addLink": "Afegir enllaç",
+    "adminComment": "Comentari pels administradors",
+    "adminCommentPlaceholder": "Informació extra que pot ser útil pels administradors per verificar aquest refugi",
+    "submit": "Enviar Proposta",
+    "photoAlert": {
+      "title": "Fotos del refugi",
+      "message": "Les fotos es podran penjar un cop acceptada la proposta de creació per un administrador"
+    },
+    "success": {
+      "title": "Proposta enviada",
+      "message": "La teva proposta ha estat enviada correctament i serà revisada per un administrador"
+    },
+    "error": {
+      "generic": "No s'ha pogut enviar la proposta. Torna-ho a intentar"
+    },
+    "errors": {
+      "nameRequired": "El nom del refugi és obligatori",
+      "nameTooLong": "El nom no pot superar els 100 caràcters",
+      "latitudeRequired": "La latitud és obligatòria",
+      "latitudeAtLeast3Decimals": "La latitud ha de tenir almenys 3 decimals",
+      "longitudeRequired": "La longitud és obligatòria",
+      "longitudeAtLeast3Decimals": "La longitud ha de tenir almenys 3 decimals",
+      "invalidColon": "Les coordenades han de dur (.) com a separador decimal",
+      "regionTooLong": "La regió no pot superar els 100 caràcters",
+      "departementTooLong": "La província no pot superar els 100 caràcters",
+      "altitudeInvalid": "L'altitud ha de ser un enter positiu",
+      "altitudeTooHigh": "L'altitud no pot superar els 8800m",
+      "placesInvalid": "Les places han de ser un enter positiu",
+      "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
+      "commentTooLong": "El comentari no pot superar els 3000 caràcters",
+      "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
+    }
+  },
+  "doubts": {
+    "title": "Secció de dubtes",
+    "noDoubts": "Encara no hi ha cap dubte. Sigues el primer en fer una pregunta!",
+    "doubtPlaceholder": "Escriu el teu dubte...",
+    "answerPlaceholder": "Escriu la teva resposta...",
+    "reply": "Respondre",
+    "replyingTo": "Responent a {{name}}",
+    "deleteDoubt": {
+      "title": "Eliminar dubte",
+      "message": "Estàs segur que vols eliminar aquest dubte? També s'eliminaran totes les seves respostes.",
+      "success": "Dubte eliminat correctament"
+    },
+    "deleteAnswer": {
+      "title": "Eliminar resposta",
+      "message": "Estàs segur que vols eliminar aquesta resposta?",
+      "success": "Resposta eliminada correctament"
+    },
+    "errors": {
+      "createDoubtError": "No s'ha pogut crear el dubte",
+      "createAnswerError": "No s'ha pogut crear la resposta",
+      "deleteDoubtError": "No s'ha pogut eliminar el dubte",
+      "deleteAnswerError": "No s'ha pogut eliminar la resposta",
+      "messageTooLong": "El missatge no pot superar els {{max}} caràcters"
+    }
+  },
+  "proposals": {
+    "titleMy": "Les meves propostes",
+    "titleAdmin": "Gestió de propostes",
+    "emptyState": "No hi ha propostes disponibles",
+    "filters": {
+      "all": "Totes",
+      "pending": "Pendents",
+      "approved": "Aprovades",
+      "rejected": "Rebutjades"
+    },
+    "status": {
+      "pending": "Pendent",
+      "approved": "Aprovada",
+      "rejected": "Rebutjada"
+    },
+    "actions": {
+      "create": "Crear",
+      "update": "Editar",
+      "delete": "Eliminar"
+    },
+    "card": {
+      "unknownRefuge": "Refugi desconegut",
+      "unknownUser": "Usuari desconegut",
+      "createdAt": "Creada el",
+      "reviewedAt": "Revisada el",
+      "rejectionReason": "Raó del rebuig",
+      "creator": "Creador/a",
+      "reviewer": "Revisor/a"
+    },
+    "detail": {
+      "title": "Detall de la proposta",
+      "comment": "Comentari",
+      "review": "Revisió",
+      "changes": "Canvis proposats",
+      "newRefuge": "Nou refugi",
+      "refugeToDelete": "Refugi a eliminar",
+      "current": "Actual",
+      "new": "Nou",
+      "value": "Valor",
+      "approve": "Aprovar",
+      "reject": "Rebutjar",
+      "newType": "Nou tipus:",
+      "newCondition": "Nou estat:",
+      "newTypeAndCondition": "Nous tipus i estat:"
+    },
+    "approve": {
+      "successTitle": "Proposta aprovada",
+      "successMessage": "La proposta ha estat aprovada correctament"
+    },
+    "reject": {
+      "successTitle": "Proposta rebutjada",
+      "successMessage": "La proposta ha estat rebutjada correctament"
+    },
+    "rejectModal": {
+      "title": "Rebutjar Proposta",
+      "warning": "Estàs a punt de rebutjar la proposta per al refugi '{{name}}'. Si us plau, explica la raó del rebuig.",
+      "confirm": "Rebutjar Proposta"
+    },
+    "errors": {
+      "loadError": "No s'han pogut carregar les propostes",
+      "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
+      "approveError": "No s'ha pogut aprovar la proposta",
+      "rejectError": "No s'ha pogut rebutjar la proposta"
+    }
+  },
+  "experiences": {
+    "title": "Experiències",
+    "viewMore": "Veure totes les experiències",
+    "addFirst": "Comparteix la teva experiència!",
+    "noExperiences": "Encara no hi ha experiències compartides. \nSigues el primer en compartir la teva!",
+    "placeholder": "Comparteix la teva experiència...",
+    "newPhotos": "Noves fotos",
+    "addPhotos": "Afegir fotos",
+    "deletePhotoInfo": "Per eliminar una foto, toca-la al carrusel i elimina-la des del visor",
+    "updateSuccess": "Experiència actualitzada correctament",
+    "deleteExperience": {
+      "title": "Eliminar experiència",
+      "message": "Estàs segur que vols eliminar aquesta experiència? Aquesta acció no es pot desfer.",
+      "success": "Experiència eliminada correctament"
+    },
+    "errors": {
+      "commentTooLong": "El comentari no pot superar els {max} caràcters",
+      "createExperienceError": "No s'ha pogut crear l'experiència",
+      "updateExperienceError": "No s'ha pogut actualitzar l'experiència",
+      "deleteExperienceError": "No s'ha pogut eliminar l'experiència",
+      "selectPhotosError": "No s'han pogut seleccionar les fotos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Alguns fitxers no s'han pogut pujar correctament"
+    }
+  },
+  "helpSupport": {
+    "title": "Ajuda i suport",
+    "intro": "Per a qualsevol fallada o error en l'app, podeu enviar un correu electrònic a:",
+    "emailCopied": "Correu copiat",
+    "emailCopiedMessage": "L'adreça de correu s'ha copiat al porta-retalls",
+    "beSpecific": "Sisplau, sigueu específics en l'escenari en què succeeix l'error i, si és possible, aporteu fotos.",
+    "warning": {
+      "title": "Atenció:",
+      "message": "No s'atendrà a propostes de modificació de la informació d'un refugi. Per fer-ho, crea una proposta d'edició del refugi a la pantalla de la fitxa del refugi."
+    }
+  },
+  "aboutApp": {
+    "title": "Sobre l'app",
+    "description": {
+      "intro": "Refugis Lliures ha nascut amb l'objectiu d'aportar informació precisa, fiable i extensa sobre els refugis lliures del Pirineu, a més de preservar el seu estat facilitant les trobades de voluntaris per a reformar-los.",
+      "sources": "L'app combina les dues fonts d'informació més grans de refugis lliures que hi ha a internet fins al moment:",
+      "userContributions": "juntament amb la informació aportada pels propis usuaris de l'app."
+    },
+    "creator": {
+      "title": "Informació del creador:",
+      "greeting": "Hola! Em dic Jordi Reverter i sóc el creador de Refugis Lliures, l'app més completa fins al moment de refugis lliures del Pirineu.",
+      "description": "Aquesta app ha sigut fruit del meu Treball de Fi de Grau a la Universitat Politècnica de Catalunya (UPC), on he pogut combinar les meves dues passions: la muntanya i el software. Des de ben petit que la muntanya ha ocupat un espai molt important en la meva vida i, sobretot, els refugis lliures. En aquests he viscut grans experiències i compartit molts moments amb gent apassionada de la muntanya i és per això que vaig decidir fer aquesta app i poder aportar el meu gra de sorra en aquest món de la muntanya. Espero que us pugui ser d'utilitat i us acompanyi a les vostres properes sortides!"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Termes i Condicions d'Ús",
+    "updateDate": "Data de l'última actualització: 4 de gener de 2026",
+    "acceptButton": "Acceptar i Tancar",
+    "acceptance": {
+      "title": "1. Acceptació dels Termes",
+      "content": "En descarregar, instal·lar o utilitzar l'aplicació RefugisLliures, acceptes quedar vinculat per aquests termes. Si no estàs d'acord amb alguna part d'aquests, no podràs accedir al servei."
+    },
+    "description": {
+      "title": "2. Descripció del Servei",
+      "content": "RefugisLliures és una plataforma per a la visualització i gestió de dades sobre refugis lliures. El servei utilitza dades en temps real i funcionalitats de mapa per millorar l'experiència de l'usuari en entorns de muntanya."
+    },
+    "permissions": {
+      "title": "3. Ús de Permisos i Dispositiu",
+      "intro": "Per al correcte funcionament de l'aplicació, es requereixen els següents permisos:",
+      "location": {
+        "title": "Ubicació:",
+        "content": "Per mostrar la teva posició en el mapa respecte als refugis."
+      },
+      "media": {
+        "title": "Multimèdia/Càmera:",
+        "content": "Per permetre la pujada de fotos dels refugis."
+      },
+      "network": {
+        "title": "Estat de la xarxa:",
+        "content": "Per gestionar la sincronització de dades amb Firebase i Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. Responsabilitat de l'Usuari",
+      "content": "L'usuari es compromet a fer un ús lícit de l'app. Donat que la informació tracta sobre refugis de muntanya, RefugisLliures no es fa responsable de la precisió exacta de les coordenades ni de l'estat físic dels refugis. L'ús de l'app no substitueix les eines de navegació professionals ni el sentit comú en activitats de risc."
+    },
+    "privacy": {
+      "title": "Política de Privacitat (Adaptada al GDPR)",
+      "dataController": {
+        "title": "1. Responsable del Tractament",
+        "content": "El responsable del tractament de les teves dades és el titular del projecte RefugisLliures (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Dades que Recollim",
+        "intro": "Recollim les dades estrictament necessàries per al funcionament de l'app:",
+        "identification": {
+          "title": "Dades d'Identificació:",
+          "content": "Nom i correu electrònic a través de Firebase Authentication."
+        },
+        "location": {
+          "title": "Dades d'Ubicació:",
+          "content": "Només si l'usuari dóna el consentiment explícit."
+        },
+        "userContent": {
+          "title": "Contingut de l'Usuari:",
+          "content": "Fotografies enviades per l'usuari (emmagatzemades a Cloudflare)."
+        },
+        "usage": {
+          "title": "Dades d'Ús:",
+          "content": "Estadístiques anònimes a través de Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Finalitat del Tractament",
+        "intro": "Les dades s'utilitzen exclusivament per a:",
+        "point1": "Gestionar el teu perfil d'usuari i autenticació.",
+        "point2": "Permetre't interactuar amb els refugis (afegir fotos, comentaris, etc.).",
+        "point3": "Millorar l'aplicació mitjançant anàlisis estadístiques."
+      },
+      "thirdParties": {
+        "title": "4. Tercers i Transferència de Dades",
+        "intro": "No compartim les teves dades amb tercers amb finalitats comercials. Tanmateix, utilitzem els següents proveïdors de serveis (subencarregats) que compleixen amb el marc del GDPR:",
+        "firebase": {
+          "title": "Firebase (Google):",
+          "content": "Per a la base de dades i autenticació."
+        },
+        "cloudflare": {
+          "title": "Cloudflare:",
+          "content": "Per a l'optimització i emmagatzematge de contingut multimèdia."
+        },
+        "analytics": {
+          "title": "Google Analytics:",
+          "content": "Per al seguiment d'errors i mètriques d'ús."
+        }
+      },
+      "rights": {
+        "title": "5. Drets ARCO (Accés, Rectificació, Cancel·lació i Oposició)",
+        "intro": "Com a usuari, tens dret a:",
+        "point1": "Saber quines dades tenim de tu.",
+        "point2": "Demanar la rectificació o eliminació de les teves dades (incloent-hi el teu compte de Firebase).",
+        "point3": "Limitar el tractament de les dades."
+      },
+      "security": {
+        "title": "6. Seguretat",
+        "content": "Totes les dades es transmeten de forma segura mitjançant protocols HTTPS i s'emmagatzemen en infraestructures amb alts estàndards de seguretat (Firebase/Cloudflare)."
+      }
     }
   }
 }

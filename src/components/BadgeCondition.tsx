@@ -20,22 +20,26 @@ export const BadgeCondition: React.FC<Props> = ({ condition, style, neutral = fa
       case 0: // pobre
         return {
           key: 'refuge.condition.poor',
-          colors: { background: '#FEE2E2', color: '#7A0B0B', borderColor: '#F87171' }
+          // pastel red
+          colors: { background: '#FDE8E8', color: '#9B1F1F', borderColor: '#F4A6A6' }
         };
-      case 1: // normal
+      case 1: // correcte
         return {
           key: 'refuge.condition.fair',
-          colors: { background: '#e0ebffff', color: '#1a49a1ff', borderColor: '#2d70ecff' }
+          // pastel blue
+          colors: { background: '#EAF4FF', color: '#3A5B99', borderColor: '#A3C4FF' }
         };
       case 2: // bé
         return {
           key: 'refuge.condition.good',
-          colors: { background: '#A2FFC8', color: '#007931', borderColor: '#30D270' }
+          // pastel green
+          colors: { background: '#E6F8EE', color: '#14532D', borderColor: '#7EE0B0'  }
         };
       case 3: // excel·lent
         return {
           key: 'refuge.condition.excellent',
-          colors: { background: '#A2FFC8', color: '#007931', borderColor: '#30D270' }
+          // pastel yellow/gold
+          colors: { background: '#FFF6E0', color: '#8B4B18', borderColor: '#F7C67A' }
         };
       default:
         return {

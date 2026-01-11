@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, BackHandler, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { MapViewComponent } from '../components/MapViewComponent';
 import { SearchBar } from '../components/SearchBar';
 import { FilterPanel } from '../components/FilterPanel';
 import { Location, Filters } from '../models';
-import { RefugisService } from '../services/RefugisService';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { useRefuges } from '../hooks/useRefugesQuery';
+import { MapCacheService } from '../services/MapCacheService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface MapScreenProps {
   onLocationSelect: (location: Location) => void;
@@ -23,14 +26,15 @@ export function MapScreen({
   selectedLocation 
 }: MapScreenProps) {
   const { t } = useTranslation();
+  const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const { isOfflineMode } = useAuth();
   
   // Estats locals de MapScreen
   const [searchQuery, setSearchQuery] = useState('');
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [allLocations, setAllLocations] = useState<Location[]>([]); // Guardar tots els refugis
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [offlineRefuges, setOfflineRefuges] = useState<Location[]>([]);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   
   const [filters, setFilters] = useState<Filters>({
@@ -40,16 +44,101 @@ export function MapScreen({
     condition: []
   });
 
-  // Filtrar refugis localment basant-se en searchQuery
+  // Construir objecte de filtres per React Query
+  const filterParams = useMemo(() => {
+    const params: any = {};
+    
+    // Altitude
+    if (filters.altitude && (filters.altitude[0] > 0 || filters.altitude[1] < MAX_ALTITUDE)) {
+      params.altitude_min = filters.altitude[0];
+      params.altitude_max = filters.altitude[1];
+    }
+    
+    // Places
+    if (filters.places && (filters.places[0] > 0 || filters.places[1] < MAX_PLACES)) {
+      params.places_min = filters.places[0];
+      params.places_max = filters.places[1];
+    }
+    
+    // Types
+    if (filters.types && filters.types.length > 0) {
+      params.type = filters.types.join(',');
+    }
+    
+    // Condition
+    if (filters.condition && filters.condition.length > 0) {
+      params.condition = filters.condition.join(',');
+    }
+    
+    return Object.keys(params).length > 0 ? params : undefined;
+  }, [filters]);
+
+  // Utilitzar React Query per carregar refugis
+  const { data: allLocations = [], isLoading, isError } = useRefuges(filterParams);
+
+  // Carregar refugis offline si estem en mode offline
+  useEffect(() => {
+    if (isOfflineMode) {
+      const loadOfflineRefuges = async () => {
+        try {
+          const refuges = await MapCacheService.getOfflineRefuges();
+          if (refuges && refuges.length > 0) {
+            // Convertir els refugis bàsics a format Location
+            const locations: Location[] = refuges.map(refuge => ({
+              id: refuge.id,
+              name: refuge.name,
+              surname: refuge.surname,
+              coord: refuge.coord,
+              geohash: refuge.geohash,
+              // Camps opcionals que no tenim en mode offline
+              altitude: undefined,
+              places: undefined,
+              info_comp: undefined,
+              description: undefined,
+              links: undefined,
+              type: undefined,
+              modified_at: undefined,
+              region: undefined
+            }));
+            setOfflineRefuges(locations);
+          }
+        } catch (error) {
+          console.error('Error loading offline refuges:', error);
+        }
+      };
+      loadOfflineRefuges();
+    } else {
+      setOfflineRefuges([]);
+    }
+  }, [isOfflineMode]);
+
+  // Utilitzar refugis offline si estem en mode offline, sinó utilitzar els de React Query
+  const locationsSource = isOfflineMode ? offlineRefuges : allLocations;
+
+  // Mostrar alertes quan hi ha errors o no resultats
+  useEffect(() => {
+    if (isError && !isOfflineMode) {
+      showAlert(t('common.error'), t('map.errorLoading'));
+    } else if (!isLoading && filterParams && locationsSource.length === 0 && !isOfflineMode) {
+      showAlert(
+        t('map.noResults.title'),
+        t('map.noResults.message'),
+        [{ text: t('common.ok'), onPress: hideAlert }]
+      );
+    }
+  }, [isError, isLoading, filterParams, locationsSource.length, isOfflineMode]);
+
+  // Filtrar refugis localment pel seu nom basant-se en searchQuery 
+  // (utilitzat per a llista de suggeriments a la searchbar i mapa)
   const filteredLocations = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) {
-      return allLocations;
+      return locationsSource;
     }
     const lower = searchQuery.toLowerCase();
-    return allLocations.filter(loc => 
+    return locationsSource.filter(loc => 
       loc.name && loc.name.toLowerCase().includes(lower)
     );
-  }, [searchQuery, allLocations]);
+  }, [searchQuery, locationsSource]);
 
   // Suggestions d'autocomplete local (només noms únics dels refugis filtrats)
   const suggestions = useMemo(() => {
@@ -58,63 +147,6 @@ export function MapScreen({
       filteredLocations.map(loc => loc.name).filter(Boolean)
     ));
   }, [searchQuery, filteredLocations]);
-
-  // Actualitzar locations mostrats al mapa
-  useEffect(() => {
-    setLocations(filteredLocations);
-  }, [filteredLocations]);
-
-  // Carregar refugis del backend només quan canvien els filtres (no searchQuery!)
-  useEffect(() => {
-    loadRefugis();
-  }, [filters]);
-
-  const loadRefugis = async () => {
-    try {
-      let data;
-      // Construir objecte de filtres només si cal
-      const filterParams: any = {};
-      if (filters) {
-        // Altitude
-        if (filters.altitude && (filters.altitude[0] > 0 || filters.altitude[1] < MAX_ALTITUDE)) {
-          filterParams.altitude_min = filters.altitude[0];
-          filterParams.altitude_max = filters.altitude[1];
-        }
-        // places
-        if (filters.places && (filters.places[0] > 0 || filters.places[1] < MAX_PLACES)) {
-          filterParams.places_min = filters.places[0];
-          filterParams.places_max = filters.places[1];
-        }
-        // Types
-        if (filters.types && filters.types.length > 0) {
-          filterParams.type = filters.types.join(',');
-        }
-        // Condition
-        if (filters.condition && filters.condition.length > 0) {
-          filterParams.condition = filters.condition.join(',');
-        }
-      }
-      // NO enviem searchQuery a l'API - filtrem localment!
-      
-      // Si no hi ha cap filtre, crida sense paràmetres
-      if (Object.keys(filterParams).length === 0) {
-        data = await RefugisService.getRefugis();
-      } else {
-        data = await RefugisService.getRefugis(filterParams);
-      }
-      // Validació de la resposta
-      if (!Array.isArray(data)) {
-        showAlert(t('common.error'), t('map.errorLoading'));
-        //console.error('Invalid refugis response:', data);
-        return;
-      }
-      setAllLocations(data); // Guardar tots els refugis
-      setLocations(data); // Mostrar tots inicialment
-    } catch (error) {
-      showAlert(t('common.error'), t('map.errorLoading'));
-      //console.error(error);
-    }
-  };
 
   const handleOpenFilters = useCallback(() => {
     setIsFilterOpen(true);
@@ -126,7 +158,11 @@ export function MapScreen({
 
   const handleFiltersChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters);
-  }, []);
+    // Si hi ha una cerca activa, esborrar-la quan s'apliquen filtres
+    if (searchQuery && searchQuery.trim().length > 0) {
+      setSearchQuery('');
+    }
+  }, [searchQuery]);
 
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -135,20 +171,12 @@ export function MapScreen({
   // Quan l'usuari selecciona un suggeriment
   const handleSuggestionSelect = useCallback((name: string) => {
     setSearchQuery(name);
-    // Trobar el refugi seleccionat i obtenir detall (des de la cache si s'hi troba)
-    const selectedRefuge = allLocations.find(loc => loc.name === name);
-    const fetchAndSelect = async (id: string) => {
-      try {
-        const detailed = await RefugisService.getRefugiById(id);
-        if (detailed) onLocationSelect(detailed);
-      } catch (err) {
-        // ignore
-      }
-    };
-    if (selectedRefuge && selectedRefuge.id) {
-      fetchAndSelect(selectedRefuge.id);
+    // Trobar el refugi seleccionat - les dades ja estan disponibles a locationsSource
+    const selectedRefuge = locationsSource.find(loc => loc.name === name);
+    if (selectedRefuge) {
+      onLocationSelect(selectedRefuge);
     }
-  }, [allLocations, onLocationSelect]);
+  }, [locationsSource, onLocationSelect]);
 
   // Si l'usuari prem el botó 'back' d'Android mentre hi ha text a la cerca,
   // esborrar la cerca i consumir l'esdeveniment (no fer el back navegacional).
@@ -167,21 +195,40 @@ export function MapScreen({
     return () => sub.remove();
   }, [searchQuery]);
 
+  // Resetar cerca quan canviem de tab (quan deixem de tenir focus)
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // Quan la pantalla perd el focus (sortim de MapScreen/canviem de tab)
+        setSearchQuery('');
+      };
+    }, [])
+  );
+
+  const handleAddPress = () => {
+    navigation.navigate('CreateRefuge');
+  };
+
   return (
     <View style={styles.container}>
       <MapViewComponent
-        locations={locations}
-        onLocationSelect={async (payload: any) => {
-          try {
-            if (typeof payload === 'string') {
-              const detailed = await RefugisService.getRefugiById(payload);
-              if (detailed) onLocationSelect(detailed);
-            } else if (payload && payload.id) {
-              const detailed = await RefugisService.getRefugiById(payload.id);
-              if (detailed) onLocationSelect(detailed);
+        locations={filteredLocations}
+        onLocationSelect={(payload: any) => {
+          // Sempre buscar el location complet des de filteredLocations
+          // per assegurar que tenim totes les dades necessàries
+          let locationId: string | undefined;
+          
+          if (typeof payload === 'string') {
+            locationId = payload;
+          } else if (payload && payload.id) {
+            locationId = payload.id;
+          }
+          
+          if (locationId) {
+            const location = filteredLocations.find(loc => loc.id === locationId);
+            if (location) {
+              onLocationSelect(location);
             }
-          } catch (err) {
-            // ignore
           }
         }}
         selectedLocation={selectedLocation}
@@ -200,6 +247,7 @@ export function MapScreen({
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           onOpenFilters={handleOpenFilters}
+          onAddPress={handleAddPress}
           suggestions={suggestions}
           onSuggestionSelect={handleSuggestionSelect}
           topInset={insets.top}

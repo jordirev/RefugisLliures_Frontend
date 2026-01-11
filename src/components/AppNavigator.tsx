@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, BackHandler, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 
 import { TabsNavigator } from './TabsNavigator';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen';
 import { ChangeEmailScreen } from '../screens/ChangeEmailScreen';
 import { EditProfileScreen } from '../screens/EditProfileScreen';
+import { HelpSupportScreen } from '../screens/HelpSupportScreen';
+import { AboutTheAppScreen } from '../screens/AboutTheAppScreen';
 import { CreateRenovationScreen } from '../screens/CreateRenovationScreen';
+import { CreateRefugeScreen } from '../screens/CreateRefugeScreen';
+import { EditRefugeScreen } from '../screens/EditRefugeScreen';
 import { EditRenovationScreen } from '../screens/EditRenovationScreen';
+import { ProposalsScreen } from '../screens/ProposalsScreen';
+import { ProposalDetailScreen } from '../screens/ProposalDetailScreen';
+import { DoubtsScreen } from '../screens/DoubtsScreen';
+import { ExperiencesScreen } from '../screens/ExperiencesScreen';
 import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
+import { DeleteRefugePopUp } from './DeleteRefugePopUp';
 
 import { Location } from '../models';
+import { useDeleteRefugeProposal } from '../hooks/useProposalsQuery';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
@@ -23,11 +35,24 @@ const Stack = createNativeStackNavigator();
 export function AppNavigator() {
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const navigation = useNavigation<any>();
+  
+  // Mutation for deleting refuge proposal
+  const deleteProposalMutation = useDeleteRefugeProposal();
   
   // Només estats globals (compartits entre pantalles)
   const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [refugeToDelete, setRefugeToDelete] = useState<Location | undefined>(undefined);
+  const [refugeToEdit, setRefugeToEdit] = useState<Location | undefined>(undefined);
   const [showDetailScreen, setShowDetailScreen] = useState(false);
+  
+  // Estats per DoubtsScreen i ExperiencesScreen overlays
+  const [showDoubtsScreen, setShowDoubtsScreen] = useState(false);
+  const [doubtsParams, setDoubtsParams] = useState<{refugeId: string, refugeName: string} | null>(null);
+  const [showExperiencesScreen, setShowExperiencesScreen] = useState(false);
+  const [experiencesParams, setExperiencesParams] = useState<{refugeId: string, refugeName: string} | null>(null);
 
   // Handlers globals per al BottomSheet
   const handleToggleFavorite = async (locationId: string | undefined) => {
@@ -40,6 +65,54 @@ export function AppNavigator() {
     } catch (error) {
       showAlert(t('common.error'), t('alerts.favoriteError'));
     }
+  };
+
+  const handleDeleteRefuge = (location: Location) => {
+    setRefugeToDelete(location);
+    setShowDeletePopup(true);
+  };
+
+  const handleConfirmDelete = (comment: string) => {
+    if (!refugeToDelete) return;
+
+    deleteProposalMutation.mutate({ refugeId: refugeToDelete.id, comment: comment || undefined }, {
+      onSuccess: () => {
+        setShowDeletePopup(false);
+        setRefugeToDelete(undefined);
+        
+        // Show success alert
+        showAlert(
+          t('deleteRefuge.success.title'),
+          t('deleteRefuge.success.message')
+        );
+        
+        // Close detail screen if open
+        if (showDetailScreen) {
+          handleCloseDetailScreen();
+        }
+      },
+      onError: (error: any) => {
+        console.error('Error creating delete proposal:', error);
+        setShowDeletePopup(false);
+        
+        // Skip showing alert if error is about coordinates
+        const errorMessage = error.message || '';
+        const isCoordError = /Cannot read property '(long|lat|coord)' of undefined/i.test(errorMessage) ||
+                             /coord/i.test(errorMessage);
+        
+        if (!isCoordError) {
+          showAlert(
+            t('common.error'),
+            errorMessage || t('deleteRefuge.error.generic')
+          );
+        }
+      }
+    });
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeletePopup(false);
+    setRefugeToDelete(undefined);
   };
 
   const handleNavigate = (location: Location) => {
@@ -74,6 +147,20 @@ export function AppNavigator() {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
+      if (showExperiencesScreen) {
+        setShowExperiencesScreen(false);
+        setExperiencesParams(null);
+        return true;
+      }
+      if (showDoubtsScreen) {
+        setShowDoubtsScreen(false);
+        setDoubtsParams(null);
+        return true;
+      }
+      if (refugeToEdit) {
+        setRefugeToEdit(undefined);
+        return true;
+      }
       if (showDetailScreen) {
         handleCloseDetailScreen();
         return true;
@@ -87,11 +174,13 @@ export function AppNavigator() {
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
-  }, [showBottomSheet, showDetailScreen]);
+  }, [showBottomSheet, showDetailScreen, refugeToEdit, showDoubtsScreen, showExperiencesScreen]);
 
   return (
     <View style={styles.container}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator 
+        screenOptions={{ headerShown: false }}
+      >
         {/* Pantalla principal amb tabs */}
         <Stack.Screen name="MainTabs">
           {() => (
@@ -109,8 +198,16 @@ export function AppNavigator() {
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="ChangeEmail" component={ChangeEmailScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+        <Stack.Screen name="AboutTheApp" component={AboutTheAppScreen} />
         <Stack.Screen name="CreateRenovation" component={CreateRenovationScreen} />
+        <Stack.Screen name="CreateRefuge" component={CreateRefugeScreen} />
+        <Stack.Screen name="EditRefuge" component={EditRefugeScreen} />
         <Stack.Screen name="EditRenovation" component={EditRenovationScreen} />
+        <Stack.Screen name="Proposals" component={ProposalsScreen} />
+        <Stack.Screen name="ProposalDetail" component={ProposalDetailScreen} />
+        <Stack.Screen name="DoubtsScreen" component={DoubtsScreen} />
+        <Stack.Screen name="ExperiencesScreen" component={ExperiencesScreen} />
         <Stack.Screen name="RefromDetail">
           {({ navigation: nav }: any) => (
             <RenovationDetailScreen
@@ -126,13 +223,36 @@ export function AppNavigator() {
         
         <Stack.Screen name="RefugeDetail">
           {({ route, navigation: nav }: any) => {
-            const { refuge } = route.params || {};
+            const { refugeId } = route.params || {};
+            if (!refugeId) {
+              nav.goBack();
+              return null;
+            }
             return (
               <RefugeDetailScreen
-                refuge={refuge}
+                refugeId={refugeId}
                 onBack={() => nav.goBack()}
                 onToggleFavorite={handleToggleFavorite}
                 onNavigate={handleNavigate}
+                onDelete={handleDeleteRefuge}
+                onEdit={(location: Location) => {
+                  nav.navigate('EditRefuge', { refuge: location });
+                }}
+                onViewMap={(location: Location) => {
+                  nav.goBack();
+                  setTimeout(() => {
+                    handleShowRefugeBottomSheet(location);
+                    navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
+                  }, 100);
+                }}
+                onNavigateToDoubts={(refugeId: string, refugeName: string) => {
+                  setDoubtsParams({ refugeId, refugeName });
+                  setShowDoubtsScreen(true);
+                }}
+                onNavigateToExperiences={(refugeId: string, refugeName: string) => {
+                  setExperiencesParams({ refugeId, refugeName });
+                  setShowExperiencesScreen(true);
+                }}
               />
             );
           }}
@@ -142,7 +262,7 @@ export function AppNavigator() {
       {/* Bottom Sheet del refugi */}
       {selectedLocation && (
         <RefugeBottomSheet
-          refuge={selectedLocation}
+          refugeId={selectedLocation.id}
           isVisible={showBottomSheet}
           onClose={handleCloseBottomSheet}
           onToggleFavorite={handleToggleFavorite}
@@ -152,15 +272,79 @@ export function AppNavigator() {
       )}
 
       {/* Pantalla de detall del refugi - Per sobre de tot */}
-      {selectedLocation && showDetailScreen && (
+      {selectedLocation && showDetailScreen && !refugeToEdit && (
         <View style={styles.detailScreenOverlay}>
           <RefugeDetailScreen
-            refuge={selectedLocation}
+            refugeId={selectedLocation.id}
+            onEdit={(location: Location) => {
+              setRefugeToEdit(location);
+            }}
+            onDelete={handleDeleteRefuge}
             onBack={handleCloseDetailScreen}
             onToggleFavorite={handleToggleFavorite}
             onNavigate={handleNavigate}
+            onViewMap={(location: Location) => {
+              handleCloseDetailScreen();
+              setTimeout(() => {
+                handleShowRefugeBottomSheet(location);
+                navigation.navigate('MainTabs', { screen: 'Map', params: { selectedRefuge: location } });
+              }, 300);
+            }}            onNavigateToDoubts={(refugeId: string, refugeName: string) => {
+              setDoubtsParams({ refugeId, refugeName });
+              setShowDoubtsScreen(true);
+            }}            onNavigateToExperiences={(refugeId: string, refugeName: string) => {
+              setExperiencesParams({ refugeId, refugeName });
+              setShowExperiencesScreen(true);
+            }}          />
+        </View>
+      )}
+
+      {/* Edit Refuge Screen overlay - Per sobre de RefugeDetailScreen */}
+      {refugeToEdit && (
+        <View style={styles.editRefugeOverlay}>
+          <EditRefugeScreen 
+            refuge={refugeToEdit} 
+            onCancel={() => setRefugeToEdit(undefined)}
           />
         </View>
+      )}
+
+      {/* Doubts Screen overlay - Per sobre de RefugeDetailScreen */}
+      {showDoubtsScreen && doubtsParams && (
+        <View style={styles.editRefugeOverlay}>
+          <DoubtsScreen 
+            refugeId={doubtsParams.refugeId}
+            refugeName={doubtsParams.refugeName}
+            onClose={() => {
+              setShowDoubtsScreen(false);
+              setDoubtsParams(null);
+            }}
+          />
+        </View>
+      )}
+
+      {/* Experiences Screen overlay - Per sobre de RefugeDetailScreen */}
+      {showExperiencesScreen && experiencesParams && (
+        <View style={styles.editRefugeOverlay}>
+          <ExperiencesScreen 
+            refugeId={experiencesParams.refugeId}
+            refugeName={experiencesParams.refugeName}
+            onClose={() => {
+              setShowExperiencesScreen(false);
+              setExperiencesParams(null);
+            }}
+          />
+        </View>
+      )}
+
+      {/* Delete Refuge Popup */}
+      {refugeToDelete && (
+        <DeleteRefugePopUp
+          visible={showDeletePopup}
+          refugeName={refugeToDelete.name}
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
       )}
       
       {/* CustomAlert */}
@@ -189,5 +373,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'white',
     zIndex: 1000,
+  },
+  editRefugeOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    zIndex: 1001,
   },
 });

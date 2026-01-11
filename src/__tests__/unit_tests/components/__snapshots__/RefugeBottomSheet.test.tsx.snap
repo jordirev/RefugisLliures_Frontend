@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el snapshot amb favorit actiu 1`] = `
 <View
@@ -245,8 +245,8 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#DBEAFE",
-                    "borderColor": "#60A5FA",
+                    "backgroundColor": "#E6F8EE",
+                    "borderColor": "#7EE0B0",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -264,13 +264,13 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#1E40AF",
+                      "color": "#14532D",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.type.occupiedInSummer
+                No vigilat
               </Text>
             </View>
           </View>
@@ -297,8 +297,8 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#A2FFC8",
-                    "borderColor": "#30D270",
+                    "backgroundColor": "#E6F8EE",
+                    "borderColor": "#7EE0B0",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -316,13 +316,13 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#007931",
+                      "color": "#14532D",
                     },
                     undefined,
                   ]
                 }
               >
-                bé
+                Bé
               </Text>
             </View>
           </View>
@@ -759,8 +759,8 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#DBEAFE",
-                    "borderColor": "#60A5FA",
+                    "backgroundColor": "#E6F8EE",
+                    "borderColor": "#7EE0B0",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -778,13 +778,13 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#1E40AF",
+                      "color": "#14532D",
                     },
                     undefined,
                   ]
                 }
               >
-                refuge.type.occupiedInSummer
+                No vigilat
               </Text>
             </View>
           </View>
@@ -811,8 +811,8 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                     "paddingVertical": 2,
                   },
                   {
-                    "backgroundColor": "#A2FFC8",
-                    "borderColor": "#30D270",
+                    "backgroundColor": "#E6F8EE",
+                    "borderColor": "#7EE0B0",
                     "borderWidth": 1.25,
                   },
                   undefined,
@@ -830,13 +830,13 @@ exports[`RefugeBottomSheet Component Snapshot testing hauria de coincidir amb el
                       "lineHeight": 16,
                     },
                     {
-                      "color": "#007931",
+                      "color": "#14532D",
                     },
                     undefined,
                   ]
                 }
               >
-                bé
+                Bé
               </Text>
             </View>
           </View>

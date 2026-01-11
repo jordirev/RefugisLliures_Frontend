@@ -18,12 +18,7 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'test-uid-123',
         username: 'testuser',
-        email: 'test@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -31,7 +26,6 @@ describe('Models d\'Usuaris', () => {
 
       expect(user.uid).toBe('test-uid-123');
       expect(user.username).toBe('testuser');
-      expect(user.email).toBe('test@example.com');
       expect(user.language).toBe('ca');
     });
 
@@ -39,57 +33,46 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-456',
         username: 'johndoe',
-        email: 'john@example.com',
-        avatar: 'https://example.com/avatar.jpg',
+        avatar_metadata: { key: 'avatar-key', url: 'https://example.com/avatar.jpg', uploaded_at: '2023-01-01T00:00:00Z' },
         language: 'es',
-        favourite_refuges: [1, 2, 3, 4, 5],
-        visited_refuges: [1, 2, 3],
-        renovations: ['reforma1', 'reforma2'],
-        num_uploaded_photos: 15,
+        favourite_refuges: ['1', '2', '3', '4', '5'],
+        visited_refuges: ['1', '2', '3'],
+        uploaded_photos_keys: ['photo1', 'photo2'],
         num_shared_experiences: 10,
         num_renovated_refuges: 2,
         created_at: '2023-05-15T10:30:00Z',
       };
 
       expect(user.uid).toBe('uid-456');
-      expect(user.avatar).toBe('https://example.com/avatar.jpg');
+      expect(user.avatar_metadata?.url).toBe('https://example.com/avatar.jpg');
       expect(user.favourite_refuges).toHaveLength(5);
       expect(user.visited_refuges).toHaveLength(3);
-      expect(user.renovations).toHaveLength(2);
-      expect(user.num_uploaded_photos).toBe(15);
+      expect(user.uploaded_photos_keys).toHaveLength(2);
       expect(user.num_shared_experiences).toBe(10);
       expect(user.num_renovated_refuges).toBe(2);
     });
 
-    it('hauria de permetre avatar com undefined', () => {
+    it('hauria de permetre avatar_metadata com undefined', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
-        avatar: undefined,
+        avatar_metadata: undefined,
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.avatar).toBeUndefined();
+      expect(user.avatar_metadata).toBeUndefined();
     });
 
     it('hauria de permetre arrays buits per refugis_favorits', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -103,12 +86,9 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [1, 5, 10, 15, 20, 100],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -123,57 +103,44 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [],
-        visited_refuges: [2, 4, 6, 8],
-        renovations: [],
-        num_uploaded_photos: null,
+        visited_refuges: ['2', '4', '6', '8'],
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       expect(user.visited_refuges).toHaveLength(4);
-      expect(user.visited_refuges).toContain(2);
-      expect(user.visited_refuges).toContain(8);
+      expect(user.visited_refuges).toContain('2');
+      expect(user.visited_refuges).toContain('8');
     });
 
-    it('hauria de permetre múltiples reformes', () => {
+    it('hauria de permetre múltiples fotos pujades', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: ['reforma-id-1', 'reforma-id-2', 'reforma-id-3'],
-        num_uploaded_photos: null,
+        uploaded_photos_keys: ['photo1', 'photo2', 'photo3'],
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.renovations).toHaveLength(3);
-      expect(user.renovations).toContain('reforma-id-1');
+      expect(user.uploaded_photos_keys).toHaveLength(3);
+      expect(user.uploaded_photos_keys).toContain('photo1');
     });
 
     it('hauria de permetre valors null per estadístiques', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.num_uploaded_photos).toBeNull();
       expect(user.num_shared_experiences).toBeNull();
       expect(user.num_renovated_refuges).toBeNull();
     });
@@ -182,18 +149,12 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: 0,
         num_shared_experiences: 0,
         num_renovated_refuges: 0,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.num_uploaded_photos).toBe(0);
       expect(user.num_shared_experiences).toBe(0);
       expect(user.num_renovated_refuges).toBe(0);
     });
@@ -205,13 +166,10 @@ describe('Models d\'Usuaris', () => {
         const user: User = {
           uid: 'uid-1',
           username: 'user1',
-          email: 'user1@example.com',
-          language: lang,
+            language: lang,
           favourite_refuges: [],
           visited_refuges: [],
-          renovations: [],
-          num_uploaded_photos: null,
-          num_shared_experiences: null,
+              num_shared_experiences: null,
           num_renovated_refuges: null,
           created_at: '2023-01-01T00:00:00Z',
         };
@@ -224,12 +182,9 @@ describe('Models d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-06-15T14:30:00.000Z',
@@ -250,14 +205,12 @@ describe('DTOs d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'test-uid',
         username: 'testuser',
-        email: 'test@example.com',
         language: 'ca',
         created_at: '2023-01-01T00:00:00Z',
       };
 
       expect(userDTO.uid).toBe('test-uid');
       expect(userDTO.username).toBe('testuser');
-      expect(userDTO.email).toBe('test@example.com');
       expect(userDTO.language).toBe('ca');
       expect(userDTO.created_at).toBe('2023-01-01T00:00:00Z');
     });
@@ -266,88 +219,85 @@ describe('DTOs d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-123',
         username: 'johndoe',
-        email: 'john@example.com',
-        avatar: 'https://example.com/avatar.jpg',
         language: 'ES',
-        favourite_refuges: [1, 2, 3],
-        visited_refuges: [1],
-        renovations: ['reforma1'],
-        num_uploaded_photos: 10,
+        favourite_refuges: ['1', '2', '3'],
+        visited_refuges: ['1'],
+        renovations: ['ref-1'],
+        uploaded_photos_keys: ['photo-1', 'photo-2'],
         num_shared_experiences: 5,
         num_renovated_refuges: 1,
         created_at: '2023-05-01T00:00:00Z',
       };
 
-      expect(userDTO.avatar).toBe('https://example.com/avatar.jpg');
       expect(userDTO.favourite_refuges).toHaveLength(3);
-      expect(userDTO.num_uploaded_photos).toBe(10);
+      expect(userDTO.uploaded_photos_keys).toHaveLength(2);
+      expect(userDTO.renovations).toHaveLength(1);
     });
 
     it('hauria de permetre camps opcionals com a null', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
-        avatar: null,
         language: 'ca',
+        avatar_metadata: null,
         favourite_refuges: null,
         visited_refuges: null,
         renovations: null,
-        num_uploaded_photos: null,
+        uploaded_photos_keys: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(userDTO.avatar).toBeNull();
+      expect(userDTO.avatar_metadata).toBeNull();
       expect(userDTO.favourite_refuges).toBeNull();
       expect(userDTO.visited_refuges).toBeNull();
       expect(userDTO.renovations).toBeNull();
-      expect(userDTO.num_uploaded_photos).toBeNull();
+      expect(userDTO.uploaded_photos_keys).toBeNull();
     });
 
     it('hauria de permetre camps opcionals com a undefined', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
-        avatar: undefined,
         language: 'ca',
+        avatar_metadata: undefined,
         favourite_refuges: undefined,
         visited_refuges: undefined,
         renovations: undefined,
-        num_uploaded_photos: undefined,
+        uploaded_photos_keys: undefined,
         num_shared_experiences: undefined,
         num_renovated_refuges: undefined,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(userDTO.avatar).toBeUndefined();
+      expect(userDTO.avatar_metadata).toBeUndefined();
       expect(userDTO.favourite_refuges).toBeUndefined();
+      expect(userDTO.renovations).toBeUndefined();
     });
 
     it('hauria de gestionar arrays buits', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
         renovations: [],
+        uploaded_photos_keys: [],
         created_at: '2023-01-01T00:00:00Z',
       };
 
       expect(userDTO.favourite_refuges).toHaveLength(0);
       expect(userDTO.visited_refuges).toHaveLength(0);
       expect(userDTO.renovations).toHaveLength(0);
+      expect(userDTO.uploaded_photos_keys).toHaveLength(0);
     });
 
     it('hauria de permetre idioma en majúscules', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'CA',
         created_at: '2023-01-01T00:00:00Z',
       };
@@ -359,7 +309,6 @@ describe('DTOs d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         created_at: '2023-01-01T00:00:00Z',
       };
@@ -375,7 +324,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-123',
         username: 'testuser',
-        email: 'test@example.com',
         language: 'ca',
         created_at: '2023-01-01T00:00:00Z',
       };
@@ -384,7 +332,6 @@ describe('Mappers d\'Usuaris', () => {
 
       expect(user.uid).toBe('uid-123');
       expect(user.username).toBe('testuser');
-      expect(user.email).toBe('test@example.com');
       expect(user.language).toBe('ca');
       expect(user.created_at).toBe('2023-01-01T00:00:00Z');
     });
@@ -393,13 +340,11 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-456',
         username: 'johndoe',
-        email: 'john@example.com',
-        avatar: 'https://example.com/avatar.jpg',
+        avatar_metadata: { key: 'avatar-key', url: 'https://example.com/avatar.jpg', uploaded_at: '2023-01-01T00:00:00Z' },
         language: 'ES',
-        favourite_refuges: [1, 2, 3, 4, 5],
-        visited_refuges: [1, 2, 3],
-        renovations: ['reforma1', 'reforma2'],
-        num_uploaded_photos: 20,
+        favourite_refuges: ['1', '2', '3', '4', '5'],
+        visited_refuges: ['1', '2', '3'],
+        uploaded_photos_keys: ['photo1', 'photo2'],
         num_shared_experiences: 15,
         num_renovated_refuges: 3,
         created_at: '2023-05-15T10:30:00Z',
@@ -409,53 +354,48 @@ describe('Mappers d\'Usuaris', () => {
 
       expect(user.uid).toBe('uid-456');
       expect(user.username).toBe('johndoe');
-      expect(user.email).toBe('john@example.com');
-      expect(user.avatar).toBe('https://example.com/avatar.jpg');
+      expect(user.avatar_metadata?.url).toBe('https://example.com/avatar.jpg');
       expect(user.language).toBe('ES');
-      expect(user.favourite_refuges).toEqual([1, 2, 3, 4, 5]);
-      expect(user.visited_refuges).toEqual([1, 2, 3]);
-      expect(user.renovations).toEqual(['reforma1', 'reforma2']);
-      expect(user.num_uploaded_photos).toBe(20);
+      expect(user.favourite_refuges).toEqual(['1', '2', '3', '4', '5']);
+      expect(user.visited_refuges).toEqual(['1', '2', '3']);
+      expect(user.uploaded_photos_keys).toEqual(['photo1', 'photo2']);
       expect(user.num_shared_experiences).toBe(15);
       expect(user.num_renovated_refuges).toBe(3);
       expect(user.created_at).toBe('2023-05-15T10:30:00Z');
     });
 
-    it('hauria de convertir avatar null a undefined', () => {
+    it('hauria de convertir avatar_metadata null a null', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
-        avatar: null,
+        avatar_metadata: null,
         language: 'ca',
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.avatar).toBeUndefined();
+      expect(user.avatar_metadata).toBeNull();
     });
 
-    it('hauria de mantenir avatar quan és una string vàlida', () => {
+    it('hauria de mantenir avatar_metadata quan és un objecte vàlid', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
-        avatar: 'https://example.com/avatar.jpg',
+        avatar_metadata: { key: 'avatar-key', url: 'https://example.com/avatar.jpg', uploaded_at: '2023-01-01T00:00:00Z' },
         language: 'ca',
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.avatar).toBe('https://example.com/avatar.jpg');
+      expect(user.avatar_metadata?.url).toBe('https://example.com/avatar.jpg');
     });
 
     it('hauria de convertir refugis_favorits null a array buit', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -471,7 +411,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: undefined,
         created_at: '2023-01-01T00:00:00Z',
@@ -486,7 +425,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [1, 5, 10],
         created_at: '2023-01-01T00:00:00Z',
@@ -501,7 +439,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         visited_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -516,7 +453,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         visited_refuges: undefined,
         created_at: '2023-01-01T00:00:00Z',
@@ -531,142 +467,132 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        visited_refuges: [2, 4, 6, 8],
+        visited_refuges: ['2', '4', '6', '8'],
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.visited_refuges).toEqual([2, 4, 6, 8]);
+      expect(user.visited_refuges).toEqual(['2', '4', '6', '8']);
     });
 
-    it('hauria de convertir reformes null a array buit', () => {
+    it('hauria de convertir uploaded_photos_keys null a array buit', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        renovations: null,
+        uploaded_photos_keys: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.renovations).toEqual([]);
+      expect(user.uploaded_photos_keys).toEqual([]);
     });
 
-    it('hauria de convertir reformes undefined a array buit', () => {
+    it('hauria de convertir uploaded_photos_keys undefined a array buit', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        renovations: undefined,
+        uploaded_photos_keys: undefined,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.renovations).toEqual([]);
+      expect(user.uploaded_photos_keys).toEqual([]);
     });
 
-    it('hauria de mantenir reformes quan és un array', () => {
+    it('hauria de mantenir uploaded_photos_keys quan és un array', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        renovations: ['reforma1', 'reforma2', 'reforma3'],
+        uploaded_photos_keys: ['photo1', 'photo2', 'photo3'],
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.renovations).toEqual(['reforma1', 'reforma2', 'reforma3']);
+      expect(user.uploaded_photos_keys).toEqual(['photo1', 'photo2', 'photo3']);
     });
 
-    it('hauria de mantenir num_fotos_pujades null', () => {
+    it('hauria de mantenir num_shared_experiences null', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        num_uploaded_photos: null,
+        num_shared_experiences: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.num_uploaded_photos).toBeNull();
+      expect(user.num_shared_experiences).toBeNull();
     });
 
-    it('hauria de mantenir num_fotos_pujades quan és 0', () => {
+    it('hauria de mantenir num_shared_experiences quan és 0', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        num_uploaded_photos: 0,
+        num_shared_experiences: 0,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.num_uploaded_photos).toBe(0);
+      expect(user.num_shared_experiences).toBe(0);
     });
 
-    it('hauria de mantenir num_fotos_pujades quan és un número positiu', () => {
+    it('hauria de mantenir num_shared_experiences quan és un número positiu', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        num_uploaded_photos: 25,
+        num_shared_experiences: 25,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.num_uploaded_photos).toBe(25);
+      expect(user.num_shared_experiences).toBe(25);
     });
 
-    it('hauria de convertir num_fotos_pujades undefined a null', () => {
+    it('hauria de convertir num_shared_experiences undefined a null', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        num_uploaded_photos: undefined,
+        num_shared_experiences: undefined,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.num_uploaded_photos).toBeNull();
+      expect(user.num_shared_experiences).toBeNull();
     });
 
-    it('hauria de mantenir num_experiencies_compartides correctament', () => {
+    it('hauria de mantenir num_renovated_refuges correctament', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        num_shared_experiences: 10,
+        num_renovated_refuges: 10,
         created_at: '2023-01-01T00:00:00Z',
       };
 
       const user = mapUserFromDTO(userDTO);
 
-      expect(user.num_shared_experiences).toBe(10);
+      expect(user.num_renovated_refuges).toBe(10);
     });
 
     it('hauria de mantenir num_refugis_reformats correctament', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         num_renovated_refuges: 5,
         created_at: '2023-01-01T00:00:00Z',
@@ -681,7 +607,6 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         created_at: '2023-06-20T15:45:30.123Z',
       };
@@ -695,11 +620,10 @@ describe('Mappers d\'Usuaris', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
+        uploaded_photos_keys: [],
         created_at: '2023-01-01T00:00:00Z',
       };
 
@@ -707,18 +631,17 @@ describe('Mappers d\'Usuaris', () => {
 
       expect(user.favourite_refuges).toHaveLength(0);
       expect(user.visited_refuges).toHaveLength(0);
-      expect(user.renovations).toHaveLength(0);
+      expect(user.uploaded_photos_keys).toHaveLength(0);
     });
 
     it('hauria de gestionar arrays amb múltiples elements', () => {
       const userDTO: UserDTO = {
         uid: 'uid-1',
         username: 'user1',
-        email: 'user1@example.com',
         language: 'ca',
-        favourite_refuges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        visited_refuges: [1, 2, 3, 4, 5],
-        renovations: ['r1', 'r2', 'r3', 'r4', 'r5'],
+        favourite_refuges: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        visited_refuges: ['1', '2', '3', '4', '5'],
+        uploaded_photos_keys: ['p1', 'p2', 'p3', 'p4', 'p5'],
         created_at: '2023-01-01T00:00:00Z',
       };
 
@@ -726,7 +649,7 @@ describe('Mappers d\'Usuaris', () => {
 
       expect(user.favourite_refuges).toHaveLength(10);
       expect(user.visited_refuges).toHaveLength(5);
-      expect(user.renovations).toHaveLength(5);
+      expect(user.uploaded_photos_keys).toHaveLength(5);
     });
   });
 });
@@ -737,12 +660,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'abc',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -756,12 +676,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: longUID,
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -774,12 +691,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-123-abc_xyz',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -794,12 +708,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'ab',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -813,12 +724,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: longUsername,
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -831,12 +739,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user_name-123',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -849,12 +754,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'User Name',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -864,116 +766,85 @@ describe('Validacions i casos límit d\'Usuaris', () => {
     });
   });
 
-  describe('Email validacions', () => {
-    it('hauria de gestionar emails estàndard', () => {
+  // Email no forma part del model User actual
+  describe('Language validacions', () => {
+    it('hauria de gestionar idiomes estàndard', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.email).toBe('user@example.com');
-      expect(user.email).toContain('@');
+      expect(user.language).toBe('ca');
     });
 
-    it('hauria de gestionar emails amb subdominis', () => {
+    it('hauria de gestionar idioma anglès', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@mail.example.com',
-        language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
+        language: 'en',
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.email).toBe('user@mail.example.com');
+      expect(user.language).toBe('en');
     });
 
-    it('hauria de gestionar emails amb punts', () => {
+    it('hauria de gestionar idioma espanyol', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user.name@example.com',
-        language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
+        language: 'es',
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.email).toBe('user.name@example.com');
+      expect(user.language).toBe('es');
     });
 
-    it('hauria de gestionar emails amb plus addressing', () => {
+    it('hauria de gestionar idioma francès', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user+tag@example.com',
-        language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
+        language: 'fr',
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.email).toBe('user+tag@example.com');
+      expect(user.language).toBe('fr');
     });
   });
 
   describe('Estadístiques límit', () => {
-    it('hauria de gestionar números molt grans per fotos pujades', () => {
+    it('hauria de gestionar números molt grans per experiències compartides', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: 999999,
-        num_shared_experiences: null,
+        num_shared_experiences: 999999,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.num_uploaded_photos).toBe(999999);
+      expect(user.num_shared_experiences).toBe(999999);
     });
 
     it('hauria de gestionar 0 com a valor vàlid', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
-        favourite_refuges: [],
-        visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: 0,
         num_shared_experiences: 0,
         num_renovated_refuges: 0,
         created_at: '2023-01-01T00:00:00Z',
       };
 
-      expect(user.num_uploaded_photos).toBe(0);
       expect(user.num_shared_experiences).toBe(0);
       expect(user.num_renovated_refuges).toBe(0);
     });
@@ -985,12 +856,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: favorits,
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -1005,12 +873,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [1, 1, 2, 2, 3, 3],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -1024,12 +889,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [999999, 1000000, 1234567],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-01-01T00:00:00Z',
@@ -1045,12 +907,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2000-01-01T00:00:00Z',
@@ -1064,12 +923,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2025-01-01T00:00:00Z',
@@ -1083,12 +939,9 @@ describe('Validacions i casos límit d\'Usuaris', () => {
       const user: User = {
         uid: 'uid-1',
         username: 'user',
-        email: 'user@example.com',
         language: 'ca',
         favourite_refuges: [],
         visited_refuges: [],
-        renovations: [],
-        num_uploaded_photos: null,
         num_shared_experiences: null,
         num_renovated_refuges: null,
         created_at: '2023-06-15T14:30:45.123Z',

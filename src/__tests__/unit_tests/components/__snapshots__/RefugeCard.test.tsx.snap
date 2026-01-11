@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapshot amb props bàsiques 1`] = `
 <View
@@ -32,7 +32,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   style={
     {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 18,
       "elevation": 4,
       "marginHorizontal": 16,
       "marginVertical": 8,
@@ -154,6 +154,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
             "fontSize": 16,
             "fontWeight": "600",
             "marginBottom": 4,
+            "marginRight": 60,
           }
         }
       >
@@ -258,6 +259,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "bottom": 12,
           "height": 40,
           "justifyContent": "center",
+          "marginRight": -4,
           "opacity": 1,
           "position": "absolute",
           "right": 16,
@@ -314,7 +316,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   style={
     {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 18,
       "elevation": 4,
       "marginHorizontal": 16,
       "marginVertical": 8,
@@ -436,6 +438,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
             "fontSize": 16,
             "fontWeight": "600",
             "marginBottom": 4,
+            "marginRight": 60,
           }
         }
       >
@@ -540,6 +543,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "bottom": 12,
           "height": 40,
           "justifyContent": "center",
+          "marginRight": -4,
           "opacity": 1,
           "position": "absolute",
           "right": 16,
@@ -596,7 +600,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   style={
     {
       "backgroundColor": "#fff",
-      "borderRadius": 16,
+      "borderRadius": 18,
       "elevation": 4,
       "marginHorizontal": 16,
       "marginVertical": 8,
@@ -718,6 +722,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
             "fontSize": 16,
             "fontWeight": "600",
             "marginBottom": 4,
+            "marginRight": 60,
           }
         }
       >
@@ -822,6 +827,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
           "bottom": 12,
           "height": 40,
           "justifyContent": "center",
+          "marginRight": -4,
           "opacity": 1,
           "position": "absolute",
           "right": 16,

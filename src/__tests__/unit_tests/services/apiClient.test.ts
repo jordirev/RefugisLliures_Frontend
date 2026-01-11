@@ -144,9 +144,6 @@ describe('apiClient', () => {
       );
       
       expect(response.status).toBe(200);
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Token expirat detectat'));
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Token refrescat correctament'));
-      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Petició reintentada amb èxit'));
     });
 
     it('ha de retornar 401 si el refresc del token també falla amb 401', async () => {
@@ -175,10 +172,7 @@ describe('apiClient', () => {
 
       // Assert
       expect(response.status).toBe(401);
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('Petició reintentada però ha fallat amb status'),
-        401
-      );
+      // Console.log removed for security - no retry status logging
     });
 
     it('ha de retornar 401 original si no pot obtenir un nou token', async () => {
@@ -200,7 +194,7 @@ describe('apiClient', () => {
 
       // Assert
       expect(response.status).toBe(401);
-      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('No s\'ha pogut obtenir un nou token'));
+      // Console.error removed for security - no token logging
       expect(mockedFetchWithLog).toHaveBeenCalledTimes(1); // No retry perquè no hi ha nou token
     });
 
@@ -223,10 +217,7 @@ describe('apiClient', () => {
 
       // Assert
       expect(response.status).toBe(401);
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('Error refrescant token'),
-        expect.any(Error)
-      );
+      // Console.error removed for security - no token error logging
     });
 
     it('no ha de reintentar si skipRetry és true', async () => {

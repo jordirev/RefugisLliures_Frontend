@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -7,11 +7,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { RenovationCard } from '../components/RenovationCard';
 import { CustomAlert } from '../components/CustomAlert';
 import { Renovation, Location } from '../models';
-import { RenovationService } from '../services/RenovationService';
-import { RefugisService } from '../services/RefugisService';
-import { mapRenovationFromDTO } from '../services/mappers/RenovationMapper';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { useRenovations, useJoinRenovation } from '../hooks/useRenovationsQuery';
+import { useRefugesBatch } from '../hooks/useRefugesQuery';
 
 // import icons
 import RenovationsIcon from '../assets/icons/reform.svg';
@@ -31,57 +30,38 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const scrollViewRef = useRef<ScrollView>(null);
   
-  const [renovations, setRenovations] = useState<Renovation[]>([]);
-  const [refuges, setRefuges] = useState<Map<string, Location>>(new Map());
-  const [isLoading, setIsLoading] = useState(true);
-  const [myRenovations, setMyRenovations] = useState<Renovation[]>([]);
-  const [otherRenovations, setOtherRenovations] = useState<Renovation[]>([]);
   const [joiningRenovationId, setJoiningRenovationId] = useState<string | null>(null);
-
-  // Refrescar la llista cada cop que la pantalla recupera el focus
+  
+  // Scroll to top when screen gains focus
   useFocusEffect(
     useCallback(() => {
-      loadRenovations();
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
     }, [])
   );
 
-  useEffect(() => {
-    if (renovations.length > 0 && firebaseUser) {
-      classifyRenovations();
+  // Utilitzar React Query per carregar renovations
+  const { data: renovations = [], isLoading: loadingRenovations, refetch } = useRenovations();
+  
+  // Obtenir IDs únics de refugis
+  const refugeIds = useMemo(() => {
+    return [...new Set(renovations.map(r => r.refuge_id))];
+  }, [renovations]);
+  
+  // Carregar tots els refuges en batch
+  const { data: refuges = new Map(), isLoading: loadingRefuges } = useRefugesBatch(refugeIds);
+  
+  // Mutation per unir-se a una renovation
+  const joinMutation = useJoinRenovation();
+  
+  const isLoading = loadingRenovations || loadingRefuges;
+
+  // Classificar renovations en "meves" i "altres"
+  const { myRenovations, otherRenovations } = useMemo(() => {
+    if (!firebaseUser || renovations.length === 0) {
+      return { myRenovations: [], otherRenovations: [] };
     }
-  }, [renovations, firebaseUser]);
-
-  const loadRenovations = async () => {
-    try {
-      setIsLoading(true);
-      const renovationsDTO = await RenovationService.getAllRenovations();
-      const mappedRenovations = renovationsDTO.map(mapRenovationFromDTO);
-      setRenovations(mappedRenovations);
-
-      // Carregar informació dels refugis
-      const refugeIds = [...new Set(mappedRenovations.map(r => r.refuge_id))];
-      const refugesMap = new Map<string, Location>();
-      
-      await Promise.all(
-        refugeIds.map(async (refugeId) => {
-          const refuge = await RefugisService.getRefugiById(refugeId);
-          if (refuge) {
-            refugesMap.set(refugeId, refuge);
-          }
-        })
-      );
-      
-      setRefuges(refugesMap);
-    } catch (error) {
-      console.error('Error loading renovations:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const classifyRenovations = () => {
-    if (!firebaseUser) return;
     
     const userUid = firebaseUser.uid;
     const mine: Renovation[] = [];
@@ -97,13 +77,12 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
         others.push(renovation);
       }
     });
-
-    setMyRenovations(mine);
-    setOtherRenovations(others);
-  };
+    
+    return { myRenovations: mine, otherRenovations: others };
+  }, [renovations, firebaseUser]);
 
   const handleViewOnMap = (renovation: Renovation) => {
-    const refuge = refuges.get(renovation.refuge_id);
+    const refuge = refuges instanceof Map ? refuges.get(renovation.refuge_id) : null;
     if (onViewMap && refuge) {
       onViewMap(refuge);
       return;
@@ -117,18 +96,18 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
     navigation.navigate('RefromDetail', { renovationId: renovation.id });
   };
 
-  const handleJoinRenovation = async (renovation: Renovation) => {
-    try {
-      setJoiningRenovationId(renovation.id);
-      await RenovationService.joinRenovation(renovation.id);
-      // Reload renovations to reflect the change
-      await loadRenovations();
-    } catch (error: any) {
-      console.error('Error joining renovation:', error);
-      showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
-    } finally {
-      setJoiningRenovationId(null);
-    }
+  const handleJoinRenovation = (renovation: Renovation) => {
+    setJoiningRenovationId(renovation.id);
+    joinMutation.mutate(renovation.id, {
+      onError: (error: any) => {
+        console.error('Error joining renovation:', error);
+        showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
+        setJoiningRenovationId(null);
+      },
+      onSuccess: () => {
+        setJoiningRenovationId(null);
+      }
+    });
   };
 
   const handleCreateNew = () => {
@@ -168,6 +147,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
       </View>
 
       <ScrollView 
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={[styles.scrollContent, { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) }]}
       >
@@ -177,7 +157,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('renovations.my_renovations')}</Text>
             {myRenovations.map((renovation) => {
-              const refuge = refuges.get(renovation.refuge_id);
+              const refuge = refuges instanceof Map ? refuges.get(renovation.refuge_id) : null;
               return (
                 <RenovationCard
                   key={renovation.id}
@@ -202,7 +182,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('renovations.other_renovations')}</Text>
             {otherRenovations.map((renovation) => {
-              const refuge = refuges.get(renovation.refuge_id);
+              const refuge = refuges instanceof Map ? refuges.get(renovation.refuge_id) : null;
               return (
                 <RenovationCard
                   key={renovation.id}
