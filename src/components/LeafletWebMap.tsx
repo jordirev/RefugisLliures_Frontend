@@ -317,23 +317,24 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             // Mostrar markers individuals
             addMarkers(locations, selectedId);
           } else {
-            // Mostrar heatmap
+            // Mostrar heatmap amb transparència uniforme
             var heatData = locations.map(function(loc) {
-              return [loc.coord.lat, loc.coord.long, 1.5]; // [lat, lng, intensity] - augmentat per més visibilitat
+              return [loc.coord.lat, loc.coord.long, 0.5]; // Intensitat fixa per tots els punts
             });
             
             heatmapLayer = L.heatLayer(heatData, {
-              radius: 30,
-              blur: 20,
-              max: 1.0,
+              radius: 25, // Reduït per zones més definides
+              blur: 15, // Menys blur per millor definició
+              max: 2.5, // Augmentat per normalitzar millor la densitat
+              minOpacity: 0.35, // Opacitat base perquè els punts solitaris es vegin
               maxZoom: TRANSITION_ZOOM,
               gradient: {
-                0.0: '#FED7AA',
-                0.3: '#FDBA74',
-                0.5: '#FB923C',
-                0.7: '#F97316',
-                0.9: '#FF6900',
-                1.0: '#EA580C'
+                0.0: 'rgba(254, 215, 170, 0.4)', // Molt transparent
+                0.2: 'rgba(253, 186, 116, 0.45)',
+                0.4: 'rgba(251, 146, 60, 0.5)',
+                0.6: 'rgba(249, 115, 22, 0.55)',
+                0.8: 'rgba(234, 88, 12, 0.6)',
+                1.0: 'rgba(194, 65, 12, 0.65)' // Màxima intensitat però transparent
               }
             }).addTo(map);
           }
