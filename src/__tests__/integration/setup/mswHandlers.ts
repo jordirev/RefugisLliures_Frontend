@@ -54,18 +54,18 @@ export const mockUser = {
   uid: 'test-uid-123',
   username: 'Test User',
   email: 'test@example.com',
-  idioma: 'ca',
-  refugis_visitats: [1, 2],
-  num_refugis_reformats: 2,
-  reformes: [1, 2],
-  num_experiencies_compartides: 5,
-  num_fotos_pujades: 10,
+  language: 'ca',
+  visited_refuges: [1, 2],
+  num_renovated_refuges: 2,
+  renovations: [1, 2],
+  num_shared_experiences: 5,
+  num_uploaded_photos: 10,
   created_at: '2024-01-01T00:00:00Z',
 };
 
 export const handlers = [
-  // GET /refugis/ - Obtenir tots els refugis amb filtres opcionals
-  http.get(`${API_BASE_URL}/refugis/`, ({ request }) => {
+  // GET /refuges/ - Obtenir tots els refugis amb filtres opcionals
+  http.get(`${API_BASE_URL}/refuges/`, ({ request }) => {
     const url = new URL(request.url);
     const altitudeMin = url.searchParams.get('altitude_min');
     const altitudeMax = url.searchParams.get('altitude_max');
@@ -110,8 +110,8 @@ export const handlers = [
     });
   }),
 
-  // GET /refugis/:id/ - Obtenir un refugi específic
-  http.get(`${API_BASE_URL}/refugis/:id/`, ({ params }) => {
+  // GET /refuges/:id/ - Obtenir un refugi específic
+  http.get(`${API_BASE_URL}/refuges/:id/`, ({ params }) => {
     const { id } = params;
     const refugi = mockRefugis.find(r => r.id === id);
 
@@ -163,7 +163,7 @@ export const handlers = [
       ...mockUser,
       username: body.username,
       email: body.email,
-      idioma: body.idioma,
+      language: body.language,
     }, { status: 201 });
   }),
 

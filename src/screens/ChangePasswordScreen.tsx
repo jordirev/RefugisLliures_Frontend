@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, BackHandler, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 import BackIcon from '../assets/icons/arrow-left.svg';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
@@ -152,36 +152,24 @@ export function ChangePasswordScreen() {
     navigation.navigate('Settings');
   };
 
-  // Ensure any removal (including Android hardware back) leads to Settings
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
-      if (Platform.OS === 'android') {
-        e.preventDefault();
-        // clear fields and go to Settings
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setCurrentPasswordError(null);
-        setPasswordRequirements([]);
-        setConfirmPasswordError(null);
-        navigation.navigate('Settings');
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-  
+  // Handle Android hardware back button
   useEffect(() => {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
-      handleGoBack();
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setCurrentPasswordError(null);
+      setPasswordRequirements([]);
+      setConfirmPasswordError(null);
+      navigation.navigate('Settings');
       return true;
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => subscription.remove();
-  }, []);
+  }, [navigation]);
   
   const isFormValid = 
     currentPassword.trim() !== '' &&

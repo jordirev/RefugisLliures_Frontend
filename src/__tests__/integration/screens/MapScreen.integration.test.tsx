@@ -11,6 +11,36 @@
  * - Interacció entre components
  */
 
+// Mock expo-video ABANS de les importacions
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    seekTo: jest.fn(),
+  })),
+}));
+
+// Mock expo-image-picker ABANS de les importacions
+jest.mock('expo-image-picker', () => ({
+  launchImageLibraryAsync: jest.fn(),
+  launchCameraAsync: jest.fn(),
+  requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  MediaTypeOptions: { Images: 'Images' },
+}));
+
+// Mock AuthContext ABANS de les importacions
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: '1', email: 'test@test.com', username: 'TestUser' },
+    isAuthenticated: true,
+    isLoading: false,
+    login: jest.fn(),
+    logout: jest.fn(),
+  }),
+}));
+
 import React from 'react';
 import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
 import { setupMSW } from '../setup/mswServer';
@@ -102,7 +132,7 @@ jest.mock('../../../components/FilterPanel', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -117,7 +147,7 @@ jest.mock('../../../utils/useTranslation', () => ({
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,
@@ -290,7 +320,7 @@ describe('MapScreen - Tests d\'integració', () => {
       const mockLocation: Location = {
         id: 1,
         name: 'Refugi de Colomers',
-        coordinates: { type: 'Point', coordinates: [0.9858, 42.6531] },
+        coord: { long: 0.9858, lat: 42.6531 },
         altitude: 2135,
         places: 16,
         type: 1,
@@ -328,7 +358,7 @@ describe('MapScreen - Tests d\'integració', () => {
       await waitFor(() => {
         expect(mockOnLocationSelect).toHaveBeenCalledWith(
           expect.objectContaining({
-            id: 1,
+            id: "1", // L'id es retorna com a string del backend
             name: 'Refugi de Colomers',
           })
         );

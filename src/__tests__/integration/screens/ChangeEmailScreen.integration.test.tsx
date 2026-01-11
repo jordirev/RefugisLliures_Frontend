@@ -42,7 +42,7 @@ jest.mock('@react-navigation/native', () => {
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,

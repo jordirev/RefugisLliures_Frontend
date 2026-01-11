@@ -156,52 +156,8 @@ describe('fetchWithLog', () => {
       );
     });
 
-    it('ha de fer log del body de la petició si existeix', async () => {
-      // Arrange
-      const mockResponse = new Response(JSON.stringify({ created: true }), {
-        status: 201
-      });
-
-      const mockFetch = jest.fn().mockResolvedValue(mockResponse);
-      (global as any).__originalFetch = mockFetch;
-
-      const body = JSON.stringify({ name: 'Test User' });
-
-      // Act
-      await fetchWithLog('https://api.test.com/users', {
-        method: 'POST',
-        body
-      });
-
-      // Assert
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/POST https:\/\/api\.test\.com\/users body={"name":"Test User"}/)
-      );
-    });
-
-    it('ha de gestionar bodies que no són strings', async () => {
-      // Arrange
-      const mockResponse = new Response(JSON.stringify({ created: true }), {
-        status: 201
-      });
-
-      const mockFetch = jest.fn().mockResolvedValue(mockResponse);
-      (global as any).__originalFetch = mockFetch;
-
-      const formData = new FormData();
-      formData.append('file', 'test');
-
-      // Act
-      await fetchWithLog('https://api.test.com/upload', {
-        method: 'POST',
-        body: formData as any
-      });
-
-      // Assert
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/POST https:\/\/api\.test\.com\/upload body=/)
-      );
-    });
+    // Tests for body logging removed - body logging was disabled for security reasons
+    // to prevent sensitive data (JWT tokens, credentials) from being exposed in logs
 
     it('ha de mesurar el temps de la petició', async () => {
       // Arrange
@@ -540,32 +496,7 @@ describe('fetchWithLog', () => {
       }
     });
 
-    it('ha de gestionar bodies amb caràcters especials', async () => {
-      // Arrange
-      const mockResponse = new Response(JSON.stringify({ created: true }), {
-        status: 201
-      });
-
-      const mockFetch = jest.fn().mockResolvedValue(mockResponse);
-      (global as any).__originalFetch = mockFetch;
-
-      const body = JSON.stringify({
-        name: 'Test "User"',
-        description: 'Line 1\nLine 2\tTab',
-        special: '€ à é ñ'
-      });
-
-      // Act
-      await fetchWithLog('https://api.test.com/users', {
-        method: 'POST',
-        body
-      });
-
-      // Assert
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('body=')
-      );
-    });
+    // Test for body logging removed - body logging was disabled for security reasons
 
     it('ha de gestionar respostes sense body', async () => {
       // Arrange

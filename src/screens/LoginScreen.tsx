@@ -9,22 +9,26 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 import validator from 'validator';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import NetInfo from '@react-native-community/netinfo';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import GoogleLogoIcon from '../assets/icons/googleLogo.png';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
+import { app } from '../services/firebase';
+import { TermsAndConditionsModal } from '../components/TermsAndConditionsModal';
 
 // Logo provisional - utilitzarem el logo default del perfil temporalment
 // TODO: Canviar per el logo definitiu de l'app
-const AppLogo = require('../assets/images/profileDefaultBackground.png');
+const AppLogo = require('../assets/images/logo.png');
  
 interface LoginScreenProps {
   onNavigateToSignUp?: () => void;
@@ -32,7 +36,7 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const { t } = useTranslation();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, enterOfflineMode } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [step, setStep] = useState<'email' | 'password'>('email');
   const [email, setEmail] = useState('');
@@ -41,6 +45,7 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const passwordInputRef = useRef<any>(null);
   
   // Verificar si Google Sign In està disponible
@@ -80,6 +85,29 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
     setIsLoading(true);
     
     try {
+      // Comprovar connexió abans d'intentar el login
+      const netState = await NetInfo.fetch();
+      
+      // Si no hi ha connexió, oferir mode offline
+      if (!netState.isConnected) {
+        setIsLoading(false);
+        showAlert(
+          'Sense connexió',
+          'No hi ha connexió a Internet. Vols entrar en mode offline? Podràs veure els mapes descarregats però les funcionalitats estaran limitades.',
+          [
+            { text: 'Cancel·lar', style: 'cancel' },
+            { 
+              text: 'Mode Offline', 
+              onPress: () => {
+                enterOfflineMode();
+              },
+              style: 'default'
+            }
+          ]
+        );
+        return;
+      }
+
       // Login amb el context (que utilitza AuthService internament)
       await login(email.trim(), password);
       
@@ -129,9 +157,31 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
       // Obtenir el codi d'error
       const errorCode = error?.code || 'unknown';
 
-      // Si les credencials són incorrectes (error específic d'autenticació),
-      // mostrem el missatge inline (vermell) sota el camp de contrasenya en lloc d'una alerta.
-      if (errorCode === 'auth/invalid-credential') {
+      // Comprovar si és un error de xarxa
+      const isNetworkError = 
+        errorCode === 'auth/network-request-failed' || 
+        error?.message?.toLowerCase().includes('network') ||
+        error?.message?.toLowerCase().includes('connection');
+
+      if (isNetworkError) {
+        // Si és error de xarxa, oferir mode offline
+        showAlert(
+          'Error de connexió',
+          'No s\'ha pogut connectar amb el servidor. Vols entrar en mode offline? Podràs veure els mapes descarregats però les funcionalitats estaran limitades.',
+          [
+            { text: 'Cancel·lar', style: 'cancel' },
+            { 
+              text: 'Mode Offline', 
+              onPress: () => {
+                enterOfflineMode();
+              },
+              style: 'default'
+            }
+          ]
+        );
+      } else if (errorCode === 'auth/invalid-credential') {
+        // Si les credencials són incorrectes (error específic d'autenticació),
+        // mostrem el missatge inline (vermell) sota el camp de contrasenya en lloc d'una alerta.
         const errorMessage = t('login.errors.invalidCredentials') || 'Credencials no vàlides';
         setPasswordError(errorMessage);
         // focus al camp de password perquè l'usuari pugui corregir-lo
@@ -279,9 +329,12 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
           >
             <Image 
               source={AppLogo} 
+              width={120}
+              height={120}
               style={styles.logo}
               resizeMode="contain"
             />
+            <Text style={styles.appName}> Refugis Lliures </Text>
             <Text style={styles.title}>{t('login.title')}</Text>
             <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
           </LinearGradient>
@@ -446,10 +499,30 @@ export function LoginScreen({ onNavigateToSignUp }: LoginScreenProps) {
                   </Text>
                 </TouchableOpacity>
               )}
+
+              {/* Text de termes i serveis */}
+              <View style={styles.termsContainer}>
+                <Text style={styles.termsText}>
+                  {t('login.termsText')}
+                </Text>
+                <TouchableOpacity 
+                  testID="terms-link"
+                  onPress={() => setShowTermsModal(true)}
+                >
+                  <Text style={styles.termsLink}>{t('login.termsLink')}</Text>
+                </TouchableOpacity>
+                <Text style={styles.termsText}>.</Text>
+              </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
       
+      {/* Modal de Termes i Condicions */}
+      <TermsAndConditionsModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+
       {/* CustomAlert */}
       {alertConfig && (
         <CustomAlert
@@ -476,26 +549,34 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    paddingTop: 10,
-    paddingBottom: 50,
+    paddingTop: 5,
+    paddingBottom: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
+    width: 180,
+    height: 180,
+    marginBottom: -20,
+    marginTop: 0,
   },
-  title: {
-    fontSize: 32,
+  appName: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 8,
+    marginBottom: 30,
+    letterSpacing: 2,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     opacity: 0.9,
   },
@@ -630,5 +711,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 8,
+  },
+  termsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 24,
+    paddingHorizontal: 10,
+  },
+  termsText: {
+    color: '#6b7280',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  termsLink: {
+    color: '#2563eb',
+    fontSize: 13,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });

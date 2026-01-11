@@ -1,23 +1,33 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Location } from '../models';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
+import useFavourite from '../hooks/useFavourite';
+import { VideoThumbnail } from './PhotoViewerModal';
+
+// Helper function to check if a media is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
+
+// Icon imports
+import MapIcon from '../assets/icons/location-map.png';
+import UserIcon from '../assets/icons/user.svg';
+import FavouriteIcon from '../assets/icons/favRed.svg';
+import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
 
 interface RefugeCardProps {
   refuge: Location;
   onPress?: () => void;
   onViewMap?: () => void;
+  onToggleFavorite?: (id: string | undefined) => void;
 }
 
-const conditionColors = {
-  'pobre': '#ef4444',
-  'normal': '#3b82f6',
-  'bé': '#22c55e',
-  'excel·lent': '#eab308'
-};
-
-export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
+export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: RefugeCardProps) {
   const { t } = useTranslation();
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refuge.id);
   
   return (
     <TouchableOpacity 
@@ -27,35 +37,67 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
     >
       {/* Imatge principal */}
       <View style={styles.imageContainer}>
-        
-        {/* Estat en cantonada superior dreta */}
-        {refuge.condition && (
-          <View style={[styles.conditionBadge, { backgroundColor: conditionColors[refuge.condition] }]}>
-            <Text style={styles.conditionText}>{refuge.condition}</Text>
-          </View>
+        {refuge.images_metadata?.[0]?.url && isVideo(refuge.images_metadata[0].url) ? (
+          <VideoThumbnail
+            uri={refuge.images_metadata[0].url}
+            style={styles.image}
+          />
+        ) : (
+          <Image
+            testID="refuge-image"
+            source={{ uri: refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+            style={styles.image}
+            resizeMode="cover"
+          />
         )}
+        {/* Botó de favorit en cantonada superior esquerra */}
+        <TouchableOpacity
+          testID="favorite-button"
+          onPress={async () => {
+            try {
+              await toggleFavourite();
+              if (onToggleFavorite) onToggleFavorite(refuge.id);
+            } catch (err) {
+              // already logged in hook
+            }
+          }}
+          style={styles.favoriteButton}
+          disabled={isProcessing}
+          accessibilityState={{ disabled: isProcessing, selected: !!isFavourite }}
+        >
+          {isFavourite ? (
+            <FavouriteFilledIcon width={24} height={24}  />
+          ) : (
+            <FavouriteIcon width={24} height={24} />
+          )}
+        </TouchableOpacity>
       </View>
       
-      {/* Informació del refugi */}
-      <View style={styles.infoContainer}>
-        {/* Nom del refugi */}
-        <Text style={styles.name} numberOfLines={1}>{refuge.name || refuge.surname || t('refuge.title')}</Text>
-        
-        {/* Regió i capacitat */}
-        <View style={styles.detailsRow}>
-          <Text style={styles.detailText}>{refuge.region ?? 'Pirineus'}</Text>
-          <Text style={styles.separator}>•</Text>
-          <Text style={styles.detailText}>👤 {refuge.places ?? 60}</Text>
+      {/* Informació del refugi - floating panel */}
+      <View style={styles.infoOverlay} pointerEvents="box-none">
+        <View style={styles.infoContainer}>
+          {/* Nom del refugi */}
+          <Text style={styles.name} numberOfLines={1}>{refuge.name || refuge.surname || t('refuge.title')}</Text>
+          
+          {/* Regió i capacitat */}
+          <View style={styles.detailsRow}>
+            <Text style={styles.detailText} numberOfLines={2} ellipsizeMode="tail">{refuge.region || t('common.pyrenees')}</Text>
+            <Text style={styles.separator}>•</Text>
+            <View style={styles.placesContainer}>
+              <UserIcon width={16} height={16} />
+              <Text style={styles.placesText}> {refuge.places || '?'}</Text>
+            </View>
+          </View>
         </View>
-        
         {/* Botó veure mapa */}
         <TouchableOpacity
+          testID="map-button"
           style={styles.mapButton}
           onPress={() => {
             onViewMap?.();
           }}
         >
-          <Text style={styles.mapButtonText}>🗺️ {t('refuge.actions.viewOnMap')}</Text>
+          <Image source={MapIcon} style={{ width: 16, height: 18 }} resizeMode="stretch" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -65,8 +107,9 @@ export function RefugeCard({ refuge, onPress, onViewMap }: RefugeCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
+    position: 'relative',
     marginHorizontal: 16,
     marginVertical: 8,
     shadowColor: '#000',
@@ -77,12 +120,23 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 200,
+    height: 216,
     position: 'relative',
+    backgroundColor: '#f3f4f6',
   },
   image: {
     width: '100%',
     height: '100%',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   conditionBadge: {
     position: 'absolute',
@@ -98,41 +152,66 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'capitalize',
   },
+  infoOverlay: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'transparent',
+  },
   infoContainer: {
-    padding: 12,
-    position: 'relative',
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
   },
   name: {
     fontSize: 16,
     fontWeight: '600',
     color: '#111827',
     marginBottom: 4,
+    marginRight: 60,
   },
   detailsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    paddingRight: 64,
+  },
+  placesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  placesText: {
+    color: '#6b7280',
+    fontSize: 13,
+    lineHeight: 16,
   },
   detailText: {
-    fontSize: 14,
     color: '#6b7280',
+    fontSize: 13,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
   separator: {
-    fontSize: 12,
+    marginHorizontal: 6,
     color: '#9ca3af',
+    fontSize: 12,
   },
   mapButton: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
+    right: 16,
+    bottom: 12,
     width: 40,
     height: 40,
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e5e7eb',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 5,
+    marginRight: -4,
   },
   mapButtonText: {
     fontSize: 20,

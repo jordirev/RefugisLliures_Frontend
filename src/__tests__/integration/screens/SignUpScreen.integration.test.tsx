@@ -35,7 +35,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -77,7 +77,7 @@ jest.mock('../../../utils/useTranslation', () => ({
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,

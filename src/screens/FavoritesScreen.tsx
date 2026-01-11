@@ -1,11 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { RefugeCard } from '../components/RefugeCard';
 import { Location } from '../models';
-import { RefugisService } from '../services/RefugisService';
-import { useTranslation } from '../utils/useTranslation';
+import { useAuth } from '../contexts/AuthContext';
+import { useFavouriteRefuges } from '../hooks/useUsersQuery';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import FavouriteIcon from '../assets/icons/favRed.svg';
+import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
+
 
 interface FavoritesScreenProps {
   onViewDetail: (refuge: Location) => void;
@@ -14,79 +21,91 @@ interface FavoritesScreenProps {
 
 export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProps) {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const flatListRef = useRef<FlatList>(null);
   
-  // Estats locals de FavoritesScreen
-  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Get favourite refuges from React Query
+  const { firebaseUser } = useAuth();
+  const { data: favouriteRefuges = [], isLoading } = useFavouriteRefuges(firebaseUser?.uid);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }, [])
+  );
 
-  // Carregar favorits al muntar el component
-  useEffect(() => {
-    loadFavorites();
-  }, []);
+  const HEADER_HEIGHT = 96;
+  // Insets for adaptive safe area padding (bottom on devices with home indicator)
+  const insets = useSafeAreaInsets();
+  const windowHeight = Dimensions.get('window').height;
 
-  const loadFavorites = async () => {
-    try {
-      setLoading(true);
-      // TODO: Quan el backend tingui l'endpoint de favorits, usar-lo
-      const favorites = await RefugisService.getFavorites();
-      
-      // Mentre tant, podem carregar tots els refugis i filtrar els favorits localment
-      const allLocations = await RefugisService.getRefugis();
-      setLocations(allLocations);
-      
-      // Extreure IDs de favorits (això vindria del backend)
-      const ids = new Set(favorites.map(f => f.id).filter((id): id is number => id !== undefined));
-      setFavoriteIds(ids);
-    } catch (error) {
-      showAlert(t('common.error'), t('favorites.error'));
-    } finally {
-      setLoading(false);
-    }
+  const favoriteLocations = useMemo(() => {
+    return favouriteRefuges.map(location => ({ ...location, isFavorite: true }));
+  }, [favouriteRefuges]);
+
+  const handleViewMap = (refuge: Location) => {
+    onViewMap(refuge);
+    (navigation as any).navigate('Map', { selectedRefuge: refuge });
   };
 
-  // Obtenir favorits amb la propietat isFavorite
-  const favoriteLocations = useMemo(() => {
-    return locations
-      .filter(location => location.id && favoriteIds.has(location.id))
-      .map(location => ({ ...location, isFavorite: true }));
-  }, [locations, favoriteIds]);
+  const handleViewDetail = (refuge: Location) => {
+    onViewDetail(refuge);
+  };
 
-  if (favoriteLocations.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyIcon}>❤️</Text>
-        <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
-        <Text style={styles.emptyText}>
-          {t('favorites.empty.message')}
-        </Text>
-      </View>
-    );
-  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('favorites.title')}</Text>
-        <Text style={styles.count}>
-          {favoriteLocations.length} {t('favorites.count', { count: favoriteLocations.length })}
-        </Text>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.headerFixed}>
+        <SafeAreaView edges={["top"]} style={styles.safeArea}>
+          <View style={styles.header}>
+            <FavouriteIcon width={20} height={20} />
+            <Text style={styles.title}>
+              {t('favorites.title')}
+              <Text style={styles.count}> {`(${favouriteRefuges.length})`}</Text>
+            </Text>
+          </View>
+        </SafeAreaView>
       </View>
-      
-      <FlatList
+
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF6000" />
+        </View>
+      ) : (
+        <FlatList
+        ref={flatListRef}
         data={favoriteLocations}
+        style={styles.container}
         renderItem={({ item }: { item: Location }) => (
           <RefugeCard
             refuge={item}
-            onPress={() => onViewDetail(item)}
-            onViewMap={() => onViewMap(item)}
+            onPress={() => handleViewDetail(item)}
+            onViewMap={() => handleViewMap(item)}
           />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingTop: HEADER_HEIGHT, paddingBottom: Math.max(insets.bottom, 16) },
+        ]}
+        ListEmptyComponent={() => {
+          const availableHeight = windowHeight - HEADER_HEIGHT - Math.max(insets.bottom, 16) - 2*insets.top;
+            const minHeight = Math.max(availableHeight, 240);
+          return (
+            <View style={[styles.emptyContainer, { minHeight }]}> 
+              <FavouriteFilledIcon width={64} height={64} style={styles.emptyIcon} />
+              <Text style={styles.emptyTitle}>{t('favorites.empty.title')}</Text>
+              <Text style={styles.emptyText}>{t('favorites.empty.message')}</Text>
+            </View>
+          );
+        }}
         showsVerticalScrollIndicator={false}
-      />
-      
+        keyExtractor={(item, index) => (item.id ? String(item.id) : String(index))}
+        />
+      )}
+
       {/* CustomAlert */}
       {alertConfig && (
         <CustomAlert
@@ -104,46 +123,79 @@ export function FavoritesScreen({ onViewDetail, onViewMap }: FavoritesScreenProp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#F9FAFB',
+  },
+  root: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#F9FAFB',
+    paddingHorizontal: 6,
+    //shadowColor: '#2b2b2bff',
+    //shadowOffset: { width: 0, height: 2 },
+    //shadowOpacity: 0,
+    //shadowRadius: 8,
+    //elevation: 2,
+  },
+  safeArea: {
+    backgroundColor: '#F9FAFB',
   },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
+    color: '#101828', 
+    fontSize: 16, 
+    fontFamily: 'Arimo', 
+    fontWeight: '400', 
+    lineHeight: 24, 
+    flexWrap: 'wrap',
+    textAlign: 'center',
+    alignItems: 'center',
   },
   count: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: 'Arimo',
     color: '#6b7280',
   },
   listContent: {
     paddingVertical: 8,
+    paddingHorizontal: 2,
   },
   emptyContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'transparent',
   },
   emptyIcon: {
     fontSize: 64,
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '400',
     color: '#111827',
     marginBottom: 8,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',
     lineHeight: 24,

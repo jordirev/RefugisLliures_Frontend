@@ -69,7 +69,7 @@ describe('Models de Refugis', () => {
 
     it('hauria de crear una ubicació completa amb tots els camps', () => {
       const location: Location = {
-        id: 1,
+        id: "1",
         name: 'Refugi Test',
         surname: 'Refugi de Muntanya',
         coord: { long: 1.5, lat: 42.5 },
@@ -77,7 +77,7 @@ describe('Models de Refugis', () => {
         places: 20,
         description: 'Un refugi de test',
         links: ['https://example.com'],
-        type: 0,
+        type: "0",
         modified_at: '2023-01-01T00:00:00Z',
         region: 'Pirineus',
         departement: 'Lleida',
@@ -85,11 +85,11 @@ describe('Models de Refugis', () => {
         imageUrl: 'https://example.com/image.jpg',
       };
 
-      expect(location.id).toBe(1);
+      expect(location.id).toBe("1");
       expect(location.surname).toBe('Refugi de Muntanya');
       expect(location.altitude).toBe(2000);
       expect(location.places).toBe(20);
-      expect(location.type).toBe(0);
+      expect(location.type).toBe("0");
       expect(location.condition).toBe('bé');
     });
 
@@ -157,13 +157,13 @@ describe('Models de Refugis', () => {
   describe('Filters Model', () => {
     it('hauria de crear filtres amb tots els camps', () => {
       const filters: Filters = {
-        types: [0, 1, 2],
+        types: ["0", "1", "2"],
         altitude: [1000, 3000],
         places: [10, 50],
         condition: ['normal', 'bé'],
       };
 
-      expect(filters.types).toEqual([0, 1, 2]);
+      expect(filters.types).toEqual(["0", "1", "2"]);
       expect(filters.altitude).toEqual([1000, 3000]);
       expect(filters.places).toEqual([10, 50]);
       expect(filters.condition).toEqual(['normal', 'bé']);
@@ -477,7 +477,7 @@ describe('Mappers de Refugis', () => {
 
       const location = mapRefugiFromDTO(refugiDTO);
 
-      expect(location.id).toBe(123);
+      expect(location.id).toBe('123');
       expect(location.name).toBe('Refugi Test');
       expect(location.coord).toEqual({ long: 1.5, lat: 42.5 });
     });
@@ -496,20 +496,20 @@ describe('Mappers de Refugis', () => {
         modified_at: '2023-01-01T00:00:00Z',
         region: 'Pirineus',
         departement: 'Lleida',
-        condition: 'bé',
+        condition: 2,
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
 
-      expect(location.id).toBe(456);
+      expect(location.id).toBe('456');
       expect(location.surname).toBe('Refugi històric');
       expect(location.altitude).toBe(2000);
       expect(location.places).toBe(25);
-      expect(location.type).toBe(0); // 'cabane ouverte' -> 0
+      expect(location.type).toBe('cabane ouverte');
       expect(location.region).toBe('Pirineus');
     });
 
-    it('hauria de mapear el tipus "cabane ouverte" a 0 (noGuarded)', () => {
+    it('hauria de mantenir el tipus "cabane ouverte" tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -518,10 +518,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(0);
+      expect(location.type).toBe('cabane ouverte');
     });
 
-    it('hauria de mapear el tipus "berger" a 1 (occupiedInSummer)', () => {
+    it('hauria de mantenir el tipus "berger" tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -530,10 +530,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(1);
+      expect(location.type).toBe('cabane ouverte mais ocupee par le berger l ete');
     });
 
-    it('hauria de mapear el tipus "fermée" a 2 (closed)', () => {
+    it('hauria de mantenir el tipus "fermée" tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -542,10 +542,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(2);
+      expect(location.type).toBe('cabane fermee');
     });
 
-    it('hauria de mapear el tipus "Fermée" (majúscula) a 2 (closed)', () => {
+    it('hauria de mantenir el tipus "Fermée" (majúscula) tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -554,10 +554,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(2);
+      expect(location.type).toBe('Fermée');
     });
 
-    it('hauria de mapear el tipus "orri" a 3 (shelter)', () => {
+    it('hauria de mantenir el tipus "orri" tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -566,10 +566,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(3);
+      expect(location.type).toBe('orri toue abri en pierre');
     });
 
-    it('hauria de mapear el tipus "emergence" a 4 (emergency)', () => {
+    it('hauria de mantenir el tipus "emergence" tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -578,10 +578,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(4);
+      expect(location.type).toBe('emergence');
     });
 
-    it('hauria de mapear tipus desconegut a 5 (unknown)', () => {
+    it('hauria de mantenir tipus desconegut tal qual', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -590,10 +590,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(5);
+      expect(location.type).toBe('tipus desconegut');
     });
 
-    it('hauria de mapear tipus undefined a 5 (unknown)', () => {
+    it('hauria de mantenir tipus undefined com undefined', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -602,10 +602,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(5);
+      expect(location.type).toBeUndefined();
     });
 
-    it('hauria de determinar condició "pobre" quan falta un mur', () => {
+    it('hauria de determinar condició 0 quan falta un mur', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -627,10 +627,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.condition).toBe('pobre');
+      expect(location.condition).toBe(0);
     });
 
-    it('hauria de determinar condició "excel·lent" amb 8+ comoditats', () => {
+    it('hauria de determinar condició 3 amb 8+ comoditats', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -652,10 +652,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.condition).toBe('excel·lent');
+      expect(location.condition).toBe(3);
     });
 
-    it('hauria de determinar condició "bé" amb 5-7 comoditats', () => {
+    it('hauria de determinar condició 2 amb 5-7 comoditats', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -677,10 +677,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.condition).toBe('bé');
+      expect(location.condition).toBe(2);
     });
 
-    it('hauria de determinar condició "normal" amb 3-4 comoditats', () => {
+    it('hauria de determinar condició 1 amb 3-4 comoditats', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -702,10 +702,10 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.condition).toBe('normal');
+      expect(location.condition).toBe(1);
     });
 
-    it('hauria de determinar condició "pobre" amb menys de 3 comoditats', () => {
+    it('hauria de determinar condició 0 amb menys de 3 comoditats', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -727,7 +727,7 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.condition).toBe('pobre');
+      expect(location.condition).toBe(0);
     });
 
     it('hauria de retornar undefined quan no hi ha info_comp', () => {
@@ -742,7 +742,7 @@ describe('Mappers de Refugis', () => {
       expect(location.condition).toBeUndefined();
     });
 
-    it('hauria de convertir ID de string a number', () => {
+    it('hauria de mantenir ID com a string', () => {
       const refugiDTO: RefugiDTO = {
         id: '9999',
         name: 'Test',
@@ -750,11 +750,11 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.id).toBe(9999);
-      expect(typeof location.id).toBe('number');
+      expect(location.id).toBe('9999');
+      expect(typeof location.id).toBe('string');
     });
 
-    it('hauria de gestionar IDs amb zeros al davant', () => {
+    it('hauria de mantenir IDs amb zeros al davant', () => {
       const refugiDTO: RefugiDTO = {
         id: '00123',
         name: 'Test',
@@ -762,7 +762,7 @@ describe('Mappers de Refugis', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.id).toBe(123);
+      expect(location.id).toBe('00123');
     });
 
     it('hauria de convertir surname null a undefined', () => {
@@ -857,9 +857,9 @@ describe('Mappers de Refugis', () => {
       const locations = mapRefugisFromDTO(refugisDTO);
 
       expect(locations).toHaveLength(3);
-      expect(locations[0].id).toBe(1);
-      expect(locations[1].id).toBe(2);
-      expect(locations[2].id).toBe(3);
+      expect(locations[0].id).toBe('1');
+      expect(locations[1].id).toBe('2');
+      expect(locations[2].id).toBe('3');
     });
 
     it('hauria de mantenir l\'ordre dels refugis', () => {
@@ -883,9 +883,9 @@ describe('Mappers de Refugis', () => {
 
       const locations = mapRefugisFromDTO(refugisDTO);
 
-      expect(locations[0].id).toBe(100);
-      expect(locations[1].id).toBe(50);
-      expect(locations[2].id).toBe(75);
+      expect(locations[0].id).toBe('100');
+      expect(locations[1].id).toBe('50');
+      expect(locations[2].id).toBe('75');
     });
 
     it('hauria de gestionar un array amb un sol element', () => {
@@ -927,9 +927,9 @@ describe('Mappers de Refugis', () => {
 
       const locations = mapRefugisFromDTO(refugisDTO);
 
-      expect(locations[0].type).toBe(0); // cabane ouverte
-      expect(locations[1].type).toBe(2); // Fermée
-      expect(locations[2].type).toBe(5); // unknown
+      expect(locations[0].type).toBe('cabane ouverte');
+      expect(locations[1].type).toBe('Fermée');
+      expect(locations[2].type).toBeUndefined();
     });
   });
 });
@@ -1081,7 +1081,7 @@ describe('Validacions i casos límit', () => {
       expect(location.places).toBe(0);
     });
 
-    it('hauria de processar refugi amb tipus inconsistent però mapeable', () => {
+    it('hauria de processar refugi amb tipus amb espais', () => {
       const refugiDTO: RefugiDTO = {
         id: '1',
         name: 'Test',
@@ -1090,7 +1090,7 @@ describe('Validacions i casos límit', () => {
       };
 
       const location = mapRefugiFromDTO(refugiDTO);
-      expect(location.type).toBe(2); // hauria de trobar 'fermée'
+      expect(location.type).toBe('  FERMÉE  '); // es manté tal qual
     });
   });
 });

@@ -8,6 +8,7 @@ dist/
 web-build/
 expo-env.d.ts
 
+
 # === Native Builds ===
 /ios
 /android
@@ -45,11 +46,15 @@ coverage/
 .env.production.local
 .env*.local
 
+# === Google Services ===
+google-services.json
+
 # === TypeScript ===
 *.tsbuildinfo
 
 # === VS Code ===
 .vscode/
+.idea/
 
 # === Watchman ===
 .watchmanconfig

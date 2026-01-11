@@ -1,0 +1,1080 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SignUpScreen - Unit Tests Renderització inicial snapshot test - pantalla de selecció d'idioma 1`] = `
+<View>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      colors={
+        [
+          "#FF8904",
+          "#F54900",
+        ]
+      }
+      end={
+        {
+          "x": 1,
+          "y": 0,
+        }
+      }
+      start={
+        {
+          "x": 0,
+          "y": 0,
+        }
+      }
+      style={
+        {
+          "alignItems": "center",
+          "borderBottomLeftRadius": 30,
+          "borderBottomRightRadius": 30,
+          "paddingBottom": 30,
+          "paddingHorizontal": 20,
+          "paddingTop": 5,
+        }
+      }
+    >
+      <Image
+        resizeMode="contain"
+        source="CatalanFlag"
+        style={
+          {
+            "height": 100,
+            "marginBottom": -10,
+            "marginTop": 10,
+            "width": 100,
+          }
+        }
+      />
+      <Text
+        style={
+          [
+            {
+              "color": "#fff",
+              "fontSize": 10,
+              "fontWeight": "bold",
+              "letterSpacing": 1.5,
+              "marginBottom": 25,
+            },
+            {
+              "marginBottom": 40,
+            },
+          ]
+        }
+      >
+         Refugis Lliures 
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#fff",
+            "fontSize": 20,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          }
+        }
+      >
+        Selecciona el teu idioma
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flex": 1,
+          "flexDirection": "column",
+          "gap": 36,
+          "justifyContent": "center",
+          "marginBottom": 20,
+          "marginTop": 40,
+          "paddingHorizontal": 20,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Català"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-ca"
+      >
+        <Image
+          resizeMode="cover"
+          source="CatalanFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="Español"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-es"
+      >
+        <Image
+          resizeMode="cover"
+          source="SpanishFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="Français"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-fr"
+      >
+        <Image
+          resizeMode="cover"
+          source="FrenchFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="English"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-en"
+      >
+        <Image
+          resizeMode="cover"
+          source="UKFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "justifyContent": "center",
+            "marginTop": 12,
+            "opacity": 1,
+          }
+        }
+        testID="back-button"
+      >
+        <Text
+          style={
+            {
+              "color": "#6b7280",
+              "fontSize": 14,
+            }
+          }
+        >
+          Ja tens compte?
+        </Text>
+        <Text
+          style={
+            {
+              "color": "#FF8904",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "marginLeft": 4,
+            }
+          }
+        >
+          Inicia sessió
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`SignUpScreen - Unit Tests Snapshot tests snapshot - formulari amb username 1`] = `
+<View>
+  <View
+    onLayout={[Function]}
+    style={
+      [
+        {
+          "flex": 1,
+        },
+        {
+          "paddingBottom": 0,
+        },
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        [
+          {
+            "flexGrow": 1,
+          },
+          {},
+        ]
+      }
+      keyboardShouldPersistTaps="handled"
+    >
+      <View>
+        <View
+          colors={
+            [
+              "#FF8904",
+              "#F54900",
+            ]
+          }
+          end={
+            {
+              "x": 1,
+              "y": 0,
+            }
+          }
+          start={
+            {
+              "x": 0,
+              "y": 0,
+            }
+          }
+          style={
+            {
+              "alignItems": "center",
+              "borderBottomLeftRadius": 30,
+              "borderBottomRightRadius": 30,
+              "paddingBottom": 30,
+              "paddingHorizontal": 20,
+              "paddingTop": 5,
+            }
+          }
+        >
+          <Image
+            resizeMode="contain"
+            source="CatalanFlag"
+            style={
+              {
+                "height": 100,
+                "marginBottom": -10,
+                "marginTop": 10,
+                "width": 100,
+              }
+            }
+          />
+          <Text
+            style={
+              {
+                "color": "#fff",
+                "fontSize": 10,
+                "fontWeight": "bold",
+                "letterSpacing": 1.5,
+                "marginBottom": 25,
+              }
+            }
+          >
+             Refugis Lliures 
+          </Text>
+          <Text
+            style={
+              {
+                "color": "#fff",
+                "fontSize": 25,
+                "fontWeight": "bold",
+                "letterSpacing": 1.1,
+                "marginBottom": 4,
+              }
+            }
+          >
+            Crea el teu compte
+          </Text>
+          <Text
+            style={
+              {
+                "color": "#fff",
+                "fontSize": 14,
+                "opacity": 0.9,
+              }
+            }
+          >
+            Registra't per començar
+          </Text>
+        </View>
+        <View
+          style={
+            {
+              "flex": 1,
+              "paddingHorizontal": 30,
+              "paddingTop": 20,
+            }
+          }
+        >
+          <View
+            accessibilityLabel="Tornar a idioma"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "alignSelf": "flex-start",
+                "flexDirection": "row",
+                "gap": 4,
+                "height": 40,
+                "justifyContent": "flex-start",
+                "marginBottom": 12,
+                "opacity": 1,
+                "width": "100%",
+              }
+            }
+          >
+            <CatalanFlag
+              color="#FF8904"
+              height={20}
+              width={20}
+            />
+            <Text
+              style={
+                {
+                  "color": "#FF8904",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              Tornar a idioma
+            </Text>
+          </View>
+          <View
+            style={
+              {
+                "marginBottom": 16,
+              }
+            }
+          >
+            <TextInput
+              autoCapitalize="none"
+              editable={true}
+              onChangeText={[Function]}
+              placeholder="Nom d'usuari"
+              placeholderTextColor="#999"
+              style={
+                {
+                  "backgroundColor": "#fff",
+                  "borderColor": "#e5e7eb",
+                  "borderRadius": 12,
+                  "borderWidth": 1,
+                  "color": "#1f2937",
+                  "fontSize": 16,
+                  "paddingHorizontal": 20,
+                  "paddingVertical": 16,
+                }
+              }
+              testID="username-input"
+              value=""
+            />
+            <Text
+              style={
+                [
+                  {
+                    "color": "#6b7280",
+                    "fontSize": 13,
+                    "lineHeight": 18,
+                  },
+                  {
+                    "marginTop": 8,
+                  },
+                ]
+              }
+            >
+              El nom d'usuari és obligatori
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "justifyContent": "center",
+                "marginTop": 12,
+                "opacity": 1,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#6b7280",
+                  "fontSize": 14,
+                }
+              }
+            >
+              Ja tens compte?
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#FF8904",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                  "marginLeft": 4,
+                }
+              }
+            >
+              Inicia sessió
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+</View>
+`;
+
+exports[`SignUpScreen - Unit Tests Snapshot tests snapshot - pantalla d'idioma 1`] = `
+<View>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      colors={
+        [
+          "#FF8904",
+          "#F54900",
+        ]
+      }
+      end={
+        {
+          "x": 1,
+          "y": 0,
+        }
+      }
+      start={
+        {
+          "x": 0,
+          "y": 0,
+        }
+      }
+      style={
+        {
+          "alignItems": "center",
+          "borderBottomLeftRadius": 30,
+          "borderBottomRightRadius": 30,
+          "paddingBottom": 30,
+          "paddingHorizontal": 20,
+          "paddingTop": 5,
+        }
+      }
+    >
+      <Image
+        resizeMode="contain"
+        source="CatalanFlag"
+        style={
+          {
+            "height": 100,
+            "marginBottom": -10,
+            "marginTop": 10,
+            "width": 100,
+          }
+        }
+      />
+      <Text
+        style={
+          [
+            {
+              "color": "#fff",
+              "fontSize": 10,
+              "fontWeight": "bold",
+              "letterSpacing": 1.5,
+              "marginBottom": 25,
+            },
+            {
+              "marginBottom": 40,
+            },
+          ]
+        }
+      >
+         Refugis Lliures 
+      </Text>
+      <Text
+        style={
+          {
+            "color": "#fff",
+            "fontSize": 20,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          }
+        }
+      >
+        Selecciona el teu idioma
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flex": 1,
+          "flexDirection": "column",
+          "gap": 36,
+          "justifyContent": "center",
+          "marginBottom": 20,
+          "marginTop": 40,
+          "paddingHorizontal": 20,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Català"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-ca"
+      >
+        <Image
+          resizeMode="cover"
+          source="CatalanFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="Español"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-es"
+      >
+        <Image
+          resizeMode="cover"
+          source="SpanishFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="Français"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-fr"
+      >
+        <Image
+          resizeMode="cover"
+          source="FrenchFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityLabel="English"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "borderRadius": 12,
+            "justifyContent": "center",
+            "opacity": 1,
+            "paddingHorizontal": 0,
+            "paddingVertical": 0,
+            "width": 187,
+          }
+        }
+        testID="language-en"
+      >
+        <Image
+          resizeMode="cover"
+          source="UKFlag"
+          style={
+            [
+              {
+                "borderRadius": 8,
+              },
+              {
+                "height": 116,
+                "width": 172,
+              },
+            ]
+          }
+        />
+      </View>
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "justifyContent": "center",
+            "marginTop": 12,
+            "opacity": 1,
+          }
+        }
+        testID="back-button"
+      >
+        <Text
+          style={
+            {
+              "color": "#6b7280",
+              "fontSize": 14,
+            }
+          }
+        >
+          Ja tens compte?
+        </Text>
+        <Text
+          style={
+            {
+              "color": "#FF8904",
+              "fontSize": 14,
+              "fontWeight": "600",
+              "marginLeft": 4,
+            }
+          }
+        >
+          Inicia sessió
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;

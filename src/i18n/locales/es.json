@@ -15,12 +15,47 @@
     "success": "Éxito",
     "noResults": "No se encontraron resultados",
     "readMore": "Leer más...",
+    "readLess": "Mostrar menos",
     "showLess": "Mostrar menos",
     "places": "plazas",
     "download": "Descargar",
     "edit": "Editar",
+    "delete": "Eliminar",
+    "remove": "Eliminar",
+    "goBack": "Volver",
     "info": "Info",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "pyrenees": "Pirineos",
+    "optional": "opcional",
+    "locale": "es",
+    "you": "Tú",
+    "share": "Compartir",
+    "warning": "Atención",
+    "understand": "Lo entiendo",
+    "confirm": "Confirmar",
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    },
+    "days": {
+      "sun": "Do",
+      "mon": "Lu",
+      "tue": "Ma",
+      "wed": "Mi",
+      "thu": "Ju",
+      "fri": "Vi",
+      "sat": "Sá"
+    }
   },
   "navigation": {
     "map": "Mapa",
@@ -32,7 +67,11 @@
     "title": "Mapa de Refugios",
     "searchPlaceholder": "Buscar refugios...",
     "noLocationsFound": "No se pudieron cargar los refugios",
-    "errorLoading": "No se pudieron cargar los refugios"
+    "errorLoading": "No se pudieron cargar los refugios",
+    "noResults": {
+      "title": "Sin resultados",
+      "message": "No hay refugios que cumplan con los filtros seleccionados"
+    }
   },
   "favorites": {
     "title": "Mis favoritos",
@@ -46,25 +85,63 @@
     "removed": "Refugio eliminado de favoritos",
     "error": "No se pudieron cargar los favoritos"
   },
+  "visited": {
+    "title": "Refugios visitados",
+    "empty": {
+      "title": "Aún no has visitado ningún refugio",
+      "message": "Marca los refugios que has visitado para verlos aquí"
+    },
+    "added": "Refugio marcado como visitado",
+    "removed": "Refugio eliminado de visitados",
+    "error": "No se han podido cargar los refugios visitados"
+  },
   "renovations": {
     "title": "Reformas y Mejoras",
+    "my_renovations": "Mis reformas",
+    "other_renovations": "Otras reformas",
     "count": "{{count}} reforma",
     "count_plural": "{{count}} reformas",
-    "priority": {
-      "high": "Alta",
-      "medium": "Media",
-      "low": "Baja"
-    },
-    "status": {
-      "pending": "Pendiente",
-      "inProgress": "En curso",
-      "completed": "Completada"
-    },
-    "contributeButton": "Contribuir",
-    "moreInfo": "Más información",
+    "join_whatapp_link": "Únete al grupo de WhatsApp",
+    "join_telegram_link": "Únete al grupo de Telegram",
+    "join": "Unirme",
+    "moreInfo": "Información",
+    "details": "Detalles de la reforma",
+    "duration": "Duración",
+    "startDate": "Inicio",
+    "endDate": "Fin",
+    "description": "Descripción",
+    "materialsNeeded": "Materiales necesarios",
+    "organizer": "Organizador",
+    "participants": "Participantes",
+    "leave": "Salir",
+    "editRenovation": "Editar reforma",
+    "updatedSuccessfully": "Reforma actualizada correctamente",
+    "errorUpdating": "No se ha podido actualizar la reforma",
+    "leaveRenovation": "Salir de la reforma",
+    "confirmLeave": "¿Estás seguro/a de que quieres salir de esta reforma?",
+    "leftSuccessfully": "Has salido de la reforma correctamente",
+    "errorLeaving": "No se pudo salir de la reforma",
+    "joinedSuccessfully": "Te has unido a la reforma correctamente",
+    "errorJoining": "No se pudo unir a la reforma",
+    "removeParticipant": "Eliminar participante",
+    "confirmRemoveParticipant": "¿Estás seguro/a de que quieres eliminar a {{name}}?",
+    "participantRemovedSuccessfully": "Participante eliminado correctamente",
+    "errorRemovingParticipant": "No se pudo eliminar el participante",
+    "deleteRenovation": "Eliminar reforma",
+    "confirmDelete": "¿Estás seguro/a de que quieres eliminar esta reforma? Esta acción no se puede deshacer.",
+    "deletedSuccessfully": "Reforma eliminada correctamente",
+    "errorDeleting": "No se pudo eliminar la reforma",
+    "notFound": "Reforma no encontrada",
+    "errorLoadingDetails": "No se pudieron cargar los detalles de la reforma",
     "empty": {
-      "title": "No hay reformas pendientes",
-      "message": "Todas las reformas están completadas"
+      "title": "No hay reformas disponibles",
+      "message": "Crea una reforma para ayudar a mantener los refugios libres"
+    },
+    "alerts": {
+      "infoTitle": "Información sobre las reformas",
+      "infoMessage": "Aquí se muestran las reformas que los usuarios publican para los refugios libres. Si quieres colaborar para mantener los refugios libres, puedes unirte a cualquier reforma y comunicarte con los participantes a través del grupo de WhatsApp o Telegram que ha establecido el creador.",
+      "infoCreationTittle": "⚠️Antes de crear una reforma",
+      "infoCreationMessage": "Antes de crear una reforma, asegúrate de consultar la normativa vigente y preguntar al parque natural o ayuntamiento si es viable."
     }
   },
   "profile": {
@@ -85,6 +162,8 @@
       "language": "Idioma",
       "changeEmail": "Cambiar correo electrónico",
       "changePassword": "Cambiar contraseña",
+      "myProposals": "Mis propuestas",
+      "proposalsManagement": "Gestión de propuestas",
       "help": "Ayuda y soporte",
       "about": "Sobre la app",
       "privacy": "Privacidad",
@@ -109,6 +188,26 @@
         "fr": "Français"
       },
       "updateError": "No se ha podido actualizar el idioma en el servidor"
+    },
+    "avatar": {
+      "changePhoto": "Cambiar foto",
+      "deletePhoto": "Eliminar foto",
+      "cropTitle": "Recortar imagen",
+      "permissionDenied": "Permiso denegado",
+      "permissionMessage": "Necesitamos permiso para acceder a tus fotos. Por favor, actívalo desde la configuración de tu dispositivo.",
+      "permissionRequired": "Permiso necesario",
+      "permissionOptions": "Necesitamos acceso a tus fotos para cambiar la imagen de perfil. Puedes elegir entre acceso limitado o acceso completo a la galería.",
+      "requestPermission": "Permitir acceso",
+      "uploadSuccess": "Foto actualizada",
+      "uploadSuccessMessage": "Tu foto de perfil se ha actualizado correctamente",
+      "uploadError": "No se ha podido subir la foto",
+      "selectError": "No se ha podido seleccionar la imagen",
+      "deleteConfirmTitle": "Eliminar foto de perfil",
+      "deleteConfirmMessage": "¿Estás seguro/a de que quieres eliminar tu foto de perfil?",
+      "deleteSuccess": "Foto eliminada",
+      "deleteSuccessMessage": "Tu foto de perfil se ha eliminado correctamente",
+      "deleteError": "No se ha podido eliminar la foto",
+      "tapToChange": "Toca para cambiar la foto de perfil"
     }
   },
   "changePassword": {
@@ -175,21 +274,74 @@
       "capacity": "Plazas",
       "region": "Región",
       "occupation": "Ocupación",
-      "seeOccupation": "Ver ocupación",
+      "seeOccupation": "Ver\n ocupación",
       "description": "Descripción",
+      "amenities": "Equipamiento",
       "localisation": "Localización",
       "services": "Servicios",
       "prepareRoute": "Prepara tu salida",
       "moreInformation": "Para más información:",
       "weather": "Meteo",
-      "nearbyRoutes": "Rutas cercanas"
+      "nearbyRoutes": "Rutas cercanas",
+      "information_not_precise": "La información puede no ser precisa o estar desactualizada. Los administradores de la aplicación no se hacen responsables del uso que se pueda hacer. \nSi vas a la montaña, toma las precauciones necesarias.",
+      "coordinates": "Coordenadas",
+      "typeAndCondition": "Tipo y Estado"
+    },
+    "amenities": {
+      "manque_un_mur": "Falta un muro",
+      "cheminee": "Chimenea",
+      "poele": "Vajilla",
+      "couvertures": "Mantas",
+      "latrines": "Letrinas",
+      "bois": "Madera cerca",
+      "eau": "Agua cerca",
+      "matelas": "Colchones",
+      "couchage": "Zona para dormir",
+      "bas_flancs": "Literas",
+      "lits": "Camas",
+      "mezzanine_etage": "Altillo"
     },
     "actions": {
       "navigate": "Navegar",
       "viewDetails": "Ver detalles",
       "favorite": "Favorito",
       "viewOnMap": "Ver en el mapa",
-      "add": "Añadir"
+      "add": "Añadir",
+      "visited": "Visitado",
+      "ask": "Preguntar \nduda",
+      "shareExperience": "Compartir\nexperiencia",
+      "addPhoto": "Añadir foto",
+      "editRefuge": "Editar refugio",
+      "deleteRefuge": "Eliminar"
+    },
+    "descriptions": {
+      "addToFavorites": "Guarda este refugio en tus favoritos",
+      "removeFromFavorites": "Elimina este refugio de favoritos",
+      "markAsVisited": "Marca como refugio visitado",
+      "markedAsVisited": "Refugio marcado como visitado",
+      "shareRefuge": "Comparte la información del refugio",
+      "shareYourExperience": "Comparte tu experiencia",
+      "askAboutRefuge": "Pregunta dudas sobre el refugio",
+      "uploadPhoto": "Sube una foto del refugio"
+    },
+    "gallery": {
+      "title": "Galería de fotos del refugio",
+      "viewAll": "Ver todo",
+      "addPhoto": "Añadir foto",
+      "noPhotos": "No hay fotos de este refugio.\nSé el primero en aportar las tuyas!",
+      "addPhotosButton": "Añade fotos"
+    },
+    "occupation": {
+      "title": "Ocupación del refugio",
+      "addVisit": "Añadir visita",
+      "editVisit": "Editar visita",
+      "deleteVisit": "Eliminar visita",
+      "deleteConfirmation": "¿Estás seguro/a de que quieres eliminar esta visita?",
+      "numVisitorsLabel": "Número de visitantes",
+      "numVisitorsPlaceholder": "Ej: 4",
+      "numVisitorsError": "El número de visitantes debe ser superior a 0",
+      "disclaimer": "No estás reservando ninguna plaza en el refugio. Solo estás indicando que irás a este refugio en esta fecha para que el resto de usuarios lo sepan.",
+      "placesExceeded": "La ocupación del refugio ({{total}} visitantes) supera la capacidad disponible ({{places}} plazas). Tenlo en cuenta antes de ir."
     }
   },
   "filters": {
@@ -217,6 +369,25 @@
       "poor": "Pobre"
     }
   },
+  "layers": {
+    "title": "Capas y Visualización",
+    "representation": {
+      "title": "Representación de los refugios",
+      "subtitle": "Elige cómo ver los refugios en el mapa",
+      "markers": "Marcadores",
+      "markersDesc": "Muestra cada refugio con un marcador individual en el mapa",
+      "heatmap": "Mapa de calor",
+      "heatmapDesc": "Muestra la densidad de refugios con colores. Los marcadores aparecen con el zoom",
+      "cluster": "Agrupaciones",
+      "clusterDesc": "Agrupa refugios cercanos en un número. Los marcadores aparecen con el zoom"
+    },
+    "mapLayer": {
+      "title": "Capa del mapa",
+      "subtitle": "Selecciona el tipo de mapa",
+      "opentopoDesc": "Mapa topográfico con curvas de nivel y relieve",
+      "openstreetDesc": "Mapa de calle con información general"
+    }
+  },
   "alerts": {
     "navigation": "Navegando a {{name}}",
     "favoriteUpdated": "Favorito actualizado",
@@ -242,9 +413,23 @@
     "cannotOpenLink": "No se puede abrir el enlace",
     "linkError": "No se pudo abrir el enlace",
     "redirectTo": "Se te redirigirá a:",
-    "windyMessage": "https://www.windy.com.\n\nEsta es una web de meteorología que ofrece varias previsiones. Las más recomendadas son Meteoblue (MBLUE) y Arome-HD.",
+    "windyMessage": "https://www.windy.com.\n\nEste es un sitio web de meteorología que ofrece varias previsiones. Las más recomendadas son Meteoblue (MBLUE) y Arome-HD.",
     "wikilocMessage": "https://ca.wikiloc.com. \n\n⚠️ Puede que no haya rutas que pasen por el refugio. Asegúrate de que la ruta pasa por el refugio. ⚠️",
-    "editRefuge": "Editar {{name}}"
+    "editRefuge": "Editar {{name}}",
+    "markedAsVisited": "Has marcado {{name}} como visitado",
+    "unmarkedAsVisited": "Has eliminado {{name}} de visitados",
+    "shareExperience": {
+      "title": "Compartir experiencia",
+      "message": "Funcionalidad para compartir tu experiencia en el refugio. ¡Próximamente disponible!"
+    },
+    "askQuestion": {
+      "title": "Preguntar duda",
+      "message": "Funcionalidad para preguntar dudas sobre el refugio. ¡Próximamente disponible!"
+    },
+    "addPhoto": {
+      "title": "Añadir foto",
+      "message": "Funcionalidad para añadir fotos del refugio. ¡Próximamente disponible!"
+    }
   },
   "permissions": {
     "location": {
@@ -268,6 +453,8 @@
     "googleButton": "Continuar con Google",
     "noAccount": "¿No tienes cuenta?",
     "signUpLink": "Regístrate",
+    "termsText": "Al registrarte o iniciar sesión, aceptas los ",
+    "termsLink": "términos y servicios",
     "errors": {
       "emptyEmail": "Por favor, introduce tu correo electrónico",
       "invalidEmail": "El formato del correo electrónico no es válido",
@@ -338,6 +525,349 @@
       "generic": "Se ha producido un error. Por favor, inténtalo de nuevo",
       "googleLoginFailed": "Error durante la autenticación con Google",
       "googleSigninNotAvailable": "Google Sign In no está disponible en Expo Go. Utiliza un build nativo para activar esta funcionalidad."
+    }
+  },
+  "createRenovation": {
+    "title": "Crear Reforma",
+    "refugeLabel": "Refugio",
+    "refugeHelper": "Pulsa para cambiar de refugio",
+    "datesLabel": "Fechas",
+    "iniDateLabel": "Fecha de inicio",
+    "finDateLabel": "Fecha de finalización",
+    "selectDate": "Selecciona fecha",
+    "selectIniDate": "Selecciona la fecha de inicio",
+    "selectFinDate": "Selecciona la fecha de finalización",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Describe las tareas de reforma o mejora...",
+    "materialsLabel": "Materiales necesarios",
+    "materialsPlaceholder": "Lista de materiales necesarios (opcional)...",
+    "groupLinkLabel": "Enlace del grupo",
+    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
+    "groupLinkInfo": "Pega aquí el enlace de invitación del grupo de WhatsApp o Telegram donde se coordinará la reforma.",
+    "submit": "Crear Reforma",
+    "viewOverlappingRenovation": "Ver renovación",
+    "errors": {
+      "refugeRequired": "Debes seleccionar un refugio",
+      "refugeNotFound": "El refugio seleccionado no existe",
+      "iniDateRequired": "Debes seleccionar la fecha de inicio",
+      "finDateRequired": "Debes seleccionar la fecha de finalización",
+      "finDateBeforeIniDate": "La fecha de finalización debe ser posterior a la de inicio",
+      "invalidDate": "Formato de fecha no válido",
+      "descriptionRequired": "Debes escribir una descripción",
+      "descriptionTooLong": "La descripción no puede superar los 1000 caracteres",
+      "groupLinkRequired": "Debes añadir un enlace del grupo",
+      "groupLinkInvalid": "El enlace debe ser de WhatsApp o Telegram",
+      "overlapMessage": "Ya existe una reforma planificada para este refugio en estas fechas.",
+      "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
+    }
+  },
+  "deleteRefuge": {
+    "title": "Eliminar Refugio",
+    "warning": "Estás a punto de proponer la eliminación del refugio '{{name}}'. Esta acción creará una propuesta que será revisada por un administrador.",
+    "commentLabel": "Razón de la eliminación",
+    "commentPlaceholder": "Explica por qué este refugio debería ser eliminado.",
+    "minChars": "(mínimo {{min}})",
+    "confirm": "Enviar Propuesta",
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta de eliminación ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "error": {
+      "generic": "No se ha podido enviar la propuesta de eliminación. Inténtalo de nuevo"
+    }
+  },
+  "editRefuge": {
+    "title": "Editar Refugio",
+    "proposalInfo": "Esta es una propuesta de edición de refugio que será revisada y aprobada por un administrador",
+    "adminCommentPlaceholder": "Comentario obligatorio para el administrador.",
+    "minChars": "mínimo {{min}}",
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta de edición ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "errors": {
+      "commentRequired": "El comentario es obligatorio para proponer ediciones",
+      "commentTooShort": "El comentario debe tener al menos {{min}} caracteres"
+    }
+  },
+  "createRefuge": {
+    "title": "Proponer Refugio",
+    "proposalInfo": "Esta es una propuesta de creación de refugio que será revisada y aprobada por un administrador",
+    "coordinates": "Coordenadas",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "generalInfo": "Información general",
+    "namePlaceholder": "Nombre del refugio",
+    "regionPlaceholder": "Comunidad autónoma",
+    "departementPlaceholder": "Provincia",
+    "pressToEdit": "Pulsa para editar",
+    "descriptionPlaceholder": "Describe el refugio...",
+    "links": "Enlaces de información extra",
+    "linkPlaceholder": "https://ejemplo.com",
+    "addLink": "Añadir enlace",
+    "adminComment": "Comentario para los administradores",
+    "adminCommentPlaceholder": "Información extra que puede ser útil para los administradores para verificar este refugio",
+    "submit": "Enviar Propuesta",
+    "photoAlert": {
+      "title": "Fotos del refugio",
+      "message": "Las fotos se podrán subir una vez aceptada la propuesta de creación por un administrador"
+    },
+    "success": {
+      "title": "Propuesta enviada",
+      "message": "Tu propuesta ha sido enviada correctamente y será revisada por un administrador"
+    },
+    "error": {
+      "generic": "No se pudo enviar la propuesta. Inténtalo de nuevo"
+    },
+    "errors": {
+      "nameRequired": "El nombre del refugio es obligatorio",
+      "nameTooLong": "El nombre no puede superar los 100 caracteres",
+      "latitudeRequired": "La latitud es obligatoria",
+      "latitudeAtLeast3Decimals": "La latitud debe tener al menos 3 decimales",
+      "longitudeRequired": "La longitud es obligatoria",
+      "longitudeAtLeast3Decimals": "La longitud debe tener al menos 3 decimales",
+      "invalidColon": "Las coordenadas deben usar un punto (.) como separador decimal",
+      "regionTooLong": "La región no puede superar los 100 caracteres",
+      "departementTooLong": "La provincia no puede superar los 100 caracteres",
+      "altitudeInvalid": "La altitud debe ser un entero positivo",
+      "altitudeTooHigh": "La altitud no puede superar los 8800m",
+      "placesInvalid": "Las plazas deben ser un entero positivo",
+      "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
+      "commentTooLong": "El comentario no puede superar los 3000 caracteres",
+      "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
+    }  },
+  "doubts": {
+    "title": "Sección de dudas",
+    "noDoubts": "Todavía no hay ninguna duda. ¡Sé el primero en hacer una pregunta!",
+    "doubtPlaceholder": "Escribe tu duda...",
+    "answerPlaceholder": "Escribe tu respuesta...",
+    "reply": "Responder",
+    "replyingTo": "Respondiendo a {{name}}",
+    "deleteDoubt": {
+      "title": "Eliminar duda",
+      "message": "¿Estás seguro de que quieres eliminar esta duda? También se eliminarán todas sus respuestas.",
+      "success": "Duda eliminada correctamente"
+    },
+    "deleteAnswer": {
+      "title": "Eliminar respuesta",
+      "message": "¿Estás seguro de que quieres eliminar esta respuesta?",
+      "success": "Respuesta eliminada correctamente"
+    },
+    "errors": {
+      "createDoubtError": "No se ha podido crear la duda",
+      "createAnswerError": "No se ha podido crear la respuesta",
+      "deleteDoubtError": "No se ha podido eliminar la duda",
+      "deleteAnswerError": "No se ha podido eliminar la respuesta",
+      "messageTooLong": "El mensaje no puede superar los {{max}} caracteres"
+    }
+  },
+  "proposals": {
+    "titleMy": "Mis propuestas",
+    "titleAdmin": "Gestión de propuestas",
+    "emptyState": "No hay propuestas disponibles",
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendientes",
+      "approved": "Aprobadas",
+      "rejected": "Rechazadas"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "actions": {
+      "create": "Crear",
+      "update": "Editar",
+      "delete": "Eliminar"
+    },
+    "card": {
+      "unknownRefuge": "Refugio desconocido",
+      "unknownUser": "Usuario desconocido",
+      "createdAt": "Creada el",
+      "reviewedAt": "Revisada el",
+      "rejectionReason": "Razón del rechazo",
+      "creator": "Creador/a",
+      "reviewer": "Revisor/a"
+    },
+    "detail": {
+      "title": "Detalle de la propuesta",
+      "comment": "Comentario",
+      "review": "Revisión",
+      "changes": "Cambios propuestos",
+      "newRefuge": "Nuevo refugio",
+      "refugeToDelete": "Refugio a eliminar",
+      "current": "Actual",
+      "new": "Nuevo",
+      "value": "Valor",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "newType": "Nuevo tipo:",
+      "newCondition": "Nuevo estado:",
+      "newTypeAndCondition": "Nuevo tipo y estado:"
+    },
+    "approve": {
+      "successTitle": "Propuesta aprobada",
+      "successMessage": "La propuesta ha sido aprobada correctamente"
+    },
+    "reject": {
+      "successTitle": "Propuesta rechazada",
+      "successMessage": "La propuesta ha sido rechazada correctamente"
+    },
+    "rejectModal": {
+      "title": "Rechazar Propuesta",
+      "warning": "Estás a punto de rechazar la propuesta para el refugio '{{name}}'. Por favor, explica la razón del rechazo.",
+      "confirm": "Rechazar Propuesta"
+    },
+    "errors": {
+      "loadError": "No se pudieron cargar las propuestas",
+      "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
+      "approveError": "No se pudo aprobar la propuesta",
+      "rejectError": "No se pudo rechazar la propuesta"
+    }  
+  },
+  "experiences": {
+    "title": "Experiencias",
+    "viewMore": "Ver todas las experiencias",
+    "addFirst": "¡Comparte tu experiencia!",
+    "noExperiences": "Aún no hay experiencias.\n¡Sé el primero en compartir la tuya!",
+    "placeholder": "Comparte tu experiencia...",
+    "newPhotos": "Nuevas fotos",
+    "addPhotos": "Añadir fotos",
+    "deletePhotoInfo": "Para eliminar una foto, tócala en el carrusel y elimínala desde el visor",
+    "updateSuccess": "La experiencia se ha actualizado correctamente",
+    "deleteExperience": {
+      "title": "Eliminar experiencia",
+      "message": "¿Estás seguro de que deseas eliminar esta experiencia? Esta acción no se puede deshacer.",
+      "success": "La experiencia se ha eliminado correctamente"
+    },
+    "errors": {
+      "commentTooLong": "El comentario no puede superar los 3000 caracteres",
+      "createExperienceError": "La experiencia no se ha creado",
+      "updateExperienceError": "La experiencia no se ha actualizado",
+      "deleteExperienceError": "La experiencia no se ha eliminado",
+      "selectPhotosError": "No se pudieron seleccionar las fotos"
+    },
+    "warnings": {
+      "someFilesFailedToUpload": "Algunos archivos no se pudieron subir correctamente"
+    }
+  },
+  "helpSupport": {
+    "title": "Ayuda y soporte",
+    "intro": "Para cualquier fallo o error en la app, podéis enviar un correo electrónico a:",
+    "emailCopied": "Correo copiado",
+    "emailCopiedMessage": "La dirección de correo se ha copiado al portapapeles",
+    "beSpecific": "Por favor, sed específicos en el escenario en el que ocurre el error y, si es posible, aportad fotos.",
+    "warning": {
+      "title": "Atención:",
+      "message": "No se atenderá a propuestas de modificación de la información de un refugio. Para hacerlo, crea una propuesta de edición del refugio en la pantalla de la ficha del refugio."
+    }
+  },
+  "aboutApp": {
+    "title": "Sobre la app",
+    "description": {
+      "intro": "Refugios Libres ha nacido con el objetivo de aportar información precisa, fiable y extensa sobre los refugios libres del Pirineo, además de preservar su estado facilitando los encuentros de voluntarios para reformarlos.",
+      "sources": "La app combina las dos fuentes de información más grandes de refugios libres que hay en internet hasta el momento:",
+      "userContributions": "junto con la información aportada por los propios usuarios de la app."
+    },
+    "creator": {
+      "title": "Información del creador:",
+      "greeting": "¡Hola! Me llamo Jordi Reverter y soy el creador de Refugios Libres, la app más completa hasta el momento de refugios libres del Pirineo.",
+      "description": "Esta app ha sido fruto de mi Trabajo de Fin de Grado en la Universitat Politècnica de Catalunya (UPC), donde he podido combinar mis dos pasiones: la montaña y el software. Desde muy pequeño la montaña ha ocupado un espacio muy importante en mi vida y, sobre todo, los refugios libres. En estos he vivido grandes experiencias y compartido muchos momentos con gente apasionada de la montaña y es por eso que decidí hacer esta app y poder aportar mi granito de arena en este mundo de la montaña. Espero que os pueda ser de utilidad y os acompañe en vuestras próximas salidas!"
+    }
+  },
+  "termsAndConditions": {
+    "title": "Términos y Condiciones de Uso",
+    "updateDate": "Fecha de la última actualización: 4 de enero de 2026",
+    "acceptButton": "Aceptar y Cerrar",
+    "acceptance": {
+      "title": "1. Aceptación de los Términos",
+      "content": "Al descargar, instalar o utilizar la aplicación RefugisLliures, aceptas quedar vinculado por estos términos. Si no estás de acuerdo con alguna parte de estos, no podrás acceder al servicio."
+    },
+    "description": {
+      "title": "2. Descripción del Servicio",
+      "content": "RefugisLliures es una plataforma para la visualización y gestión de datos sobre refugios libres. El servicio utiliza datos en tiempo real y funcionalidades de mapa para mejorar la experiencia del usuario en entornos de montaña."
+    },
+    "permissions": {
+      "title": "3. Uso de Permisos y Dispositivo",
+      "intro": "Para el correcto funcionamiento de la aplicación, se requieren los siguientes permisos:",
+      "location": {
+        "title": "Ubicación:",
+        "content": "Para mostrar tu posición en el mapa respecto a los refugios."
+      },
+      "media": {
+        "title": "Multimedia/Cámara:",
+        "content": "Para permitir la subida de fotos de los refugios."
+      },
+      "network": {
+        "title": "Estado de la red:",
+        "content": "Para gestionar la sincronización de datos con Firebase y Cloudflare."
+      }
+    },
+    "responsibility": {
+      "title": "4. Responsabilidad del Usuario",
+      "content": "El usuario se compromete a hacer un uso lícito de la app. Dado que la información trata sobre refugios de montaña, RefugisLliures no se hace responsable de la precisión exacta de las coordenadas ni del estado físico de los refugios. El uso de la app no sustituye las herramientas de navegación profesionales ni el sentido común en actividades de riesgo."
+    },
+    "privacy": {
+      "title": "Política de Privacidad (Adaptada al RGPD)",
+      "dataController": {
+        "title": "1. Responsable del Tratamiento",
+        "content": "El responsable del tratamiento de tus datos es el titular del proyecto RefugisLliures (Jordi Revilla)."
+      },
+      "dataCollection": {
+        "title": "2. Datos que Recogemos",
+        "intro": "Recogemos los datos estrictamente necesarios para el funcionamiento de la app:",
+        "identification": {
+          "title": "Datos de Identificación:",
+          "content": "Nombre y correo electrónico a través de Firebase Authentication."
+        },
+        "location": {
+          "title": "Datos de Ubicación:",
+          "content": "Solo si el usuario da el consentimiento explícito."
+        },
+        "userContent": {
+          "title": "Contenido del Usuario:",
+          "content": "Fotografías enviadas por el usuario (almacenadas en Cloudflare)."
+        },
+        "usage": {
+          "title": "Datos de Uso:",
+          "content": "Estadísticas anónimas a través de Google Analytics."
+        }
+      },
+      "dataPurpose": {
+        "title": "3. Finalidad del Tratamiento",
+        "intro": "Los datos se utilizan exclusivamente para:",
+        "point1": "Gestionar tu perfil de usuario y autenticación.",
+        "point2": "Permitirte interactuar con los refugios (añadir fotos, comentarios, etc.).",
+        "point3": "Mejorar la aplicación mediante análisis estadísticos."
+      },
+      "thirdParties": {
+        "title": "4. Terceros y Transferencia de Datos",
+        "intro": "No compartimos tus datos con terceros con fines comerciales. Sin embargo, utilizamos los siguientes proveedores de servicios (subencargados) que cumplen con el marco del RGPD:",
+        "firebase": {
+          "title": "Firebase (Google):",
+          "content": "Para la base de datos y autenticación."
+        },
+        "cloudflare": {
+          "title": "Cloudflare:",
+          "content": "Para la optimización y almacenamiento de contenido multimedia."
+        },
+        "analytics": {
+          "title": "Google Analytics:",
+          "content": "Para el seguimiento de errores y métricas de uso."
+        }
+      },
+      "rights": {
+        "title": "5. Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)",
+        "intro": "Como usuario, tienes derecho a:",
+        "point1": "Saber qué datos tenemos de ti.",
+        "point2": "Solicitar la rectificación o eliminación de tus datos (incluyendo tu cuenta de Firebase).",
+        "point3": "Limitar el tratamiento de los datos."
+      },
+      "security": {
+        "title": "6. Seguridad",
+        "content": "Todos los datos se transmiten de forma segura mediante protocolos HTTPS y se almacenan en infraestructuras con altos estándares de seguridad (Firebase/Cloudflare)."
+      }
     }
   }
 }

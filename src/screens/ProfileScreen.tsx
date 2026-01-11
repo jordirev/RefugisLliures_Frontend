@@ -1,30 +1,99 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from '../hooks/useTranslation';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
+import { RefugeCard } from '../components/RefugeCard';
+import { AvatarPopup } from '../components/AvatarPopup';
+import { useUser, useVisitedRefuges } from '../hooks/useUsersQuery';
+import { Location } from '../models';
 
 // Icones
 import StatsIcon from '../assets/icons/stats.svg';
 import SettingsIcon from '../assets/icons/settings.svg';
 import AltitudeIcon from '../assets/icons/altitude2.svg';
+const VisitedIcon = require('../assets/icons/visited2.png');
 
 // Imatge de fons del header
 import DefaultProfileBackgroundImage from '../assets/images/profileDefaultBackground.png';
 
-export function ProfileScreen() {
+interface ProfileScreenProps {
+  onViewDetail: (refuge: Location) => void;
+  onViewMap: (refuge: Location) => void;
+}
+
+export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const { t } = useTranslation();
   const currentLanguage = getCurrentLanguage();
   const navigation = useNavigation<any>();
-  const { firebaseUser, backendUser, isLoading } = useAuth();
+  const { firebaseUser, backendUser, refreshUserData } = useAuth();
+  const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  const [showAvatarPopup, setShowAvatarPopup] = useState(false);
+  
+  // Utilitzar React Query per obtenir dades de l'usuari i refugis visitats amb cache
+  const { data: userFromQuery, isLoading: isLoadingUser, refetch: refetchUserQuery } = useUser(firebaseUser?.uid);
+  const { data: visitedRefuges = [], isLoading: isLoadingVisited } = useVisitedRefuges(firebaseUser?.uid);
+  
+  // Scroll to top when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
+  
+  // Utilitzar les dades de React Query si estan disponibles, sinó usar backendUser
+  const displayUser = userFromQuery || backendUser;
+
+  // Navigation handlers - les dades completes ja estan disponibles des de AuthContext
+  const handleViewMap = (refuge: Location) => {
+    onViewMap(refuge);
+    navigation.navigate('Map', { selectedRefuge: refuge });
+  };
+
+  const handleViewDetail = (refuge: Location) => {
+    onViewDetail(refuge);
+  };
+  
+  // Empty component for visited refuges
+  const EmptyVisitedComponent = () => (
+    <View style={styles.emptyVisitedContainer}>
+      <Image source={VisitedIcon} style={styles.emptyVisitedIcon} />
+      <Text style={styles.emptyVisitedTitle}>{t('visited.empty.title')}</Text>
+      <Text style={styles.emptyVisitedText}>{t('visited.empty.message')}</Text>
+    </View>
+  );
+  
+  const handleAvatarPress = () => {
+    setShowAvatarPopup(true);
+  };
+  
+  const handleAvatarUpdated = () => {
+    // Refrescar les dades de l'usuari
+    refetchUserQuery();
+    if (refreshUserData) {
+      refreshUserData();
+    }
+  };
+  
   
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView edges={["top"]} style={styles.safeArea} testID="profile-safe-area">
-        <View style={styles.header}>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.headerFixed}>
+        <SafeAreaView edges={["top"]} style={styles.safeArea}></SafeAreaView>
+      </View>
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.header, { marginTop: insets.top }]}>
           {/* Background block with real horizontal gradient and image overlay */}
           <LinearGradient
             colors={["#FF8904", "#F54900"]}
@@ -50,30 +119,41 @@ export function ProfileScreen() {
           </LinearGradient>
 
           {/* Avatar overlapping the background */}
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={handleAvatarPress}
+            activeOpacity={0.8}
+          >
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {(() => {
-                  const name = backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || '';
-                  const parts = name.trim().split(/\s+/);
-                  if (parts.length === 0) return '';
-                  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-                  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-                })()}
-              </Text>
+              {displayUser?.avatar_metadata?.url ? (
+                <Image 
+                  source={{ uri: displayUser.avatar_metadata.url }} 
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <Text style={styles.avatarText}>
+                  {(() => {
+                    const name = displayUser?.username || firebaseUser?.displayName || '';
+                    const parts = name.trim().split(/\s+/);
+                    if (parts.length === 0) return '';
+                    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                  })()}
+                </Text>
+              )}
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Name and subtitle to the right of the avatar */}
           <View style={styles.nameBlock}>
             <Text style={styles.nameText}>
-              {backendUser?.username || firebaseUser?.displayName || backendUser?.email || firebaseUser?.email || ''}
+              {displayUser?.username || firebaseUser?.displayName || ''}
             </Text>
             <Text style={styles.subtitleText}>
               {(() => {
-                // Prefer backendUser data if available, otherwise use Firebase creation time
+                // Prefer displayUser data if available, otherwise use Firebase creation time
                 try {
-                  const created = backendUser?.created_at ?? firebaseUser?.metadata?.creationTime;
+                  const created = displayUser?.created_at ?? firebaseUser?.metadata?.creationTime;
                   if (created) {
                     const d = typeof created === 'number' ? new Date(created * 1000) : new Date(created);
                     if (!Number.isNaN(d.getTime())) {
@@ -88,51 +168,96 @@ export function ProfileScreen() {
             </Text>
           </View>
         </View>
-      </SafeAreaView>
-      
-      <View style={styles.content}>
-        <View style={[styles.section, styles.sectionStatics]}>
-          <View style={styles.sectionTitle}>
-            <StatsIcon />
-            <Text style={styles.title}>{t('profile.stats.title')}</Text>
-          </View>
-          <View style={styles.statsGrid}>
-            <View style={styles.statsRow}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.refugis_visitats?.length ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
+        
+        <View style={styles.content}>
+          <View style={[styles.section, styles.sectionStatics]}>
+            <View style={styles.sectionTitle}>
+              <StatsIcon />
+              <Text style={styles.title}>{t('profile.stats.title')}</Text>
+            </View>
+            <View style={styles.statsGrid}>
+              <View style={styles.statsRow}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{visitedRefuges?.length ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.visited')}</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{displayUser?.num_renovated_refuges ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
+                </View>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_refugis_reformats ?? backendUser?.reformes?.length ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.renovations')}</Text>
+              <View style={styles.statsRow}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{displayUser?.num_shared_experiences ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statValue}>{displayUser?.uploaded_photos_keys?.length ?? 0}</Text>
+                  <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
+                </View>
               </View>
             </View>
-            <View style={styles.statsRow}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_experiencies_compartides ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.contributions')}</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{backendUser?.num_fotos_pujades ?? 0}</Text>
-                <Text style={styles.statLabel}>{t('profile.stats.photos')}</Text>
-              </View>
-            </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionTitle}>
-            <AltitudeIcon width={20} height={20} />
-            <Text style={styles.title}>{t('profile.stats.visited')}</Text>
-            <Text style={styles.titleValue}>({backendUser?.refugis_visitats?.length ?? 0})</Text>
+          <View style={[styles.section, styles.sectionVisited]}>
+            <View style={[styles.sectionTitle, { paddingLeft: 32, marginTop: 12 }]}>
+              <AltitudeIcon width={20} height={20} />
+              <Text style={styles.title}>{t('visited.title')}</Text>
+              <Text style={styles.titleValue}>({visitedRefuges?.length ?? 0})</Text>
+            </View>
+            {isLoadingVisited ? (
+              <View style={styles.emptyVisitedContainer}>
+                <ActivityIndicator size="large" color="#FF6000" />
+              </View>
+            ) : visitedRefuges && visitedRefuges.length > 0 ? (
+              <View style={styles.visitedList}>
+                {visitedRefuges.map((refuge, index) => (
+                  <RefugeCard
+                    key={refuge.id ? String(refuge.id) : String(index)}
+                    refuge={refuge}
+                    onPress={() => handleViewDetail(refuge)}
+                    onViewMap={() => handleViewMap(refuge)}
+                  />
+                ))}
+              </View>
+            ) : (
+              <EmptyVisitedComponent />
+            )}
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      
+      {/* Avatar Popup */}
+      <AvatarPopup
+        visible={showAvatarPopup}
+        onClose={() => setShowAvatarPopup(false)}
+        avatarUrl={displayUser?.avatar_metadata?.url}
+        username={displayUser?.username || firebaseUser?.displayName || ''}
+        uid={firebaseUser?.uid || ''}
+        onAvatarUpdated={handleAvatarUpdated}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  headerFixed: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffffff',
@@ -151,6 +276,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6900',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     fontSize: 20,
@@ -290,9 +420,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   sectionStatics: {
-    borderRadius: 12,
+    borderRadius: 18,
     borderColor: '#e5e7eb',
     borderWidth: 1,
+  },
+  sectionVisited: {
+    padding: 0,
+    marginHorizontal: -20,
+    marginRight: -32,
+    marginLeft: -32,
   },
   sectionTitle: {
     flexDirection: 'row',
@@ -327,7 +463,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 100,
     backgroundColor: '#f9fafb',
-    borderRadius: 12,
+    borderRadius: 17,
     padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -350,6 +486,37 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'stretch',
     flexShrink: 1,
+  },
+  visitedList: {
+    width: '100%',
+    paddingHorizontal: 16,
+  },
+  emptyVisitedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 48,
+    minHeight: 200,
+  },
+  emptyVisitedIcon: {
+    width: 48,
+    height: 48,
+    marginBottom: 16,
+    opacity: 0.8,
+  },
+  emptyVisitedTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyVisitedText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   menuItem: {
     flexDirection: 'row',

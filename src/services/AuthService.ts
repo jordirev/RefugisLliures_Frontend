@@ -13,7 +13,8 @@ import {
   updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
-  verifyBeforeUpdateEmail
+  verifyBeforeUpdateEmail,
+  fetchSignInMethodsForEmail
 } from './firebase';
 import type { FirebaseUser } from './firebase';
 
@@ -70,7 +71,6 @@ export class AuthService {
 
       // 3. Enviar email de verificació
       await sendEmailVerification(firebaseUser);
-      console.log('Email de verificació enviat a:', signUpData.email);
 
       // 4. Obtenir el token d'autenticació
       const token = await firebaseUser.getIdToken();
@@ -79,7 +79,7 @@ export class AuthService {
       const userData: UserCreateData = {
         username: signUpData.username,
         email: signUpData.email,
-        idioma: signUpData.language,
+        language: signUpData.language,
       };
 
       const backendUser = await UsersService.createUser(userData, token);
@@ -89,12 +89,6 @@ export class AuthService {
         await firebaseUser.delete();
         throw new Error('Error creant l\'usuari al backend');
       }
-
-      console.log('Usuari creat correctament:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName
-      });
 
       // 6. Tancar la sessió perquè l'usuari hagi de fer login després de verificar el correu
       await signOut(auth);
@@ -122,12 +116,6 @@ export class AuthService {
       );
 
       const firebaseUser = userCredential.user;
-
-      console.log('Usuari autenticat:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        emailVerified: firebaseUser.emailVerified
-      });
 
       return firebaseUser;
     } catch (error: any) {
@@ -176,13 +164,6 @@ export class AuthService {
       const userCredential = await signInWithCredential(auth, googleCredential);
       const firebaseUser = userCredential.user;
 
-      console.log('Usuari autenticat amb Google:', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
-      });
-
       // 7. Obtenir el token d'autenticació de Firebase
       const token = await firebaseUser.getIdToken();
 
@@ -196,7 +177,7 @@ export class AuthService {
         const userData: UserCreateData = {
           username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuari',
           email: firebaseUser.email || '',
-          idioma: 'ca', // Idioma per defecte, es pot canviar després
+          language: 'ca', // Idioma per defecte, es pot canviar després
         };
 
         backendUser = await UsersService.createUser(userData, token);
@@ -242,7 +223,6 @@ export class AuthService {
   static async resetPassword(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
-      console.log('Email de recuperació enviat a:', email);
     } catch (error: any) {
       console.error('Error enviant email de recuperació:', error);
       throw error;
@@ -266,7 +246,6 @@ export class AuthService {
       }
 
       await sendEmailVerification(targetUser);
-      console.log('Email de verificació reenviat a:', targetUser.email);
     } catch (error: any) {
       console.error('Error reenviant email de verificació:', error);
       throw error;
@@ -450,27 +429,33 @@ export class AuthService {
 
       console.log('Iniciant canvi de correu de:', oldEmail, 'a:', newEmail);
 
-      // 1. Reautenticar l'usuari amb la contrasenya actual
+      // 1. Comprovar si el nou email ja existeix
+      try {
+        const signInMethods = await fetchSignInMethodsForEmail(auth, newEmail);
+        if (signInMethods && signInMethods.length > 0) {
+          // L'email ja està en ús
+          const error: any = new Error('EMAIL_ALREADY_IN_USE');
+          error.code = 'auth/email-already-in-use';
+          throw error;
+        }
+      } catch (error: any) {
+        // Si l'error no és de xarxa, propagar-lo
+        if (error.code === 'auth/email-already-in-use') {
+          throw error;
+        }
+        // Si és un altre error (per exemple xarxa), continuar igualment
+        console.log('No s\'ha pogut verificar si l\'email existeix, continuant...');
+      }
+
+      // 2. Reautenticar l'usuari amb la contrasenya actual
       const credential = EmailAuthProvider.credential(oldEmail, password);
       await reauthenticateWithCredential(user, credential);
       console.log('Usuari reautenticat correctament');
 
-      // 2. Enviar email de verificació al correu actual per confirmar el canvi
-      // Firebase enviarà un correu amb un enllaç. Només quan l'usuari faci clic s'actualitzarà el correu
-      try {
-        await verifyBeforeUpdateEmail(user, newEmail);
-        console.log('verifyBeforeUpdateEmail cridat correctament. Email enviat a:', oldEmail);
-      } catch (emailError: any) {
-        console.error('Error cridant verifyBeforeUpdateEmail:', emailError);
-        console.error('Error code:', emailError?.code);
-        console.error('Error message:', emailError?.message);
-        throw emailError;
-      }
-
-      // Nota: El backend s'actualitzarà automàticament quan Firebase notifiqui el canvi
-      // mitjançant els tokens renovats amb el nou email
-
-      console.log('Email de verificació enviat al correu actual per confirmar el canvi a:', newEmail);
+      // 3. Enviar email de verificació ABANS de canviar l'email
+      // L'email només es canviarà quan l'usuari faci clic a l'enllaç de verificació
+      await verifyBeforeUpdateEmail(user, newEmail);
+      console.log('Email de verificació enviat. L\'email es canviarà quan l\'usuari verifiqui el nou correu:', newEmail);
     } catch (error: any) {
       console.error('Error iniciant canvi de correu electrònic:', error);
       throw error;

@@ -1,0 +1,657 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BadgeSelector Component Snapshots hauria de coincidir amb el snapshot per condició col·lapsat 1`] = `
+<View
+  style={
+    [
+      {},
+      undefined,
+    ]
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#E6F8EE",
+            "borderColor": "#7EE0B0",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+      testID="badge-container"
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#14532D",
+            },
+            undefined,
+          ]
+        }
+      >
+        refuge.condition.good
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`BadgeSelector Component Snapshots hauria de coincidir amb el snapshot per tipus col·lapsat 1`] = `
+<View
+  style={
+    [
+      {},
+      undefined,
+    ]
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#E6F8EE",
+            "borderColor": "#7EE0B0",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+      testID="badge-container"
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#14532D",
+            },
+            undefined,
+          ]
+        }
+      >
+        refuge.type.noGuarded
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`BadgeSelector Component Snapshots hauria de coincidir amb el snapshot per tipus expandit 1`] = `
+<View
+  style={
+    [
+      {},
+      undefined,
+    ]
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "alignItems": "center",
+            "alignSelf": "flex-start",
+            "borderRadius": 8,
+            "justifyContent": "center",
+            "overflow": "hidden",
+            "paddingHorizontal": 8,
+            "paddingVertical": 2,
+          },
+          {
+            "backgroundColor": "#E6F8EE",
+            "borderColor": "#7EE0B0",
+            "borderWidth": 1.25,
+          },
+          undefined,
+        ]
+      }
+      testID="badge-container"
+    >
+      <Text
+        style={
+          [
+            {
+              "fontFamily": "Arimo",
+              "fontSize": 12,
+              "fontWeight": "400",
+              "lineHeight": 16,
+            },
+            {
+              "color": "#14532D",
+            },
+            undefined,
+          ]
+        }
+      >
+        refuge.type.noGuarded
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 8,
+        "marginTop": 8,
+        "paddingHorizontal": 4,
+      }
+    }
+  >
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "alignSelf": "flex-start",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "overflow": "hidden",
+              "paddingHorizontal": 8,
+              "paddingVertical": 2,
+            },
+            {
+              "backgroundColor": "#E6F8EE",
+              "borderColor": "#7EE0B0",
+              "borderWidth": 1.25,
+            },
+            undefined,
+          ]
+        }
+        testID="badge-container"
+      >
+        <Text
+          style={
+            [
+              {
+                "fontFamily": "Arimo",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "lineHeight": 16,
+              },
+              {
+                "color": "#14532D",
+              },
+              undefined,
+            ]
+          }
+        >
+          refuge.type.noGuarded
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "alignSelf": "flex-start",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "overflow": "hidden",
+              "paddingHorizontal": 8,
+              "paddingVertical": 2,
+            },
+            {
+              "backgroundColor": "#EAF4FF",
+              "borderColor": "#A3C4FF",
+              "borderWidth": 1.25,
+            },
+            undefined,
+          ]
+        }
+        testID="badge-container"
+      >
+        <Text
+          style={
+            [
+              {
+                "fontFamily": "Arimo",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "lineHeight": 16,
+              },
+              {
+                "color": "#3A5B99",
+              },
+              undefined,
+            ]
+          }
+        >
+          refuge.type.occupiedInSummer
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "alignSelf": "flex-start",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "overflow": "hidden",
+              "paddingHorizontal": 8,
+              "paddingVertical": 2,
+            },
+            {
+              "backgroundColor": "#FDE8E8",
+              "borderColor": "#F4A6A6",
+              "borderWidth": 1.25,
+            },
+            undefined,
+          ]
+        }
+        testID="badge-container"
+      >
+        <Text
+          style={
+            [
+              {
+                "fontFamily": "Arimo",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "lineHeight": 16,
+              },
+              {
+                "color": "#9B1F1F",
+              },
+              undefined,
+            ]
+          }
+        >
+          refuge.type.closed
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "alignSelf": "flex-start",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "overflow": "hidden",
+              "paddingHorizontal": 8,
+              "paddingVertical": 2,
+            },
+            {
+              "backgroundColor": "#F3F4F6",
+              "borderColor": "#9CA3AF",
+              "borderWidth": 1.25,
+            },
+            undefined,
+          ]
+        }
+        testID="badge-container"
+      >
+        <Text
+          style={
+            [
+              {
+                "fontFamily": "Arimo",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "lineHeight": 16,
+              },
+              {
+                "color": "#374151",
+              },
+              undefined,
+            ]
+          }
+        >
+          refuge.type.shelter
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "alignSelf": "flex-start",
+              "borderRadius": 8,
+              "justifyContent": "center",
+              "overflow": "hidden",
+              "paddingHorizontal": 8,
+              "paddingVertical": 2,
+            },
+            {
+              "backgroundColor": "#FFF6E0",
+              "borderColor": "#F7C67A",
+              "borderWidth": 1.25,
+            },
+            undefined,
+          ]
+        }
+        testID="badge-container"
+      >
+        <Text
+          style={
+            [
+              {
+                "fontFamily": "Arimo",
+                "fontSize": 12,
+                "fontWeight": "400",
+                "lineHeight": 16,
+              },
+              {
+                "color": "#8B4B18",
+              },
+              undefined,
+            ]
+          }
+        >
+          refuge.type.emergency
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;

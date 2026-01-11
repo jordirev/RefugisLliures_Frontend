@@ -4,6 +4,9 @@ import { WebView } from 'react-native-webview';
 import { Location } from '../models';
 import { MapCacheService } from '../services/MapCacheService';
 
+export type RepresentationType = 'markers' | 'heatmap' | 'cluster';
+export type MapLayerType = 'opentopomap' | 'openstreetmap';
+
 interface LeafletWebMapProps {
   locations: Location[];
   onLocationSelect: (location: Location) => void;
@@ -11,6 +14,8 @@ interface LeafletWebMapProps {
   center?: [number, number];
   zoom?: number;
   userLocation?: {latitude: number, longitude: number} | null;
+  representation?: RepresentationType;
+  mapLayer?: MapLayerType;
 }
 
 // Memoritzem el component per evitar re-renders innecessaris
@@ -20,7 +25,9 @@ export const LeafletWebMap = memo(function LeafletWebMap({
   selectedLocation,
   center = [42.6, 0.7], // Centre dels Pirineus
   zoom = 8,
-  userLocation
+  userLocation,
+  representation = 'cluster',
+  mapLayer = 'opentopomap'
 }: LeafletWebMapProps) {
   const [cacheStatus, setCacheStatus] = useState<any>(null);
   const webViewRef = useRef<any>(null);
@@ -50,22 +57,64 @@ export const LeafletWebMap = memo(function LeafletWebMap({
       if (locationsChanged) {
         const js = `
           if (typeof updateMarkers === 'function') {
-            updateMarkers(${JSON.stringify(locations)}, ${selectedLocation?.id || null});
+            updateMarkers(${JSON.stringify(locations)}, ${JSON.stringify(selectedLocation?.id || null)}, '${representation}');
           }
         `;
         webViewRef.current.injectJavaScript(js);
         previousLocationsRef.current = locations;
       }
     }
-  }, [locations, mapInitialized, selectedLocation]);
+  }, [locations, mapInitialized, selectedLocation, representation]);
+
+  // Actualitzar representació quan canvia
+  useEffect(() => {
+    if (mapInitialized && webViewRef.current) {
+      const js = `
+        if (typeof changeRepresentation === 'function') {
+          changeRepresentation('${representation}', ${JSON.stringify(locations)}, ${JSON.stringify(selectedLocation?.id || null)});
+        }
+      `;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [representation, mapInitialized]);
+
+  // Actualitzar capa del mapa quan canvia
+  useEffect(() => {
+    if (mapInitialized && webViewRef.current) {
+      const js = `
+        if (typeof changeMapLayer === 'function') {
+          changeMapLayer('${mapLayer}');
+        }
+      `;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [mapLayer, mapInitialized]);
 
   // Actualitzar el marker seleccionat
   useEffect(() => {
     if (mapInitialized && webViewRef.current) {
+      const lat = selectedLocation?.coord?.lat;
+      const lng = selectedLocation?.coord?.long;
+      const id = selectedLocation?.id;
+
       const js = `
-        if (typeof updateSelectedMarker === 'function') {
-          updateSelectedMarker(${selectedLocation?.id || null});
-        }
+        (function() {
+          try {
+            if (typeof updateSelectedMarker === 'function') {
+              updateSelectedMarker(
+                ${JSON.stringify(id || null)}, 
+                ${JSON.stringify(lat || null)}, 
+                ${JSON.stringify(lng || null)}
+              );
+            }
+          } catch(e) {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'Error in updateSelectedMarker: ' + e.message
+            }));
+          }
+        })();
+        true;
       `;
       webViewRef.current.injectJavaScript(js);
     }
@@ -89,7 +138,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
               // Add a round blue marker with white border and shadow
               window.userMarker = L.marker([ul.latitude, ul.longitude], { icon: userLocationIcon }).addTo(map);
               // Center map to the user location
-              map.setView([ul.latitude, ul.longitude], 15);
+              map.setView([ul.latitude, ul.longitude], 8);
             }
           } catch(err) {
             // swallow errors coming from injected code
@@ -118,6 +167,14 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
       
+      <!-- Leaflet.heat for heatmap -->
+      <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+      
+      <!-- Leaflet.markercluster for clustering -->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+      <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+      
       <style>
         body { 
           margin: 0; 
@@ -128,7 +185,25 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           height: 100vh; 
           width: 100vw; 
         }
-        /* Popups disabled - removed popup styles to prevent popup rendering */
+        /* Custom cluster styles */
+        .marker-cluster-small {
+          background-color: rgba(255, 105, 0, 0.6);
+        }
+        .marker-cluster-small div {
+          background-color: rgba(255, 105, 0, 0.8);
+        }
+        .marker-cluster-medium {
+          background-color: rgba(255, 105, 0, 0.6);
+        }
+        .marker-cluster-medium div {
+          background-color: rgba(255, 105, 0, 0.8);
+        }
+        .marker-cluster-large {
+          background-color: rgba(255, 105, 0, 0.6);
+        }
+        .marker-cluster-large div {
+          background-color: rgba(255, 105, 0, 0.9);
+        }
       </style>
     </head>
     <body>
@@ -142,45 +217,19 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         var cacheInfo = ${JSON.stringify(cacheStatus)};
         var hasCache = cacheInfo && cacheInfo.metadata && cacheInfo.metadata.isComplete;
 
-        // Funció per obtenir URL de tile (cache híbrid)
-        function getTileUrl(coords) {
-          var z = coords.z;
-          var x = coords.x;
-          var y = coords.y;
-          
-          // Si tenim cache, intentar usar tiles locals primer
-          if (hasCache) {
-            // Aquesta és una simulació - en una implementació real, hauríem de comprovar si el tile existeix localment
-            // Per ara, utilitzarem online sempre, però amb la infraestructura preparada per cache
-            return 'https://a.tile.opentopomap.org/' + z + '/' + x + '/' + y + '.png';
-          }
-          
-          return 'https://a.tile.opentopomap.org/' + z + '/' + x + '/' + y + '.png';
-        }
+        // Definir les capes de mapa
+        var tileLayers = {
+          opentopomap: L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+          }),
+          openstreetmap: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+          })
+        };
 
-        // Crear una capa personalitzada que pot usar cache
-        var CustomTileLayer = L.TileLayer.extend({
-          createTile: function(coords, done) {
-            var tile = document.createElement('img');
-            
-            tile.onload = function() {
-              done(null, tile);
-            };
-            
-            tile.onerror = function() {
-              // Fallback a online si local falla
-              tile.src = 'https://a.tile.opentopomap.org/' + coords.z + '/' + coords.x + '/' + coords.y + '.png';
-            };
-            
-            tile.src = getTileUrl(coords);
-            return tile;
-          }
-        });
-
-        // Afegir la capa personalitzada
-        var tileLayer = new CustomTileLayer('', {
-          maxZoom: 17,
-        }).addTo(map);
+        // Capa actual
+        var currentLayer = '${mapLayer}';
+        var tileLayer = tileLayers[currentLayer].addTo(map);
 
         // Icona personalitzada per als refugis
         var refugeIcon = L.divIcon({
@@ -197,8 +246,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           iconAnchor: [16, 16]
         });
 
-        // Icona blava per la ubicació de l'usuari (escala 2/3)
-        // Reduïm el diàmetre i l'ample del border per fer-la aproximadament 2/3 de la mida original
+        // Icona blava per la ubicació de l'usuari
         var userLocationIcon = L.divIcon({
           html: '<div style="width: 16px; height: 16px; background: #2563eb; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>',
           className: 'user-location-marker',
@@ -206,23 +254,40 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           iconAnchor: [8, 8]
         });
 
-  // Gestió de marcadors - guardem referència global
-  var markers = [];
-  var userMarker = null;
-  // Expose userMarker on window so injected updates can reference/remove it
-  window.userMarker = null;
+        // Variables globals per gestionar les diferents representacions
+        var markers = [];
+        var markerClusterGroup = null;
+        var heatmapLayer = null;
+        var userMarker = null;
+        var currentRepresentation = '${representation}';
+        
+        window.userMarker = null;
 
-        // Popups removed; no popup content function
-
-        // Funció per afegir marcadors
-        function addMarkers(locations, selectedId) {
-          // Eliminar marcadors existents
+        // Funció per netejar totes les capes de representació
+        function clearRepresentations() {
+          // Netejar markers individuals
           markers.forEach(function(m) {
             map.removeLayer(m);
           });
           markers = [];
+          
+          // Netejar cluster
+          if (markerClusterGroup) {
+            map.removeLayer(markerClusterGroup);
+            markerClusterGroup = null;
+          }
+          
+          // Netejar heatmap
+          if (heatmapLayer) {
+            map.removeLayer(heatmapLayer);
+            heatmapLayer = null;
+          }
+        }
 
-          // Afegir nous marcadors
+        // Funció per afegir marcadors normals
+        function addMarkers(locations, selectedId) {
+          clearRepresentations();
+
           locations.forEach(function(location) {
             var isSelected = location.id === selectedId;
             var marker = L.marker([location.coord.lat, location.coord.long], {
@@ -230,7 +295,6 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             }).addTo(map);
 
             marker.locationData = location;
-            // No popup bound to marker; only notify React Native on click
             marker.on('click', function() {
               window.ReactNativeWebView?.postMessage(JSON.stringify({
                 type: 'locationSelect',
@@ -242,36 +306,194 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           });
         }
 
-        // Funció per actualitzar markers (crida des de React Native)
-        window.updateMarkers = function(newLocations, selectedId) {
-          addMarkers(newLocations, selectedId);
-        };
-
-        // Funció per actualitzar només el marker seleccionat (més eficient)
-        window.updateSelectedMarker = function(selectedId) {
-          markers.forEach(function(marker) {
-            var isSelected = marker.locationData && marker.locationData.id === selectedId;
-            marker.setIcon(isSelected ? selectedIcon : refugeIcon);
-          });
+        // Funció per afegir heatmap
+        function addHeatmap(locations, selectedId) {
+          clearRepresentations();
           
-          // Centrar mapa al refugi seleccionat
-          if (selectedId) {
-            var selectedMarker = markers.find(function(m) { 
-              return m.locationData && m.locationData.id === selectedId; 
+          var currentZoom = map.getZoom();
+          var TRANSITION_ZOOM = 12; // Zoom a partir del qual mostrem markers
+          
+          if (currentZoom >= TRANSITION_ZOOM) {
+            // Mostrar markers individuals
+            addMarkers(locations, selectedId);
+          } else {
+            // Mostrar heatmap amb transparència uniforme
+            var heatData = locations.map(function(loc) {
+              return [loc.coord.lat, loc.coord.long, 0.5]; // Intensitat fixa per tots els punts
             });
-            if (selectedMarker) {
-              map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14, {
-                animate: true,
-                duration: 0.5
+            
+            heatmapLayer = L.heatLayer(heatData, {
+              radius: 25, // Reduït per zones més definides
+              blur: 15, // Menys blur per millor definició
+              max: 2.5, // Augmentat per normalitzar millor la densitat
+              minOpacity: 0.35, // Opacitat base perquè els punts solitaris es vegin
+              maxZoom: TRANSITION_ZOOM,
+              gradient: {
+                0.0: 'rgba(254, 215, 170, 0.4)', // Molt transparent
+                0.2: 'rgba(253, 186, 116, 0.45)',
+                0.4: 'rgba(251, 146, 60, 0.5)',
+                0.6: 'rgba(249, 115, 22, 0.55)',
+                0.8: 'rgba(234, 88, 12, 0.6)',
+                1.0: 'rgba(194, 65, 12, 0.65)' // Màxima intensitat però transparent
+              }
+            }).addTo(map);
+          }
+          
+          // Event listener per canviar a markers quan fem zoom
+          map.off('zoomend', handleHeatmapZoom);
+          map.on('zoomend', handleHeatmapZoom);
+          
+          function handleHeatmapZoom() {
+            var zoom = map.getZoom();
+            if (currentRepresentation === 'heatmap') {
+              if (zoom >= TRANSITION_ZOOM && heatmapLayer) {
+                clearRepresentations();
+                addMarkers(locations, selectedId);
+              } else if (zoom < TRANSITION_ZOOM && markers.length > 0) {
+                clearRepresentations();
+                addHeatmap(locations, selectedId);
+              }
+            }
+          }
+        }
+
+        // Funció per afegir clusters
+        function addCluster(locations, selectedId) {
+          clearRepresentations();
+          
+          var currentZoom = map.getZoom();
+          var TRANSITION_ZOOM = 12; // Zoom a partir del qual desactivem clustering
+          
+          markerClusterGroup = L.markerClusterGroup({
+            maxClusterRadius: currentZoom >= TRANSITION_ZOOM ? 0 : 80,
+            disableClusteringAtZoom: TRANSITION_ZOOM,
+            spiderfyOnMaxZoom: false,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            iconCreateFunction: function(cluster) {
+              var count = cluster.getChildCount();
+              var size = 'small';
+              if (count >= 10) size = 'medium';
+              if (count >= 20) size = 'large';
+              
+              return L.divIcon({
+                html: '<div><span>' + count + '</span></div>',
+                className: 'marker-cluster marker-cluster-' + size,
+                iconSize: L.point(40, 40)
               });
             }
+          });
+          
+          locations.forEach(function(location) {
+            var isSelected = location.id === selectedId;
+            var marker = L.marker([location.coord.lat, location.coord.long], {
+              icon: isSelected ? selectedIcon : refugeIcon
+            });
+            
+            marker.locationData = location;
+            marker.on('click', function() {
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'locationSelect',
+                id: location.id
+              }));
+            });
+            
+            markerClusterGroup.addLayer(marker);
+            markers.push(marker);
+          });
+          
+          map.addLayer(markerClusterGroup);
+        }
+
+        // Funció per canviar el tipus de representació
+        window.changeRepresentation = function(newRepresentation, locations, selectedId) {
+          currentRepresentation = newRepresentation;
+          
+          if (newRepresentation === 'markers') {
+            addMarkers(locations, selectedId);
+          } else if (newRepresentation === 'heatmap') {
+            addHeatmap(locations, selectedId);
+          } else if (newRepresentation === 'cluster') {
+            addCluster(locations, selectedId);
           }
         };
 
-        // Inicialitzar marcadors
+        // Funció per canviar la capa del mapa
+        window.changeMapLayer = function(newLayer) {
+          if (currentLayer !== newLayer && tileLayers[newLayer]) {
+            map.removeLayer(tileLayer);
+            tileLayer = tileLayers[newLayer].addTo(map);
+            currentLayer = newLayer;
+          }
+        };
+
+        // Funció per actualitzar markers (crida des de React Native)
+        window.updateMarkers = function(newLocations, selectedId, representation) {
+          representation = representation || currentRepresentation;
+          
+          if (representation === 'markers') {
+            addMarkers(newLocations, selectedId);
+          } else if (representation === 'heatmap') {
+            addHeatmap(newLocations, selectedId);
+          } else if (representation === 'cluster') {
+            addCluster(newLocations, selectedId);
+          }
+        };
+
+        // Funció per actualitzar només el marker seleccionat (més eficient)
+        window.updateSelectedMarker = function(selectedId, lat, lng) {
+          try {
+            // Actualitzar icones de tots els marcadors
+            markers.forEach(function(marker) {
+              var isSelected = marker.locationData && marker.locationData.id === selectedId;
+              marker.setIcon(isSelected ? selectedIcon : refugeIcon);
+            });
+            
+            // Centrar mapa al refugi seleccionat
+            if (selectedId) {
+              var targetLat = lat;
+              var targetLng = lng;
+              
+              // Si no tenim coordenades passades, buscar-les al marcador
+              if (targetLat === null || targetLat === undefined || targetLng === null || targetLng === undefined) {
+                var selectedMarker = markers.find(function(m) { 
+                  return m.locationData && m.locationData.id === selectedId; 
+                });
+                
+                if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
+                  targetLat = selectedMarker.locationData.coord.lat;
+                  targetLng = selectedMarker.locationData.coord.long;
+                }
+              }
+              
+              // Fer zoom si tenim coordenades
+              if (targetLat !== null && targetLat !== undefined && targetLng !== null && targetLng !== undefined) {
+                map.setView([targetLat, targetLng], 14, {
+                  animate: true,
+                  duration: 0.5
+                });
+              }
+            }
+          } catch(e) {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'debug',
+              message: 'Error in updateSelectedMarker: ' + e.message
+            }));
+          }
+        };
+
+        // Inicialitzar amb la representació adequada
         var initialLocations = ${JSON.stringify(locations)};
-        var selectedLocationId = ${selectedLocation?.id || null};
-        addMarkers(initialLocations, selectedLocationId);
+        var selectedLocationId = ${JSON.stringify(selectedLocation?.id || null)};
+        var initialRepresentation = '${representation}';
+        
+        if (initialRepresentation === 'markers') {
+          addMarkers(initialLocations, selectedLocationId);
+        } else if (initialRepresentation === 'heatmap') {
+          addHeatmap(initialLocations, selectedLocationId);
+        } else if (initialRepresentation === 'cluster') {
+          addCluster(initialLocations, selectedLocationId);
+        }
 
         // Dibuixa la bola blava si tenim userLocation (assignada a window.userMarker per evitar duplicats)
         var userLocation = ${JSON.stringify(userLocation)};
@@ -302,8 +524,12 @@ export const LeafletWebMap = memo(function LeafletWebMap({
           var selectedMarker = markers.find(function(m) { 
             return m.locationData && m.locationData.id === selectedLocationId; 
           });
-          if (selectedMarker) {
-            map.setView([selectedMarker.locationData.coord.lat, selectedMarker.locationData.coord.long], 14);
+          if (selectedMarker && selectedMarker.locationData && selectedMarker.locationData.coord) {
+            var lat = selectedMarker.locationData.coord.lat;
+            var lng = selectedMarker.locationData.coord.long;
+            if (lat !== undefined && lng !== undefined) {
+              map.setView([lat, lng], 14);
+            }
           }
         }
 
@@ -331,6 +557,8 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         }
       } else if (data.type === 'mapInitialized') {
         setMapInitialized(true);
+      } else if (data.type === 'debug') {
+        console.log('[WebView]', data.message);
       }
     } catch (error) {
       console.error('Error parsing message from WebView:', error);

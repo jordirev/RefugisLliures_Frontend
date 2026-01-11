@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useTranslation } from '../utils/useTranslation';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { useTranslation } from '../hooks/useTranslation';
 
 // Importar les icones SVG
 import SearchIcon from '../assets/icons/search.svg';
@@ -10,14 +10,27 @@ import PlusIcon from '../assets/icons/plus.svg';
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onOpenFilters: () => void;
+  onOpenFilters?: () => void;
+  onAddPress?: () => void;
   suggestions?: string[];
   onSuggestionSelect?: (name: string) => void;
   topInset?: number;
+  showFilterButton?: boolean;
+  showAddButton?: boolean;
 }
 
 // Memoritzem el component per evitar re-renders innecessaris
-export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, onOpenFilters, suggestions = [], onSuggestionSelect, topInset = 0 }: SearchBarProps) {
+export const SearchBar = memo(function SearchBar({ 
+  searchQuery, 
+  onSearchChange, 
+  onOpenFilters, 
+  onAddPress,
+  suggestions = [], 
+  onSuggestionSelect, 
+  topInset = 0,
+  showFilterButton = true,
+  showAddButton = true
+}: SearchBarProps) {
   const { t } = useTranslation();
   
   return (
@@ -56,6 +69,7 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
             </TouchableOpacity>
           )}
         </View>
+        {showFilterButton && onOpenFilters && (
         <TouchableOpacity
           style={styles.filterButton}
           onPress={() => {
@@ -65,30 +79,37 @@ export const SearchBar = memo(function SearchBar({ searchQuery, onSearchChange, 
         >
           <FilterIcon width={18} height={18} color="#6B7280" />
         </TouchableOpacity>
+        )}
       </View>
       {/* Llista de suggeriments d'autocomplete */}
       {suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          {suggestions.slice(0, 6).map((name) => (
-            <TouchableOpacity
-              key={name}
-              style={styles.suggestionItem}
-              onPress={() => {
-                Keyboard.dismiss();
-                onSuggestionSelect && onSuggestionSelect(name);
-              }}
-            >
-              <Text style={styles.suggestionText}>{name}</Text>
-            </TouchableOpacity>
-          ))}
+          <ScrollView 
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+          >
+            {suggestions.map((name) => (
+              <TouchableOpacity
+                key={name}
+                style={styles.suggestionItem}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  onSuggestionSelect && onSuggestionSelect(name);
+                }}
+              >
+                <Text style={styles.suggestionText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       )}
       {/* Botó afegeix: només mostrar si la cerca està buida */}
-      {(!searchQuery || searchQuery.trim().length === 0) && (
+      {showAddButton && (!searchQuery || searchQuery.trim().length === 0) && (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            Keyboard.dismiss();
+            onAddPress && onAddPress();
             /* TODO: Implementar afegir nova ubicació */
           }}
         >
@@ -223,6 +244,10 @@ const styles = StyleSheet.create({
       shadowRadius: 4,
       elevation: 2,
       paddingVertical: 4,
+      maxHeight: 240,
+    },
+    scrollView: {
+      maxHeight: 240,
     },
     suggestionItem: {
       paddingVertical: 8,

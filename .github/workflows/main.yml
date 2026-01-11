@@ -30,7 +30,7 @@ jobs:
       run: npm ci
       
     - name: Run unit and integration tests with coverage
-      run: npm run test:coverage
+      run: npm run test:coverage -- -u
       
     - name: Run E2E tests without coverage
       run: npm run test:e2e

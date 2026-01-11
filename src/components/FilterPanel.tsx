@@ -9,13 +9,14 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Filters } from '../models';
 import XIcon from '../assets/icons/x.svg';
 import FilterIcon from '../assets/icons/filters.svg';
 import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -37,19 +38,20 @@ export function FilterPanel({
   maxPlaces = 30,
 }: FilterPanelProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   
   const locationTypes = [
-    { id: 0, label: t('refuge.type.noGuarded') },
-    { id: 3, label: t('refuge.type.shelter') },
-    { id: 4, label: t('refuge.type.emergency') },
-    { id: 1, label: t('refuge.type.occupiedInSummer') },
-    { id: 2, label: t('refuge.type.closed') },
+    { id: "non gardé", label: t('refuge.type.noGuarded') },
+    { id: "orri", label: t('refuge.type.shelter') },
+    { id: "emergence", label: t('refuge.type.emergency') },
+    { id: "cabane ouverte mais ocupee par le berger l ete", label: t('refuge.type.occupiedInSummer') },
+    { id: "fermée", label: t('refuge.type.closed') },
   ];
 
   const conditions = [
-    { id: 'pobre', label: t('refuge.condition.poor') },
-    { id: 'normal', label: t('refuge.condition.fair') },
-    { id: 'bé', label: t('refuge.condition.good') },
+    { id: 0, label: t('refuge.condition.poor') },
+    { id: 1, label: t('refuge.condition.fair') },
+    { id: 2, label: t('refuge.condition.good') },
   ];
 
   // Use a local copy of filters so changes are only emitted when the user
@@ -61,7 +63,7 @@ export function FilterPanel({
     if (isOpen) setLocalFilters(filters);
   }, [isOpen, filters]);
 
-  const handleTypeChange = (typeId: number) => {
+  const handleTypeChange = (typeId: string) => {
     const newTypes = localFilters.types.includes(typeId)
       ? localFilters.types.filter((t) => t !== typeId)
       : [...localFilters.types, typeId];
@@ -69,7 +71,7 @@ export function FilterPanel({
     setLocalFilters({ ...localFilters, types: newTypes });
   };
 
-  const handleConditionChange = (conditionId: 'pobre' | 'normal' | 'bé') => {
+  const handleConditionChange = (conditionId: number) => {
     const newConditions = localFilters.condition.includes(conditionId)
       ? localFilters.condition.filter((c) => c !== conditionId)
       : [...localFilters.condition, conditionId];
@@ -273,16 +275,16 @@ export function FilterPanel({
               <View style={styles.conditionsGrid}>
                 <View style={styles.badgesRow}>
                   {conditions.map((condition) => {
-                    const selected = localFilters.condition.includes(condition.id as any);
+                    const selected = localFilters.condition.includes(condition.id);
                     return (
                       <TouchableOpacity
                         key={condition.id}
                         style={[styles.badgeWrapper, selected ? styles.badgeSelectedWrapper : styles.badgeUnselectedWrapper]}
-                        onPress={() => handleConditionChange(condition.id as any)}
+                        onPress={() => handleConditionChange(condition.id)}
                         activeOpacity={0.8}
                       >
                         <BadgeCondition
-                          condition={condition.label}
+                          condition={condition.id}
                           style={selected ? undefined : styles.badgeUnselected}
                           muted={!selected}
                         />
@@ -295,7 +297,7 @@ export function FilterPanel({
           </ScrollView>
 
           {/* Botons d'acció */}
-          <View style={styles.footer}>
+          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
             <TouchableOpacity
               style={styles.clearButton}
               onPress={clearFilters}

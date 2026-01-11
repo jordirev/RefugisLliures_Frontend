@@ -4,20 +4,32 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Location } from '../models';
 import { BadgeType } from './BadgeType';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
+import useFavourite from '../hooks/useFavourite';
+import { useRefuge } from '../hooks/useRefugesQuery';
+import { VideoThumbnail } from './PhotoViewerModal';
+
+// Helper function to check if a media is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
 
 import AltitudeIcon from '../assets/icons/altitude.svg';
 import CapacityIcon from '../assets/icons/user.svg';
 import RegionIcon from '../assets/icons/region.svg';
-import FavouriteIcon from '../assets/icons/favourite2.svg';
+import FavouriteIcon from '../assets/icons/favRed.svg';
+import FavouriteFilledIcon from '../assets/icons/favourite2.svg';
+
 
 // BadgeCondition component handles mapping condition -> colors
 
 interface RefugeBottomSheetProps {
-  refuge: Location;
+  refugeId: string;
   isVisible: boolean;
   onClose: () => void;
-  onToggleFavorite: (id: number | undefined) => void;
+  onToggleFavorite: (id: string | undefined) => void;
   onNavigate: (refuge: Location) => void;
   onViewDetails: (refuge: Location) => void;
 }
@@ -31,7 +43,7 @@ const SCREEN_WIDTH = Math.min(
 );
 
 export function RefugeBottomSheet({ 
-  refuge, 
+  refugeId, 
   isVisible, 
   onClose, 
   onToggleFavorite,
@@ -40,7 +52,19 @@ export function RefugeBottomSheet({
 }: RefugeBottomSheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  
+  // Load full refuge data - must call hooks BEFORE any early returns
+  const { data: refuge, isLoading } = useRefuge(refugeId || '');
+  const { isFavourite, toggleFavourite, isProcessing } = useFavourite(refugeId || '');
+  
+  // Early return if not visible (after all hooks)
   if (!isVisible) return null;
+
+  // Show loading or return null if no data
+  if (isLoading || !refuge || !refugeId) return null;
+
+  // Safe access to images_metadata
+  const imageUrl = refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
 
   return (
     <View style={styles.overlay}>
@@ -55,20 +79,44 @@ export function RefugeBottomSheet({
         <View style={styles.handle} />
           {/* Imatge del refugi */}
           <View style={styles.imageContainer}>
-            <Image
-              testID="refuge-image"
-              source={{ uri: refuge.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
-              style={styles.image}
-              resizeMode="cover"
-            />
+            {isVideo(imageUrl) ? (
+              <VideoThumbnail
+                uri={imageUrl}
+                style={styles.image}
+              />
+            ) : (
+              <Image
+                testID="refuge-image"
+                source={{ uri: imageUrl }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            )}
           </View>
           <View style={styles.sheetInfo}>
             <View style={styles.namefavorite}>
               {/* Nom */}
               <Text style={styles.name}>{refuge.name}</Text>
               {/* Favorit */}
-              <TouchableOpacity testID="favorite-button" onPress={() => onToggleFavorite(refuge.id)} style={styles.favoriteButton}>
-                <FavouriteIcon width={24} height={24} />
+              <TouchableOpacity
+                testID="favorite-button"
+                onPress={async () => {
+                  try {
+                    await toggleFavourite();
+                    if (onToggleFavorite) onToggleFavorite(refuge.id);
+                  } catch (err) {
+                    // already logged in hook
+                  }
+                }}
+                style={styles.favoriteButton}
+                disabled={isProcessing}
+                accessibilityState={{ disabled: isProcessing, selected: !!isFavourite }}
+              >
+                {isFavourite ? (
+                  <FavouriteFilledIcon width={24} height={24} />
+                ) : (
+                  <FavouriteIcon width={24} height={24} />
+                )}
               </TouchableOpacity>
             </View>
 
@@ -83,7 +131,7 @@ export function RefugeBottomSheet({
                   <BadgeType type={refuge.type} />
                 </View>
                 {/* Estat */}
-                {refuge.condition && (
+                {refuge.condition != null && (
                   <View style={styles.detailItem}>
                     <BadgeCondition condition={refuge.condition} />
                   </View>
@@ -100,7 +148,7 @@ export function RefugeBottomSheet({
                 {/* Places */}
                 <View style={styles.detailItem}>
                   <CapacityIcon color={'#4A5565'} />
-                  <Text style={styles.detailValue}>{refuge.places} </Text>
+                  <Text style={styles.detailValue}>{refuge.places ?? "?"} </Text>
                 </View>
                 {/* Regió */}
                 <View style={styles.detailItem}>

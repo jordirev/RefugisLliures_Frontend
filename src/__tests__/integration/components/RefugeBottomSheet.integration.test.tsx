@@ -11,6 +11,51 @@
  * - Casos límit i camps opcionals
  */
 
+// Mock d'expo-video (ha d'anar ABANS dels imports)
+jest.mock('expo-video', () => ({
+  VideoView: 'VideoView',
+  useVideoPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+  })),
+}));
+
+// Mock de useRefuge hook
+const mockRefugeData = {
+  id: '1',
+  name: 'Refugi de Colomers',
+  coord: { lat: 42.6531, long: 0.9858 },
+  altitude: 2135,
+  places: 16,
+  type: 1,
+  condition: 2,
+  region: 'Pallars Sobirà',
+  images_metadata: [{ url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }],
+};
+
+let mockUseRefugeReturn = {
+  data: mockRefugeData,
+  isLoading: false,
+};
+
+jest.mock('../../../hooks/useRefugesQuery', () => ({
+  useRefuge: jest.fn(() => mockUseRefugeReturn),
+}));
+
+// Mock de useFavourite hook
+const mockToggleFavourite = jest.fn();
+let mockUseFavouriteReturn = {
+  isFavourite: false,
+  toggleFavourite: mockToggleFavourite,
+  isProcessing: false,
+};
+
+jest.mock('../../../hooks/useFavourite', () => ({
+  __esModule: true,
+  default: jest.fn(() => mockUseFavouriteReturn),
+}));
+
 import React from 'react';
 import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
 import { RefugeBottomSheet } from '../../../components/RefugeBottomSheet';
@@ -21,6 +66,7 @@ jest.mock('../../../assets/icons/altitude.svg', () => 'AltitudeIcon');
 jest.mock('../../../assets/icons/user.svg', () => 'CapacityIcon');
 jest.mock('../../../assets/icons/region.svg', () => 'RegionIcon');
 jest.mock('../../../assets/icons/favourite2.svg', () => 'FavouriteIcon');
+jest.mock('../../../assets/icons/favRed.svg', () => 'FavouriteRedIcon');
 
 // Mock dels components Badge
 jest.mock('../../../components/BadgeType', () => ({
@@ -40,7 +86,7 @@ jest.mock('../../../components/BadgeCondition', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -53,18 +99,6 @@ jest.mock('../../../utils/useTranslation', () => ({
 }));
 
 describe('RefugeBottomSheet - Tests d\'integració', () => {
-  const mockRefuge: Location = {
-    id: 1,
-    name: 'Refugi de Colomers',
-    coord: { lat: 42.6531, long: 0.9858 },
-    altitude: 2135,
-    places: 16,
-    type: 1,
-    condition: 'bé',
-    region: 'Pallars Sobirà',
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-  };
-
   const mockOnClose = jest.fn();
   const mockOnToggleFavorite = jest.fn();
   const mockOnNavigate = jest.fn();
@@ -72,20 +106,30 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset mocks to default values
+    mockUseRefugeReturn = {
+      data: mockRefugeData,
+      isLoading: false,
+    };
+    mockUseFavouriteReturn = {
+      isFavourite: false,
+      toggleFavourite: mockToggleFavourite,
+      isProcessing: false,
+    };
   });
 
   describe('Renderització i visibilitat', () => {
     it('no hauria de renderitzar quan isVisible és false', () => {
       const { queryByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={false}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(queryByText('Refugi de Colomers')).toBeNull();
@@ -94,14 +138,14 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de renderitzar quan isVisible és true', () => {
       const { getByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByText('Refugi de Colomers')).toBeTruthy();
@@ -110,14 +154,14 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de mostrar la informació bàsica del refugi', () => {
       const { getByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByText('Refugi de Colomers')).toBeTruthy();
@@ -131,14 +175,14 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de mostrar el badge de tipus', () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByTestId('badge-type')).toBeTruthy();
@@ -147,32 +191,35 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de mostrar el badge de condició si existeix', () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByTestId('badge-condition')).toBeTruthy();
     });
 
     it('no hauria de mostrar el badge de condició si no existeix', () => {
-      const refugeWithoutCondition = { ...mockRefuge, condition: undefined };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, condition: undefined },
+        isLoading: false,
+      };
 
       const { queryByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutCondition}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(queryByTestId('badge-condition')).toBeNull();
@@ -183,34 +230,37 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de mostrar la imatge del refugi', () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const image = getByTestId('refuge-image');
       expect(image).toBeTruthy();
-      expect(image.props.source.uri).toBe(mockRefuge.imageUrl);
+      expect(image.props.source.uri).toBe(mockRefugeData.images_metadata[0].url);
     });
 
-    it('hauria de mostrar una imatge per defecte si no hi ha imageUrl', () => {
-      const refugeWithoutImage = { ...mockRefuge, imageUrl: undefined };
+    it('hauria de mostrar una imatge per defecte si no hi ha images_metadata', () => {
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, images_metadata: [] },
+        isLoading: false,
+      };
 
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutImage}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const image = getByTestId('refuge-image');
@@ -224,14 +274,14 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de cridar onClose quan es fa clic al backdrop', () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const backdrop = getByTestId('backdrop');
@@ -240,117 +290,132 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('hauria de cridar onToggleFavorite quan es fa clic al botó de favorit', () => {
+    it('hauria de permetre pressionar el botó de favorit', async () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const favoriteButton = getByTestId('favorite-button');
+      
+      // Verificar que el botó existeix i es pot pressionar
+      expect(favoriteButton).toBeTruthy();
       fireEvent.press(favoriteButton);
-
-      expect(mockOnToggleFavorite).toHaveBeenCalledWith(mockRefuge.id);
+      
+      await waitFor(() => {
+        expect(mockToggleFavourite).toHaveBeenCalled();
+      });
     });
 
     it('hauria de cridar onViewDetails quan es fa clic al botó de detalls', () => {
       const { getByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const detailsButton = getByText('Veure detalls');
       fireEvent.press(detailsButton);
 
-      expect(mockOnViewDetails).toHaveBeenCalledWith(mockRefuge);
+      expect(mockOnViewDetails).toHaveBeenCalled();
     });
   });
 
   describe('Camps opcionals i casos límit', () => {
     it('hauria de gestionar altitud undefined', () => {
-      const refugeWithoutAltitude = { ...mockRefuge, altitude: undefined };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, altitude: undefined },
+        isLoading: false,
+      };
 
       const { queryByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutAltitude}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       // No hauria de mostrar l'altitud
-      expect(queryByText(/m$/)).toBeNull();
+      expect(queryByText(/2135 m/)).toBeNull();
     });
 
     it('hauria de mostrar "Unknown" si no hi ha regió', () => {
-      const refugeWithoutRegion = { ...mockRefuge, region: undefined };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, region: undefined },
+        isLoading: false,
+      };
 
       const { getByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutRegion}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByText(/Unknown/)).toBeTruthy();
     });
 
-    it('hauria de gestionar id undefined en toggleFavorite', () => {
-      const refugeWithoutId = { ...mockRefuge, id: undefined };
+    it('hauria de gestionar refugeId buit sense errors', () => {
+      mockUseRefugeReturn = {
+        data: null,
+        isLoading: false,
+      };
 
-      const { getByTestId } = renderWithProviders(
+      const { queryByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutId}
+          refugeId=""
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
-      const favoriteButton = getByTestId('favorite-button');
-      fireEvent.press(favoriteButton);
-
-      expect(mockOnToggleFavorite).toHaveBeenCalledWith(undefined);
+      // No hauria de renderitzar res si no hi ha dades
+      expect(queryByTestId('bottom-sheet')).toBeNull();
     });
 
     it('hauria de gestionar places = 0', () => {
-      const refugeWithZeroPlaces = { ...mockRefuge, places: 0 };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, places: 0 },
+        isLoading: false,
+      };
 
       const { getByText } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithZeroPlaces}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       // Hauria de mostrar 0 places
@@ -362,14 +427,14 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     it('hauria de respectar els insets de safe area', () => {
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={mockRefuge}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       const sheet = getByTestId('bottom-sheet');
@@ -380,36 +445,42 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
 
   describe('Diferents tipus de refugis', () => {
     it('hauria de mostrar correctament un refugi de tipus 0', () => {
-      const refugeType0 = { ...mockRefuge, type: 0 };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, type: 0 },
+        isLoading: false,
+      };
 
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeType0}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByTestId('badge-type')).toBeTruthy();
     });
 
     it('hauria de mostrar correctament un refugi sense tipus', () => {
-      const refugeWithoutType = { ...mockRefuge, type: undefined };
+      mockUseRefugeReturn = {
+        data: { ...mockRefugeData, type: undefined },
+        isLoading: false,
+      };
 
       const { getByTestId } = renderWithProviders(
         <RefugeBottomSheet
-          refuge={refugeWithoutType}
+          refugeId="1"
           isVisible={true}
           onClose={mockOnClose}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />,
-        { withNavigation: false }
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
       );
 
       expect(getByTestId('badge-type')).toBeTruthy();
@@ -417,26 +488,53 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Diferents condicions de refugis', () => {
-    const conditions: Array<'pobre' | 'normal' | 'bé'> = ['pobre', 'normal', 'bé'];
+    const conditions = [1, 2, 3];
 
     conditions.forEach(condition => {
       it(`hauria de mostrar correctament un refugi amb condició ${condition}`, () => {
-        const refugeWithCondition = { ...mockRefuge, condition };
+        mockUseRefugeReturn = {
+          data: { ...mockRefugeData, condition },
+          isLoading: false,
+        };
 
         const { getByTestId } = renderWithProviders(
           <RefugeBottomSheet
-            refuge={refugeWithCondition}
+            refugeId="1"
             isVisible={true}
             onClose={mockOnClose}
             onToggleFavorite={mockOnToggleFavorite}
             onNavigate={mockOnNavigate}
             onViewDetails={mockOnViewDetails}
           />,
-          { withNavigation: false }
+          { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
         );
 
         expect(getByTestId('badge-condition')).toBeTruthy();
       });
     });
   });
+
+  describe('Estat de carrega', () => {
+    it('no hauria de renderitzar mentre carrega', () => {
+      mockUseRefugeReturn = {
+        data: null,
+        isLoading: true,
+      };
+
+      const { queryByTestId } = renderWithProviders(
+        <RefugeBottomSheet
+          refugeId="1"
+          isVisible={true}
+          onClose={mockOnClose}
+          onToggleFavorite={mockOnToggleFavorite}
+          onNavigate={mockOnNavigate}
+          onViewDetails={mockOnViewDetails}
+        />,
+        { withNavigation: false, mockAuthValue: { isAuthenticated: true } }
+      );
+
+      expect(queryByTestId('bottom-sheet')).toBeNull();
+    });
+  });
 });
+

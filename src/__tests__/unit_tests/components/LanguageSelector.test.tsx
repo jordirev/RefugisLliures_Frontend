@@ -15,7 +15,6 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { TouchableOpacity, ScrollView } from 'react-native';
 import { LanguageSelector } from '../../../components/LanguageSelector';
-import { UsersService } from '../../../services/UsersService';
 import * as i18n from '../../../i18n';
 
 // Mock de i18n
@@ -31,7 +30,7 @@ jest.mock('../../../i18n', () => ({
 }));
 
 // Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -55,22 +54,29 @@ jest.mock('../../../contexts/AuthContext', () => ({
   })),
 }));
 
-// Mock de UsersService
-jest.mock('../../../services/UsersService', () => ({
-  UsersService: {
-    updateUser: jest.fn(() => Promise.resolve()),
-  },
-}));
-
 // Mock de useCustomAlert
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: {},
     showAlert: mockShowAlert,
     hideAlert: mockHideAlert,
+  }),
+}));
+
+// Mock de useUsersQuery (useUpdateUserProfile)
+const mockMutate = jest.fn((args, options) => {
+  // Simulate successful mutation by calling onSuccess
+  if (options?.onSuccess) {
+    Promise.resolve().then(() => options.onSuccess());
+  }
+});
+jest.mock('../../../hooks/useUsersQuery', () => ({
+  useUpdateUserProfile: () => ({
+    mutate: mockMutate,
+    isPending: false,
   }),
 }));
 
@@ -84,7 +90,12 @@ describe('LanguageSelector Component', () => {
     jest.clearAllMocks();
     (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('ca');
     (i18n.changeLanguage as jest.Mock).mockResolvedValue(undefined);
-    (UsersService.updateUser as jest.Mock).mockResolvedValue(undefined);
+    // Reset mockMutate to default success behavior
+    mockMutate.mockImplementation((args, options) => {
+      if (options?.onSuccess) {
+        Promise.resolve().then(() => options.onSuccess());
+      }
+    });
   });
 
   describe('Renderització del modal', () => {
@@ -175,10 +186,9 @@ describe('LanguageSelector Component', () => {
       fireEvent.press(getByText('English'));
       
       await waitFor(() => {
-        expect(UsersService.updateUser).toHaveBeenCalledWith(
-          'user123',
-          { idioma: 'EN' },
-          'token123'
+        expect(mockMutate).toHaveBeenCalledWith(
+          { uid: 'user123', data: { language: 'EN' } },
+          expect.any(Object)
         );
       });
     });
@@ -222,10 +232,10 @@ describe('LanguageSelector Component', () => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
       });
       
-      expect(UsersService.updateUser).not.toHaveBeenCalled();
+      expect(mockMutate).not.toHaveBeenCalled();
     });
 
-    it('NO hauria d\'actualitzar el backend si no hi ha token', async () => {
+    it('hauria d\'actualitzar el backend encara que no hi ha token (utilitza backendUser)', async () => {
       const { useAuth } = require('../../../contexts/AuthContext');
       useAuth.mockReturnValueOnce({
         backendUser: { uid: 'user123' },
@@ -239,17 +249,20 @@ describe('LanguageSelector Component', () => {
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
+        // Now it should call mutate since backendUser exists
+        expect(mockMutate).toHaveBeenCalled();
       });
-      
-      expect(UsersService.updateUser).not.toHaveBeenCalled();
     });
   });
 
   describe('Gestió d\'errors', () => {
     it('hauria de mostrar error si falla l\'actualització al backend', async () => {
-      (UsersService.updateUser as jest.Mock).mockRejectedValueOnce(
-        new Error('Network error')
-      );
+      // Override mockMutate to call onError
+      mockMutate.mockImplementationOnce((args, options) => {
+        if (options?.onError) {
+          Promise.resolve().then(() => options.onError(new Error('Network error')));
+        }
+      });
 
       const { getByText } = render(<LanguageSelector {...defaultProps} />);
       
@@ -264,9 +277,12 @@ describe('LanguageSelector Component', () => {
     });
 
     it('hauria de mantenir el canvi local si falla l\'actualització backend', async () => {
-      (UsersService.updateUser as jest.Mock).mockRejectedValueOnce(
-        new Error('Network error')
-      );
+      // Override mockMutate to call onError
+      mockMutate.mockImplementationOnce((args, options) => {
+        if (options?.onError) {
+          Promise.resolve().then(() => options.onError(new Error('Network error')));
+        }
+      });
 
       const onClose = jest.fn();
       const { getByText } = render(
@@ -277,7 +293,8 @@ describe('LanguageSelector Component', () => {
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
-        expect(onClose).toHaveBeenCalled();
+        // Modal should NOT close on error
+        expect(onClose).not.toHaveBeenCalled();
       });
     });
 

@@ -2,10 +2,10 @@
  * Tests unitaris per al component BadgeType
  * 
  * Aquest fitxer cobreix:
- * - Renderització amb diferents tipus (0-5)
+ * - Renderització amb diferents tipus (strings)
  * - Colors segons el tipus
- * - Traduccions dels tipus
- * - Mode neutral i muted
+ * - Mode neutral
+ * - Mode muted
  * - Gestió de tipus desconeguts
  */
 
@@ -13,8 +13,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { BadgeType } from '../../../components/BadgeType';
 
-// Mock de useTranslation
-jest.mock('../../../utils/useTranslation', () => ({
+// Mock useTranslation hook
+jest.mock('../../../hooks/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -23,7 +23,6 @@ jest.mock('../../../utils/useTranslation', () => ({
         'refuge.type.closed': 'Tancat',
         'refuge.type.shelter': 'Abric',
         'refuge.type.emergency': 'Emergència',
-        'refuge.type.unknown': 'Desconegut',
       };
       return translations[key] || key;
     },
@@ -32,94 +31,106 @@ jest.mock('../../../utils/useTranslation', () => ({
 
 describe('BadgeType Component', () => {
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar "Desconegut" quan no es proporciona tipus', () => {
+    it('hauria de renderitzar "No vigilat" quan no es proporciona tipus', () => {
       const { getByText } = render(<BadgeType />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria de renderitzar "Desconegut" quan tipus és undefined', () => {
-      const { getByText } = render(<BadgeType type={undefined} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria de renderitzar "Desconegut" quan tipus és 5', () => {
-      const { getByText } = render(<BadgeType type={5} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-  });
-
-  describe('Tipus 0 - noGuarded', () => {
-    it('hauria de renderitzar "No vigilat"', () => {
-      const { getByText } = render(<BadgeType type={0} />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors verds', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={0} />);
+    it('hauria de renderitzar "No vigilat" quan tipus és undefined', () => {
+      const { getByText } = render(<BadgeType type={undefined} />);
+      
+      expect(getByText('No vigilat')).toBeTruthy();
+    });
+
+    it('hauria de renderitzar "No vigilat" amb tipus desconegut', () => {
+      const { getByText } = render(<BadgeType type="unknown_type" />);
+      
+      expect(getByText('No vigilat')).toBeTruthy();
+    });
+
+    it('hauria de renderitzar "No vigilat" amb tipus "non gardé"', () => {
+      const { getByText } = render(<BadgeType type="non gardé" />);
+      
+      expect(getByText('No vigilat')).toBeTruthy();
+    });
+  });
+
+  describe('Tipus - noGuarded (per defecte)', () => {
+    it('hauria de renderitzar "No vigilat"', () => {
+      const { getByText } = render(<BadgeType />);
+      
+      expect(getByText('No vigilat')).toBeTruthy();
+    });
+
+    it('hauria d\'aplicar colors verds pastel', () => {
+      const { getByTestId } = render(<BadgeType />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#D1FAE5',
-          borderColor: '#34D399',
+          backgroundColor: '#E6F8EE',
+          borderColor: '#7EE0B0',
         })
       );
     });
   });
 
-  describe('Tipus 1 - occupiedInSummer', () => {
+  describe('Tipus - occupiedInSummer', () => {
+    const typeValue = "cabane ouverte mais ocupee par le berger l ete";
+    
     it('hauria de renderitzar "Ocupat a l\'estiu"', () => {
-      const { getByText } = render(<BadgeType type={1} />);
+      const { getByText } = render(<BadgeType type={typeValue} />);
       
       expect(getByText('Ocupat a l\'estiu')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors blaus', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={1} />);
+    it('hauria d\'aplicar colors blaus pastel', () => {
+      const { getByTestId } = render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#DBEAFE',
-          borderColor: '#60A5FA',
+          backgroundColor: '#EAF4FF',
+          borderColor: '#A3C4FF',
         })
       );
     });
   });
 
-  describe('Tipus 2 - closed', () => {
+  describe('Tipus - closed', () => {
+    const typeValue = "fermée";
+    
     it('hauria de renderitzar "Tancat"', () => {
-      const { getByText } = render(<BadgeType type={2} />);
+      const { getByText } = render(<BadgeType type={typeValue} />);
       
       expect(getByText('Tancat')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors vermells', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={2} />);
+    it('hauria d\'aplicar colors vermells pastel', () => {
+      const { getByTestId } = render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#FEE2E2',
-          borderColor: '#F87171',
+          backgroundColor: '#FDE8E8',
+          borderColor: '#F4A6A6',
         })
       );
     });
   });
 
-  describe('Tipus 3 - shelter', () => {
+  describe('Tipus - shelter', () => {
+    const typeValue = "orri";
+    
     it('hauria de renderitzar "Abric"', () => {
-      const { getByText } = render(<BadgeType type={3} />);
+      const { getByText } = render(<BadgeType type={typeValue} />);
       
       expect(getByText('Abric')).toBeTruthy();
     });
 
     it('hauria d\'aplicar colors grisos', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={3} />);
+      const { getByTestId } = render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -131,41 +142,23 @@ describe('BadgeType Component', () => {
     });
   });
 
-  describe('Tipus 4 - emergency', () => {
+  describe('Tipus - emergency', () => {
+    const typeValue = "emergence";
+    
     it('hauria de renderitzar "Emergència"', () => {
-      const { getByText } = render(<BadgeType type={4} />);
+      const { getByText } = render(<BadgeType type={typeValue} />);
       
       expect(getByText('Emergència')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors taronja', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={4} />);
+    it('hauria d\'aplicar colors grocs pastel', () => {
+      const { getByTestId } = render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#FEF3C7',
-          borderColor: '#F59E42',
-        })
-      );
-    });
-  });
-
-  describe('Tipus 5 - unknown', () => {
-    it('hauria de renderitzar "Desconegut"', () => {
-      const { getByText } = render(<BadgeType type={5} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria d\'aplicar colors grisos', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={5} />);
-      
-      const badge = getByTestId('badge-container');
-      expect(badge?.props.style).toContainEqual(
-        expect.objectContaining({
-          backgroundColor: '#E5E7EB',
-          borderColor: '#9CA3AF',
+          backgroundColor: '#FFF6E0',
+          borderColor: '#F7C67A',
         })
       );
     });
@@ -173,7 +166,7 @@ describe('BadgeType Component', () => {
 
   describe('Mode neutral', () => {
     it('hauria d\'aplicar colors neutres quan neutral=true', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={0} neutral={true} />);
+      const { getByTestId } = render(<BadgeType neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -185,7 +178,7 @@ describe('BadgeType Component', () => {
     });
 
     it('hauria de tenir opacity 0.7 en mode neutral', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={0} neutral={true} />);
+      const { getByTestId } = render(<BadgeType neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -196,7 +189,7 @@ describe('BadgeType Component', () => {
     });
 
     it('hauria d\'ignorar colors de tipus en mode neutral', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={2} neutral={true} />);
+      const { getByTestId } = render(<BadgeType type="fermée" neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -209,42 +202,42 @@ describe('BadgeType Component', () => {
 
   describe('Mode muted', () => {
     it('hauria d\'aplicar textColor gris quan muted=true', () => {
-      const { getByText } = render(<BadgeType type={0} muted={true} />);
+      const { getByText } = render(<BadgeType muted={true} />);
       
       const textElement = getByText('No vigilat');
       expect(textElement.props.style).toContainEqual(
         expect.objectContaining({
-          color: '#6B7280', // color de text muted
+          color: '#6B7280',
         })
       );
     });
 
     it('hauria de mantenir colors de fons originals en mode muted', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={0} muted={true} />);
+      const { getByTestId } = render(<BadgeType muted={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#D1FAE5', // colors de fons originals
-          borderColor: '#34D399',
+          backgroundColor: '#E6F8EE',
+          borderColor: '#7EE0B0',
         })
       );
     });
 
     it('hauria d\'aplicar muted a tipus "closed"', () => {
-      const { getByText, getByTestId } = render(<BadgeType type={2} muted={true} />);
+      const { getByText, getByTestId } = render(<BadgeType type="fermée" muted={true} />);
       
       const badge = getByTestId('badge-container');
       const textElement = getByText('Tancat');
 
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#FEE2E2', // colors de fons vermells
+          backgroundColor: '#FDE8E8',
         })
       );
       expect(textElement.props.style).toContainEqual(
         expect.objectContaining({
-          color: '#6B7280', // text gris
+          color: '#6B7280',
         })
       );
     });
@@ -252,12 +245,11 @@ describe('BadgeType Component', () => {
 
   describe('Combinació de modes', () => {
     it('neutral hauria de tenir prioritat sobre muted', () => {
-      const { getByText, getByTestId } = render(
-        <BadgeType type={0} neutral={true} muted={true} />
+      const { getByTestId } = render(
+        <BadgeType neutral={true} muted={true} />
       );
       
       const badge = getByTestId('badge-container');
-      // En mode neutral, s'apliquen colors neutres (no muted)
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
           backgroundColor: '#F3F4F6',
@@ -270,8 +262,8 @@ describe('BadgeType Component', () => {
   describe('Estils personalitzats', () => {
     it('hauria d\'aplicar estils personalitzats amb la prop style', () => {
       const customStyle = { marginTop: 10 };
-      const { getByText, getByTestId } = render(
-        <BadgeType type={0} style={customStyle} />
+      const { getByTestId } = render(
+        <BadgeType style={customStyle} />
       );
       
       const badge = getByTestId('badge-container');
@@ -282,64 +274,42 @@ describe('BadgeType Component', () => {
 
     it('hauria de combinar estils personalitzats amb estils per defecte', () => {
       const customStyle = { padding: 5 };
-      const { getByText, getByTestId } = render(
-        <BadgeType type={1} style={customStyle} />
+      const { getByTestId } = render(
+        <BadgeType type="fermée" style={customStyle} />
       );
       
       const badge = getByTestId('badge-container');
-      // React Native combines styles as an array, check for both properties separately
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          backgroundColor: '#DBEAFE', // estil per defecte
+          backgroundColor: '#FDE8E8',
         })
       );
       expect(badge?.props.style).toContainEqual(
         expect.objectContaining({
-          padding: 5, // estil personalitzat
+          padding: 5,
         })
       );
     });
   });
 
-  describe('Tipus fora de rang', () => {
-    it('hauria de tractar tipus negatiu com unknown', () => {
-      const { getByText } = render(<BadgeType type={-1} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria de tractar tipus > 5 com unknown', () => {
-      const { getByText } = render(<BadgeType type={10} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria de tractar tipus molt gran com unknown', () => {
-      const { getByText } = render(<BadgeType type={999} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-  });
-
-  describe('Tots els tipus', () => {
+  describe('Tots els tipus amb traduccions', () => {
     const testCases = [
-      { type: 0, expectedText: 'No vigilat', expectedBg: '#D1FAE5' },
-      { type: 1, expectedText: 'Ocupat a l\'estiu', expectedBg: '#DBEAFE' },
-      { type: 2, expectedText: 'Tancat', expectedBg: '#FEE2E2' },
-      { type: 3, expectedText: 'Abric', expectedBg: '#F3F4F6' },
-      { type: 4, expectedText: 'Emergència', expectedBg: '#FEF3C7' },
-      { type: 5, expectedText: 'Desconegut', expectedBg: '#E5E7EB' },
+      { type: undefined, expectedText: 'No vigilat', expectedBg: '#E6F8EE' },
+      { type: 'non gardé', expectedText: 'No vigilat', expectedBg: '#E6F8EE' },
+      { type: 'cabane ouverte mais ocupee par le berger l ete', expectedText: 'Ocupat a l\'estiu', expectedBg: '#EAF4FF' },
+      { type: 'fermée', expectedText: 'Tancat', expectedBg: '#FDE8E8' },
+      { type: 'orri', expectedText: 'Abric', expectedBg: '#F3F4F6' },
+      { type: 'emergence', expectedText: 'Emergència', expectedBg: '#FFF6E0' },
     ];
 
     testCases.forEach(({ type, expectedText, expectedBg }) => {
-      it(`hauria de renderitzar correctament el tipus ${type}`, () => {
-        const { getByText } = render(<BadgeType type={type} />);
+      it(`hauria de renderitzar correctament el tipus "${type || 'undefined'}"`, () => {
+        const { getByText, getByTestId } = render(<BadgeType type={type} />);
         
         expect(getByText(expectedText)).toBeTruthy();
         
-        const { getByTestId } = render(<BadgeType type={type} />);
-                const badge = getByTestId('badge-container');
-                expect(badge?.props.style).toContainEqual(
+        const badge = getByTestId('badge-container');
+        expect(badge?.props.style).toContainEqual(
           expect.objectContaining({
             backgroundColor: expectedBg,
           })
@@ -350,57 +320,45 @@ describe('BadgeType Component', () => {
 
   describe('Traducció dels tipus', () => {
     it('hauria d\'usar la funció t per traduir', () => {
-      const { getByText } = render(<BadgeType type={0} />);
+      const { getByText } = render(<BadgeType />);
       
-      // Verificar que el text traduït es mostra
       expect(getByText('No vigilat')).toBeTruthy();
-    });
-
-    it('hauria de mostrar la clau de traducció si no es troba', () => {
-      // Aquest test verifica que el component gestiona traduccions no trobades
-      const { getByText } = render(<BadgeType type={3} />);
-      
-      expect(getByText('Abric')).toBeTruthy();
     });
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot per cada tipus', () => {
-      [0, 1, 2, 3, 4, 5].forEach(type => {
-        const tree = render(<BadgeType type={type} />).toJSON();
-        expect(tree).toMatchSnapshot(`BadgeType-${type}`);
-      });
+    it('hauria de coincidir amb el snapshot per defecte', () => {
+      const tree = render(<BadgeType />).toJSON();
+      expect(tree).toMatchSnapshot();
     });
 
     it('hauria de coincidir amb el snapshot en mode neutral', () => {
-      const tree = render(<BadgeType type={0} neutral={true} />).toJSON();
+      const tree = render(<BadgeType neutral={true} />).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
     it('hauria de coincidir amb el snapshot en mode muted', () => {
-      const tree = render(<BadgeType type={0} muted={true} />).toJSON();
+      const tree = render(<BadgeType muted={true} />).toJSON();
+      expect(tree).toMatchSnapshot();
+    });
+
+    it('hauria de coincidir amb el snapshot per tipus closed', () => {
+      const tree = render(<BadgeType type="fermée" />).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });
 
-  describe('Casos límit de números', () => {
-    it('hauria de gestionar 0 correctament', () => {
-      const { getByText } = render(<BadgeType type={0} />);
+  describe('Casos límit', () => {
+    it('hauria de gestionar tipus buit com noGuarded', () => {
+      const { getByText } = render(<BadgeType type="" />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria de gestionar NaN com unknown', () => {
-      const { getByText } = render(<BadgeType type={NaN} />);
+    it('hauria de gestionar tipus amb espais', () => {
+      const { getByText } = render(<BadgeType type="  " />);
       
-      expect(getByText('Desconegut')).toBeTruthy();
-    });
-
-    it('hauria de gestionar Infinity com unknown', () => {
-      const { getByText } = render(<BadgeType type={Infinity} />);
-      
-      expect(getByText('Desconegut')).toBeTruthy();
+      expect(getByText('No vigilat')).toBeTruthy();
     });
   });
 });
-

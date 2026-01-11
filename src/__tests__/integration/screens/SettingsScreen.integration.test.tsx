@@ -58,7 +58,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 const mockShowAlert = jest.fn();
 const mockHideAlert = jest.fn();
 
-jest.mock('../../../utils/useCustomAlert', () => ({
+jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
     alertVisible: false,
     alertConfig: null,
@@ -99,8 +99,6 @@ describe('SettingsScreen - Tests d\'integració', () => {
       });
 
       expect(getByText('profile.settings.title')).toBeTruthy();
-      expect(getByText('profile.settings.preferences')).toBeTruthy();
-      expect(getByText('profile.settings.notifications')).toBeTruthy();
       expect(getByText('profile.settings.editProfile')).toBeTruthy();
       expect(getByText('profile.settings.language')).toBeTruthy();
       expect(getByText('profile.settings.changeEmail')).toBeTruthy();
@@ -303,30 +301,6 @@ describe('SettingsScreen - Tests d\'integració', () => {
   });
 
   describe('Opcions de menú sense funcionalitat', () => {
-    it('hauria de permetre fer clic a Preferències', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
-
-      const preferencesButton = getByText('profile.settings.preferences');
-      fireEvent.press(preferencesButton);
-
-      // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigate).not.toHaveBeenCalledWith('Preferences');
-    });
-
-    it('hauria de permetre fer clic a Notificacions', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
-        mockNavigation,
-      });
-
-      const notificationsButton = getByText('profile.settings.notifications');
-      fireEvent.press(notificationsButton);
-
-      // No hauria de cridar navegació (funcionalitat futura)
-      expect(mockNavigate).not.toHaveBeenCalledWith('Notifications');
-    });
-
     it('hauria de permetre fer clic a Ajuda', () => {
       const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
         mockNavigation,

@@ -15,7 +15,7 @@ import { useWindowDimensions } from 'react-native';
 import { BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import ArrowLeftIcon from '../assets/icons/arrow-left.svg';
@@ -23,10 +23,10 @@ import { AuthService } from '../services/AuthService';
 import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 // Logo provisional
-const AppLogo = require('../assets/images/profileDefaultBackground.png');
+const AppLogo = require('../assets/images/logo.png');
 
 // Configuració de banderes: imatges reals a `src/assets/images`
 const flags = {
@@ -338,6 +338,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               style={styles.logo}
               resizeMode="contain"
             />
+            <Text style={[styles.appName, { marginBottom: 40 }]}> Refugis Lliures </Text>
             <Text style={styles.languageTitle}>
               {t('signup.selectLanguage')}
             </Text>
@@ -427,6 +428,7 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
               style={styles.logo}
               resizeMode="contain"
             />
+            <Text style={styles.appName}> Refugis Lliures </Text>
             <Text style={styles.title}>{t('signup.title')}</Text>
             <Text style={styles.subtitle}>{t('signup.subtitle')}</Text>
           </LinearGradient>
@@ -629,15 +631,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   languageHeader: {
-    paddingTop: 60,
-    paddingBottom: 50,
+    paddingTop: 5,
+    paddingBottom: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
   languageTitle: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
@@ -669,8 +671,8 @@ const styles = StyleSheet.create({
     color: '#1f2937',
   },
   header: {
-    paddingTop: 40,
-    paddingBottom: 50,
+    paddingTop: 5,
+    paddingBottom: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
@@ -698,18 +700,27 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
+    width: 100,
+    height: 100,
+    marginBottom: -10,
+    marginTop: 10,
   },
-  title: {
-    fontSize: 32,
+  appName: {
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 8,
+    letterSpacing: 1.5,
+    marginBottom: 25,
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+    letterSpacing: 1.1,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
     opacity: 0.9,
   },

@@ -55,15 +55,11 @@ export async function apiClient(
 
   // Si la resposta és 401 i no s'ha de saltar el retry, intentar refrescar el token
   if (response.status === 401 && !skipRetry) {
-    console.log('[apiClient] Token expirat detectat (401). Refrescant token...');
-    
     try {
       // Refrescar el token
       const newToken = await AuthService.getAuthToken(true); // forceRefresh = true
       
       if (newToken) {
-        console.log('[apiClient] Token refrescat correctament. Reintentant petició...');
-        
         // Actualitzar el header amb el nou token
         fetchOptions.headers = {
           ...fetchOptions.headers,
@@ -72,14 +68,6 @@ export async function apiClient(
         
         // Reintentar la petició amb el nou token
         response = await fetchWithLog(input, fetchOptions);
-        
-        if (response.ok) {
-          console.log('[apiClient] Petició reintentada amb èxit!');
-        } else {
-          console.log('[apiClient] Petició reintentada però ha fallat amb status:', response.status);
-        }
-      } else {
-        console.error('[apiClient] No s\'ha pogut obtenir un nou token. L\'usuari haurà de tornar a fer login.');
       }
     } catch (error) {
       console.error('[apiClient] Error refrescant token:', error);

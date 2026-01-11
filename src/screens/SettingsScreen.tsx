@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, BackHandler, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { getCurrentLanguage, LANGUAGES } from '../i18n';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import i18n from '../i18n';
 import { CustomAlert } from '../components/CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
+import { isUserAdmin } from '../utils/authUtils';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
@@ -21,10 +22,20 @@ export function SettingsScreen() {
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
+  const [isAdmin, setIsAdmin] = useState(false);
   // Fixed header height (used to pad the scrollable content)
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
   const insets = useSafeAreaInsets();
+  
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const adminStatus = await isUserAdmin();
+      setIsAdmin(adminStatus);
+    };
+    checkAdminStatus();
+  }, []);
   
   // Actualitzar l'idioma mostrat quan canvia l'idioma de i18n
   useEffect(() => {
@@ -44,34 +55,9 @@ export function SettingsScreen() {
   }, []);
   
   const handleGoBack = () => {
-    // Navigate to the Profile tab instead of just going back
-    navigation.navigate(t('navigation.profile'));
+    // Navigate to the Profile tab
+    navigation.navigate('Profile');
   };
-
-  // Ensure any removal (including Android hardware back) leads to Settings
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
-      if (Platform.OS === 'android') {
-        e.preventDefault();
-        navigation.navigate('Profile');
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-  
-  // Handle Android hardware back button
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const onBackPress = () => {
-      handleGoBack();
-      return true; // Prevent default behavior
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => subscription.remove();
-  }, [handleGoBack]);
   
   return (
     <View style={styles.root}>
@@ -95,14 +81,6 @@ export function SettingsScreen() {
       >
         <View style={styles.content}>
         <View style={styles.section}>          
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>{t('profile.settings.preferences')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>{t('profile.settings.notifications')}</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.menuItem}
             onPress={() => navigation.navigate('EditProfile')}
@@ -136,11 +114,39 @@ export function SettingsScreen() {
             <Text style={styles.menuText}>{t('profile.settings.changePassword')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          {/* Separador */}
+          <View style={styles.separator} />
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('Proposals', { mode: 'my' })}
+          >
+            <Text style={styles.menuText}>{t('profile.settings.myProposals')}</Text>
+          </TouchableOpacity>
+
+          { isAdmin && (
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('Proposals', { mode: 'admin' })}
+            >
+              <Text style={styles.menuText}>{t('profile.settings.proposalsManagement')}</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Separador */}
+          <View style={styles.separator} />
+
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('HelpSupport')}
+          >
             <Text style={styles.menuText}>{t('profile.settings.help')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('AboutTheApp')}
+          >
             <Text style={styles.menuText}>{t('profile.settings.about')}</Text>
           </TouchableOpacity>
 
@@ -339,6 +345,11 @@ const styles = StyleSheet.create({
   menuArrow: {
     fontSize: 24,
     color: '#9ca3af',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#E5E7EB',
+    marginBottom: 24,
   },
   bottomSafeArea: {
     position: 'absolute',

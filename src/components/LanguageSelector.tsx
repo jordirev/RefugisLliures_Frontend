@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LANGUAGES, LanguageCode, getCurrentLanguage, changeLanguage } from '../i18n';
-import { useTranslation } from '../utils/useTranslation';
+import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
-import { UsersService } from '../services/UsersService';
+import { useUpdateUserProfile } from '../hooks/useUsersQuery';
 import { CustomAlert } from './CustomAlert';
-import { useCustomAlert } from '../utils/useCustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -14,13 +14,14 @@ interface LanguageSelectorProps {
 
 export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
   const { t, i18n } = useTranslation();
-  const { backendUser, authToken, reloadUser } = useAuth();
+  const { backendUser, reloadUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const currentLanguage = getCurrentLanguage();
+  const updateUserMutation = useUpdateUserProfile();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleLanguageSelect = async (languageCode: LanguageCode) => {
-    if (isUpdating) return;
+    if (isUpdating || updateUserMutation.isPending) return;
     
     try {
       setIsUpdating(true);
@@ -29,28 +30,30 @@ export function LanguageSelector({ visible, onClose }: LanguageSelectorProps) {
       await changeLanguage(languageCode);
       
       // Si l'usuari està autenticat, actualitzar l'idioma al backend
-      if (backendUser && authToken) {
-        try {
-          await UsersService.updateUser(
-            backendUser.uid,
-            { idioma: languageCode.toUpperCase() },
-            authToken
-          );
-          // Recarregar l'usuari per assegurar-se que les dades són correctes
-          await reloadUser();
-        } catch (error) {
-          console.error('Error actualitzant idioma al backend:', error);
-          // Mostrar error però mantenir el canvi local
-          showAlert(
-            t('common.error'),
-            t('profile.languageSelector.updateError') || 'Error actualitzant l\'idioma al servidor'
-          );
-        }
+      if (backendUser) {
+        updateUserMutation.mutate(
+          { uid: backendUser.uid, data: { language: languageCode.toUpperCase() } },
+          {
+            onSuccess: async () => {
+              // Recarregar l'usuari per assegurar-se que les dades són correctes
+              await reloadUser();
+              onClose();
+            },
+            onError: (error) => {
+              console.error('Error actualitzant idioma al backend:', error);
+              // Mostrar error però mantenir el canvi local
+              showAlert(
+                t('common.error'),
+                t('profile.languageSelector.updateError') || 'Error actualitzant l\'idioma al servidor'
+              );
+            },
+          }
+        );
+      } else {
+        onClose();
       }
-      
-      onClose();
     } catch (error) {
-      console.error('Error canviant idioma:', error);
+      console.error('Error canviant language:', error);
       showAlert(t('common.error'), t('common.error'));
     } finally {
       setIsUpdating(false);

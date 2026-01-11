@@ -389,7 +389,34 @@ describe('MapCacheService', () => {
   });
 
   describe('downloadTilesForArea', () => {
+    // Mock global fetch for downloadRefuges
+    const mockFetch = jest.fn();
+    const originalFetch = global.fetch;
+
+    beforeAll(() => {
+      global.fetch = mockFetch;
+      jest.useFakeTimers();
+    });
+
+    afterAll(() => {
+      global.fetch = originalFetch;
+      jest.useRealTimers();
+    });
+
     beforeEach(() => {
+      // Reset all mocks before each test
+      jest.clearAllMocks();
+      
+      // Mock fetch for downloadRefuges
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          results: [
+            { id: 1, name: 'Refugi Test', coord: { lat: 42.5, long: 1.5 }, geohash: 'sp3e' }
+          ]
+        })
+      });
+      
       FileSystem.getInfoAsync.mockResolvedValue({
         exists: false,
         isDirectory: false,
@@ -405,6 +432,7 @@ describe('MapCacheService', () => {
         md5: ''
       });
       mockedAsyncStorage.setItem.mockResolvedValue(undefined);
+      mockedAsyncStorage.getItem.mockResolvedValue(null);
     });
 
     it('ha de descarregar tots els tiles d\'una àrea amb èxit', async () => {
@@ -427,8 +455,8 @@ describe('MapCacheService', () => {
       const onProgress = jest.fn();
       const onComplete = jest.fn();
 
-      // Act
-      const result = await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10,
@@ -436,13 +464,18 @@ describe('MapCacheService', () => {
         onComplete
       );
 
+      // Advance all timers to completion
+      await jest.runAllTimersAsync();
+      
+      const result = await resultPromise;
+
       // Assert
       expect(result).toBe(true);
       expect(onProgress).toHaveBeenCalled();
       expect(onComplete).toHaveBeenCalledWith(true);
       expect(logApi).toHaveBeenCalledWith('CACHE', expect.stringContaining('Starting download'));
       expect(logApi).toHaveBeenCalledWith('CACHE', expect.stringContaining('Download complete'));
-    });
+    }, 30000);
 
     it('ha d\'informar del progrés durant la descàrrega', async () => {
       // Arrange
@@ -463,13 +496,16 @@ describe('MapCacheService', () => {
 
       const onProgress = jest.fn();
 
-      // Act
-      await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10,
         onProgress
       );
+
+      await jest.runAllTimersAsync();
+      await resultPromise;
 
       // Assert
       expect(onProgress).toHaveBeenCalled();
@@ -478,7 +514,7 @@ describe('MapCacheService', () => {
       
       expect(downloaded).toBe(total);
       expect(percentage).toBe(100);
-    });
+    }, 15000);
 
     it('ha de guardar metadata durant la descàrrega', async () => {
       // Arrange
@@ -497,12 +533,20 @@ describe('MapCacheService', () => {
         modificationTime: Date.now()
       });
 
-      // Act
-      await MapCacheService.downloadTilesForArea(smallBounds, 10, 10);
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(smallBounds, 10, 10);
+
+      await jest.runAllTimersAsync();
+      await resultPromise;
 
       // Assert
       expect(mockedAsyncStorage.setItem).toHaveBeenCalled();
-      const savedMetadata = JSON.parse(mockedAsyncStorage.setItem.mock.calls[0][1]);
+      // Find the call that saves metadata (key = 'map_cache_metadata')
+      const metadataCall = mockedAsyncStorage.setItem.mock.calls.find(
+        (call) => call[0] === 'map_cache_metadata'
+      );
+      expect(metadataCall).toBeDefined();
+      const savedMetadata = JSON.parse(metadataCall![1]);
       
       expect(savedMetadata).toMatchObject({
         version: '1.0.0',
@@ -511,7 +555,7 @@ describe('MapCacheService', () => {
         maxZoom: 10
       });
       expect(savedMetadata.isComplete).toBeDefined();
-    });
+    }, 15000);
 
     it('ha de gestionar descàrregues parcials', async () => {
       // Arrange
@@ -530,17 +574,20 @@ describe('MapCacheService', () => {
         modificationTime: Date.now()
       });
 
-      // Act
-      const result = await MapCacheService.downloadTilesForArea(
+      // Act - Use Promise + runAllTimersAsync for fake timers
+      const resultPromise = MapCacheService.downloadTilesForArea(
         smallBounds,
         10,
         10
       );
 
+      await jest.runAllTimersAsync();
+      const result = await resultPromise;
+
       // Assert
       expect(typeof result).toBe('boolean');
       expect(mockedAsyncStorage.setItem).toHaveBeenCalled();
-    });
+    }, 15000);
 
     it('ha de gestionar errors durant la descàrrega', async () => {
       // Arrange
@@ -575,18 +622,26 @@ describe('MapCacheService', () => {
       });
 
       // Act - with reduced zoom to speed up test
-      await MapCacheService.downloadTilesForArea(
+      const resultPromise = MapCacheService.downloadTilesForArea(
         MapCacheService.PYRENEES_BOUNDS,
         8,
         9
       );
 
+      await jest.runAllTimersAsync();
+      await resultPromise;
+
       // Assert
-      const savedMetadata = JSON.parse(mockedAsyncStorage.setItem.mock.calls[0][1]);
+      // Find the call that saves metadata (key = 'map_cache_metadata')
+      const metadataCall = mockedAsyncStorage.setItem.mock.calls.find(
+        (call) => call[0] === 'map_cache_metadata'
+      );
+      expect(metadataCall).toBeDefined();
+      const savedMetadata = JSON.parse(metadataCall![1]);
       expect(savedMetadata.bounds).toEqual(MapCacheService.PYRENEES_BOUNDS);
       expect(savedMetadata.minZoom).toBe(8);
       expect(savedMetadata.maxZoom).toBe(9);
-    }, 10000);
+    }, 30000);
   });
 
   describe('hasTile', () => {

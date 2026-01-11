@@ -1,0 +1,752 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuickActionsMenu Component Renderització bàsica snapshot test - menú obert 1`] = `
+[
+  <View
+    onMoveShouldSetResponder={[Function]}
+    onMoveShouldSetResponderCapture={[Function]}
+    onResponderEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderStart={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    style={
+      {
+        "bottom": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "width": 30,
+        "zIndex": 1000,
+      }
+    }
+  />,
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "bottom": 0,
+        "left": 0,
+        "opacity": 1,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 1500,
+      }
+    }
+  />,
+  <View
+    collapsable={false}
+    style={
+      {
+        "backgroundColor": "transparent",
+        "bottom": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "transform": [
+          {
+            "translateX": 120,
+          },
+        ],
+        "width": 120,
+        "zIndex": 2000,
+      }
+    }
+  >
+    <View
+      colors={
+        [
+          "rgba(88, 88, 88, 0.92)",
+          "rgba(88, 88, 88, 0.70)",
+          "rgba(88, 88, 88, 0.40)",
+          "transparent",
+        ]
+      }
+      end={
+        {
+          "x": 0,
+          "y": 0,
+        }
+      }
+      start={
+        {
+          "x": 1,
+          "y": 0,
+        }
+      }
+      style={
+        {
+          "flex": 1,
+          "paddingLeft": 2,
+          "paddingRight": 2,
+          "paddingTop": 40,
+        }
+      }
+    >
+      <RCTScrollView
+        contentContainerStyle={
+          {
+            "paddingBottom": 40,
+          }
+        }
+        showsVerticalScrollIndicator={false}
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      >
+        <View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-favorite"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <TrashIcon
+                color="#ffffff"
+                height={24}
+                width={24}
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.favorite
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-visited"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <Image
+                source="TrashIcon"
+                style={
+                  {
+                    "height": 24,
+                    "width": 24,
+                  }
+                }
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.visited
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-view-map"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <Image
+                resizeMode="stretch"
+                source="TrashIcon"
+                style={
+                  {
+                    "height": 30,
+                    "marginLeft": 2,
+                    "width": 38,
+                  }
+                }
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.viewOnMap
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-share-experience"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <TrashIcon
+                color="#ffffff"
+                height={24}
+                width={24}
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.shareExperience
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-ask"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <Image
+                source="TrashIcon"
+                style={
+                  {
+                    "height": 28,
+                    "width": 28,
+                  }
+                }
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.ask
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-photo"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <Image
+                source="TrashIcon"
+                style={
+                  {
+                    "height": 38,
+                    "width": 38,
+                  }
+                }
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.addPhoto
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-edit"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <Image
+                source="TrashIcon"
+                style={
+                  {
+                    "height": 22,
+                    "width": 22,
+                  }
+                }
+              />
+            </View>
+            <Text
+              style={
+                {
+                  "color": "#ffffff",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "lineHeight": 16,
+                  "textAlign": "center",
+                }
+              }
+            >
+              refuge.actions.editRefuge
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "marginBottom": 18,
+                "opacity": 1,
+                "paddingHorizontal": 6,
+                "paddingVertical": 10,
+              }
+            }
+            testID="menu-delete"
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "marginBottom": 6,
+                }
+              }
+            >
+              <TrashIcon
+                color="#EF4444"
+                height={24}
+                width={24}
+              />
+            </View>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#ffffff",
+                    "fontSize": 13,
+                    "fontWeight": "500",
+                    "lineHeight": 16,
+                    "textAlign": "center",
+                  },
+                  {
+                    "color": "#EF4444",
+                  },
+                ]
+              }
+            >
+              refuge.actions.deleteRefuge
+            </Text>
+          </View>
+        </View>
+      </RCTScrollView>
+    </View>
+  </View>,
+]
+`;
+
+exports[`QuickActionsMenu Component Renderització bàsica snapshot test - menú tancat 1`] = `
+<View
+  onMoveShouldSetResponder={[Function]}
+  onMoveShouldSetResponderCapture={[Function]}
+  onResponderEnd={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderReject={[Function]}
+  onResponderRelease={[Function]}
+  onResponderStart={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  onStartShouldSetResponderCapture={[Function]}
+  style={
+    {
+      "bottom": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+      "width": 30,
+      "zIndex": 1000,
+    }
+  }
+/>
+`;

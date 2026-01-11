@@ -3,6 +3,14 @@
  */
 
 /**
+ * Coordenades del refugi
+ */
+export interface CoordDTO {
+  long: number;
+  lat: number;
+}
+
+/**
  * Informació complementària del refugi
  */
 export interface InfoCompDTO {
@@ -21,12 +29,15 @@ export interface InfoCompDTO {
 }
 
 /**
- * Coordenades del refugi
+ * Metadades d'una imatge associada al refugi
  */
-export interface CoordDTO {
-  long: number;
-  lat: number;
-}
+export interface ImageMetadataDTO {
+  key: string;
+  url: string;
+  uploaded_at: string; // ISO date string
+  creator_uid: string;
+  experience_id?: string | null;
+} 
 
 /**
  * DTO per a un refugi individual (resposta completa)
@@ -45,8 +56,27 @@ export interface RefugiDTO {
   modified_at?: string | null;
   region?: string | null;
   departement?: string | null;
-  condition?: string | null;
-  images_urls?: string[];
+  condition?: number | null;
+  visitors?: string[];
+  images_metadata?: ImageMetadataDTO[];
+}
+
+/**
+ * DTO per a la creació o actualització d'un refugi
+ */
+export interface RefugiBodyDTO {
+  name: string;
+  surname?: string | null;
+  coord: CoordDTO;
+  altitude?: number | null;
+  places?: number | null;
+  info_comp?: InfoCompDTO;
+  description?: string;
+  links?: string[];
+  type?: string;
+  region?: string | null;
+  departement?: string | null;
+  condition?: number | null;
 }
 
 /**
@@ -74,4 +104,27 @@ export interface RefugiSimpleDTO {
 export interface RefugisSimpleResponseDTO {
   count: number;
   results: RefugiSimpleDTO[];
+}
+
+
+/**
+ * DTO per a la informació bàsica d'un refugi per a usuaris.
+ * S'utilitza en la representació de refugis visitats i favorits.
+ */
+export interface UserRefugiInfoDTO {
+  id: string;
+  name: string;
+  coord?: CoordDTO;
+  places?: number | null;
+  region?: string | null;
+  images_metadata?: ImageMetadataDTO[];
+}
+
+/**
+ * DTO per a la resposta paginada amb informació bàsica de refugis per a usuaris
+ * S'utilitza en la representació de refugis visitats i favorits.
+ */
+export interface UserRefugiInfoResponseDTO {
+  count: number;
+  results: UserRefugiInfoDTO[];
 }

@@ -5,6 +5,15 @@
 import { User } from '../../models'
 import { UserDTO } from '../dto/UserDTO';
 
+export function mapAvatarMetadataFromDTO(avatarDTO: any | undefined): any | undefined {
+  if (!avatarDTO) return undefined;
+  return {
+    key: avatarDTO.key,
+    url: avatarDTO.url,
+    uploaded_at: avatarDTO.uploaded_at,
+  };
+}
+
 /**
  * Converteix un UserDTO al format User del frontend
  */
@@ -12,15 +21,13 @@ export function mapUserFromDTO(userDTO: UserDTO): User {
   return {
     uid: userDTO.uid,
     username: userDTO.username,
-    email: userDTO.email,
-    avatar: userDTO.avatar || undefined,
-    idioma: userDTO.idioma,
-    refugis_favorits: userDTO.refugis_favorits || [],
-    refugis_visitats: userDTO.refugis_visitats || [],
-    reformes: userDTO.reformes || [],
-    num_fotos_pujades: userDTO.num_fotos_pujades ?? null,
-    num_experiencies_compartides: userDTO.num_experiencies_compartides ?? null,
-    num_refugis_reformats: userDTO.num_refugis_reformats ?? null,
+    avatar_metadata: mapAvatarMetadataFromDTO(userDTO.avatar_metadata) || null,
+    language: userDTO.language,
+    favourite_refuges: userDTO.favourite_refuges || [],
+    visited_refuges: userDTO.visited_refuges || [],
+    uploaded_photos_keys: userDTO.uploaded_photos_keys || [],
+    num_shared_experiences: userDTO.num_shared_experiences ?? null,
+    num_renovated_refuges: userDTO.num_renovated_refuges ?? null,
     created_at: userDTO.created_at,
   };
 }
