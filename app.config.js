@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { version } from 'os';
 import path from 'path';
 
 // 1. Ruta a l'arrel del projecte (on Expo busca per defecte durant el prebuild)
@@ -45,7 +46,10 @@ export default {
     
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "cat.refugislliures.app" // Cambiar valor. Abans s'ha de crear una IOs APP al firebase
+      bundleIdentifier: "cat.refugislliures.app", // Cambiar valor. Abans s'ha de crear una IOs APP al firebase
+      buildNumber: "1", // S'incrementar amb cada nova versió de producció
+      // IMPORTANT: Expo farà servir aquest fitxer de l'arrel per generar la carpeta ios/
+      googleServicesFile: "./GoogleService-Info.plist"
     },
     
     android: {
@@ -54,12 +58,17 @@ export default {
         backgroundColor: "#FF6000"
       },
       package: "com.refugislliures.app",
+      versionCode: 1, // S'incrementar amb cada nova versió de producció
       // IMPORTANT: Expo farà servir aquest fitxer de l'arrel per generar la carpeta android/
       googleServicesFile: "./google-services.json",
       edgeToEdgeEnabled: true,
       permissions: [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO"
       ]
     },
 

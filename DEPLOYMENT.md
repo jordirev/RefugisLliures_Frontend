@@ -47,7 +47,7 @@ El fitxer `eas.json` ja està configurat amb tres perfils de build:
 
 - **development**: Build de desenvolupament amb development client (APK)
 - **preview**: Build de previsualització per testejar (APK)
-- **production**: Build de producció per pujar a Google Play Store (AAB)
+- **production**: Build de producció per pujar a Aptoide (APK)
 
 ## 3. Autenticació amb Expo
 
