@@ -1,7 +1,7 @@
 # Deute tècnic detectat
 
 > **[FET]** comprovat al codi · **[INFERÈNCIA]** deducció · **[NO VERIFICAT]** depèn de config externa.
-> Inventari; res no s'ha corregit.
+> Inventari; res no s'ha corregit al codi. B14 (docs antigues de `README/` que descrivien comportament inexistent) està **resolt**: la carpeta s'ha eliminat i el contingut vàlid s'ha migrat a `docs/` (octubre 2026).
 
 ## Alt (funcionalitat trencada o dades incorrectes)
 | # | Problema | Evidència | Tipus |
@@ -54,7 +54,6 @@
 | B11 | `Linking.openURL` sense `catch` | `RenovationDetailScreen.tsx:112`, `RenovationCard.tsx:46` |
 | B12 | Opcions de picker incoherents (MIME forçat, `MediaTypeOptions.All` obsolet, `aspect` sense `allowsEditing`) | `ExperiencesScreen.tsx:148,157`, `UserExperience.tsx:154`, `RefugeDetailScreen.tsx:559` |
 | B13 | Tests duplicats en dues carpetes | `src/__tests__/services` vs `src/__tests__/unit_tests/services` (també `hooks`, `mappers`) |
-| B14 | `README/TOKEN_REFRESH.md` i `README/OFFLINE_MAPS.md` descriuen comportament que el codi no té | — |
 
 ## Codi mort / sense ús
 `src/utils/mockData.ts` (no importat; no encaixa amb `Location`) · `useCreateRefuge/useUpdateRefuge/useDeleteRefuge` (`useRefugesQuery.ts:76-130`) · `useRefugeMedia`, `useUploadRefugeMedia`, `useDeleteRefugeMedia` (`useRefugeMediaQuery.ts`) · `useUserVisits` (`useRefugeVisitsQuery.ts:32`) · `MapCacheService.getTileUrl/hasTile/getTileLocalPath` · `AppNavigator.handleToggleFavorite` (no-op) · prop `onNavigate` · `Share` a `QuickActionsMenu.tsx:11` · `deleteMediaMutation` (`ExperiencesScreen.tsx:106`) · imports `@env` a `src/services/firebase.ts:26-34` · paràmetres `authToken?` de `UsersService` i estat `authToken` del context · `const stack` a `App.js:36` · dependències `expo-auth-session`, `expo-image-manipulator` · `export *` de mòduls amb `default` a `src/hooks/index.ts:7-8`.

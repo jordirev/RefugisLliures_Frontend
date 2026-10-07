@@ -22,6 +22,6 @@ Els objectes `Location` complets es serialitzen a JSON a cada actualització **[
 - **Les tiles descarregades no es fan servir**: `getTileUrl`/`hasTile`/`getTileLocalPath` (L212-234) no tenen cap crida **[FET]**.
 
 ## Gotchas
-- Sense xarxa, la WebView no pot carregar ni Leaflet (CDN) ni tiles → el mapa no es pinta **[INFERÈNCIA]**. `README/OFFLINE_MAPS.md` afirma que "l'app continuarà funcionant normalment": **no quadra amb el codi**.
+- Sense xarxa, la WebView no pot carregar ni Leaflet (CDN) ni tiles → el mapa no es pinta **[INFERÈNCIA]**. Qualsevol afirmació que el mapa "funciona offline" **no quadra amb el codi** (ús del gestor offline a la UI: [flows/07](../flows/07-map-search-filters.md#passos)).
 - Descàrregues massives contra OpenTopoMap/OSM poden violar les seves polítiques d'ús **[INFERÈNCIA]**; no hi ha `User-Agent` propi **[NO VERIFICAT]**.
 - El mapa es crea amb `attributionControl: false` (`LeafletWebMap.tsx:214`): no es mostra l'atribució d'OSM/OpenTopoMap, que les seves llicències exigeixen **[FET + INFERÈNCIA legal]**.

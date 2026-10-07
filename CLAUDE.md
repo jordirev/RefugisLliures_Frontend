@@ -60,11 +60,21 @@ Screen → hook use*Query (React Query) → *Service (static, retorna DTO) → a
 - `docs/flows/` — 01 registre · 02 login/sessió · 03 perfil/compte · 04 preferits/visitats · 05 ocupació · 06 renovations · 07 mapa · 08 detall refugi · 09 fotos · 10 propostes · 11 experiències · 12 dubtes.
 - `docs/integrations/` — backend-api · firebase-auth-google · maps-leaflet-tiles · external-apis-device · eas-ci-tooling.
 - `docs/recipes/` — add-endpoint-call · add-service · add-model · add-screen.
-- `README/` — docs antigues; algunes obsoletes (vegeu `docs/README.md`).
+- `docs/guides/` — getting-started · firebase-setup · google-signin-setup (passos d'execució/configuració).
+- `docs/architecture/` — design-patterns · i18n (detall d'ARCHITECTURE).
+- `docs/reference/` — experience-service (API i hooks en detall).
 
 ## En canviar codi
 - Endpoint nou → `docs/recipes/add-endpoint-call.md`; pantalla nova → `docs/recipes/add-screen.md`.
 - Corregeixes un bug de `docs/TECH_DEBT.md` → treu-lo o marca'l com a resolt.
+- **Mantén `docs/` al dia en el mateix canvi** (no en un de posterior):
+  - Canvia el comportament d'un flux → actualitza el `docs/flows/NN-*.md` corresponent.
+  - Canvia una integració (backend, Firebase, mapa, APIs externes, EAS/CI) → `docs/integrations/*.md`.
+  - Canvia l'stack, les capes, la navegació o una convenció → `docs/ARCHITECTURE.md` (i `docs/architecture/*` si escau) i aquest `CLAUDE.md`.
+  - Gotcha nou o resolt → `docs/GOTCHAS.md` i, si és dels principals, la llista "Top gotchas" d'aquí.
+  - Detectes deute o un bug que no corregeixes → afegeix-lo a `docs/TECH_DEBT.md` amb la seva severitat.
+  - Canvien passos de configuració/execució → `docs/guides/*`; canvia l'API d'un servei documentat → `docs/reference/*`.
+  - Crees o elimines un document → actualitza `docs/README.md` i l'"Índex de docs" d'aquí.
 
 ## graphify
 

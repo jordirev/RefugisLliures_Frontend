@@ -75,7 +75,8 @@ sequenceDiagram
 ## Passos
 - **Login email**: `LoginScreen.handleLogin` (67-204) → `AuthService.login` (`AuthService.ts:110-125`). Errors via `AuthService.getErrorMessageKey` (claus `auth.errors.*`).
 - **Google**: `LoginScreen.handleGoogleLogin` (232-262) → `AuthService.loginWithGoogle` (134-203): `@react-native-google-signin/google-signin` (requerit condicionalment, L25-31) amb `webClientId` = variable `FIREBASE_WEB_CLIENT_ID` → `GoogleAuthProvider.credential(idToken)` → `signInWithCredential` → `GET /users/{uid}/` → si no existeix, `POST /users/` amb `language: 'ca'`.
-- **Recuperar contrasenya**: `LoginScreen.handleForgotPassword` (264-311) → `sendPasswordResetEmail` (`AuthService.ts:223-230`).
+- **Recuperar contrasenya**: `LoginScreen.handleForgotPassword` (264-311) → `sendPasswordResetEmail` (`AuthService.ts:223-230`). Firebase envia el correu (plantilla configurable a la consola, enllaç amb caducitat) i la nova contrasenya s'introdueix a la pàgina allotjada per Firebase, no a l'app; després l'usuari torna a fer login.
+- **Reenviar verificació**: des de l'alerta d'email no verificat → `AuthService.resendVerificationEmail` (237-255) i logout.
 - **Logout**: `SettingsScreen.tsx:179-204` → `AuthService.logout` = `signOut(auth)` (`AuthService.ts:208-216`); el listener buida l'estat del context (`AuthContext.tsx:102-107`).
 - **Token**: `apiClient` (`src/services/apiClient.ts:36-79`) afegeix el Bearer i, en 401, força refresc i reintenta **una** vegada.
 - **Admin**: `isUserAdmin()` llegeix `getIdTokenResult().claims.role === 'admin'` (`src/utils/authUtils.ts:7-24`); únic consumidor: `SettingsScreen.tsx:32-38` (mostra l'accés a gestió de propostes).
@@ -89,6 +90,6 @@ sequenceDiagram
 - Carrera entre els reintents del listener (3 × 1 s) i el `POST /users/` del flux Google; amb el backend en *cold start* de Render `backendUser` pot quedar `null` **[INFERÈNCIA]**.
 - `isUserAdmin` no força refresc del token: un canvi de rol no es veu fins al refresc horari **[FET + INFERÈNCIA]**.
 - `AuthContext.authToken` i els paràmetres `authToken?` de `UsersService` **no s'usen** per a les peticions: `apiClient` sempre llegeix `auth.currentUser` **[FET]**.
-- `README/TOKEN_REFRESH.md` cita logs que no existeixen al codi i el presenta com a complet; no hi ha cua ni `onIdTokenChanged` **[FET]**.
+- El refresc de token és només un reintent en 401: no hi ha cua, refresc proactiu ni `onIdTokenChanged` **[FET]** (motivació i límits: [integrations/firebase-auth-google.md](../integrations/firebase-auth-google.md#tokens)).
 - Strings hard-coded en català a les alertes offline i de Google (`LoginScreen.tsx:95-105,169-179,236`) **[FET]**.
 - Si l'alerta "email no verificat" es tanca amb el botó enrere d'Android, no es fa logout **[INFERÈNCIA]** (`LoginScreen.tsx:116-149` + `CustomAlert` `onRequestClose`).

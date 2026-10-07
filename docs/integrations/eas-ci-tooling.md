@@ -8,6 +8,7 @@
 - La carpeta `android/` existeix en local però **no** està versionada (`git ls-files android` buit); no hi ha `ios/` **[FET]**.
 - Comandes: `npm start` (expo start), `npm run android` (`expo run:android`), `npm run web`.
 - Google Sign-In i `react-native-image-crop-picker` necessiten **build nativa** (dev client), no Expo Go **[FET pel codi de fallback]**.
+- Passos per posar en marxa l'entorn: [guides/getting-started.md](../guides/getting-started.md).
 
 ## EAS (`eas.json`, `.eas/workflows/create-production-builds.yml`)
 - Perfils: `development` (dev client, APK intern), `preview` (APK intern), `production` (app-bundle, store).

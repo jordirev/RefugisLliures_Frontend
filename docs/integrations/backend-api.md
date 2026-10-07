@@ -21,7 +21,7 @@ Per a multipart (fotos, avatar, experiències) els serveis passen `FormData` dir
 
 ## Patró dels serveis [FET]
 - Classes amb mètodes `static async` (p. ex. `RenovationService`, `src/services/RenovationService.ts:41`).
-- Retornen **DTOs** (`src/services/dto/*.ts`); el mapatge a models (`src/models/index.ts`) el fan els **hooks** amb `src/services/mappers/*` (p. ex. `src/hooks/useRenovationsQuery.ts:18-19`).
+- El lloc del mapatge DTO→model és **mixt**: `RenovationService`, `ExperienceService` i `DoubtsService` retornen **DTOs** (`src/services/dto/*.ts`) i el mapatge a models (`src/models/index.ts`) el fan els **hooks** amb `src/services/mappers/*` (p. ex. `src/hooks/useRenovationsQuery.ts:18-19`, patró de referència); `RefugisService`, `UsersService`, `RefugeProposalsService` i `RefugeVisitService` mapegen dins el servei (p. ex. `RefugisService.ts:23,86`). Vegeu [architecture/design-patterns.md](../architecture/design-patterns.md).
 - Gestió d'errors **inconsistent**:
   - `RenovationService`, `RefugeVisitService`: llancen `Error` amb missatges en català (alguns perden l'status).
   - `UsersService`: retorna `null`/`false` en error (no llança) → les mutacions creuen que han anat bé.

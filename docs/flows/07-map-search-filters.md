@@ -73,6 +73,7 @@ sequenceDiagram
 - Capes: OpenTopoMap per defecte o OpenStreetMap (`LeafletWebMap.tsx:221-228`); representació `cluster` (`maxClusterRadius` 80, sense clúster a zoom ≥12), heatmap o markers.
 - "Localitza'm": `expo-location` → `setUserLocation` → injecció a la WebView amb zoom 8 (`MapViewComponent.tsx:67-112`).
 - Mode offline: `MapScreen.tsx:80-113` llegeix `MapCacheService.getOfflineRefuges()`.
+- Gestor offline a la UI: botó de descàrrega dels controls del mapa (`MapViewComponent.tsx:57-64`, `testID="download-button"`) → modal `OfflineMapManager` amb barra de progrés, estat i mida de la cache, i botons per descarregar o esborrar. Zona `PYRENEES_BOUNDS` = lat 41.5–43.5, long −2.5–3.5, zoom 6–14 (`MapCacheService.ts:46-51`, `OfflineMapManager.tsx:63-66`); tiles PNG d'OpenTopoMap a `documentDirectory`. L'antiga documentació (zoom 8–14, 50–150 MB, "funciona offline") no quadra amb el codi.
 
 ## Gotchas i bugs
 - **Els mapes offline no funcionen**: les tiles es descarreguen però cap codi les llegeix (`MapCacheService.ts:212-234` sense ús) i Leaflet es carrega de la CDN unpkg (`LeafletWebMap.tsx:163-176`) **[FET]** → offline només funciona la llista de refugis **[INFERÈNCIA]**.

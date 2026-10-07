@@ -12,6 +12,8 @@
 | Servei | `src/services/ExperienceService.ts` |
 | Mapper | `src/services/mappers/ExperienceMapper.ts:8-19` |
 
+Endpoints, formes de resposta, errors per status i ús dels hooks: [reference/experience-service.md](../reference/experience-service.md).
+
 ## Diagrama
 
 ```mermaid

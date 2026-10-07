@@ -12,6 +12,12 @@
 | Servei | `src/services/RefugeMediaService.ts` (`uploadRefugeMedia` 108-159, `deleteRefugeMedia` 172-210) |
 | Hooks (no usats) | `src/hooks/useRefugeMediaQuery.ts` (`useRefugeMedia` 12-21, `useUploadRefugeMedia` 27-60, `useDeleteRefugeMedia` 66) |
 
+## UI
+- **Carrusel del detall**: les 3 primeres fotos a amplada completa (enganxades al safe area superior) + una 4a pàgina amb dos botons sobre fons semitransparent ("Veure més fotografies" → `GalleryScreen`, "Afegir fotografia" → pujada); `ScrollView` horitzontal amb `pagingEnabled` i 4 punts indicadors (l'actiu, més gran i destacat).
+- **`GalleryScreen`**: capçalera fixa amb fletxa enrere, graella quadrada de 3 columnes amb scroll vertical; tocar una foto obre el visor en aquella posició.
+- **`PhotoViewerModal`**: fons negre ~95 %, botó X, swipe horitzontal entre fotos amb indicadors, pastilla inferior amb avatar i nom del creador (consultat amb React Query) i data de pujada; icona de paperera només per al creador (comparació local d'`uid`) amb confirmació.
+- Els permisos de galeria es demanen just abans de pujar; selecció múltiple de fotos i vídeos.
+
 ## Diagrama — pujar
 
 ```mermaid

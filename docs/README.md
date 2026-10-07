@@ -14,6 +14,15 @@ App mòbil Expo / React Native (TypeScript). Documentació generada a partir del
 - [GOTCHAS.md](GOTCHAS.md) — què NO fer.
 - [TECH_DEBT.md](TECH_DEBT.md) — bugs i deute per severitat.
 
+### Guies (passos per executar o configurar)
+- [guides/getting-started.md](guides/getting-started.md) — instal·lar, executar (dev client / Expo Go), scripts i solució de problemes
+- [guides/firebase-setup.md](guides/firebase-setup.md) — projecte Firebase, `.env`, fitxers natius, verificació manual de l'auth, errors comuns
+- [guides/google-signin-setup.md](guides/google-signin-setup.md) — Web Client ID, SHA-1, build nativa, errors de Google Sign-In
+
+### Arquitectura en detall
+- [architecture/design-patterns.md](architecture/design-patterns.md) — patrons arquitectònics i de disseny amb diagrames (fill d'ARCHITECTURE §3)
+- [architecture/i18n.md](architecture/i18n.md) — selecció i canvi d'idioma, ús de `t()`, claus, afegir idiomes
+
 ### Fluxos d'usuari (amb diagrama Mermaid)
 | # | Flux | Fitxer |
 |---|---|---|
@@ -43,16 +52,24 @@ App mòbil Expo / React Native (TypeScript). Documentació generada a partir del
 - [recipes/add-model.md](recipes/add-model.md)
 - [recipes/add-screen.md](recipes/add-screen.md)
 
-## Relació amb `README/` (documentació antiga)
-La carpeta `README/` (20 fitxers, ~4.000 línies) es manté sense canvis. Contradiccions detectades:
+### Referència detallada per domini
+- [reference/experience-service.md](reference/experience-service.md) — endpoints, respostes, errors i hooks d'experiències (fill de flows/11)
 
-| Fitxer antic | Afirmació | Realitat |
-|---|---|---|
-| `README/TOKEN_REFRESH.md` | Refresc "implementat i funcional", amb logs concrets | Només hi ha un reintent en 401; els logs citats no existeixen (`src/services/apiClient.ts`) **[FET]** |
-| `README/OFFLINE_MAPS.md` | El mapa funciona offline amb la cache | Les tiles no es llegeixen mai (`src/services/MapCacheService.ts:212-234`) **[FET]** |
-| `README/GOOGLE_LOGIN_SETUP.md` | Usa `expo-auth-session` / `expo-crypto` | Usa `@react-native-google-signin/google-signin` (`src/services/AuthService.ts:25-31`) **[FET]** |
+## Origen: antiga carpeta `README/`
+La carpeta `README/` (20 fitxers de 2025) s'ha eliminat a l'octubre de 2026. El contingut vigent s'ha migrat i contrastat amb el codi; el desactualitzat (pantalles mock, `app.json`, `expo-auth-session`, mapes offline "funcionals", refresc de token "complet", `src/examples/`) s'ha descartat.
 
-La resta no s'ha contrastat línia a línia → **[NO VERIFICAT]**.
+| Antic | Destí |
+|---|---|
+| `README.md`, `START_HERE.md`, `README_NATIVE.md` | [guides/getting-started.md](guides/getting-started.md) |
+| `SETUP_CHECKLIST.md`, `FIREBASE_SETUP_FIX.md`, `AUTH_QUICK_START.md`, `AUTHENTICATION_README.md` | [guides/firebase-setup.md](guides/firebase-setup.md), [integrations/firebase-auth-google.md](integrations/firebase-auth-google.md) (API de `useAuth`/`AuthService`) |
+| `GOOGLE_LOGIN_SETUP.md`, `GOOGLE_LOGIN_GUIA_RAPIDA.md`, `GOOGLE_LOGIN_RESUM.md` | [guides/google-signin-setup.md](guides/google-signin-setup.md) |
+| `AUTHENTICATION_FLOWS.md`, `IMPLEMENTATION_SUMMARY.md`, `LOGIN_README.md`, `SIGNUP_README.md` | [flows/01](flows/01-signup.md), [flows/02](flows/02-login-logout-session.md), [integrations/firebase-auth-google.md](integrations/firebase-auth-google.md) |
+| `TOKEN_REFRESH.md` | [integrations/firebase-auth-google.md §Tokens](integrations/firebase-auth-google.md#tokens) |
+| `PATRONS_ARQUITECTONICS_I_DISSENY.md` | [architecture/design-patterns.md](architecture/design-patterns.md) (corregit) |
+| `I18N_IMPLEMENTATION.md` | [architecture/i18n.md](architecture/i18n.md) |
+| `EXPERIENCE_SERVICE.md` | [reference/experience-service.md](reference/experience-service.md) |
+| `PHOTO_GALLERY_IMPLEMENTATION.md` | [flows/09 §UI](flows/09-refuge-photos-gallery.md#ui) |
+| `OFFLINE_MAPS.md` | [flows/07](flows/07-map-search-filters.md), [integrations/maps-leaflet-tiles.md](integrations/maps-leaflet-tiles.md) |
 
 ## Fora d'abast
 Backend (té els seus docs a `Backend/RefugisLliures_Backend/docs/`) i integració frontend↔backend (es documentarà a `TFG/`). No s'ha documentat la carpeta `TFG/INFO`. Mai es documenten valors de secrets.

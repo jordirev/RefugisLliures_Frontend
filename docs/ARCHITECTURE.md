@@ -13,7 +13,7 @@
 | Auth | Firebase JS SDK 12 + Google Sign-In natiu | `src/services/firebase.ts`, `src/services/AuthService.ts` |
 | Backend | REST a Render (URL fixa) | [integrations/backend-api.md](integrations/backend-api.md) |
 | Mapa | Leaflet dins `react-native-webview` | [integrations/maps-leaflet-tiles.md](integrations/maps-leaflet-tiles.md) |
-| i18n | i18next + react-i18next, ca/es/en/fr, fallback `ca` | `src/i18n/index.ts` |
+| i18n | i18next + react-i18next, ca/es/en/fr, fallback `ca` | `src/i18n/index.ts`, [architecture/i18n.md](architecture/i18n.md) |
 | Tests | Jest (preset react-native), Testing Library, MSW, emulador Firebase Auth | `jest.config.js`, `jest.config.e2e.js` |
 | Build | EAS (Android), GitHub Actions, SonarCloud, Codecov | [integrations/eas-ci-tooling.md](integrations/eas-ci-tooling.md) |
 
@@ -35,7 +35,7 @@ src/
   i18n/                 index.ts + locales/{ca,es,en,fr}.json
   utils/                authUtils (isUserAdmin), mockData (sense ús)
   __tests__/            unit_tests/, integration/ (MSW), E2E/, i duplicats a services/, hooks/
-README/                 docs antigues (vegeu docs/README.md)
+docs/                   aquesta documentació (índex a docs/README.md)
 ```
 
 ## 3. Capes (patró de referència: renovations)
@@ -47,9 +47,11 @@ Screen/Component → hook use*Query (useQuery/useMutation) → *Service (static)
 |---|---|---|
 | Pantalla | Consumeix hooks i `useAuth()`; alertes amb `useCustomAlert`; textos `t()` | `src/screens/RenovationsScreen.tsx` |
 | Hook | `queryKey` + `queryFn` que crida el servei i mapeja; mutacions invaliden claus a `onSuccess` | `src/hooks/useRenovationsQuery.ts:14-171` |
-| Servei | `static async`, construeix URL amb `API_BASE_URL`, retorna DTO; errors: **llança** o **retorna null** segons el servei | `src/services/RenovationService.ts:41-154` |
+| Servei | `static async`, construeix URL amb `API_BASE_URL`, retorna DTO (refugis, usuaris, propostes i visites ja retornen model); errors: **llança** o **retorna null** segons el servei | `src/services/RenovationService.ts:41-154` |
 | Mapper | Funció pura DTO→model | `src/services/mappers/RenovationMapper.ts:11-22` |
 | Model | Interfície TS | `src/models/index.ts:93` |
+
+Patrons aplicats (capes, Repository, DTO, Mapper, Facade, Decorator, Optimistic update…) amb diagrames: [architecture/design-patterns.md](architecture/design-patterns.md).
 
 ## 4. Navegació
 - **Pre-login** (sense navigator): `App.js` alterna `LoginScreen`/`SignUpScreen` per estat; entra a `AppNavigator` si `isAuthenticated` (Firebase user + `emailVerified`) o `isOfflineMode` (`App.js:59-72`, `AuthContext.tsx:245`).
@@ -75,12 +77,12 @@ Claus de query: registre `queryKeys` (`src/config/queryClient.ts:39-67`) per a r
 - Detall: [flows/02](flows/02-login-logout-session.md), [integrations/firebase-auth-google.md](integrations/firebase-auth-google.md).
 
 ## 7. Convencions
-- **Idioma**: comentaris, JSDoc i missatges d'error dels serveis en **català**; identificadors en anglès; UI via i18n (amb excepcions hard-coded, vegeu [TECH_DEBT](TECH_DEBT.md)).
+- **Idioma**: comentaris, JSDoc i missatges d'error dels serveis en **català**; identificadors en anglès; UI via i18n (amb excepcions hard-coded, vegeu [TECH_DEBT](TECH_DEBT.md); detall a [architecture/i18n.md](architecture/i18n.md)).
 - **Noms**: pantalles `XScreen.tsx` amb export amb nom; serveis `XService` classe estàtica; hooks `useX` / `useXQuery.ts`; DTO `XDTO`; mapper `mapXFromDTO`.
 - **Models** mantenen snake_case del backend (`creator_uid`, `ini_date`); el refugi és `Location`.
 - **Alertes**: `useCustomAlert` + `<CustomAlert/>` (no `Alert.alert`, amb excepcions).
 - **Logs**: `console.log/error` abundants; `fetchWithLog` registra totes les peticions.
-- **Colors**: taronja `#f97316` / `#FF6900` hard-coded als estils.
+- **Colors**: taronja `#f97316` / `#FF6900` hard-coded als estils; degradat `#FF8904 → #F54900` a capçaleres i botons de Login/SignUp.
 
 ## 8. Excepcions al patró [FET]
 | Excepció | On |
