@@ -1,76 +1,38 @@
-# === Node / Dependencies ===
+# ── Dependències ──────────────────────────────────────────
 node_modules/
 
-# === Expo ===
+# ── Expo / Metro ──────────────────────────────────────────
 .expo/
-.expo-shared/
 dist/
-web-build/
 expo-env.d.ts
-
-
-# === Native Builds ===
-/ios
-/android
-.kotlin/
-*.orig.*
-
-# === Sensitive Files / Keys ===
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.pem
-
-# === Metro Bundler ===
 .metro-health-check*
 
-# === Debug / Logs ===
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-*.log
+# ── Build natiu (generat per `expo prebuild`; no hi ha ios/) ──
+/android
 
-# === Graphify Output ===
+# ── Secrets i configuració local ──────────────────────────
+.env
+.env.*.local
+# (google-services.json es regenera a app.config.js des de GOOGLE_SERVICES_JSON_BASE64)
+google-services.json
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+# ── Tests i anàlisi ───────────────────────────────────────
+coverage/
 graphify-out/
 
-# === Coverage Reports ===
-coverage/
+# ── Logs (inclou els de l'emulador de Firebase) ───────────
+*.log
+npm-debug.*
 
-# === macOS ===
-.DS_Store
-
-# === Local env files ===
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
-
-# === Google Services ===
-google-services.json
-
-# === TypeScript ===
+# ── TypeScript ────────────────────────────────────────────
 *.tsbuildinfo
 
-# === VS Code ===
+# ── Editors i SO ──────────────────────────────────────────
 .vscode/
 .idea/
-
-# === Watchman ===
-.watchmanconfig
-
-# === Fastlane (si usas para deploy nativo) ===
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots
-fastlane/test_output
-
-# === Firebase Emulator ===
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
-database-debug.log
+.DS_Store
