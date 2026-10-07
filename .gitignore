@@ -32,6 +32,9 @@ yarn-debug.*
 yarn-error.*
 *.log
 
+# === Graphify Output ===
+graphify-out/
+
 # === Coverage Reports ===
 coverage/
 
