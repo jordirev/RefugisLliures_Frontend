@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
@@ -26,9 +25,11 @@ import {
   useUpdateExperience,
   useDeleteExperience,
 } from '../hooks/useExperiencesQuery';
-import { useDeleteRefugeMedia } from '../hooks/useRefugeMediaQuery';
 import { useUser } from '../hooks/useUsersQuery';
 import { Experience, ImageMetadata } from '../models';
+import { useMediaUpload, getUploadErrorKey, getFailureReasonKey } from '../hooks/useMediaUpload';
+import { RightsDeclarationModal } from '../components/RightsDeclarationModal';
+import type { PreparedMediaFile, UploadFailureDTO } from '../services/MediaUploadService';
 
 // Icons
 // @ts-ignore
@@ -45,10 +46,11 @@ type ExperiencesScreenParams = {
 // Component to render individual experience (avoids hook issues in loops)
 const ExperienceItem: React.FC<{
   experience: Experience;
-  onEdit: (experienceId: string, newComment: string, newFiles: File[]) => void;
+  onEdit: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
   onDelete: (experienceId: string) => void;
   onPhotoPress: (photos: ImageMetadata[], index: number) => void;
-}> = ({ experience, onEdit, onDelete, onPhotoPress }) => {
+  onPickMedia?: () => Promise<PreparedMediaFile[] | null>;
+}> = ({ experience, onEdit, onDelete, onPhotoPress, onPickMedia }) => {
   const { data: user } = useUser(experience.creator_uid);
 
   return (
@@ -59,6 +61,7 @@ const ExperienceItem: React.FC<{
       onDelete={() => onDelete(experience.id)}
       onPhotoPress={onPhotoPress}
       refugeCreatorUid={experience.creator_uid}
+      onPickMedia={onPickMedia}
     />
   );
 };
@@ -83,7 +86,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   const refugeName = refugeNameProp || routeParams?.refugeName;
 
   const [comment, setComment] = useState('');
-  const [selectedFiles, setSelectedFiles] = useState<any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<PreparedMediaFile[]>([]);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<ImageMetadata[]>([]);
@@ -103,7 +106,28 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   const createExperienceMutation = useCreateExperience();
   const updateExperienceMutation = useUpdateExperience();
   const deleteExperienceMutation = useDeleteExperience();
-  const deleteMediaMutation = useDeleteRefugeMedia();
+  // Selecció de fotos/vídeos: llista blanca, declaració de drets i compressió
+  const { pickMedia, isPreparing, rightsModalProps } = useMediaUpload({ showAlert });
+
+  /**
+   * Avís després de crear/editar: fallades de pujada (per motiu) o error global.
+   * @returns true si s'ha mostrat algun avís
+   */
+  const showUploadWarnings = (failed?: UploadFailureDTO[], uploadError?: any): boolean => {
+    if (uploadError) {
+      showAlert(t('common.warning'), t(getUploadErrorKey(uploadError?.code)));
+      return true;
+    }
+    if (failed && failed.length > 0) {
+      const reasons = Array.from(new Set(failed.map((f) => t(getFailureReasonKey(f.reason)))));
+      showAlert(
+        t('common.warning'),
+        `${t('experiences.warnings.someFilesFailedToUpload')}\n${reasons.map((r) => `• ${r}`).join('\n')}`
+      );
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
@@ -137,33 +161,9 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
 
   const handleAddPhotos = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        showAlert(t('common.error'), t('refuge.gallery.permissionDenied'));
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsMultipleSelection: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets) {
-        const files = result.assets.map((asset) => {
-          const uri = asset.uri;
-          const name = uri.split('/').pop() || 'photo.jpg';
-          const type = asset.type === 'video' ? 'video/mp4' : 'image/jpeg';
-
-          return {
-            uri,
-            name,
-            type,
-          } as any;
-        });
-
-        setSelectedFiles([...selectedFiles, ...files]);
+      const files = await pickMedia();
+      if (files && files.length > 0) {
+        setSelectedFiles((prev) => [...prev, ...files]);
       }
     } catch (error) {
       console.error('Error selecting photos:', error);
@@ -201,12 +201,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           setInputHeight(44);
           Keyboard.dismiss();
 
-          if (data.failed_files && data.failed_files.length > 0) {
-            showAlert(
-              t('common.warning'),
-              t('experiences.warnings.someFilesFailedToUpload')
-            );
-          }
+          showUploadWarnings(data.failed_files, data.uploadError);
         },
         onError: (error: any) => {
           showAlert(
@@ -218,7 +213,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
     );
   };
 
-  const handleEdit = (experienceId: string, newComment: string, newFiles: File[]) => {
+  const handleEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => {
     // Check character limit
     if (newComment.trim().length > 2000) {
       showAlert(
@@ -239,12 +234,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
       },
       {
         onSuccess: (data) => {
-          if (data.failed_files && data.failed_files.length > 0) {
-            showAlert(
-              t('common.warning'),
-              t('experiences.warnings.someFilesFailedToUpload')
-            );
-          } else {
+          if (!showUploadWarnings(data.failed_files, data.uploadError)) {
             showAlert(t('common.success'), t('experiences.updateSuccess'));
           }
         },
@@ -356,6 +346,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onPhotoPress={handlePhotoPress}
+                  onPickMedia={() => pickMedia()}
                 />
               ))
             ) : (
@@ -398,8 +389,13 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
             <TouchableOpacity
               style={styles.addPhotoButton}
               onPress={handleAddPhotos}
+              disabled={isPreparing}
             >
-              <Image source={AddPhotoIcon} style={{ width: 28, height: 28 }} />
+              {isPreparing ? (
+                <ActivityIndicator size="small" color="#FF6900" />
+              ) : (
+                <Image source={AddPhotoIcon} style={{ width: 28, height: 28 }} />
+              )}
             </TouchableOpacity>
             
             <TextInput
@@ -457,6 +453,9 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           )?.creator_uid
         }
       />
+
+      {/* Declaració de drets abans de la primera pujada de la sessió */}
+      <RightsDeclarationModal {...rightsModalProps} />
 
       {/* CustomAlert */}
       {alertConfig && (

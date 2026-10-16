@@ -10,13 +10,40 @@ import {
 } from '../services/ExperienceService';
 import { mapExperienceFromDTO } from '../services/mappers/ExperienceMapper';
 import { Experience } from '../models';
+import { MediaUploadService, MediaUploadResult, UploadFailureDTO } from '../services/MediaUploadService';
+import { queryKeys } from '../config/queryClient';
+import { invalidateMediaQueries } from './mediaInvalidation';
+
+/**
+ * Puja els fitxers d'una experiència amb upload-intents (target=experience).
+ * Un error global de pujada NO desfà l'experiència: es retorna a `uploadError`.
+ */
+async function uploadExperienceFiles(
+  refugeId: string,
+  experienceId: string,
+  files: UpdateExperienceRequest['files']
+): Promise<{ upload: MediaUploadResult | null; uploadError: unknown }> {
+  if (!files || files.length === 0) return { upload: null, uploadError: null };
+  try {
+    const upload = await MediaUploadService.uploadFiles({
+      target: 'experience',
+      refugeId,
+      experienceId,
+      files,
+    });
+    return { upload, uploadError: null };
+  } catch (error) {
+    console.error('Error pujant els fitxers de l\'experiència:', error);
+    return { upload: null, uploadError: error };
+  }
+}
 
 /**
  * Hook per obtenir totes les experiències d'un refugi
  */
 export function useExperiences(refugeId: string | undefined) {
   return useQuery({
-    queryKey: refugeId ? ['experiences', 'refuge', refugeId] : ['experiences', 'refuge', 'undefined'],
+    queryKey: refugeId ? queryKeys.refugeExperiences(refugeId) : ['experiences', 'refuge', 'undefined'],
     queryFn: async () => {
       if (!refugeId) throw new Error('Refuge ID is required');
       const experiencesDTO = await ExperienceService.getExperiencesByRefuge(refugeId);
@@ -27,28 +54,39 @@ export function useExperiences(refugeId: string | undefined) {
 }
 
 /**
- * Hook per crear una nova experiència
- * Afegeix l'experiència a la cache en lloc d'invalidar tota la llista
+ * Hook per crear una nova experiència.
+ * 1) POST /api/experiences/ (JSON) · 2) si hi ha fitxers, upload-intents amb target=experience
+ * (PUT directe + confirm). Afegeix l'experiència a la cache i invalida el que depèn de les fotos.
  */
 export function useCreateExperience() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (request: CreateExperienceRequest) => {
-      const response = await ExperienceService.createExperience(request);
+      const response = await ExperienceService.createExperience({
+        refuge_id: request.refuge_id,
+        comment: request.comment,
+      });
+      const experience = mapExperienceFromDTO(response.experience);
+      const { upload, uploadError } = await uploadExperienceFiles(request.refuge_id, experience.id, request.files);
+      if (upload && upload.uploaded.length > 0) {
+        experience.images_metadata = [...(experience.images_metadata || []), ...upload.uploaded];
+      }
+      const failed: UploadFailureDTO[] = upload ? upload.failed : [];
       return {
-        experience: mapExperienceFromDTO(response.experience),
-        uploaded_files: response.uploaded_files,
-        failed_files: response.failed_files,
+        experience,
+        uploaded_files: upload ? upload.uploaded.map((m) => m.key) : [],
+        failed_files: failed,
+        uploadError,
         message: response.message,
         refuge_id: request.refuge_id,
-        hasFiles: request.files && request.files.length > 0,
+        hasFiles: !!request.files && request.files.length > 0,
       };
     },
     onSuccess: (data, variables) => {
       // Afegir la nova experiència a la llista existent
       const refugeId = variables.refuge_id;
-      const queryKey = ['experiences', 'refuge', refugeId];
+      const queryKey = queryKeys.refugeExperiences(refugeId);
       
       queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
         if (!oldData) return [data.experience];
@@ -56,23 +94,20 @@ export function useCreateExperience() {
         return [data.experience, ...oldData];
       });
 
-      // Si es pugen fotos, invalidar el refugi (les fotos també es pengen al refugi)
       if (data.hasFiles) {
-        queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
-        queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
-        // Invalidar filtres de refugis ja que les fotos afecten el refugi
-        queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+        // Fotos noves: refugi, mitjans, experiències, llista i usuari
+        invalidateMediaQueries(queryClient, { refugeId });
+      } else {
+        // Invalidar dades del user (num_shared_experiences)
+        queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
       }
-
-      // Invalidar dades del user (num_shared_experiences)
-      queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
     },
   });
 }
 
 /**
- * Hook per actualitzar una experiència
- * Actualitza l'experiència a la cache en lloc d'invalidar tota la llista
+ * Hook per actualitzar una experiència.
+ * PATCH (JSON) del comentari i, si n'hi ha, pujada de fitxers nous amb target=experience.
  */
 export function useUpdateExperience() {
   const queryClient = useQueryClient();
@@ -87,42 +122,40 @@ export function useUpdateExperience() {
       refugeId: string; 
       request: UpdateExperienceRequest 
     }) => {
-      const response = await ExperienceService.updateExperience(experienceId, request);
+      const hasFiles = !!request.files && request.files.length > 0;
+      let response: Awaited<ReturnType<typeof ExperienceService.updateExperience>> | null = null;
+      if (request.comment || !hasFiles) {
+        response = await ExperienceService.updateExperience(experienceId, { comment: request.comment });
+      }
+      const { upload, uploadError } = await uploadExperienceFiles(refugeId, experienceId, request.files);
       return {
-        experience: response.experience ? mapExperienceFromDTO(response.experience) : undefined,
-        uploaded_files: response.uploaded_files,
-        failed_files: response.failed_files,
-        message: response.message,
+        experience: response?.experience ? mapExperienceFromDTO(response.experience) : undefined,
+        uploaded_files: upload ? upload.uploaded.map((m) => m.key) : [],
+        failed_files: upload ? upload.failed : ([] as UploadFailureDTO[]),
+        uploadError,
+        message: response?.message,
         experienceId,
         refugeId,
-        hasFiles: request.files && request.files.length > 0,
+        hasFiles,
       };
     },
     onSuccess: (data) => {
-      if (!data.experience) return;
-      
-      // Actualitzar l'experiència a la llista existent
-      const queryKey = ['experiences', 'refuge', data.refugeId];
-      
-      queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
-        if (!oldData) return [data.experience!];
+      if (data.experience) {
+        // Actualitzar l'experiència a la llista existent
+        const queryKey = queryKeys.refugeExperiences(data.refugeId);
         
-        return oldData.map(exp => 
-          exp.id === data.experienceId ? data.experience! : exp
-        );
-      });
-
-      // Si es pugen fotos, invalidar el refugi (les fotos també es pengen al refugi)
-      if (data.hasFiles) {
-        queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', data.refugeId] });
-        queryClient.invalidateQueries({ queryKey: ['refugeMedia', data.refugeId] });
-        // Invalidar filtres de refugis ja que les fotos afecten el refugi
-        queryClient.invalidateQueries({ queryKey: ['refuges', 'list'] });
+        queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
+          if (!oldData) return [data.experience!];
+          
+          return oldData.map(exp => 
+            exp.id === data.experienceId ? data.experience! : exp
+          );
+        });
       }
 
-      // Invalidar dades del user (uploaded_photos_keys)
+      // Si es pugen fotos, invalidar refugi, mitjans, experiències, llista i usuari
       if (data.hasFiles) {
-        queryClient.invalidateQueries({ queryKey: ['users', 'detail'] });
+        invalidateMediaQueries(queryClient, { refugeId: data.refugeId });
       }
     },
   });
@@ -148,7 +181,7 @@ export function useDeleteExperience() {
     },
     onSuccess: ({ experienceId, refugeId }) => {
       // Eliminar l'experiència de la llista existent
-      const queryKey = ['experiences', 'refuge', refugeId];
+      const queryKey = queryKeys.refugeExperiences(refugeId);
       
       queryClient.setQueryData<Experience[]>(queryKey, (oldData) => {
         if (!oldData) return [];

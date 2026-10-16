@@ -141,6 +141,26 @@ describe('AuthService - Tests Unitaris', () => {
       expect(mockUser.delete).toHaveBeenCalled();
     });
 
+    it('hauria d\'enviar birth_date i esborrar l\'usuari de Firebase si el backend respon underage', async () => {
+      (firebase.createUserWithEmailAndPassword as jest.Mock).mockResolvedValue(mockUserCredential);
+      (firebase.updateProfile as jest.Mock).mockResolvedValue(undefined);
+      (firebase.sendEmailVerification as jest.Mock).mockResolvedValue(undefined);
+      (mockUser.getIdToken as jest.Mock).mockResolvedValue('mock-token');
+      (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
+      (UsersService.createUser as jest.Mock).mockRejectedValue({ code: 'underage', status: 403 });
+
+      await expect(AuthService.signUp({ ...signUpData, birthDate: '2015-01-01' })).rejects.toMatchObject({
+        code: 'underage',
+      });
+      expect(UsersService.createUser).toHaveBeenCalledWith(
+        expect.objectContaining({ birth_date: '2015-01-01' }),
+        'mock-token'
+      );
+      expect(mockUser.delete).toHaveBeenCalled();
+      // No s'envia el correu de verificació d'un compte esborrat
+      expect(firebase.sendEmailVerification).not.toHaveBeenCalled();
+    });
+
     it('hauria de propagar errors de Firebase', async () => {
       // Arrange
       const firebaseError = new Error('auth/email-already-in-use');

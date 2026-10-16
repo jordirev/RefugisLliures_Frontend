@@ -178,7 +178,8 @@
         "title": "Eliminar compte",
         "confirmTitle": "Eliminar compte?",
         "confirmMessage": "Aquesta acció eliminarà permanentment el teu compte i les dades associades. Estàs segur/ra?"
-      }
+      },
+      "mediaReportsManagement": "Gestió de denúncies de fotos"
     },
     "languageSelector": {
       "title": "Selecciona l'idioma",
@@ -451,7 +452,7 @@
     "emailPlaceholder": "Correu electrònic",
     "passwordPlaceholder": "Contrasenya",
     "forgotPassword": "Has oblidat la contrasenya?",
-  "continue": "Continua",
+    "continue": "Continua",
     "loginButton": "Iniciar sessió",
     "orContinueWith": "o",
     "googleButton": "Continuar amb Google",
@@ -494,7 +495,9 @@
       "numberPassword": "\t• Mínim un número",
       "specialCharPassword": "\t• Mínim un caràcter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les contrasenyes no coincideixen",
-      "registrationFailed": "No s'ha pogut crear el compte. Si tens un compte existent, prova a iniciar sessió o recupera la teva contrasenya."
+      "registrationFailed": "No s'ha pogut crear el compte. Si tens un compte existent, prova a iniciar sessió o recupera la teva contrasenya.",
+      "usernameTooShort": "El nom d'usuari ha de tenir almenys 2 caràcters",
+      "selectLanguage": "Si us plau, selecciona un idioma"
     }
   },
   "editProfile": {
@@ -874,5 +877,156 @@
         "content": "Totes les dades es transmeten de forma segura mitjançant protocols HTTPS i s'emmagatzemen en infraestructures amb alts estàndards de seguretat (Firebase/Cloudflare)."
       }
     }
+  },
+  "media": {
+    "errors": {
+      "invalidType": "Només es poden pujar fotos (JPEG, PNG, WebP, HEIC) i vídeos (MP4, MOV, WebM)",
+      "tooLarge": "El fitxer és massa gran (fotos fins a 15 MB, vídeos fins a 50 MB)",
+      "tooLong": "El vídeo supera la durada màxima de {{seconds}} segons",
+      "tooManyFiles": "Com a màxim pots pujar {{max}} fitxers alhora",
+      "ageNotConfirmed": "Has de confirmar la teva edat abans de pujar fotos o vídeos",
+      "userBlocked": "El teu compte està bloquejat per incompliment de les normes i no pot publicar contingut",
+      "notOwner": "Només el creador de l'experiència hi pot afegir fotos",
+      "notFound": "El refugi o l'experiència ja no existeix",
+      "uploadFailed": "No s'han pogut pujar els fitxers. Torna-ho a provar",
+      "notAllowedTitle": "Acció no permesa",
+      "rejectedTitle": "Alguns fitxers no s'enviaran"
+    },
+    "failureReasons": {
+      "missing_object": "El fitxer no ha arribat al servidor",
+      "too_large": "Fitxer massa gran",
+      "invalid_type": "No és una foto o un vídeo vàlid",
+      "processing_error": "Error processant el fitxer",
+      "moderation_blocked": "Bloquejat per la moderació",
+      "put_failed": "Error de xarxa pujant el fitxer",
+      "unknown": "Error desconegut"
+    },
+    "permissions": {
+      "title": "Permisos necessaris",
+      "message": "Necessitem permís per accedir a les teves fotos i vídeos."
+    },
+    "upload": {
+      "success": "S'han pujat {{count}} fitxer(s) correctament",
+      "partial": "S'han pujat {{uploaded}} fitxer(s); {{failed}} no s'han pogut pujar:"
+    },
+    "rights": {
+      "title": "Abans de publicar",
+      "intro": "Les fotos i vídeos que pugis seran visibles per a tots els usuaris registrats. En publicar declares que:",
+      "authorship": "Ets l'autor o tens permís de qui ho és",
+      "peopleConsent": "Tens el consentiment de les persones que hi surten (i, en el cas de menors, dels seus tutors)",
+      "noIllegal": "No conté contingut il·legal, sexual, violent ni dades personals d'altres",
+      "visibility": "Eliminem la ubicació GPS i les dades del dispositiu de les fotos. Pots denunciar o esborrar contingut des del menú ⋮.",
+      "checkbox": "Ho declaro i accepto les normes de la comunitat",
+      "accept": "Continuar"
+    },
+    "viewer": {
+      "moreOptions": "Més opcions",
+      "report": "Denunciar",
+      "deleteTitle": "Eliminar fotografia",
+      "deleteMessage": "Estàs segur que vols eliminar aquesta fotografia? Aquesta acció no es pot desfer.",
+      "deleteError": "No s'ha pogut eliminar la fotografia",
+      "anonymous": "Anònim"
+    },
+    "report": {
+      "title": "Denunciar contingut",
+      "intro": "Indica per què creus que aquest contingut no hauria de ser a l'app. Revisarem la denúncia i, en casos greus, l'ocultarem immediatament.",
+      "groups": {
+        "childSafety": "Seguretat de menors",
+        "sexualContent": "Contingut sexual",
+        "violenceHate": "Violència i odi",
+        "animalCruelty": "Maltractament animal",
+        "selfHarm": "Autolesions",
+        "illegal": "Il·legal",
+        "privacyRights": "Privacitat i drets",
+        "fraudSpam": "Frau i spam",
+        "other": "Altres"
+      },
+      "reasons": {
+        "child_sexual_abuse": "Abús o explotació sexual de menors",
+        "child_endangerment": "Menors en situació de risc / imatges inapropiades de menors",
+        "sexual_nonconsensual": "Nuesa o contingut sexual (inclosos íntims no consentits i deepfakes)",
+        "violence_gore": "Violència explícita o contingut sagnant",
+        "terrorism_extremism": "Terrorisme o extremisme violent",
+        "hate_speech": "Odi o discriminació",
+        "harassment_bullying": "Assetjament o intimidació",
+        "animal_cruelty": "Maltractament animal",
+        "self_harm": "Suïcidi o autolesions",
+        "illegal_goods": "Drogues, armes o activitats il·legals",
+        "my_image": "Hi surto jo sense el meu consentiment (dret a la pròpia imatge)",
+        "privacy_personal_data": "Dades personals d'altres (documents, matrícules, adreces)",
+        "intellectual_property": "Drets d'autor o marca (no és de qui la publica)",
+        "fraud_scam_spam": "Frau, estafa, spam o publicitat",
+        "misleading_irrelevant": "Falsa o no correspon a aquest refugi",
+        "other": "Altres (cal descripció)"
+      },
+      "detailsLabel": "Detalls (opcional)",
+      "detailsRequiredLabel": "Detalls (obligatori)",
+      "detailsPlaceholder": "Explica breument el problema",
+      "goodFaith": "Declaro de bona fe que la informació d'aquesta denúncia és correcta i completa",
+      "submit": "Enviar denúncia",
+      "footnote": "També pots escriure a {{email}}. Les denúncies falses o abusives poden comportar el bloqueig del compte.",
+      "successTitle": "Denúncia enviada",
+      "successMessage": "Gràcies. La revisarem al més aviat possible. Si vols aportar més informació o recórrer una decisió, escriu a {{email}}.",
+      "errors": {
+        "reasonRequired": "Tria un motiu",
+        "detailsRequired": "Cal una descripció per al motiu «Altres»",
+        "detailsTooLong": "La descripció no pot superar els 1000 caràcters",
+        "goodFaithRequired": "Has d'acceptar la declaració de bona fe",
+        "generic": "No s'ha pogut enviar la denúncia. Torna-ho a provar",
+        "ownMedia": "No pots denunciar el teu propi contingut",
+        "alreadyReported": "Ja has denunciat aquest contingut",
+        "notFound": "Aquest contingut ja no existeix"
+      }
+    },
+    "admin": {
+      "title": "Denúncies de fotos",
+      "status": {
+        "pending": "Pendents",
+        "resolved": "Resoltes"
+      },
+      "empty": "No hi ha denúncies",
+      "loadError": "No s'han pogut carregar les denúncies",
+      "priority": "Prioritat: {{priority}}",
+      "reportsCount": "Denúncies: {{count}}",
+      "resolutionAction": "Acció",
+      "actions": {
+        "dismiss": "Desestimar",
+        "remove": "Retirar",
+        "remove_and_strike": "Retirar + avís (strike)"
+      },
+      "statementLabel": "Motivació (es comunicarà a l'autor)",
+      "statementPlaceholder": "Explica els motius de la decisió",
+      "statementRequired": "Cal una motivació",
+      "resolved": "Denúncia resolta",
+      "resolveError": "No s'ha pogut resoldre la denúncia"
+    },
+    "notices": {
+      "title": "Avisos de moderació",
+      "actions": {
+        "remove": "Contingut retirat",
+        "remove_and_strike": "Contingut retirat amb avís",
+        "hide": "Contingut ocult en revisió",
+        "block": "Compte bloquejat",
+        "dismiss": "Denúncia desestimada",
+        "other": "Avís"
+      },
+      "strikes": "Avisos acumulats: {{count}} de 3",
+      "appeal": "Si no hi estàs d'acord pots recórrer escrivint a {{email}}."
+    }
+  },
+  "age": {
+    "birthDateLabel": "Data de naixement",
+    "dayPlaceholder": "DD",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "AAAA",
+    "birthDateHint": "Només la fem servir per comprovar que tens almenys 16 anys; no la desem.",
+    "gateTitle": "Confirma la teva edat",
+    "gateMessage": "Per continuar fent servir l'app has de tenir almenys {{age}} anys. Introdueix la teva data de naixement.",
+    "invalidDate": "Introdueix una data vàlida (DD/MM/AAAA)",
+    "underageTitle": "Edat insuficient",
+    "underageMessage": "Has de tenir almenys {{age}} anys per fer servir Refugis Lliures.",
+    "confirmError": "No s'ha pogut confirmar l'edat. Torna-ho a provar",
+    "logout": "Tancar la sessió",
+    "privacyNote": "Només desem que has confirmat l'edat mínima, no la data de naixement."
   }
 }

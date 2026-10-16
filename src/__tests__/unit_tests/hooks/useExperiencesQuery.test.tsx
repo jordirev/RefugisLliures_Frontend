@@ -18,6 +18,7 @@ import {
   useDeleteExperience,
 } from '../../../hooks/useExperiencesQuery';
 import { ExperienceService } from '../../../services/ExperienceService';
+import { MediaUploadService } from '../../../services/MediaUploadService';
 
 // Mock ExperienceService
 jest.mock('../../../services/ExperienceService', () => ({
@@ -26,6 +27,13 @@ jest.mock('../../../services/ExperienceService', () => ({
     createExperience: jest.fn(),
     updateExperience: jest.fn(),
     deleteExperience: jest.fn(),
+  },
+}));
+
+// Mock de la pujada de mitjans (intents → PUT → confirm)
+jest.mock('../../../services/MediaUploadService', () => ({
+  MediaUploadService: {
+    uploadFiles: jest.fn(),
   },
 }));
 
@@ -230,29 +238,92 @@ describe('useExperiencesQuery Hooks', () => {
       expect(thrownError?.message).toBe('No tens permisos');
     });
 
-    it('hauria de gestionar experiències amb fitxers', async () => {
+    it('hauria de crear l\'experiència en JSON i després pujar els fitxers amb target=experience', async () => {
       (ExperienceService.createExperience as jest.Mock).mockResolvedValue({
         experience: mockExperienceDTO,
-        uploaded_files: ['file1.jpg', 'file2.jpg'],
-        failed_files: [],
         message: 'Success',
       });
+      const uploadedItem = {
+        key: 'refugis-lliures/refuge-1/uuid.webp',
+        url: 'https://r2/uuid.webp',
+        thumb_url: 'https://r2/uuid_thumb.webp',
+        uploaded_at: '2025-01-01T10:00:00Z',
+        creator_uid: 'user-123',
+        experience_id: 'experience-1',
+      };
+      (MediaUploadService.uploadFiles as jest.Mock).mockResolvedValue({
+        uploaded: [uploadedItem],
+        failed: [{ upload_id: 'u2', reason: 'invalid_type' }],
+      });
+      const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+      const files = [
+        { uri: 'file://photo1.webp', contentType: 'image/webp', size: 100, mediaType: 'image' as const },
+        { uri: 'file://clip.mp4', contentType: 'video/mp4', size: 200, mediaType: 'video' as const },
+      ];
 
       const { result } = renderHook(() => useCreateExperience(), {
         wrapper: createWrapper(),
       });
 
+      let data: any;
       await act(async () => {
-        await result.current.mutateAsync({
+        data = await result.current.mutateAsync({
           refuge_id: 'refuge-1',
-          title: 'Experiència amb fotos',
-          description: 'Descripció',
-          rating: 5,
-          files: [{ uri: 'file://photo1.jpg', name: 'photo1.jpg', type: 'image/jpeg' }],
+          comment: 'Experiència amb fotos',
+          files,
         });
       });
 
-      expect(ExperienceService.createExperience).toHaveBeenCalled();
+      // 1) creació sense fitxers
+      expect(ExperienceService.createExperience).toHaveBeenCalledWith({
+        refuge_id: 'refuge-1',
+        comment: 'Experiència amb fotos',
+      });
+      // 2) pujada amb target=experience i l'id de l'experiència creada
+      expect(MediaUploadService.uploadFiles).toHaveBeenCalledWith({
+        target: 'experience',
+        refugeId: 'refuge-1',
+        experienceId: 'experience-1',
+        files,
+      });
+      expect(data.uploaded_files).toEqual([uploadedItem.key]);
+      expect(data.failed_files).toEqual([{ upload_id: 'u2', reason: 'invalid_type' }]);
+      expect(data.experience.images_metadata).toEqual([uploadedItem]);
+      // Invalidacions de mitjans
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refuges', 'detail', 'refuge-1'] });
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refugeMedia', 'refuge-1'] });
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['refuges', 'list'] });
+    });
+
+    it('no hauria de fallar la creació si la pujada falla (uploadError)', async () => {
+      (ExperienceService.createExperience as jest.Mock).mockResolvedValue({ experience: mockExperienceDTO });
+      const err: any = new Error('blocked');
+      err.code = 'user_blocked';
+      (MediaUploadService.uploadFiles as jest.Mock).mockRejectedValue(err);
+
+      const { result } = renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
+
+      let data: any;
+      await act(async () => {
+        data = await result.current.mutateAsync({
+          refuge_id: 'refuge-1',
+          comment: 'x',
+          files: [{ uri: 'file://a.webp', contentType: 'image/webp', size: 1, mediaType: 'image' as const }],
+        });
+      });
+
+      expect(data.experience.id).toBe('experience-1');
+      expect(data.uploadError).toBe(err);
+    });
+
+    it('no hauria de cridar la pujada si no hi ha fitxers', async () => {
+      (ExperienceService.createExperience as jest.Mock).mockResolvedValue({ experience: mockExperienceDTO });
+      const { result } = renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
+      await act(async () => {
+        await result.current.mutateAsync({ refuge_id: 'refuge-1', comment: 'x' });
+      });
+      expect(MediaUploadService.uploadFiles).not.toHaveBeenCalled();
     });
   });
 
@@ -274,12 +345,12 @@ describe('useExperiencesQuery Hooks', () => {
         await result.current.mutateAsync({
           experienceId: 'experience-1',
           refugeId: 'refuge-1',
-          request: { title: 'Títol actualitzat' },
+          request: { comment: 'Comentari actualitzat' },
         });
       });
 
       expect(ExperienceService.updateExperience).toHaveBeenCalledWith('experience-1', {
-        title: 'Títol actualitzat',
+        comment: 'Comentari actualitzat',
       });
     });
 
@@ -298,7 +369,7 @@ describe('useExperiencesQuery Hooks', () => {
           await result.current.mutateAsync({
             experienceId: 'experience-1',
             refugeId: 'refuge-1',
-            request: { title: 'Títol actualitzat' },
+            request: { comment: 'Comentari actualitzat' },
           });
         } catch (error) {
           thrownError = error as Error;

@@ -177,7 +177,8 @@
         "title": "Supprimer le compte",
         "confirmTitle": "Supprimer le compte",
         "confirmMessage": "Cette action supprimera définitivement votre compte et les données associées. Êtes-vous sûr(e) ?"
-      }
+      },
+      "mediaReportsManagement": "Gestion des signalements de photos"
     },
     "languageSelector": {
       "title": "Sélectionnez la langue",
@@ -448,15 +449,17 @@
     "title": "Bienvenue",
     "subtitle": "Connectez-vous pour continuer",
     "emailPlaceholder": "Adresse e-mail",
-  "passwordPlaceholder": "Mot de passe",
-  "forgotPassword": "Mot de passe oublié ?",
-  "continue": "Continuer",
-  "loginButton": "Se connecter",
+    "passwordPlaceholder": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "continue": "Continuer",
+    "loginButton": "Se connecter",
     "orContinueWith": "ou",
     "googleButton": "Continuer avec Google",
     "noAccount": "Vous n'avez pas de compte ?",
-    "signUpLink": "S'inscrire",    "termsText": "En vous inscrivant ou en vous connectant, vous acceptez les ",
-    "termsLink": "conditions d'utilisation",    "errors": {
+    "signUpLink": "S'inscrire",
+    "termsText": "En vous inscrivant ou en vous connectant, vous acceptez les ",
+    "termsLink": "conditions d'utilisation",
+    "errors": {
       "emptyEmail": "Veuillez entrer votre adresse e-mail",
       "invalidEmail": "Le format de l'adresse e-mail n'est pas valide",
       "emptyPassword": "Veuillez entrer votre mot de passe",
@@ -491,7 +494,9 @@
       "numberPassword": "\t• Minimum un chiffre",
       "specialCharPassword": "\t• Minimum un caractère spécial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
-      "registrationFailed": "Impossible de créer le compte. Si vous avez un compte existant, essayez de vous connecter ou de récupérer votre mot de passe."
+      "registrationFailed": "Impossible de créer le compte. Si vous avez un compte existant, essayez de vous connecter ou de récupérer votre mot de passe.",
+      "usernameTooShort": "Le nom d'utilisateur doit comporter au moins 2 caractères",
+      "selectLanguage": "Veuillez sélectionner une langue"
     }
   },
   "editProfile": {
@@ -871,5 +876,156 @@
         "content": "Toutes les données sont transmises de manière sécurisée via les protocoles HTTPS et stockées dans des infrastructures aux normes de sécurité élevées (Firebase/Cloudflare)."
       }
     }
+  },
+  "media": {
+    "errors": {
+      "invalidType": "Seules les photos (JPEG, PNG, WebP, HEIC) et les vidéos (MP4, MOV, WebM) peuvent être envoyées",
+      "tooLarge": "Le fichier est trop volumineux (photos jusqu'à 15 Mo, vidéos jusqu'à 50 Mo)",
+      "tooLong": "La vidéo dépasse la durée maximale de {{seconds}} secondes",
+      "tooManyFiles": "Vous pouvez envoyer au maximum {{max}} fichiers à la fois",
+      "ageNotConfirmed": "Vous devez confirmer votre âge avant d'envoyer des photos ou des vidéos",
+      "userBlocked": "Votre compte est bloqué pour non-respect des règles et ne peut pas publier de contenu",
+      "notOwner": "Seul le créateur de l'expérience peut y ajouter des photos",
+      "notFound": "Le refuge ou l'expérience n'existe plus",
+      "uploadFailed": "Les fichiers n'ont pas pu être envoyés. Réessayez",
+      "notAllowedTitle": "Action non autorisée",
+      "rejectedTitle": "Certains fichiers ne seront pas envoyés"
+    },
+    "failureReasons": {
+      "missing_object": "Le fichier n'est pas arrivé au serveur",
+      "too_large": "Fichier trop volumineux",
+      "invalid_type": "Ce n'est pas une photo ou une vidéo valide",
+      "processing_error": "Erreur lors du traitement du fichier",
+      "moderation_blocked": "Bloqué par la modération",
+      "put_failed": "Erreur réseau lors de l'envoi du fichier",
+      "unknown": "Erreur inconnue"
+    },
+    "permissions": {
+      "title": "Autorisations nécessaires",
+      "message": "Nous avons besoin de l'autorisation d'accéder à vos photos et vidéos."
+    },
+    "upload": {
+      "success": "{{count}} fichier(s) envoyé(s) avec succès",
+      "partial": "{{uploaded}} fichier(s) envoyé(s) ; {{failed}} n'ont pas pu être envoyés :"
+    },
+    "rights": {
+      "title": "Avant de publier",
+      "intro": "Les photos et vidéos que vous envoyez seront visibles par tous les utilisateurs inscrits. En publiant, vous déclarez que :",
+      "authorship": "Vous en êtes l'auteur ou avez l'autorisation de l'auteur",
+      "peopleConsent": "Vous avez le consentement des personnes qui y apparaissent (et, pour les mineurs, de leurs tuteurs)",
+      "noIllegal": "Il ne contient aucun contenu illégal, sexuel ou violent, ni de données personnelles d'autrui",
+      "visibility": "Nous supprimons la localisation GPS et les données de l'appareil des photos. Vous pouvez signaler ou supprimer du contenu depuis le menu ⋮.",
+      "checkbox": "Je le déclare et j'accepte les règles de la communauté",
+      "accept": "Continuer"
+    },
+    "viewer": {
+      "moreOptions": "Plus d'options",
+      "report": "Signaler",
+      "deleteTitle": "Supprimer la photo",
+      "deleteMessage": "Voulez-vous vraiment supprimer cette photo ? Cette action est irréversible.",
+      "deleteError": "La photo n'a pas pu être supprimée",
+      "anonymous": "Anonyme"
+    },
+    "report": {
+      "title": "Signaler un contenu",
+      "intro": "Indiquez pourquoi ce contenu ne devrait pas figurer dans l'app. Nous examinerons le signalement et, dans les cas graves, le masquerons immédiatement.",
+      "groups": {
+        "childSafety": "Sécurité des mineurs",
+        "sexualContent": "Contenu sexuel",
+        "violenceHate": "Violence et haine",
+        "animalCruelty": "Maltraitance animale",
+        "selfHarm": "Automutilation",
+        "illegal": "Illégal",
+        "privacyRights": "Vie privée et droits",
+        "fraudSpam": "Fraude et spam",
+        "other": "Autre"
+      },
+      "reasons": {
+        "child_sexual_abuse": "Abus ou exploitation sexuelle d'enfants",
+        "child_endangerment": "Mineurs en danger / images inappropriées de mineurs",
+        "sexual_nonconsensual": "Nudité ou contenu sexuel (y compris intimes non consentis et deepfakes)",
+        "violence_gore": "Violence explicite ou contenu sanglant",
+        "terrorism_extremism": "Terrorisme ou extrémisme violent",
+        "hate_speech": "Haine ou discrimination",
+        "harassment_bullying": "Harcèlement ou intimidation",
+        "animal_cruelty": "Maltraitance animale",
+        "self_harm": "Suicide ou automutilation",
+        "illegal_goods": "Drogues, armes ou activités illégales",
+        "my_image": "J'y apparais sans mon consentement (droit à l'image)",
+        "privacy_personal_data": "Données personnelles d'autrui (documents, plaques, adresses)",
+        "intellectual_property": "Droit d'auteur ou marque (n'appartient pas à la personne qui publie)",
+        "fraud_scam_spam": "Fraude, arnaque, spam ou publicité",
+        "misleading_irrelevant": "Fausse ou ne correspond pas à ce refuge",
+        "other": "Autre (description requise)"
+      },
+      "detailsLabel": "Détails (facultatif)",
+      "detailsRequiredLabel": "Détails (obligatoire)",
+      "detailsPlaceholder": "Expliquez brièvement le problème",
+      "goodFaith": "Je déclare de bonne foi que les informations de ce signalement sont exactes et complètes",
+      "submit": "Envoyer le signalement",
+      "footnote": "Vous pouvez aussi écrire à {{email}}. Les signalements faux ou abusifs peuvent entraîner le blocage du compte.",
+      "successTitle": "Signalement envoyé",
+      "successMessage": "Merci. Nous l'examinerons au plus vite. Pour apporter plus d'informations ou contester une décision, écrivez à {{email}}.",
+      "errors": {
+        "reasonRequired": "Choisissez un motif",
+        "detailsRequired": "Une description est requise pour le motif « Autre »",
+        "detailsTooLong": "La description ne peut pas dépasser 1000 caractères",
+        "goodFaithRequired": "Vous devez accepter la déclaration de bonne foi",
+        "generic": "Le signalement n'a pas pu être envoyé. Réessayez",
+        "ownMedia": "Vous ne pouvez pas signaler votre propre contenu",
+        "alreadyReported": "Vous avez déjà signalé ce contenu",
+        "notFound": "Ce contenu n'existe plus"
+      }
+    },
+    "admin": {
+      "title": "Signalements de photos",
+      "status": {
+        "pending": "En attente",
+        "resolved": "Résolus"
+      },
+      "empty": "Il n'y a aucun signalement",
+      "loadError": "Les signalements n'ont pas pu être chargés",
+      "priority": "Priorité : {{priority}}",
+      "reportsCount": "Signalements : {{count}}",
+      "resolutionAction": "Action",
+      "actions": {
+        "dismiss": "Rejeter",
+        "remove": "Retirer",
+        "remove_and_strike": "Retirer + avertissement"
+      },
+      "statementLabel": "Motivation (communiquée à l'auteur)",
+      "statementPlaceholder": "Expliquez les motifs de la décision",
+      "statementRequired": "Une motivation est requise",
+      "resolved": "Signalement résolu",
+      "resolveError": "Le signalement n'a pas pu être résolu"
+    },
+    "notices": {
+      "title": "Avis de modération",
+      "actions": {
+        "remove": "Contenu retiré",
+        "remove_and_strike": "Contenu retiré avec avertissement",
+        "hide": "Contenu masqué en cours de révision",
+        "block": "Compte bloqué",
+        "dismiss": "Signalement rejeté",
+        "other": "Avis"
+      },
+      "strikes": "Avertissements : {{count}} sur 3",
+      "appeal": "Si vous n'êtes pas d'accord, vous pouvez contester en écrivant à {{email}}."
+    }
+  },
+  "age": {
+    "birthDateLabel": "Date de naissance",
+    "dayPlaceholder": "JJ",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "AAAA",
+    "birthDateHint": "Nous l'utilisons uniquement pour vérifier que vous avez au moins 16 ans ; nous ne la conservons pas.",
+    "gateTitle": "Confirmez votre âge",
+    "gateMessage": "Pour continuer à utiliser l'app, vous devez avoir au moins {{age}} ans. Saisissez votre date de naissance.",
+    "invalidDate": "Saisissez une date valide (JJ/MM/AAAA)",
+    "underageTitle": "Âge insuffisant",
+    "underageMessage": "Vous devez avoir au moins {{age}} ans pour utiliser Refugis Lliures.",
+    "confirmError": "Votre âge n'a pas pu être confirmé. Réessayez",
+    "logout": "Se déconnecter",
+    "privacyNote": "Nous conservons uniquement le fait que vous avez confirmé l'âge minimum, pas la date de naissance."
   }
 }

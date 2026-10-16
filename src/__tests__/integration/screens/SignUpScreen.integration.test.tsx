@@ -391,6 +391,13 @@ describe('SignUpScreen - Tests d\'integració', () => {
         fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
+      // Data de naixement (pas nou: edat mínima 16 anys)
+      await waitFor(() => {
+        fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      });
+
       await waitFor(() => {
         expect(queryByText('Les contrasenyes no coincideixen')).toBeNull();
       });
@@ -432,6 +439,13 @@ describe('SignUpScreen - Tests d\'integració', () => {
         fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
+      // Data de naixement (pas nou: edat mínima 16 anys)
+      await waitFor(() => {
+        fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      });
+
       // Step 6: Submit
       await waitFor(() => {
         const signUpButton = getByText('Registrar-se');
@@ -439,7 +453,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
       });
 
       await waitFor(() => {
-        expect(mockSignup).toHaveBeenCalledWith('test@example.com', 'Test1234!', 'testuser', 'ca');
+        expect(mockSignup).toHaveBeenCalledWith('test@example.com', 'Test1234!', 'testuser', 'ca', '1990-05-20');
         expect(mockShowAlert).toHaveBeenCalledWith(
           'Èxit',
           expect.any(String),
@@ -475,6 +489,13 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
       await waitFor(() => {
         fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      });
+
+      // Data de naixement (pas nou: edat mínima 16 anys)
+      await waitFor(() => {
+        fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
       await waitFor(() => {
@@ -606,6 +627,13 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
       await waitFor(() => {
         fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      });
+
+      // Data de naixement (pas nou: edat mínima 16 anys)
+      await waitFor(() => {
+        fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
       const signUpButton = getByText('Registrar-se');

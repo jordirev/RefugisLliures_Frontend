@@ -53,10 +53,26 @@ import * as ImagePicker from 'expo-image-picker';
 // Mock UsersService
 jest.mock('../../../services/UsersService', () => ({
   UsersService: {
-    uploadAvatar: jest.fn().mockResolvedValue({ url: 'https://example.com/new-avatar.jpg' }),
     deleteAvatar: jest.fn().mockResolvedValue(undefined),
   },
 }));
+
+// Mock del hook de pujada (target=avatar)
+const mockPickAndUpload = jest.fn();
+const mockEnsureRights = jest.fn().mockResolvedValue(true);
+let mockIsUploading = false;
+jest.mock('../../../hooks/useMediaUpload', () => ({
+  useMediaUpload: () => ({
+    pickAndUpload: mockPickAndUpload,
+    ensureRightsConfirmed: mockEnsureRights,
+    isUploading: mockIsUploading,
+    rightsModalProps: { visible: false, onAccept: jest.fn(), onCancel: jest.fn() },
+  }),
+  getFailureReasonKey: (reason: string) => `media.failureReasons.${reason || 'unknown'}`,
+}));
+
+// Mock expo-constants (per defecte: development build, no Expo Go)
+jest.mock('expo-constants', () => ({ __esModule: true, default: { executionEnvironment: 'bare' } }));
 
 // Mock SVG icons
 jest.mock('../../../assets/icons/x.svg', () => 'CrossIcon');
@@ -113,9 +129,14 @@ describe('AvatarPopup Component', () => {
     mockImageCropPicker.openPicker.mockResolvedValue({
       path: 'file://test/cropped-image.jpg',
       mime: 'image/jpeg',
+      width: 512,
+      height: 512,
+      size: 2048,
     });
-    (UsersService.uploadAvatar as jest.Mock).mockResolvedValue({ url: 'https://example.com/new-avatar.jpg' });
     (UsersService.deleteAvatar as jest.Mock).mockResolvedValue(undefined);
+    mockPickAndUpload.mockResolvedValue(null);
+    mockEnsureRights.mockResolvedValue(true);
+    mockIsUploading = false;
   });
 
   describe('Renderització bàsica', () => {
@@ -227,6 +248,105 @@ describe('AvatarPopup Component', () => {
     });
   });
 
+  describe('Pujada d\'avatar (upload-intents, target=avatar)', () => {
+    it('build nativa: declaració de drets, crop-picker i pickAndUpload amb l\'asset retallat', async () => {
+      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+
+      expect(mockEnsureRights).toHaveBeenCalled();
+      expect(mockImageCropPicker.openPicker).toHaveBeenCalledWith(expect.objectContaining({ mediaType: 'photo' }));
+      expect(mockPickAndUpload).toHaveBeenCalledWith(
+        { target: 'avatar', uid: 'user-123' },
+        {
+          imagesOnly: true,
+          multiple: false,
+          assets: [
+            expect.objectContaining({ uri: 'file://test/cropped-image.jpg', mimeType: 'image/jpeg', width: 512 }),
+          ],
+        },
+        { showResultAlert: false }
+      );
+    });
+
+    it('no obre el crop-picker si no s\'accepta la declaració de drets', async () => {
+      mockEnsureRights.mockResolvedValueOnce(false);
+      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+      expect(mockImageCropPicker.openPicker).not.toHaveBeenCalled();
+      expect(mockPickAndUpload).not.toHaveBeenCalled();
+    });
+
+    it('web: usa expo-image-picker dins del hook (sense assets)', async () => {
+      require('react-native').Platform.OS = 'web';
+      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+      expect(mockImageCropPicker.openPicker).not.toHaveBeenCalled();
+      expect(mockPickAndUpload).toHaveBeenCalledWith(
+        { target: 'avatar', uid: 'user-123' },
+        { imagesOnly: true, multiple: false, assets: undefined },
+        { showResultAlert: false }
+      );
+    });
+
+    it('èxit: notifica onAvatarUpdated i tanca amb OK', async () => {
+      mockPickAndUpload.mockResolvedValueOnce({ uploaded: [{ key: 'users-avatars/user-123/u.webp' }], failed: [] });
+      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+      expect(mockOnAvatarUpdated).toHaveBeenCalled();
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'profile.avatar.uploadSuccess',
+        'profile.avatar.uploadSuccessMessage',
+        expect.any(Array)
+      );
+      await act(async () => {
+        mockAlertState.lastButtons[0].onPress();
+      });
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    it('fallada del confirm: mostra el motiu', async () => {
+      mockPickAndUpload.mockResolvedValueOnce({ uploaded: [], failed: [{ upload_id: 'u1', reason: 'moderation_blocked' }] });
+      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+      expect(mockOnAvatarUpdated).not.toHaveBeenCalled();
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'common.error',
+        expect.stringContaining('media.failureReasons.moderation_blocked'),
+        expect.any(Array)
+      );
+    });
+
+    it('cancel·lació del crop-picker: no fa res', async () => {
+      const err: any = new Error('cancelled');
+      err.code = 'E_PICKER_CANCELLED';
+      mockImageCropPicker.openPicker.mockRejectedValueOnce(err);
+      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      await act(async () => {
+        fireEvent.press(getByText('profile.avatar.changePhoto'));
+      });
+      expect(mockPickAndUpload).not.toHaveBeenCalled();
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('mostra indicador de càrrega mentre puja', () => {
+      mockIsUploading = true;
+      const { UNSAFE_root } = render(<AvatarPopup {...defaultProps} />);
+      const indicators = UNSAFE_root.findAllByType(require('react-native').ActivityIndicator);
+      expect(indicators.length).toBeGreaterThan(0);
+    });
+  });
+
   describe('Eliminació de foto', () => {
     it('hauria de mostrar botó d\'eliminar quan hi ha avatar', () => {
       const { getByText } = render(
@@ -251,155 +371,6 @@ describe('AvatarPopup Component', () => {
       fireEvent.press(deleteButton);
 
       // Hauria d'aparèixer el diàleg de confirmació (CustomAlert)
-    });
-  });
-
-  describe('Gestió de permisos (Web)', () => {
-    beforeEach(() => {
-      // Set Platform.OS to web for these tests
-      require('react-native').Platform.OS = 'web';
-    });
-
-    afterEach(() => {
-      // Reset to default
-      require('react-native').Platform.OS = 'android';
-    });
-
-    it('hauria de demanar permisos si no estan concedits (web)', async () => {
-      ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'undetermined' });
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
-      });
-    });
-
-    it('hauria de mostrar alerta si el permís és denegat (web)', async () => {
-      ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'common.error',
-          'profile.avatar.permissionMessage',
-          expect.any(Array)
-        );
-      });
-    });
-
-    it('hauria de continuar si el permís és concedit després de demanar-lo (web)', async () => {
-      ImagePicker.getMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'undetermined' });
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('Selecció d\'imatge cancel·lada', () => {
-    it('hauria de no fer res si l\'usuari cancel·la la selecció (mòbil)', async () => {
-      // En react-native-image-crop-picker, la cancel·lació llança un error amb codi E_PICKER_CANCELLED
-      mockImageCropPicker.openPicker.mockRejectedValueOnce({ code: 'E_PICKER_CANCELLED' });
-
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockImageCropPicker.openPicker).toHaveBeenCalled();
-      });
-
-      // No hauria de pujar cap imatge
-      expect(UsersService.uploadAvatar).not.toHaveBeenCalled();
-      // No hauria de mostrar cap alerta d'error
-      expect(mockShowAlert).not.toHaveBeenCalled();
-    });
-
-    it('hauria de no fer res si l\'usuari cancel·la la selecció (web)', async () => {
-      require('react-native').Platform.OS = 'web';
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-        canceled: true,
-        assets: [],
-      });
-
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
-      });
-
-      // No s'hauria d'haver cridat uploadAvatar
-      expect(UsersService.uploadAvatar).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Upload d\'avatar', () => {
-    it('hauria de pujar avatar i notificar l\'actualització', async () => {
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(UsersService.uploadAvatar).toHaveBeenCalledWith('user-123', expect.anything());
-      });
-
-      await waitFor(() => {
-        expect(mockOnAvatarUpdated).toHaveBeenCalled();
-      });
-
-      expect(mockShowAlert).toHaveBeenCalledWith(
-        'profile.avatar.uploadSuccess',
-        'profile.avatar.uploadSuccessMessage',
-        expect.any(Array)
-      );
-    });
-
-    it('hauria de gestionar errors durant l\'upload', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (UsersService.uploadAvatar as jest.Mock).mockRejectedValueOnce(new Error('Upload error'));
-
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'common.error',
-          expect.any(String),
-          expect.any(Array)
-        );
-      });
-
-      consoleSpy.mockRestore();
     });
   });
 
@@ -522,129 +493,7 @@ describe('AvatarPopup Component', () => {
     });
   });
 
-  describe('Estats de càrrega', () => {
-    it('hauria de mostrar indicador de càrrega durant upload', async () => {
-      const { getByText, queryByTestId } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      // Durant la càrrega, hauria de mostrar un ActivityIndicator
-    });
-  });
-
-  describe('Error en selecció d\'imatge', () => {
-    it('hauria de gestionar error extern quan launchImageLibraryAsync falla', async () => {
-      // Configurar entorn web per utilitzar expo-image-picker
-      require('react-native').Platform.OS = 'web';
-      
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (ImagePicker.launchImageLibraryAsync as jest.Mock).mockRejectedValueOnce(new Error('Picker error'));
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'common.error',
-          'Picker error',
-          expect.any(Array)
-        );
-      });
-
-      consoleSpy.mockRestore();
-    });
-
-    it('hauria de mostrar missatge per defecte quan error no té message', async () => {
-      // Configurar entorn web per utilitzar expo-image-picker
-      require('react-native').Platform.OS = 'web';
-      
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (ImagePicker.launchImageLibraryAsync as jest.Mock).mockRejectedValueOnce({});
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'common.error',
-          'profile.avatar.selectError',
-          expect.any(Array)
-        );
-      });
-
-      consoleSpy.mockRestore();
-    });
-  });
-
   describe('Callbacks d\'alerta', () => {
-    it('hauria de cridar onClose quan es prem OK després d\'upload exitós', async () => {
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'profile.avatar.uploadSuccess',
-          'profile.avatar.uploadSuccessMessage',
-          expect.any(Array)
-        );
-      });
-
-      // Simular que l'usuari prem OK en l'alerta d'èxit
-      const okButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.ok');
-      expect(okButton).toBeDefined();
-
-      await act(async () => {
-        if (okButton?.onPress) {
-          okButton.onPress();
-        }
-      });
-
-      expect(mockHideAlert).toHaveBeenCalled();
-      expect(mockOnClose).toHaveBeenCalled();
-    });
-
-    it('hauria de cridar hideAlert quan es prem OK després d\'error upload', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (UsersService.uploadAvatar as jest.Mock).mockRejectedValueOnce(new Error('Upload error'));
-
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'common.error',
-          expect.any(String),
-          expect.any(Array)
-        );
-      });
-
-      const okButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.ok');
-      expect(okButton).toBeDefined();
-
-      await act(async () => {
-        if (okButton?.onPress) {
-          okButton.onPress();
-        }
-      });
-
-      expect(mockHideAlert).toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
-    });
-
     it('hauria de cridar onClose després d\'eliminar amb èxit', async () => {
       const { getByText } = render(
         <AvatarPopup
@@ -711,46 +560,4 @@ describe('AvatarPopup Component', () => {
     });
   });
 
-  describe('Entorn Web', () => {
-    const originalPlatformOS = require('react-native').Platform.OS;
-    const originalFetch = global.fetch;
-
-    afterEach(() => {
-      require('react-native').Platform.OS = originalPlatformOS;
-      global.fetch = originalFetch;
-    });
-
-    it('hauria de crear File amb fetch/blob en entorn web', async () => {
-      // Mock Platform.OS = 'web' ABANS de renderitzar
-      require('react-native').Platform.OS = 'web';
-
-      // Mock global fetch ABANS de renderitzar
-      const mockBlob = new Blob(['image data'], { type: 'image/jpeg' });
-      const mockFetch = jest.fn().mockResolvedValue({
-        blob: jest.fn().mockResolvedValue(mockBlob),
-      });
-      global.fetch = mockFetch;
-
-      // Assegurar que launchImageLibraryAsync retorna un resultat vàlid
-      (ImagePicker.launchImageLibraryAsync as jest.Mock).mockResolvedValue({
-        canceled: false,
-        assets: [{ uri: 'file://test/image.jpg', type: 'image' }],
-      });
-
-      const { getByText } = render(
-        <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
-      );
-
-      const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
-
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('file://test/image.jpg');
-      });
-
-      await waitFor(() => {
-        expect(UsersService.uploadAvatar).toHaveBeenCalledWith('user-123', expect.any(File));
-      });
-    });
-  });
 });

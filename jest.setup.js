@@ -161,6 +161,15 @@ jest.mock('expo-file-system/legacy', () => ({
   EncodingType: {
     UTF8: 'utf8',
   },
+  // Pujada directa a R2 (MediaUploadService.putFile)
+  getInfoAsync: jest.fn().mockResolvedValue({ exists: true, size: 1024 }),
+  FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
+  createUploadTask: jest.fn((url, fileUri, options, callback) => ({
+    uploadAsync: jest.fn(async () => {
+      if (callback) callback({ totalBytesSent: 1024, totalBytesExpectedToSend: 1024 });
+      return { status: 200, body: '', headers: {} };
+    }),
+  })),
 }));
 
 // Mock expo-sharing
@@ -383,3 +392,43 @@ global.console = {
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+// Mock de react-native-compressor (mòdul natiu: no existeix a Jest)
+jest.mock('react-native-compressor', () => ({
+  Video: {
+    compress: jest.fn((uri) => Promise.resolve(`${uri}.compressed.mp4`)),
+  },
+  Image: {
+    compress: jest.fn((uri) => Promise.resolve(uri)),
+  },
+  getVideoMetaData: jest.fn(() => Promise.resolve({ duration: 10, size: 1024, width: 1280, height: 720, extension: 'mp4' })),
+  getFileSize: jest.fn(() => Promise.resolve('1024')),
+}));
+
+// Mock d'expo-image: component host senzill que conserva les props (source, placeholder, cacheKey...)
+jest.mock('expo-image', () => {
+  const React = require('react');
+  const Image = (props) => React.createElement('ExpoImage', props);
+  Image.prefetch = jest.fn(() => Promise.resolve(true));
+  Image.clearMemoryCache = jest.fn(() => Promise.resolve(true));
+  Image.clearDiskCache = jest.fn(() => Promise.resolve(true));
+  return { Image };
+});
+
+// Mock d'expo-image-manipulator (compressió d'imatges al client)
+jest.mock('expo-image-manipulator', () => ({
+  manipulateAsync: jest.fn((uri, actions) =>
+    Promise.resolve({ uri: `${uri}.webp`, width: 2048, height: 1536 })
+  ),
+  SaveFormat: { JPEG: 'jpeg', PNG: 'png', WEBP: 'webp' },
+  FlipType: { Vertical: 'vertical', Horizontal: 'horizontal' },
+}));
+
+// Mock global d'expo-image-picker (els tests que el necessiten el poden sobreescriure amb jest.mock local)
+jest.mock('expo-image-picker', () => ({
+  requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  getMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  launchImageLibraryAsync: jest.fn().mockResolvedValue({ canceled: true, assets: null }),
+  MediaTypeOptions: { All: 'All', Images: 'Images', Videos: 'Videos' },
+  UIImagePickerPresentationStyle: { FULL_SCREEN: 0 },
+}));

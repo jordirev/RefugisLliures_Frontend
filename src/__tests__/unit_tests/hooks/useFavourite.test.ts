@@ -50,6 +50,7 @@ describe('useFavourite Hook', () => {
     login: jest.fn(),
     loginWithGoogle: jest.fn(),
     signup: jest.fn(),
+    confirmAge: jest.fn(),
     logout: jest.fn(),
     deleteAccount: jest.fn(),
     refreshToken: jest.fn(),

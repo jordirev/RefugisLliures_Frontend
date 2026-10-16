@@ -12,9 +12,7 @@ import {
   PanResponder,
   Dimensions,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import * as FileSystem from 'expo-file-system/legacy';
 // Use a runtime require for expo-sharing so the code still typechecks if the
@@ -40,11 +38,15 @@ import { useUser } from '../hooks/useUsersQuery';
 import { BadgeType } from '../components/BadgeType';
 import { BadgeCondition } from '../components/BadgeCondition';
 import { QuickActionsMenu } from '../components/QuickActionsMenu';
-import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal';
+import { PhotoViewerModal } from '../components/PhotoViewerModal';
 import { UserExperience } from '../components/UserExperience';
 import { GalleryScreen } from './GalleryScreen';
-import { RefugeMediaService } from '../services/RefugeMediaService';
 import { useAuth } from '../contexts/AuthContext';
+import { useMediaUpload } from '../hooks/useMediaUpload';
+import { RightsDeclarationModal } from '../components/RightsDeclarationModal';
+import { MediaThumbnail } from '../components/MediaThumbnail';
+import { MediaImage, isVideoMedia } from '../components/MediaImage';
+import type { PreparedMediaFile } from '../services/MediaUploadService';
 import { RefugeOccupationModal } from '../components/RefugeOccupationModal';
 
 // Icons
@@ -66,20 +68,14 @@ import AddPhotoIcon from '../assets/icons/addPhoto.png';
 import DoubtIcon from '../assets/icons/doubt-orange.png';
 import ExperienceIcon from '../assets/icons/message-circle.svg';
 
-// Helper function to check if a media is a video based on URL extension
-const isVideo = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext));
-};
-
 // Component for experience preview in the list
 const ExperiencePreviewItem: React.FC<{ 
   experience: any;
   onPhotoPress: (photos: any[], index: number) => void;
-  onEdit?: (experienceId: string, newComment: string, newFiles: File[]) => void;
+  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
   onDelete?: () => void;
-}> = ({ experience, onPhotoPress, onEdit, onDelete }) => {
+  onPickMedia?: () => Promise<PreparedMediaFile[] | null>;
+}> = ({ experience, onPhotoPress, onEdit, onDelete, onPickMedia }) => {
   const { data: user } = useUser(experience.creator_uid);
 
   return (
@@ -91,6 +87,7 @@ const ExperiencePreviewItem: React.FC<{
         onEdit={onEdit}
         onDelete={onDelete}
         refugeCreatorUid={experience.creator_uid}
+        onPickMedia={onPickMedia}
       />
     </View>
   );
@@ -127,6 +124,14 @@ export function RefugeDetailScreen({
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const { firebaseUser } = useAuth();
+  // Pujada de fotos/vídeos (URL PUT prefirmada + invalidacions)
+  const {
+    pickAndUpload,
+    pickMedia,
+    isUploading: uploadingPhotos,
+    progress: uploadProgress,
+    rightsModalProps,
+  } = useMediaUpload({ showAlert });
   
   // Load full refuge data - pass refugeId even if empty (hooks must always be called)
   const { data: refuge, isLoading: loadingRefuge, refetch: refetchRefuge } = useRefuge(refugeId || '');
@@ -180,7 +185,6 @@ export function RefugeDetailScreen({
   const [photoViewerVisible, setPhotoViewerVisible] = React.useState(false);
   const [photoViewerIndex, setPhotoViewerIndex] = React.useState(0);
   const [galleryScreenVisible, setGalleryScreenVisible] = React.useState(false);
-  const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
   const imageScrollRef = React.useRef<ScrollView>(null);
 
   // Experience photo viewer states
@@ -538,64 +542,11 @@ export function RefugeDetailScreen({
     setConfirmModalVisible(true);
   };
 
-  // Handle photo upload
+  // Pujada de fotos/vídeos del refugi: selecció → drets → compressió → intents → PUT → confirm.
+  // El hook invalida refugi, mitjans, experiències, llista de refugis i usuari.
   const handleUploadPhotos = async () => {
-    try {
-      // Request permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permisos necessaris',
-          'Necessitem permisos per accedir a les teves fotos i vídeos.'
-        );
-        return;
-      }
-
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['videos', 'images'],
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        ...(Platform.OS === 'ios' && {
-          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
-        }),
-      });
-
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        return;
-      }
-
-      setUploadingPhotos(true);
-
-      // Prepare files for upload using URIs directly (React Native compatible)
-      const files: any[] = [];
-      for (const asset of result.assets) {
-        const fileName = asset.uri.split('/').pop() || `photo_${Date.now()}.jpg`;
-        const mimeType = asset.mimeType || 'image/jpeg';
-        
-        // Create file object compatible with React Native FormData
-        files.push({
-          uri: asset.uri,
-          type: mimeType,
-          name: fileName,
-        });
-      }
-
-      // Upload photos
-      await RefugeMediaService.uploadRefugeMedia(refugeId, files as any);
-      
-      // Refetch refuge data to get updated photos
-      await refetchRefuge();
-      
-      showAlert('Èxit', `S'han pujat ${files.length} foto(s) correctament.`);
-    } catch (error) {
-      console.error('Error uploading photos:', error);
-      showAlert('Error', 'No s\'han pogut pujar les fotos. Intenta-ho de nou.');
-    } finally {
-      setUploadingPhotos(false);
-    }
+    if (uploadingPhotos) return;
+    await pickAndUpload({ target: 'refuge', refugeId, uid: firebaseUser?.uid });
   };
 
   const handleImageScroll = (event: any) => {
@@ -629,7 +580,7 @@ export function RefugeDetailScreen({
     // React Query will handle cache invalidation
   };
 
-  const handleExperienceEdit = (experienceId: string, newComment: string, newFiles: File[]) => {
+  const handleExperienceEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => {
     updateExperienceMutation.mutate(
       { 
         experienceId, 
@@ -637,8 +588,12 @@ export function RefugeDetailScreen({
         request: { comment: newComment, files: newFiles } 
       },
       {
-        onSuccess: () => {
-          showAlert(t('common.success'), t('experiences.updateSuccess') || 'Experiència actualitzada correctament');
+        onSuccess: (data) => {
+          if (data.uploadError || (data.failed_files && data.failed_files.length > 0)) {
+            showAlert(t('common.warning'), t('experiences.warnings.someFilesFailedToUpload'));
+          } else {
+            showAlert(t('common.success'), t('experiences.updateSuccess'));
+          }
         },
         onError: (error: any) => {
           showAlert(
@@ -738,34 +693,23 @@ export function RefugeDetailScreen({
                     activeOpacity={0.9}
                     onPress={() => handleImagePress(index)}
                   >
-                    {isVideo(image.url) ? (
-                      <>
-                        <VideoThumbnail uri={image.url} style={styles.headerImage} />
-                        <View style={styles.videoOverlay}>
-                          <View style={styles.playIconContainer}>
-                            <Text style={styles.playIcon}>▶</Text>
-                          </View>
-                        </View>
-                      </>
-                    ) : (
-                      <Image
-                        source={{ uri: image.url }}
-                        style={styles.headerImage}
-                        resizeMode="cover"
-                      />
-                    )}
+                    <MediaThumbnail media={image} style={styles.headerImage} />
                   </TouchableOpacity>
                 ))}
                 
                 {/* 4th screen with buttons */}
                 <View style={styles.buttonScreen}>
-                  <Image
-                    source={{ 
-                      uri: sortedImages[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
-                    }}
-                    style={styles.headerImage}
-                    resizeMode="cover"
-                  />
+                  {sortedImages[0] && (!isVideoMedia(sortedImages[0]) || sortedImages[0].thumb_url) ? (
+                    <MediaImage media={sortedImages[0]} variant="thumb" style={styles.headerImage} />
+                  ) : (
+                    <Image
+                      source={{ 
+                        uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
+                      }}
+                      style={styles.headerImage}
+                      resizeMode="cover"
+                    />
+                  )}
                   <View style={styles.buttonScreenOverlay}>
                     <TouchableOpacity
                       style={styles.galleryButton}
@@ -783,7 +727,12 @@ export function RefugeDetailScreen({
                     >
                       <Image source={AddPhotoIcon} style={styles.addPhotoButtonIcon} />
                       {uploadingPhotos ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
+                        <>
+                          <ActivityIndicator size="small" color="#FFFFFF" />
+                          {uploadProgress > 0 && (
+                            <Text style={styles.galleryButtonText}>{Math.round(uploadProgress * 100)}%</Text>
+                          )}
+                        </>
                       ) : (                        
                         <Text style={styles.galleryButtonText} numberOfLines={1}>{t('refuge.gallery.addPhoto')}</Text>
                       )}
@@ -1012,6 +961,7 @@ export function RefugeDetailScreen({
                   onPhotoPress={handleExperiencePhotoPress}
                   onEdit={handleExperienceEdit}
                   onDelete={() => handleExperienceDelete(experience.id)}
+                  onPickMedia={() => pickMedia()}
                 />
               ))}
               
@@ -1087,7 +1037,8 @@ export function RefugeDetailScreen({
         onShowAlert={showAlert}
         onDelete={onDelete ? () => onDelete(refuge) : undefined}
         onEdit={onEdit ? () => onEdit(refuge) : undefined}
-        onPhotoUploaded={handlePhotoDeleted}
+        onAddPhoto={handleUploadPhotos}
+        isUploadingPhotos={uploadingPhotos}
         onViewMap={onViewMap ? () => {
           setMenuOpen(false);
           onViewMap(refuge);
@@ -1181,7 +1132,13 @@ export function RefugeDetailScreen({
         />
       )}
       
-      {/* CustomAlert */}
+        </>
+      )}
+
+      {/* Declaració de drets abans de la primera pujada de la sessió */}
+      <RightsDeclarationModal {...rightsModalProps} />
+
+      {/* CustomAlert (fora del bloc condicional perquè també es vegi des de la galeria) */}
       {alertConfig && (
         <CustomAlert
           visible={alertVisible}
@@ -1190,8 +1147,6 @@ export function RefugeDetailScreen({
           buttons={alertConfig.buttons}
           onDismiss={hideAlert}
         />
-      )}
-        </>
       )}
     </View>
   );

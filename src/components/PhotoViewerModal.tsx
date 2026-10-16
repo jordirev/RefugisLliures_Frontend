@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Modal,
@@ -9,23 +9,22 @@ import {
   ScrollView,
   Text,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { ImageMetadata } from '../models';
-import { RefugeMediaService } from '../services/RefugeMediaService';
-import { UsersService } from '../services/UsersService';
-import { useQuery } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
+import { useUser } from '../hooks/useUsersQuery';
+import { useDeleteRefugeMedia } from '../hooks/useRefugeMediaQuery';
+import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { MediaImage, isVideoMedia } from './MediaImage';
+import { isUserAdmin } from '../utils/authUtils';
 
 // Icons
 // @ts-ignore
 import CloseIcon from '../assets/icons/x.svg';
-// @ts-ignore
-import TrashIcon from '../assets/icons/trash.svg';
 
 interface PhotoViewerModalProps {
   visible: boolean;
@@ -40,12 +39,27 @@ interface PhotoViewerModalProps {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Helper function to check if a media is a video based on URL extension
-const isVideo = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext));
-};
+/**
+ * Permisos visuals del menú ⋮ (el backend és qui autoritza de veritat).
+ * - «Denunciar»: qualsevol usuari autenticat que NO sigui l'autor.
+ * - «Eliminar»: l'autor, el creador de l'experiència a què pertany la foto, o un admin.
+ */
+export function getPhotoMenuPermissions(params: {
+  currentUid?: string | null;
+  creatorUid?: string | null;
+  experienceCreatorUid?: string | null;
+  isAdmin: boolean;
+}) {
+  const { currentUid, creatorUid, experienceCreatorUid, isAdmin } = params;
+  const isAuthor =
+    !!currentUid &&
+    (currentUid === creatorUid || (!!experienceCreatorUid && currentUid === experienceCreatorUid));
+  return {
+    isAuthor,
+    canReport: !!currentUid && !isAuthor,
+    canDelete: isAuthor || (!!currentUid && isAdmin),
+  };
+}
 
 // Video thumbnail component - shows first frame of video with play icon
 export function VideoThumbnail({ uri, style, onPress }: { uri: string; style: any; onPress?: () => void }) {
@@ -96,32 +110,49 @@ export function PhotoViewerModal({
   hideMetadata = false,
 }: PhotoViewerModalProps) {
   const { firebaseUser } = useAuth();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const navigation = useNavigation<any>();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const scrollViewRef = useRef<ScrollView>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
+  const deleteMediaMutation = useDeleteRefugeMedia();
+  const deleting = deleteMediaMutation.isPending;
 
   const currentPhoto = photos[currentIndex];
 
-  // Obtenir informació del creador de la foto actual
-  const { data: creator, isLoading: loadingCreator } = useQuery({
-    queryKey: ['user', currentPhoto?.creator_uid],
-    queryFn: async () => {
-      if (!currentPhoto?.creator_uid) return null;
-      return await UsersService.getUserByUid(currentPhoto.creator_uid);
-    },
-    enabled: !!currentPhoto?.creator_uid && !hideMetadata,
-  });
+  // Informació del creador de la foto actual (clau del registre: ['users','detail',uid])
+  const { data: creator, isLoading: loadingCreator } = useUser(
+    !hideMetadata ? currentPhoto?.creator_uid : undefined
+  );
 
-  // Si és des d'una experiència, comprovar si l'usuari és el creador de l'experiència
-  const isOwner = experienceCreatorUid 
-    ? firebaseUser?.uid === experienceCreatorUid
-    : firebaseUser?.uid === currentPhoto?.creator_uid;
+  // Rol d'admin (claim del token de Firebase); només afecta la UI
+  useEffect(() => {
+    let cancelled = false;
+    if (visible && firebaseUser) {
+      isUserAdmin()
+        .then((admin) => {
+          if (!cancelled) setIsAdmin(admin);
+        })
+        .catch(() => undefined);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, firebaseUser]);
+
+  const { canReport, canDelete } = getPhotoMenuPermissions({
+    currentUid: firebaseUser?.uid,
+    creatorUid: currentPhoto?.creator_uid,
+    experienceCreatorUid,
+    isAdmin,
+  });
 
   React.useEffect(() => {
     if (visible) {
       setCurrentIndex(initialIndex);
+      setMenuOpen(false);
       // Scroll to initial photo
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({
@@ -137,42 +168,53 @@ export function PhotoViewerModal({
     const index = Math.round(offsetX / SCREEN_WIDTH);
     if (index !== currentIndex && index >= 0 && index < photos.length) {
       setCurrentIndex(index);
+      setMenuOpen(false);
     }
   };
 
-  const handleDelete = async () => {
+  const handleReport = () => {
+    setMenuOpen(false);
+    if (!currentPhoto) return;
+    const mediaKey = currentPhoto.key;
+    // Es tanca el modal abans de navegar: un <Modal> sempre queda per sobre de la pila
+    onClose();
+    navigation.navigate('ReportMedia', { refugeId, mediaKey });
+  };
+
+  const handleDelete = () => {
+    setMenuOpen(false);
     showAlert(
-      'Eliminar fotografia',
-      'Estàs segur que vols eliminar aquesta fotografia? Aquesta acció no es pot desfer.',
+      t('media.viewer.deleteTitle'),
+      t('media.viewer.deleteMessage'),
       [
         {
-          text: 'Cancel·lar',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Eliminar',
+          text: t('common.delete'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              setDeleting(true);
-              await RefugeMediaService.deleteRefugeMedia(refugeId, currentPhoto.key);
-              
-              // Invalidar queries d'experiències per refrescar les dades
-              queryClient.invalidateQueries({ queryKey: ['experiences', 'refuge', refugeId] });
-              // També invalidar el refugi i els seus media
-              queryClient.invalidateQueries({ queryKey: ['refuges', 'detail', refugeId] });
-              queryClient.invalidateQueries({ queryKey: ['refugeMedia', refugeId] });
-              
-              if (onPhotoDeleted) {
-                onPhotoDeleted();
+          onPress: () => {
+            deleteMediaMutation.mutate(
+              {
+                refugeId,
+                mediaKey: currentPhoto.key,
+                experienceId: currentPhoto.experience_id,
+                creatorUid: currentPhoto.creator_uid,
+              },
+              {
+                onSuccess: () => {
+                  if (onPhotoDeleted) {
+                    onPhotoDeleted();
+                  }
+                  onClose();
+                },
+                onError: (error) => {
+                  console.error('Error deleting photo:', error);
+                  showAlert(t('common.error'), t('media.viewer.deleteError'));
+                },
               }
-              onClose();
-            } catch (error) {
-              console.error('Error deleting photo:', error);
-              showAlert('Error', 'No s\'ha pogut eliminar la fotografia');
-            } finally {
-              setDeleting(false);
-            }
+            );
           },
         },
       ]
@@ -197,10 +239,46 @@ export function PhotoViewerModal({
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        {/* Close button */}
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        {/* Close button (a l'esquerra: la dreta és per al menú ⋮) */}
+        <TouchableOpacity style={styles.closeButton} onPress={onClose} testID="photo-viewer-close">
           <CloseIcon width={24} height={24} color="#FFFFFF" />
         </TouchableOpacity>
+
+        {/* Menú ⋮ (Denunciar / Eliminar) */}
+        {(canReport || canDelete) && (
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => setMenuOpen((open) => !open)}
+            testID="photo-menu-button"
+            accessibilityLabel={t('media.viewer.moreOptions')}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {deleting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.menuButtonText}>⋮</Text>
+            )}
+          </TouchableOpacity>
+        )}
+        {menuOpen && (
+          <View style={styles.menuDropdown} testID="photo-menu-dropdown">
+            {canReport && (
+              <TouchableOpacity style={styles.menuItem} onPress={handleReport} testID="photo-menu-report">
+                <Text style={styles.menuItemText}>{t('media.viewer.report')}</Text>
+              </TouchableOpacity>
+            )}
+            {canDelete && (
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={handleDelete}
+                disabled={deleting}
+                testID="photo-menu-delete"
+              >
+                <Text style={[styles.menuItemText, styles.menuItemDestructive]}>{t('common.delete')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
 
         {/* Photos scroll view */}
         <ScrollView
@@ -214,14 +292,10 @@ export function PhotoViewerModal({
         >
           {photos.map((photo, index) => (
             <View key={photo.key} style={styles.photoContainer}>
-              {isVideo(photo.url) ? (
+              {isVideoMedia(photo) ? (
                 <VideoPlayer uri={photo.url} style={styles.photo} />
               ) : (
-                <Image
-                  source={{ uri: photo.url }}
-                  style={styles.photo}
-                  resizeMode="contain"
-                />
+                <MediaImage media={photo} variant="full" style={styles.photo} contentFit="contain" />
               )}
             </View>
           ))}
@@ -249,7 +323,7 @@ export function PhotoViewerModal({
                       </View>
                     )}
                     <Text style={styles.creatorName}>
-                      {creator?.username || 'Anònim'}
+                      {creator?.username || t('media.viewer.anonymous')}
                     </Text>
                     <Text style={styles.separator}>·</Text>
                     <Text style={styles.date}>
@@ -260,37 +334,6 @@ export function PhotoViewerModal({
               </View>
             </View>
 
-            {/* Delete button (only if owner) - when metadata visible */}
-            {isOwner && (
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={handleDelete}
-                disabled={deleting}
-              >
-                {deleting ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <TrashIcon width={20} height={20} color="#FFFFFF" />
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-
-        {/* Delete button (only if owner) - when metadata hidden */}
-        {hideMetadata && isOwner && (
-          <View style={styles.deleteButtonContainerNoMetadata}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDelete}
-              disabled={deleting}
-            >
-              {deleting ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <TrashIcon width={20} height={20} color="#FFFFFF" />
-              )}
-            </TouchableOpacity>
           </View>
         )}
 
@@ -319,7 +362,7 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: 10,
-    right: 10,
+    left: 10,
     zIndex: 10,
     width: 40,
     height: 40,
@@ -395,17 +438,47 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 11,
   },
-  deleteButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(31, 31, 31, 0.7)',
+  menuButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 11,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  deleteButtonContainerNoMetadata: {
+  menuButtonText: {
+    color: '#FFFFFF',
+    fontSize: 26,
+    fontWeight: '700',
+    lineHeight: 30,
+  },
+  menuDropdown: {
     position: 'absolute',
-    bottom: 100,
-    right: 20,
+    top: 54,
+    right: 12,
+    zIndex: 12,
+    minWidth: 160,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    paddingVertical: 4,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  menuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  menuItemText: {
+    fontSize: 15,
+    color: '#111827',
+  },
+  menuItemDestructive: {
+    color: '#DC2626',
   },
 });
