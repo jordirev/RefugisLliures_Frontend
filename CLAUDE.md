@@ -40,7 +40,7 @@ Screen → hook use*Query (React Query) → *Service (static, retorna DTO) → a
 
 ## Top gotchas (llista completa: docs/GOTCHAS.md)
 1. Els serveis han de **llançar** en error; `UsersService` retorna `null` i les mutacions creuen que han anat bé.
-2. Mutacions sempre via hook amb invalidacions; la pujada/esborrat de fotos i l'avatar avui salten els hooks.
+2. Mutacions sempre via hook amb invalidacions; fotos/vídeos/avatar només amb `useMediaUpload` (URL PUT prefirmada, el PUT a R2 sense Bearer) i renderitzats amb `MediaImage` (expo-image, `cacheKey` = clau).
 3. `mutate()` amb el tipus exacte de `mutationFn` (eliminar renovation està trencat per això).
 4. La cache de React Query **no es buida** al logout; la sessió Firebase **no persisteix** entre arrencades.
 5. La UI no és seguretat: comprovacions d'autor/admin són visuals; autoritza el backend.

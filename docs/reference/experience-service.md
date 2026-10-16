@@ -28,13 +28,13 @@ interface Experience {
 | Mètode del servei | Endpoint | Cos | Resposta |
 |---|---|---|---|
 | `getExperiencesByRefuge(refugeId)` | `GET /api/experiences/?refuge_id={id}` | — | `{ experiences: ExperienceDTO[] }` |
-| `createExperience({refuge_id, comment, files?})` | `POST /api/experiences/` | multipart: `refuge_id`, `comment`, `files` (repetit) | `{ experience, uploaded_files?, failed_files?, message? }` |
-| `updateExperience(id, {comment?, files?})` | `PATCH /api/experiences/{id}/` | multipart: `comment`, `files` (afegeix imatges) | `{ experience?, uploaded_files?, failed_files?, message? }` |
+| `createExperience({refuge_id, comment})` | `POST /api/experiences/` | JSON `{refuge_id, comment}` (els `files` del request **no** s'envien) | `{ experience, message? }` |
+| `updateExperience(id, {comment?})` | `PATCH /api/experiences/{id}/` | JSON `{comment}` | `{ experience?, message? }` |
 | `deleteExperience(id)` | `DELETE /api/experiences/{id}/` | — | `{ success, message }` |
 
-- `uploaded_files` són les claus de media pujades; `failed_files`, els noms que han fallat; `message`, l'error parcial. Una experiència es pot crear encara que alguns fitxers fallin (la UI mostra `experiences.warnings.someFilesFailedToUpload`).
+- Els fitxers (`PreparedMediaFile[]`, de `useMediaUpload().pickMedia`) els puja el **hook** després de crear l'experiència: `MediaUploadService.uploadFiles({target:'experience', refugeId, experienceId, files})` (intents → PUT R2 → confirm). El hook retorna `uploaded_files` (claus), `failed_files` (`[{upload_id, reason}]`) i `uploadError` (error global de pujada; l'experiència ja existeix).
 - **Eliminar una foto d'una experiència** no es fa amb aquests endpoints sinó amb el de media del refugi: `DELETE /api/refuges/{id}/media/{key}/` (`RefugeMediaService.deleteRefugeMedia`, vegeu [flows/09](../flows/09-refuge-photos-gallery.md)).
-- Multipart: el servei construeix `FormData` i **no** fixa `Content-Type`.
+- El backend manté el multipart antic per a versions velles de l'app, però aquest client ja no l'usa.
 
 ## Errors (llança `Error` amb missatge en català) [FET]
 | Operació | Status → missatge per defecte (si el backend no envia `error`) |
@@ -44,16 +44,16 @@ interface Experience {
 | Actualitzar | 400 · 401 · 403 "No tens permisos per editar aquesta experiència" · 404 "Experiència no trobada" · xarxa "No s'ha pogut actualitzar l'experiència" |
 | Eliminar | 401 · 403 "No tens permisos per eliminar aquesta experiència" · 404 |
 
-El frontend gestiona el 403, però segons els docs del backend aquest **no comprova la propietat**; l'única protecció és visual (vegeu [flows/11](../flows/11-experiences.md#gotchas-i-bugs)).
+El frontend gestiona el 403; amb la feature `images` el backend comprova la propietat a update/delete i als intents (`not_owner`).
 
 ## Hooks (`src/hooks/useExperiencesQuery.ts`)
-Clau de llista: `['experiences', 'refuge', refugeId]` (fora del registre `queryKeys`).
+Clau de llista: `queryKeys.refugeExperiences(refugeId)` = `['experiences', 'refuge', refugeId]`.
 
 | Hook | Ús | Efecte a la cache en `onSuccess` |
 |---|---|---|
 | `useExperiences(refugeId)` | `const { data, isLoading, error } = useExperiences(id)` | — |
-| `useCreateExperience()` | `mutateAsync({ refuge_id, comment, files })` | afegeix la nova al principi de la llista; si hi ha fitxers invalida `['refuges','detail',id]`, `['refugeMedia',id]`, `['refuges','list']`; sempre invalida `['users','detail']` |
-| `useUpdateExperience()` | `mutateAsync({ experienceId, refugeId, request: { comment, files } })` | substitueix l'experiència a la llista (si la resposta no porta `experience`, no fa res); **només si hi ha fitxers** invalida refugi, media, llista de refugis i `['users','detail']` |
+| `useCreateExperience()` | `mutateAsync({ refuge_id, comment, files })` | crea (JSON) i puja els fitxers; afegeix la nova al principi de la llista (amb els `MediaItem` pujats); si hi ha fitxers `invalidateMediaQueries` (refugi, refugeMedia, experiències, llista, usuari); si no, `['users','detail']` |
+| `useUpdateExperience()` | `mutateAsync({ experienceId, refugeId, request: { comment, files } })` | PATCH només si hi ha comentari (o no hi ha fitxers); puja els fitxers amb `target=experience`; substitueix l'experiència si la resposta la porta; si hi ha fitxers `invalidateMediaQueries` |
 | `useDeleteExperience()` | `mutateAsync({ experienceId, refugeId })` | la treu de la llista; invalida refugi, media, llista de refugis i usuari |
 
 No són optimistic updates: escriuen a la cache després de la resposta.
@@ -61,9 +61,11 @@ No són optimistic updates: escriuen a la cache després de la resposta.
 ```tsx
 const { data: experiences } = useExperiences(refugeId);
 const create = useCreateExperience();
+const { pickMedia, rightsModalProps } = useMediaUpload({ showAlert }); // renderitza <RightsDeclarationModal {...rightsModalProps} />
 
-const onSubmit = async (comment: string, files: File[]) => {
+const onPick = async () => setFiles((await pickMedia()) ?? []);
+const onSubmit = async (comment: string) => {
   const result = await create.mutateAsync({ refuge_id: refugeId, comment, files });
-  if (result.failed_files?.length) showAlert(t('experiences.warnings.someFilesFailedToUpload'));
+  if (result.uploadError || result.failed_files.length) showAlert(t('common.warning'), t('experiences.warnings.someFilesFailedToUpload'));
 };
 ```
