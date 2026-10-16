@@ -154,6 +154,9 @@ export interface MediaReport {
  */
 export interface ModerationNotice {
   id: string;
+  type?: string | null;
+  automated?: boolean | null;
+  redress?: string | null;
   media_key?: string | null;
   refuge_id?: string | null;
   action?: string | null;

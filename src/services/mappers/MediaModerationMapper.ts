@@ -28,9 +28,12 @@ export function mapMediaReportFromDTO(dto: MediaReportDTO): MediaReport {
 export function mapModerationNoticeFromDTO(dto: ModerationNoticeDTO): ModerationNotice {
   return {
     id: dto.id,
+    type: dto.type ?? null,
+    automated: dto.automated ?? null,
+    redress: dto.redress ?? null,
     media_key: dto.media_key ?? null,
     refuge_id: dto.refuge_id ?? null,
-    action: dto.action ?? null,
+    action: dto.action ?? dto.type ?? null,
     reason: dto.reason ?? null,
     statement: dto.statement ?? null,
     strikes: dto.strikes ?? null,

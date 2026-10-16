@@ -41,6 +41,12 @@ export interface MediaReportResolveDTO {
 /** Element de GET /api/users/{uid}/moderation-notices/ */
 export interface ModerationNoticeDTO {
   id: string;
+  uid?: string | null;
+  type?: string | null;
+  report_id?: string | null;
+  automated?: boolean | null;
+  /** Informació sobre vies de recurs (art. 17 DSA) */
+  redress?: string | null;
   media_key?: string | null;
   refuge_id?: string | null;
   action?: string | null;

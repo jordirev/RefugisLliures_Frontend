@@ -50,6 +50,8 @@ describe('MediaModerationService', () => {
 
     it.each([
       [403, {}, 'own_media'],
+      [403, { error: 'own_media', code: 'own_media', message: 'No pots' }, 'own_media'],
+      [409, { error: 'already_reported', code: 'already_reported', message: 'Ja' }, 'already_reported'],
       [403, { error: 'user_blocked' }, 'user_blocked'],
       [409, {}, 'already_reported'],
       [404, {}, 'not_found'],
@@ -69,7 +71,7 @@ describe('MediaModerationService', () => {
       expect(await MediaModerationService.getMediaReports('pending')).toEqual([{ id: '1' }]);
       expect(apiGet).toHaveBeenCalledWith(`${BASE}/admin/media-reports/?status=pending`);
 
-      (apiGet as jest.Mock).mockResolvedValueOnce(res(200, { results: [{ id: '2' }] }));
+      (apiGet as jest.Mock).mockResolvedValueOnce(res(200, { count: 1, reports: [{ id: '2' }] }));
       expect(await MediaModerationService.getMediaReports('resolved')).toEqual([{ id: '2' }]);
     });
 
@@ -80,6 +82,21 @@ describe('MediaModerationService', () => {
         action: 'remove',
         statement: 'Motiu',
       });
+    });
+
+    it('retorna el report de la resposta {report, resolved_report_ids, ...}', async () => {
+      (apiPatch as jest.Mock).mockResolvedValue(
+        res(200, { report: { id: 'rep-1', status: 'resolved' }, resolved_report_ids: ['rep-1', 'rep-2'], strikes: 1, user_blocked: false })
+      );
+      const report = await MediaModerationService.resolveMediaReport('rep-1', { action: 'remove_and_strike', statement: 'x' });
+      expect(report).toEqual({ id: 'rep-1', status: 'resolved' });
+    });
+
+    it('409 already_resolved conserva el codi', async () => {
+      (apiPatch as jest.Mock).mockResolvedValue(res(409, { error: 'already_resolved', code: 'already_resolved', message: 'x' }));
+      await expect(
+        MediaModerationService.resolveMediaReport('rep-1', { action: 'dismiss', statement: 'x' })
+      ).rejects.toMatchObject({ code: 'already_resolved', status: 409 });
     });
 
     it('rebutja resoldre sense motivació', async () => {
@@ -122,6 +139,14 @@ describe('UsersService (edat)', () => {
     (apiPatch as jest.Mock).mockResolvedValue(res(200, {}));
     await UsersService.confirmAge('me', '1990-01-02');
     expect(apiPatch).toHaveBeenCalledWith(`${BASE}/users/me/age-confirmation/`, { birth_date: '1990-01-02' });
+  });
+
+  it('confirmAge retorna l\'usuari serialitzat (age_confirmed: true)', async () => {
+    (apiPatch as jest.Mock).mockResolvedValue(
+      res(200, { uid: 'me', username: 'u', language: 'ca', created_at: 'd', age_confirmed: true })
+    );
+    const user = await UsersService.confirmAge('me', '1990-01-02');
+    expect(user?.age_confirmed).toBe(true);
   });
 
   it('confirmAge: 403 → underage', async () => {

@@ -248,10 +248,13 @@ export const handlers = [
     }
     const body = (await request.json()) as any;
     if (!body || body.rights_confirmed !== true || !Array.isArray(body.files) || body.files.length === 0) {
-      return HttpResponse.json({ error: 'validation' }, { status: 400 });
+      return HttpResponse.json({ error: 'Dades invàlides', details: { files: ['required'] } }, { status: 400 });
     }
     if (body.files.length > 10) {
-      return HttpResponse.json({ error: 'Màxim 10 fitxers' }, { status: 400 });
+      return HttpResponse.json({ error: 'Dades invàlides', details: { files: ['max 10'] } }, { status: 400 });
+    }
+    if (body.target === 'avatar' && (body.files.length !== 1 || !String(body.files[0].content_type).startsWith('image/'))) {
+      return HttpResponse.json({ error: 'Dades invàlides', details: { files: ['avatar: exactament una imatge'] } }, { status: 400 });
     }
     return HttpResponse.json(
       {
@@ -297,19 +300,35 @@ export const handlers = [
   }),
 
   // POST /media/reports/
-  http.post(`${API_BASE_URL}/media/reports/`, () => HttpResponse.json({ id: 'report-1' }, { status: 201 })),
+  http.post(`${API_BASE_URL}/media/reports/`, async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json(
+      {
+        id: 'report-1',
+        refuge_id: body.refuge_id,
+        media_key: body.media_key,
+        reason: body.reason,
+        details: body.details ?? null,
+        status: 'pending',
+        priority: 'normal',
+        created_at: '2026-10-16T10:00:00Z',
+        media_hidden: false,
+      },
+      { status: 201 }
+    );
+  }),
 
   // GET /admin/media-reports/
-  http.get(`${API_BASE_URL}/admin/media-reports/`, () => HttpResponse.json([])),
+  http.get(`${API_BASE_URL}/admin/media-reports/`, () => HttpResponse.json({ count: 0, reports: [] })),
 
   // GET /users/:uid/moderation-notices/
-  http.get(`${API_BASE_URL}/users/:uid/moderation-notices/`, () => HttpResponse.json([])),
+  http.get(`${API_BASE_URL}/users/:uid/moderation-notices/`, () => HttpResponse.json({ notices: [] })),
 
   // PATCH /users/:uid/age-confirmation/
-  http.patch(`${API_BASE_URL}/users/:uid/age-confirmation/`, async ({ request }) => {
+  http.patch(`${API_BASE_URL}/users/:uid/age-confirmation/`, async ({ params, request }) => {
     const body = (await request.json()) as any;
-    if (!body?.birth_date) return HttpResponse.json({ error: 'validation' }, { status: 400 });
-    return HttpResponse.json({ age_confirmed: true });
+    if (!body?.birth_date) return HttpResponse.json({ error: 'Dades invàlides', details: { birth_date: ['required'] } }, { status: 400 });
+    return HttpResponse.json({ ...mockUser, uid: params.uid, age_confirmed: true });
   }),
 ];
 

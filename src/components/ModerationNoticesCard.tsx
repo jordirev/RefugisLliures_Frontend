@@ -24,6 +24,7 @@ export function ModerationNoticesCard({ uid }: { uid?: string }) {
             {notice.reason ? ` · ${t(`media.report.reasons.${notice.reason}`, { defaultValue: notice.reason })}` : ''}
           </Text>
           {!!notice.statement && <Text style={styles.statement}>{notice.statement}</Text>}
+          {!!notice.redress && <Text style={styles.meta}>{notice.redress}</Text>}
           {notice.strikes != null && (
             <Text style={styles.meta}>{t('media.notices.strikes', { count: notice.strikes })}</Text>
           )}

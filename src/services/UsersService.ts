@@ -77,10 +77,14 @@ export class UsersService {
    *
    * @throws ApiError amb codi `underage` (403) o `unknown`
    */
-  static async confirmAge(uid: string, birthDate: string): Promise<void> {
+  static async confirmAge(uid: string, birthDate: string): Promise<User | null> {
     const url = `${API_BASE_URL}/users/${encodeURIComponent(uid)}/age-confirmation/`;
     const response = await apiPatch(url, { birth_date: birthDate });
-    if (response.ok) return;
+    if (response.ok) {
+      // 200 → usuari serialitzat amb age_confirmed: true
+      const user = await readJsonSafe(response);
+      return user && typeof user === 'object' && user.uid ? mapUserFromDTO(user as UserDTO) : null;
+    }
     const data = await readJsonSafe(response);
     if (response.status === 403) {
       throw new ApiError('Edat inferior a la mínima', 'underage', 403, data);

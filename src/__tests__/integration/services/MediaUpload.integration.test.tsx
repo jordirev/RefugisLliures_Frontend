@@ -158,7 +158,11 @@ describe('Integració: pujada de mitjans (intent → PUT → confirm)', () => {
   it.each(['age_not_confirmed', 'user_blocked', 'not_owner'])(
     'propaga el 403 %s de l\'intent amb el seu codi',
     async (code) => {
-      server.use(http.post(`${API}/media/upload-intents/`, () => HttpResponse.json({ error: code }, { status: 403 })));
+      server.use(
+        http.post(`${API}/media/upload-intents/`, () =>
+          HttpResponse.json({ error: code, code, message: 'Text lliure que no s\'ha de llegir' }, { status: 403 })
+        )
+      );
       await expect(
         MediaUploadService.uploadFiles({ target: 'experience', refugeId: '1', experienceId: 'e1', files })
       ).rejects.toMatchObject({ code, status: 403 });

@@ -47,10 +47,13 @@ export class MediaModerationService {
     const message = (data && (data.message || data.error || data.detail)) || `Error ${response.status}`;
     if (response.status === 403) {
       // L'autor no pot denunciar la seva pròpia foto; altres 403 (bloqueig) es propaguen amb el seu codi
-      const code = extractApiErrorCode(data, ['user_blocked', 'age_not_confirmed']) || 'own_media';
+      // Backend: {error, code, message}; codis own_media | user_blocked | age_not_confirmed
+      const code = extractApiErrorCode(data, ['own_media', 'user_blocked', 'age_not_confirmed']) || 'own_media';
       throw new ApiError(String(message), code, 403, data);
     }
-    if (response.status === 409) throw new ApiError(String(message), 'already_reported', 409, data);
+    if (response.status === 409) {
+      throw new ApiError(String(message), extractApiErrorCode(data, ['already_reported']) || 'already_reported', 409, data);
+    }
     if (response.status === 404) throw new ApiError(String(message), 'not_found', 404, data);
     if (response.status === 400) throw new ApiError(String(message), 'validation', 400, data);
     throw new ApiError(String(message), 'unknown', response.status, data);
@@ -92,13 +95,19 @@ export class MediaModerationService {
       const data = await readJsonSafe(response);
       throw new ApiError(
         (data && (data.error || data.detail)) || 'No s\'ha pogut resoldre la denúncia',
-        response.status === 403 ? 'forbidden' : response.status === 400 ? 'validation' : 'unknown',
+        extractApiErrorCode(data, ['already_resolved']) ||
+          (response.status === 403 ? 'forbidden' : response.status === 400 ? 'validation' : 'unknown'),
         response.status,
         data
       );
     }
     const data = await readJsonSafe(response);
-    return data && typeof data === 'object' && data.id ? (data as MediaReportDTO) : null;
+    // Resposta: {report, resolved_report_ids, media_status, strikes, user_blocked}
+    if (data && typeof data === 'object') {
+      if (data.report && typeof data.report === 'object') return data.report as MediaReportDTO;
+      if (data.id) return data as MediaReportDTO;
+    }
+    return null;
   }
 
   /**

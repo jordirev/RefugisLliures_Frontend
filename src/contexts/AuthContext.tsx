@@ -196,9 +196,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!firebaseUser) {
       throw new Error('No user is logged in');
     }
-    await UsersService.confirmAge(firebaseUser.uid, birthDate);
-    // Actualització optimista: el GET d'usuari exposarà age_confirmed = true
-    setBackendUser((prev) => (prev ? { ...prev, age_confirmed: true } : prev));
+    const updated = await UsersService.confirmAge(firebaseUser.uid, birthDate);
+    // El backend retorna l'usuari serialitzat (age_confirmed: true); si no, actualització local
+    setBackendUser((prev) =>
+      updated ? { ...updated, age_confirmed: true } : prev ? { ...prev, age_confirmed: true } : prev
+    );
     queryClient.invalidateQueries({ queryKey: queryKeys.user(firebaseUser.uid) });
   };
 
