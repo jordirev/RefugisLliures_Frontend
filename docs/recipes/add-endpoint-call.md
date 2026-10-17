@@ -28,7 +28,7 @@ Regles:
 - Usa `apiGet/apiPost/apiPatch/apiDelete` de `src/services/apiClient.ts`, **no** `fetch` directe.
 - **Llança** en errors (conserva `status`): retornar `null`/`false` fa que `onError` de les mutacions no s'executi (bug real a `src/services/UsersService.ts`). Vegeu [GOTCHAS](../GOTCHAS.md).
 - No afegeixis `?id=` redundants (com `RenovationService.ts:168,209`).
-- Multipart: construeix `FormData` i **no** fixis `Content-Type` (com l'avatar, `UsersService.ts:369-417`).
+- Multipart: construeix `FormData` i **no** fixis `Content-Type`. (Fotos, vídeos i avatar **no** són multipart: usa `useMediaUpload`.)
 - No posis textos d'usuari al servei: retorna codis/estats i tradueix a la UI amb `t(...)`.
 - `API_BASE_URL` avui està duplicat a cada servei; si en crees un de nou, reutilitza el mateix valor (idealment centralitzar-lo, vegeu [TECH_DEBT](../TECH_DEBT.md)).
 

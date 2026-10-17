@@ -34,7 +34,7 @@ interface Experience {
 
 - Els fitxers (`PreparedMediaFile[]`, de `useMediaUpload().pickMedia`) els puja el **hook** després de crear l'experiència: `MediaUploadService.uploadFiles({target:'experience', refugeId, experienceId, files})` (intents → PUT R2 → confirm). El hook retorna `uploaded_files` (claus), `failed_files` (`[{upload_id, reason}]`) i `uploadError` (error global de pujada; l'experiència ja existeix).
 - **Eliminar una foto d'una experiència** no es fa amb aquests endpoints sinó amb el de media del refugi: `DELETE /api/refuges/{id}/media/{key}/` (`RefugeMediaService.deleteRefugeMedia`, vegeu [flows/09](../flows/09-refuge-photos-gallery.md)).
-- El backend manté el multipart antic per a versions velles de l'app, però aquest client ja no l'usa.
+- El backend ja no accepta multipart a `POST`/`PATCH /api/experiences/` (només JSON; els camins antics s'han retirat): els fitxers només van per `upload-intents`.
 
 ## Errors (llança `Error` amb missatge en català) [FET]
 | Operació | Status → missatge per defecte (si el backend no envia `error`) |
