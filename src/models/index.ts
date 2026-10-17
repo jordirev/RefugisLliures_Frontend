@@ -25,7 +25,14 @@ export interface InfoComp {
 }
 
 /**
- * Metadades d'una imatge associada al refugi
+ * Tipus de mitjà (contracte `MediaItem` del backend)
+ */
+export type MediaType = 'image' | 'video';
+
+/**
+ * Metadades d'un mitjà (foto o vídeo) associat al refugi.
+ * Forma `MediaItem` del contracte d'API. Els camps nous són opcionals per mantenir
+ * compatibilitat amb items antics sense miniatura ni blurhash.
  */
 export interface ImageMetadata {
   key: string;
@@ -33,7 +40,16 @@ export interface ImageMetadata {
   uploaded_at: string; // ISO date string
   creator_uid: string;
   experience_id?: string | null; // id de l'experiencia a la que pertany la foto
+  thumb_url?: string | null; // miniatura WebP (o pòster del vídeo)
+  media_type?: MediaType; // si falta, es dedueix per l'extensió de la URL
+  width?: number | null;
+  height?: number | null;
+  blurhash?: string | null;
+  taken_at?: string | null; // data de presa (EXIF), desada només a Firestore
 }
+
+/** Àlies amb el nom del contracte d'API */
+export type MediaItem = ImageMetadata;
 
 export interface Location {
   id: string;
@@ -85,6 +101,69 @@ export interface User {
   num_shared_experiences: number | null;
   num_renovated_refuges: number | null;
   created_at: string; // ISO date string
+  /** false si l'usuari encara no ha confirmat l'edat mínima (16 anys); undefined amb backends antics */
+  age_confirmed?: boolean;
+}
+
+/*******************************  Media moderation Models  ***********************************/
+
+export type MediaReportReason =
+  | 'child_sexual_abuse'
+  | 'child_endangerment'
+  | 'sexual_nonconsensual'
+  | 'violence_gore'
+  | 'terrorism_extremism'
+  | 'hate_speech'
+  | 'harassment_bullying'
+  | 'animal_cruelty'
+  | 'self_harm'
+  | 'illegal_goods'
+  | 'my_image'
+  | 'privacy_personal_data'
+  | 'intellectual_property'
+  | 'fraud_scam_spam'
+  | 'misleading_irrelevant'
+  | 'other';
+
+export type MediaReportStatus = 'pending' | 'resolved';
+export type MediaReportAction = 'dismiss' | 'remove' | 'remove_and_strike';
+
+/**
+ * Denúncia d'un mitjà (vista d'administració)
+ */
+export interface MediaReport {
+  id: string;
+  refuge_id: string;
+  media_key: string;
+  reason: MediaReportReason | string;
+  details?: string | null;
+  status: MediaReportStatus | string;
+  reporter_uid?: string | null;
+  media_creator_uid?: string | null;
+  priority?: string | null;
+  reports_count?: number | null;
+  created_at?: string | null;
+  resolved_at?: string | null;
+  resolution_action?: MediaReportAction | string | null;
+  statement?: string | null;
+  media?: ImageMetadata | null;
+}
+
+/**
+ * Avís de moderació a l'usuari (declaració de motius, art. 17 DSA)
+ */
+export interface ModerationNotice {
+  id: string;
+  type?: string | null;
+  automated?: boolean | null;
+  redress?: string | null;
+  media_key?: string | null;
+  refuge_id?: string | null;
+  action?: string | null;
+  reason?: string | null;
+  statement?: string | null;
+  strikes?: number | null;
+  created_at?: string | null;
 }
 
 

@@ -31,7 +31,7 @@ Assegura't que el fitxer `app.json` tingui la configuració correcta per Android
     "slug": "refugislliures-frontend",
     "version": "1.0.0",
     "android": {
-      "package": "cat.refugislliures.app",
+      "package": "com.refugislliures.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"

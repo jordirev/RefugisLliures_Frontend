@@ -177,7 +177,8 @@
         "title": "Eliminar cuenta",
         "confirmTitle": "Eliminar cuenta",
         "confirmMessage": "Esta acción eliminará permanentemente tu cuenta y los datos asociados. ¿Estás seguro/a?"
-      }
+      },
+      "mediaReportsManagement": "Gestión de denuncias de fotos"
     },
     "languageSelector": {
       "title": "Selecciona el idioma",
@@ -445,10 +446,10 @@
     "title": "Bienvenido/a",
     "subtitle": "Inicia sesión para continuar",
     "emailPlaceholder": "Correo electrónico",
-  "passwordPlaceholder": "Contraseña",
-  "forgotPassword": "¿Has olvidado la contraseña?",
-  "continue": "Continuar",
-  "loginButton": "Iniciar sesión",
+    "passwordPlaceholder": "Contraseña",
+    "forgotPassword": "¿Has olvidado la contraseña?",
+    "continue": "Continuar",
+    "loginButton": "Iniciar sesión",
     "orContinueWith": "o",
     "googleButton": "Continuar con Google",
     "noAccount": "¿No tienes cuenta?",
@@ -490,7 +491,9 @@
       "numberPassword": "\t• Mínimo un número",
       "specialCharPassword": "\t• Mínimo un carácter especial (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Las contraseñas no coinciden",
-      "registrationFailed": "No se pudo crear la cuenta. Si tienes una cuenta existente, prueba a iniciar sesión o recupera la contraseña."
+      "registrationFailed": "No se pudo crear la cuenta. Si tienes una cuenta existente, prueba a iniciar sesión o recupera la contraseña.",
+      "usernameTooShort": "El nombre de usuario debe tener al menos 2 caracteres",
+      "selectLanguage": "Por favor, selecciona un idioma"
     }
   },
   "editProfile": {
@@ -635,7 +638,8 @@
       "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
       "commentTooLong": "El comentario no puede superar los 3000 caracteres",
       "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
-    }  },
+    }
+  },
   "doubts": {
     "title": "Sección de dudas",
     "noDoubts": "Todavía no hay ninguna duda. ¡Sé el primero en hacer una pregunta!",
@@ -724,7 +728,7 @@
       "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
       "approveError": "No se pudo aprobar la propuesta",
       "rejectError": "No se pudo rechazar la propuesta"
-    }  
+    }
   },
   "experiences": {
     "title": "Experiencias",
@@ -869,5 +873,156 @@
         "content": "Todos los datos se transmiten de forma segura mediante protocolos HTTPS y se almacenan en infraestructuras con altos estándares de seguridad (Firebase/Cloudflare)."
       }
     }
+  },
+  "media": {
+    "errors": {
+      "invalidType": "Solo se pueden subir fotos (JPEG, PNG, WebP, HEIC) y vídeos (MP4, MOV, WebM)",
+      "tooLarge": "El archivo es demasiado grande (fotos hasta 15 MB, vídeos hasta 50 MB)",
+      "tooLong": "El vídeo supera la duración máxima de {{seconds}} segundos",
+      "tooManyFiles": "Como máximo puedes subir {{max}} archivos a la vez",
+      "ageNotConfirmed": "Debes confirmar tu edad antes de subir fotos o vídeos",
+      "userBlocked": "Tu cuenta está bloqueada por incumplir las normas y no puede publicar contenido",
+      "notOwner": "Solo el creador de la experiencia puede añadirle fotos",
+      "notFound": "El refugio o la experiencia ya no existe",
+      "uploadFailed": "No se han podido subir los archivos. Vuelve a intentarlo",
+      "notAllowedTitle": "Acción no permitida",
+      "rejectedTitle": "Algunos archivos no se enviarán"
+    },
+    "failureReasons": {
+      "missing_object": "El archivo no ha llegado al servidor",
+      "too_large": "Archivo demasiado grande",
+      "invalid_type": "No es una foto o un vídeo válido",
+      "processing_error": "Error procesando el archivo",
+      "moderation_blocked": "Bloqueado por la moderación",
+      "put_failed": "Error de red subiendo el archivo",
+      "unknown": "Error desconocido"
+    },
+    "permissions": {
+      "title": "Permisos necesarios",
+      "message": "Necesitamos permiso para acceder a tus fotos y vídeos."
+    },
+    "upload": {
+      "success": "Se han subido {{count}} archivo(s) correctamente",
+      "partial": "Se han subido {{uploaded}} archivo(s); {{failed}} no se han podido subir:"
+    },
+    "rights": {
+      "title": "Antes de publicar",
+      "intro": "Las fotos y vídeos que subas serán visibles para todos los usuarios registrados. Al publicar declaras que:",
+      "authorship": "Eres el autor o tienes permiso de quien lo es",
+      "peopleConsent": "Tienes el consentimiento de las personas que aparecen (y, en el caso de menores, de sus tutores)",
+      "noIllegal": "No contiene contenido ilegal, sexual, violento ni datos personales de otros",
+      "visibility": "Eliminamos la ubicación GPS y los datos del dispositivo de las fotos. Puedes denunciar o borrar contenido desde el menú ⋮.",
+      "checkbox": "Lo declaro y acepto las normas de la comunidad",
+      "accept": "Continuar"
+    },
+    "viewer": {
+      "moreOptions": "Más opciones",
+      "report": "Denunciar",
+      "deleteTitle": "Eliminar fotografía",
+      "deleteMessage": "¿Seguro que quieres eliminar esta fotografía? Esta acción no se puede deshacer.",
+      "deleteError": "No se ha podido eliminar la fotografía",
+      "anonymous": "Anónimo"
+    },
+    "report": {
+      "title": "Denunciar contenido",
+      "intro": "Indica por qué crees que este contenido no debería estar en la app. Revisaremos la denuncia y, en casos graves, lo ocultaremos inmediatamente.",
+      "groups": {
+        "childSafety": "Seguridad de menores",
+        "sexualContent": "Contenido sexual",
+        "violenceHate": "Violencia y odio",
+        "animalCruelty": "Maltrato animal",
+        "selfHarm": "Autolesiones",
+        "illegal": "Ilegal",
+        "privacyRights": "Privacidad y derechos",
+        "fraudSpam": "Fraude y spam",
+        "other": "Otros"
+      },
+      "reasons": {
+        "child_sexual_abuse": "Abuso o explotación sexual de menores",
+        "child_endangerment": "Menores en situación de riesgo / imágenes inapropiadas de menores",
+        "sexual_nonconsensual": "Desnudez o contenido sexual (incluidos íntimos no consentidos y deepfakes)",
+        "violence_gore": "Violencia explícita o contenido sangriento",
+        "terrorism_extremism": "Terrorismo o extremismo violento",
+        "hate_speech": "Odio o discriminación",
+        "harassment_bullying": "Acoso o intimidación",
+        "animal_cruelty": "Maltrato animal",
+        "self_harm": "Suicidio o autolesiones",
+        "illegal_goods": "Drogas, armas o actividades ilegales",
+        "my_image": "Salgo yo sin mi consentimiento (derecho a la propia imagen)",
+        "privacy_personal_data": "Datos personales de otros (documentos, matrículas, direcciones)",
+        "intellectual_property": "Derechos de autor o marca (no es de quien la publica)",
+        "fraud_scam_spam": "Fraude, estafa, spam o publicidad",
+        "misleading_irrelevant": "Falsa o no corresponde a este refugio",
+        "other": "Otros (requiere descripción)"
+      },
+      "detailsLabel": "Detalles (opcional)",
+      "detailsRequiredLabel": "Detalles (obligatorio)",
+      "detailsPlaceholder": "Explica brevemente el problema",
+      "goodFaith": "Declaro de buena fe que la información de esta denuncia es correcta y completa",
+      "submit": "Enviar denuncia",
+      "footnote": "También puedes escribir a {{email}}. Las denuncias falsas o abusivas pueden conllevar el bloqueo de la cuenta.",
+      "successTitle": "Denuncia enviada",
+      "successMessage": "Gracias. La revisaremos lo antes posible. Si quieres aportar más información o recurrir una decisión, escribe a {{email}}.",
+      "errors": {
+        "reasonRequired": "Elige un motivo",
+        "detailsRequired": "Se necesita una descripción para el motivo «Otros»",
+        "detailsTooLong": "La descripción no puede superar los 1000 caracteres",
+        "goodFaithRequired": "Debes aceptar la declaración de buena fe",
+        "generic": "No se ha podido enviar la denuncia. Vuelve a intentarlo",
+        "ownMedia": "No puedes denunciar tu propio contenido",
+        "alreadyReported": "Ya has denunciado este contenido",
+        "notFound": "Este contenido ya no existe"
+      }
+    },
+    "admin": {
+      "title": "Denuncias de fotos",
+      "status": {
+        "pending": "Pendientes",
+        "resolved": "Resueltas"
+      },
+      "empty": "No hay denuncias",
+      "loadError": "No se han podido cargar las denuncias",
+      "priority": "Prioridad: {{priority}}",
+      "reportsCount": "Denuncias: {{count}}",
+      "resolutionAction": "Acción",
+      "actions": {
+        "dismiss": "Desestimar",
+        "remove": "Retirar",
+        "remove_and_strike": "Retirar + aviso (strike)"
+      },
+      "statementLabel": "Motivación (se comunicará al autor)",
+      "statementPlaceholder": "Explica los motivos de la decisión",
+      "statementRequired": "Se necesita una motivación",
+      "resolved": "Denuncia resuelta",
+      "resolveError": "No se ha podido resolver la denuncia"
+    },
+    "notices": {
+      "title": "Avisos de moderación",
+      "actions": {
+        "remove": "Contenido retirado",
+        "remove_and_strike": "Contenido retirado con aviso",
+        "hide": "Contenido oculto en revisión",
+        "block": "Cuenta bloqueada",
+        "dismiss": "Denuncia desestimada",
+        "other": "Aviso"
+      },
+      "strikes": "Avisos acumulados: {{count}} de 3",
+      "appeal": "Si no estás de acuerdo puedes recurrir escribiendo a {{email}}."
+    }
+  },
+  "age": {
+    "birthDateLabel": "Fecha de nacimiento",
+    "dayPlaceholder": "DD",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "AAAA",
+    "birthDateHint": "Solo la usamos para comprobar que tienes al menos 16 años; no la guardamos.",
+    "gateTitle": "Confirma tu edad",
+    "gateMessage": "Para seguir usando la app debes tener al menos {{age}} años. Introduce tu fecha de nacimiento.",
+    "invalidDate": "Introduce una fecha válida (DD/MM/AAAA)",
+    "underageTitle": "Edad insuficiente",
+    "underageMessage": "Debes tener al menos {{age}} años para usar Refugis Lliures.",
+    "confirmError": "No se ha podido confirmar la edad. Vuelve a intentarlo",
+    "logout": "Cerrar sesión",
+    "privacyNote": "Solo guardamos que has confirmado la edad mínima, no la fecha de nacimiento."
   }
 }

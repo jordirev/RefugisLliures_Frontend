@@ -37,7 +37,17 @@ export interface ImageMetadataDTO {
   uploaded_at: string; // ISO date string
   creator_uid: string;
   experience_id?: string | null;
-} 
+  // Camps del contracte MediaItem (opcionals per als items antics)
+  thumb_url?: string | null;
+  media_type?: 'image' | 'video' | null;
+  width?: number | null;
+  height?: number | null;
+  blurhash?: string | null;
+  taken_at?: string | null;
+}
+
+/** Àlies amb el nom del contracte d'API */
+export type MediaItemDTO = ImageMetadataDTO;
 
 /**
  * DTO per a un refugi individual (resposta completa)

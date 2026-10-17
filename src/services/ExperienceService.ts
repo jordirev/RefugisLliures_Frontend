@@ -1,4 +1,5 @@
-import { apiGet, apiClient } from './apiClient';
+import { apiGet, apiClient, apiPost, apiPatch } from './apiClient';
+import type { PreparedMediaFile } from './MediaUploadService';
 import { 
   ExperienceDTO, 
   ExperienceListResponseDTO,
@@ -15,7 +16,12 @@ const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 export interface CreateExperienceRequest {
   refuge_id: string;
   comment: string;
-  files?: File[]; // Arxius d'imatges/vídeos opcionals
+  /**
+   * Fitxers ja validats i comprimits (useMediaUpload.pickMedia). NO s'envien amb
+   * l'experiència: el hook crea l'experiència (JSON) i després fa upload-intents
+   * amb target=experience.
+   */
+  files?: PreparedMediaFile[];
 }
 
 /**
@@ -23,7 +29,8 @@ export interface CreateExperienceRequest {
  */
 export interface UpdateExperienceRequest {
   comment?: string;
-  files?: File[]; // Arxius d'imatges/vídeos opcionals
+  /** Fitxers nous (es pugen amb upload-intents, vegeu CreateExperienceRequest) */
+  files?: PreparedMediaFile[];
 }
 
 /**
@@ -76,33 +83,18 @@ export class ExperienceService {
   }
 
   /**
-   * Crea una nova experiència per a un refugi amb fitxers opcionals
-   * POST /api/experiences/
-   * Utilitza multipart/form-data per enviar fitxers
+   * Crea una nova experiència (només text) per a un refugi.
+   * POST /api/experiences/  JSON {refuge_id, comment}
+   * Els fitxers es pugen després amb upload-intents (target=experience).
    * Requereix autenticació
    */
   static async createExperience(request: CreateExperienceRequest): Promise<ExperienceCreateResponseDTO> {
     try {
       const url = `${API_BASE_URL}/experiences/`;
       
-      // Crear FormData per enviar fitxers
-      const formData = new FormData();
-      formData.append('refuge_id', request.refuge_id);
-      formData.append('comment', request.comment);
-      
-      // Afegir fitxers si n'hi ha
-      if (request.files && request.files.length > 0) {
-        request.files.forEach((file) => {
-          formData.append('files', file);
-        });
-      }
-      
-      // Utilitzar apiClient directament sense especificar Content-Type
-      // perquè FormData ho gestiona automàticament
-      const response = await apiClient(url, {
-        method: 'POST',
-        body: formData,
-        // No establir Content-Type, deixar que el navegador ho faci
+      const response = await apiPost(url, {
+        refuge_id: request.refuge_id,
+        comment: request.comment,
       });
       
       if (response.status === 400) {
@@ -137,10 +129,10 @@ export class ExperienceService {
   }
 
   /**
-   * Actualitza una experiència existent (comentari i/o fitxers)
-   * PATCH /api/experiences/{experience_id}/
-   * Utilitza multipart/form-data per enviar fitxers
-   * Requereix autenticació i ser el creador de l'experiència
+   * Actualitza el comentari d'una experiència existent.
+   * PATCH /api/experiences/{experience_id}/  JSON {comment}
+   * Els fitxers nous es pugen amb upload-intents (target=experience).
+   * Requereix autenticació i ser el creador de l'experiència (el backend ho comprova: 403)
    */
   static async updateExperience(
     experienceId: string,
@@ -149,25 +141,12 @@ export class ExperienceService {
     try {
       const url = `${API_BASE_URL}/experiences/${experienceId}/`;
       
-      // Crear FormData per enviar fitxers
-      const formData = new FormData();
-      
+      const body: { comment?: string } = {};
       if (request.comment) {
-        formData.append('comment', request.comment);
+        body.comment = request.comment;
       }
       
-      // Afegir fitxers si n'hi ha
-      if (request.files && request.files.length > 0) {
-        request.files.forEach((file) => {
-          formData.append('files', file);
-        });
-      }
-      
-      // Utilitzar apiClient directament sense especificar Content-Type
-      const response = await apiClient(url, {
-        method: 'PATCH',
-        body: formData,
-      });
+      const response = await apiPatch(url, body);
       
       if (response.status === 400) {
         const errorData: ExperienceErrorResponse = await response.json();

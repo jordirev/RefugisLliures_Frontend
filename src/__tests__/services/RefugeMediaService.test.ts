@@ -9,27 +9,30 @@ import * as apiClient from '../../services/apiClient';
 jest.mock('../../services/apiClient');
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
-// Mock media data
+// Mock media data (forma MediaItem del contracte)
 const mockMediaItem = {
-  key: 'refuges/1/photo1.jpg',
-  url: 'https://example.com/photo1.jpg',
-  uploadedBy: 'user-1',
-  uploadedAt: '2024-01-15T10:00:00Z',
-  size: 1024,
-  mimeType: 'image/jpeg',
-  experienceId: null,
+  key: 'refugis-lliures/1/0d3c.webp',
+  url: 'https://example.com/photo1.webp',
+  thumb_url: 'https://example.com/photo1_thumb.webp',
+  media_type: 'image',
+  width: 2048,
+  height: 1536,
+  blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+  creator_uid: 'user-1',
+  uploaded_at: '2024-01-15T10:00:00Z',
+  taken_at: null,
+  experience_id: null,
 };
 
 const mockMediaList = [
   mockMediaItem,
   {
+    // Item antic sense miniatura ni blurhash (fallback)
     key: 'refuges/1/photo2.png',
     url: 'https://example.com/photo2.png',
-    uploadedBy: 'user-2',
-    uploadedAt: '2024-01-16T10:00:00Z',
-    size: 2048,
-    mimeType: 'image/png',
-    experienceId: 'exp-1',
+    creator_uid: 'user-2',
+    uploaded_at: '2024-01-16T10:00:00Z',
+    experience_id: 'exp-1',
   },
 ];
 
@@ -48,9 +51,11 @@ describe('RefugeMediaService', () => {
       const result = await RefugeMediaService.getRefugeMedia('refuge-1');
 
       expect(mockedApiClient.apiGet).toHaveBeenCalledWith(
-        expect.stringContaining('/refugis/refuge-1/media/')
+        expect.stringContaining('/refuges/refuge-1/media/')
       );
       expect(result).toEqual(mockMediaList);
+      // L'item antic no rep camps nous inventats
+      expect(result[1].thumb_url).toBeUndefined();
     });
 
     it('should return empty array for invalid response', async () => {
@@ -121,91 +126,6 @@ describe('RefugeMediaService', () => {
 
       await expect(RefugeMediaService.getRefugeMedia('refuge-1'))
         .rejects.toThrow('Error 400: Bad Request');
-    });
-  });
-
-  describe('uploadRefugeMedia', () => {
-    const mockUploadResponse = {
-      uploaded: 2,
-      failed: 0,
-      media: mockMediaList,
-      errors: [],
-    };
-
-    it('should upload files successfully', async () => {
-      mockedApiClient.apiClient.mockResolvedValue({
-        ok: true,
-        json: async () => mockUploadResponse,
-      } as Response);
-
-      const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-      const result = await RefugeMediaService.uploadRefugeMedia('refuge-1', mockFiles);
-
-      expect(mockedApiClient.apiClient).toHaveBeenCalledWith(
-        expect.stringContaining('/refuges/refuge-1/media/'),
-        expect.objectContaining({
-          method: 'POST',
-          body: expect.any(FormData),
-        })
-      );
-      expect(result.uploaded).toBe(2);
-    });
-
-    it('should throw error when no files provided', async () => {
-      await expect(RefugeMediaService.uploadRefugeMedia('refuge-1', []))
-        .rejects.toThrow('No s\'han proporcionat fitxers');
-    });
-
-    it('should handle validation error (400)', async () => {
-      mockedApiClient.apiClient.mockResolvedValue({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-        json: async () => ({ error: 'Invalid file format' }),
-      } as Response);
-
-      const mockFiles = [new File(['test'], 'test.txt', { type: 'text/plain' })];
-      await expect(RefugeMediaService.uploadRefugeMedia('refuge-1', mockFiles))
-        .rejects.toThrow('Invalid file format');
-    });
-
-    it('should handle unauthorized error (401)', async () => {
-      mockedApiClient.apiClient.mockResolvedValue({
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized',
-        json: async () => ({}),
-      } as Response);
-
-      const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-      await expect(RefugeMediaService.uploadRefugeMedia('refuge-1', mockFiles))
-        .rejects.toThrow('No estàs autenticat');
-    });
-
-    it('should handle not found error (404)', async () => {
-      mockedApiClient.apiClient.mockResolvedValue({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        json: async () => ({}),
-      } as Response);
-
-      const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-      await expect(RefugeMediaService.uploadRefugeMedia('invalid-id', mockFiles))
-        .rejects.toThrow('El refugi especificat no existeix');
-    });
-
-    it('should handle server error (500)', async () => {
-      mockedApiClient.apiClient.mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-        json: async () => ({}),
-      } as Response);
-
-      const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-      await expect(RefugeMediaService.uploadRefugeMedia('refuge-1', mockFiles))
-        .rejects.toThrow('Error del servidor');
     });
   });
 

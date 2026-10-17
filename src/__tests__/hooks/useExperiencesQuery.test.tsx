@@ -16,6 +16,14 @@ import { ExperienceService } from '../../services/ExperienceService';
 // Mock the ExperienceService
 jest.mock('../../services/ExperienceService');
 
+// Mock de la pujada (intents → PUT → confirm): mai xarxa real als tests
+jest.mock('../../services/MediaUploadService', () => ({
+  MediaUploadService: {
+    uploadFiles: jest.fn().mockResolvedValue({ uploaded: [], failed: [] }),
+  },
+}));
+import { MediaUploadService } from '../../services/MediaUploadService';
+
 // Mock the mappers
 jest.mock('../../services/mappers/ExperienceMapper', () => ({
   mapExperienceFromDTO: jest.fn((dto) => ({
@@ -169,7 +177,7 @@ describe('useCreateExperience', () => {
       wrapper: createWrapper(queryClient),
     });
 
-    const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+    const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
 
     await act(async () => {
       await result.current.mutateAsync({
@@ -237,7 +245,7 @@ describe('useUpdateExperience', () => {
       wrapper: createWrapper(queryClient),
     });
 
-    const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+    const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
 
     await act(async () => {
       await result.current.mutateAsync({
@@ -247,7 +255,14 @@ describe('useUpdateExperience', () => {
       });
     });
 
-    expect(mockedService.updateExperience).toHaveBeenCalled();
+    // Només fitxers: no cal PATCH; es pugen amb target=experience
+    expect(mockedService.updateExperience).not.toHaveBeenCalled();
+    expect(MediaUploadService.uploadFiles).toHaveBeenCalledWith({
+      target: 'experience',
+      refugeId: 'refuge-1',
+      experienceId: 'exp-1',
+      files: [mockFile],
+    });
   });
 
   it('should handle error when updating experience', async () => {

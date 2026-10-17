@@ -1,9 +1,14 @@
 /**
- * Servei per gestionar els mitjans (imatges i vídeos) dels refugis
+ * Servei per gestionar els mitjans (imatges i vídeos) dels refugis.
+ *
+ * La pujada ja no passa per aquí (multipart antic): es fa amb URL PUT prefirmada
+ * des de `MediaUploadService` + hook `useMediaUpload`.
  */
 
 import { ImageMetadata } from '../models';
-import { apiGet, apiPost, apiDelete, apiClient } from './apiClient';
+import { apiGet, apiDelete } from './apiClient';
+import { ImageMetadataDTO } from './dto/RefugiDTO';
+import { mapImageMetadataFromDTO } from './mappers/RefugiMapper';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -11,20 +16,7 @@ const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
  * Interfície per la resposta de la llista de mitjans
  */
 interface RefugeMediaListResponse {
-  media: ImageMetadata[];
-}
-
-/**
- * Interfície per la resposta de pujada de mitjans
- */
-interface RefugeMediaUploadResponse {
-  uploaded: number;
-  failed: number;
-  media: ImageMetadata[];
-  errors?: Array<{
-    file: string;
-    error: string;
-  }>;
+  media: ImageMetadataDTO[];
 }
 
 /**
@@ -48,7 +40,7 @@ interface ApiErrorResponse {
 export class RefugeMediaService {
   /**
    * Obté la llista de tots els mitjans (imatges i vídeos) d'un refugi
-   * GET /api/refugis/{id}/media/
+   * GET /api/refuges/{id}/media/
    * 
    * @param refugeId - ID del refugi
    * @returns Array de metadades dels mitjans o null si hi ha error
@@ -56,7 +48,7 @@ export class RefugeMediaService {
    */
   static async getRefugeMedia(refugeId: string): Promise<ImageMetadata[]> {
     try {
-      const url = `${API_BASE_URL}/refugis/${refugeId}/media/`;
+      const url = `${API_BASE_URL}/refuges/${refugeId}/media/`;
       const response = await apiGet(url);
       
       if (!response.ok) {
@@ -82,7 +74,7 @@ export class RefugeMediaService {
         return [];
       }
       
-      return data.media;
+      return data.media.map(mapImageMetadataFromDTO);
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -93,74 +85,8 @@ export class RefugeMediaService {
   }
 
   /**
-   * Puja una o més imatges/vídeos per a un refugi específic
-   * POST /api/refugis/{id}/media/
-   * 
-   * Formats acceptats:
-   * - Imatges: JPEG, JPG, PNG, WebP, HEIC, HEIF
-   * - Vídeos: MP4, MOV, AVI, WebM
-   * 
-   * @param refugeId - ID del refugi
-   * @param files - Array de fitxers a pujar (File objects)
-   * @returns Resposta amb els mitjans pujats correctament i errors si n'hi ha
-   * @throws Error amb missatge descriptiu en cas d'error
-   */
-  static async uploadRefugeMedia(
-    refugeId: string, 
-    files: File[]
-  ): Promise<RefugeMediaUploadResponse> {
-    try {
-      if (!files || files.length === 0) {
-        throw new Error('No s\'han proporcionat fitxers per pujar');
-      }
-
-      const url = `${API_BASE_URL}/refuges/${refugeId}/media/`;
-      
-      // Crear FormData per enviar els fitxers
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('files', file);
-      });
-
-      // Fer la petició amb FormData (no afegir Content-Type, el navegador ho farà automàticament)
-      const response = await apiClient(url, {
-        method: 'POST',
-        body: formData
-        // No afegir headers Content-Type per deixar que el navegador estableixi el boundary correcte
-      });
-      
-      if (!response.ok) {
-        const errorData: ApiErrorResponse = await response.json().catch(() => ({ 
-          error: `Error ${response.status}: ${response.statusText}` 
-        }));
-        
-        if (response.status === 400) {
-          throw new Error(errorData.error || 'Fitxers invàlids o cap fitxer proporcionat');
-        } else if (response.status === 401) {
-          throw new Error('No estàs autenticat. Si us plau, inicia sessió.');
-        } else if (response.status === 404) {
-          throw new Error('El refugi especificat no existeix');
-        } else if (response.status === 500) {
-          throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
-        }
-        
-        throw new Error(errorData.error || 'No s\'han pogut pujar els mitjans');
-      }
-      
-      const data: RefugeMediaUploadResponse = await response.json();
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      console.error('Error uploading refuge media:', error);
-      throw new Error('No s\'han pogut pujar els mitjans del refugi');
-    }
-  }
-
-  /**
    * Elimina un mitjà específic d'un refugi utilitzant la seva key
-   * DELETE /api/refugis/{id}/media/{key}
+   * DELETE /api/refuges/{id}/media/{key}/
    * 
    * Requereix que l'usuari sigui el creador del mitjà o administrador
    * 

@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { UserExperience } from '../../../components/UserExperience';
 import { User, Experience, ImageMetadata } from '../../../models';
 
@@ -543,14 +543,11 @@ describe('UserExperience Component', () => {
       expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, 'Comentari actualitzat', []);
     });
 
-    it('hauria de gestionar afegir fotos durant l\'edició', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-        canceled: false,
-        assets: [
-          { uri: 'file://test-photo.jpg', type: 'image' },
-        ],
-      });
+    it('hauria d\'afegir els fitxers preparats per onPickMedia durant l\'edició', async () => {
+      const prepared = [
+        { uri: 'file://test-photo.webp', contentType: 'image/webp', size: 1234, mediaType: 'image' as const },
+      ];
+      const mockPickMedia = jest.fn().mockResolvedValue(prepared);
 
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
@@ -564,47 +561,50 @@ describe('UserExperience Component', () => {
           onPhotoPress={mockOnPhotoPress}
           onEdit={mockOnEdit}
           onDelete={mockOnDelete}
+          onPickMedia={mockPickMedia}
         />
       );
 
-      // Entrar en mode edició
       fireEvent.press(getByText('common.edit'));
-      
-      // Afegir foto
-      await waitFor(async () => {
+      await act(async () => {
         fireEvent.press(getByText('experiences.addPhotos'));
       });
-      
+
+      expect(mockPickMedia).toHaveBeenCalled();
       await waitFor(() => {
-        expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
+        expect(getByText('experiences.newPhotos:')).toBeTruthy();
       });
+
+      // Confirmar envia els fitxers preparats (MIME real, no forçat)
+      fireEvent.press(getByText('common.confirm'));
+      expect(mockOnEdit).toHaveBeenCalledWith(experienceByCurrentUser.id, experienceByCurrentUser.comment, prepared);
     });
 
-    it('hauria de gestionar el cas de permís denegat silenciosament', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
-
+    it('no hauria d\'afegir res si la selecció es cancel·la', async () => {
+      const mockPickMedia = jest.fn().mockResolvedValue(null);
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText, queryByText } = render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
           onPhotoPress={mockOnPhotoPress}
           onEdit={mockOnEdit}
           onDelete={mockOnDelete}
+          onPickMedia={mockPickMedia}
         />
       );
 
       fireEvent.press(getByText('common.edit'));
-      fireEvent.press(getByText('experiences.addPhotos'));
-
-      await waitFor(() => {
-        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
+      await act(async () => {
+        fireEvent.press(getByText('experiences.addPhotos'));
       });
+
+      expect(mockPickMedia).toHaveBeenCalled();
+      expect(queryByText('experiences.newPhotos:')).toBeNull();
     });
 
     it('hauria de mostrar el comptador de caràcters durant l\'edició', () => {

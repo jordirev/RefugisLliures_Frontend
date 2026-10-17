@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { Keyboard } from 'react-native';
 import { ExperiencesScreen } from '../../../screens/ExperiencesScreen';
 import {
@@ -33,6 +33,18 @@ jest.mock('../../../hooks/useExperiencesQuery', () => ({
 
 jest.mock('../../../hooks/useRefugeMediaQuery', () => ({
   useDeleteRefugeMedia: jest.fn(),
+}));
+
+// Mock del hook de pujada de mitjans (selecció + drets + compressió)
+const mockPickMedia = jest.fn();
+jest.mock('../../../hooks/useMediaUpload', () => ({
+  useMediaUpload: () => ({
+    pickMedia: mockPickMedia,
+    isPreparing: false,
+    rightsModalProps: { visible: false, onAccept: jest.fn(), onCancel: jest.fn() },
+  }),
+  getUploadErrorKey: (code: string) => `media.errors.${code}`,
+  getFailureReasonKey: (reason: string) => `media.failureReasons.${reason}`,
 }));
 
 jest.mock('../../../hooks/useUsersQuery', () => ({
@@ -123,13 +135,14 @@ jest.mock('../../../components/UserExperience', () => ({
 
 // Capture alert buttons for testing
 let capturedAlertButtons: any[] = [];
+const mockShowAlert = jest.fn((title: any, message: any, buttons?: any) => {
+  if (buttons) {
+    capturedAlertButtons = buttons;
+  }
+});
 jest.mock('../../../hooks/useCustomAlert', () => ({
   useCustomAlert: () => ({
-    showAlert: jest.fn((title, message, buttons) => {
-      if (buttons) {
-        capturedAlertButtons = buttons;
-      }
-    }),
+    showAlert: mockShowAlert,
     hideAlert: jest.fn(),
     alertVisible: false,
     alertConfig: {},
@@ -431,32 +444,6 @@ describe('ExperiencesScreen', () => {
       }
 
       expect(mockGoBack).toHaveBeenCalled();
-    });
-  });
-
-  describe('Fotos', () => {
-    it('hauria de poder eliminar fotos existents', async () => {
-      const mockDeleteMedia = jest.fn();
-      (useDeleteRefugeMedia as jest.Mock).mockReturnValue({
-        mutate: mockDeleteMedia,
-      });
-      
-      const experienceWithPhotos = {
-        ...mockExperience,
-        photos: [{ id: 'photo-1', url: 'https://example.com/photo.jpg' }],
-      };
-      
-      (useExperiences as jest.Mock).mockReturnValue({
-        data: [experienceWithPhotos],
-        isLoading: false,
-      });
-
-      const { toJSON } = render(
-        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
-      );
-
-      expect(toJSON()).toBeTruthy();
-      expect(useDeleteRefugeMedia).toHaveBeenCalled();
     });
   });
 
@@ -771,36 +758,6 @@ describe('ExperiencesScreen', () => {
     });
   });
 
-  describe('Eliminació de media', () => {
-    it('hauria de cridar deleteRefugeMedia quan s\'elimina una foto', async () => {
-      const mockDeleteMedia = jest.fn((data, options) => {
-        options?.onSuccess?.();
-      });
-      (useDeleteRefugeMedia as jest.Mock).mockReturnValue({
-        mutate: mockDeleteMedia,
-      });
-      
-      const experienceWithPhotos = {
-        ...mockExperience,
-        images_metadata: [
-          { key: 'photo-1', url: 'https://example.com/photo.jpg', uploaded_at: '2025-01-01' },
-        ],
-      };
-      
-      (useExperiences as jest.Mock).mockReturnValue({
-        data: [experienceWithPhotos],
-        isLoading: false,
-      });
-
-      const { toJSON } = render(
-        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
-      );
-
-      expect(toJSON()).toBeTruthy();
-      expect(useDeleteRefugeMedia).toHaveBeenCalled();
-    });
-  });
-
   describe('Keyboard interactions', () => {
     it('should handle keyboard show event', async () => {
       (useExperiences as jest.Mock).mockReturnValue({
@@ -932,52 +889,20 @@ describe('ExperiencesScreen', () => {
   });
 
   describe('Add photos button', () => {
-    it('should handle add photos button press and select photos', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({
-        status: 'granted',
-      });
-      ImagePicker.launchImageLibraryAsync.mockResolvedValue({
-        canceled: false,
-        assets: [
-          { uri: 'file:///path/to/photo1.jpg', type: 'image' },
-          { uri: 'file:///path/to/video.mp4', type: 'video' },
-        ],
-      });
-
-      (useExperiences as jest.Mock).mockReturnValue({
-        data: [],
-        isLoading: false,
-      });
-
-      const { UNSAFE_root, getByTestId } = render(
-        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
-      );
-
-      // Find add photo button (the one with AddPhotoIcon)
+    const pressAllTouchables = (UNSAFE_root: any) => {
       const { TouchableOpacity } = require('react-native');
       const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
-      
-      // Press the add photo button
       for (const touchable of touchables) {
         try {
           fireEvent.press(touchable);
         } catch (e) {
-          // Some buttons might throw, that's OK
+          // Ignore
         }
       }
+    };
 
-      await waitFor(() => {
-        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
-      });
-    });
-
-    it('should show error when permission is denied', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValue({
-        status: 'denied',
-      });
-
+    it('should open the media picker through useMediaUpload.pickMedia', async () => {
+      mockPickMedia.mockResolvedValue(null);
       (useExperiences as jest.Mock).mockReturnValue({
         data: [],
         isLoading: false,
@@ -987,19 +912,79 @@ describe('ExperiencesScreen', () => {
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
-      
-      for (const touchable of touchables) {
-        try {
-          fireEvent.press(touchable);
-        } catch (e) {
-          // Ignore
-        }
-      }
+      pressAllTouchables(UNSAFE_root);
 
       await waitFor(() => {
-        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
+        expect(mockPickMedia).toHaveBeenCalled();
+      });
+    });
+
+    it('should send the prepared files (real MIME) with createExperience', async () => {
+      const prepared = [
+        { uri: 'file:///photo1.webp', contentType: 'image/webp', size: 100, mediaType: 'image' },
+        { uri: 'file:///clip.mp4', contentType: 'video/mp4', size: 200, mediaType: 'video' },
+      ];
+      mockPickMedia.mockResolvedValue(prepared);
+      const mockMutate = jest.fn();
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { UNSAFE_root, getByPlaceholderText } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      // Obrir el selector (i afegir els fitxers preparats)
+      await act(async () => {
+        pressAllTouchables(UNSAFE_root);
+      });
+      await waitFor(() => expect(mockPickMedia).toHaveBeenCalled());
+
+      fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Amb fotos');
+      await act(async () => {
+        pressAllTouchables(UNSAFE_root);
+      });
+
+      await waitFor(() => {
+        expect(mockMutate).toHaveBeenCalledWith(
+          expect.objectContaining({ refuge_id: 'refuge-1', comment: 'Amb fotos', files: prepared }),
+          expect.any(Object)
+        );
+      });
+    });
+
+    it('should warn with the failure reasons when some files fail', async () => {
+      const mockMutate = jest.fn((data, options) => {
+        options?.onSuccess?.({ failed_files: [{ upload_id: 'u1', reason: 'moderation_blocked' }] });
+      });
+      (useCreateExperience as jest.Mock).mockReturnValue({
+        mutate: mockMutate,
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+
+      const { UNSAFE_root, getByPlaceholderText } = render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+      mockPickMedia.mockResolvedValue(null);
+      fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text');
+      await act(async () => {
+        pressAllTouchables(UNSAFE_root);
+      });
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith(
+          'common.warning',
+          expect.stringContaining('media.failureReasons.moderation_blocked')
+        );
       });
     });
 

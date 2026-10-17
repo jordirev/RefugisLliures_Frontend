@@ -133,6 +133,16 @@ export function SettingsScreen() {
             </TouchableOpacity>
           )}
 
+          { isAdmin && (
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('MediaReports')}
+              testID="settings-media-reports"
+            >
+              <Text style={styles.menuText}>{t('profile.settings.mediaReportsManagement')}</Text>
+            </TouchableOpacity>
+          )}
+
           {/* Separador */}
           <View style={styles.separator} />
 

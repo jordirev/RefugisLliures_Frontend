@@ -9,12 +9,14 @@
  */
 
 import { ExperienceService } from '../../../services/ExperienceService';
-import { apiGet, apiClient } from '../../../services/apiClient';
+import { apiGet, apiClient, apiPost, apiPatch } from '../../../services/apiClient';
 
 // Mock apiClient
 jest.mock('../../../services/apiClient', () => ({
   apiGet: jest.fn(),
   apiClient: jest.fn(),
+  apiPost: jest.fn(),
+  apiPatch: jest.fn(),
 }));
 
 describe('ExperienceService', () => {
@@ -116,7 +118,7 @@ describe('ExperienceService', () => {
         message: 'Experiència creada correctament',
       };
 
-      (apiClient as jest.Mock).mockResolvedValue({
+      (apiPost as jest.Mock).mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue(mockResponse),
       });
@@ -126,12 +128,32 @@ describe('ExperienceService', () => {
         comment: 'Nova experiència',
       });
 
-      expect(apiClient).toHaveBeenCalled();
+      // Flux nou: JSON sense fitxers (els fitxers van per upload-intents)
+      expect(apiPost).toHaveBeenCalledWith(
+        'https://refugislliures-backend.onrender.com/api/experiences/',
+        { refuge_id: 'refuge-123', comment: 'Nova experiència' }
+      );
       expect(result).toEqual(mockResponse);
     });
 
+    it('no hauria d\'enviar els fitxers dins del cos de creació', async () => {
+      (apiPost as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ experience: { id: 'exp-1' } }),
+      });
+
+      await ExperienceService.createExperience({
+        refuge_id: 'refuge-123',
+        comment: 'Amb fotos',
+        files: [{ uri: 'file://a.webp', contentType: 'image/webp', size: 10, mediaType: 'image' }],
+      });
+
+      const body = (apiPost as jest.Mock).mock.calls[0][1];
+      expect(body).toEqual({ refuge_id: 'refuge-123', comment: 'Amb fotos' });
+    });
+
     it('hauria de llançar error per dades invàlides', async () => {
-      (apiClient as jest.Mock).mockResolvedValue({
+      (apiPost as jest.Mock).mockResolvedValue({
         ok: false,
         status: 400,
         json: jest.fn().mockResolvedValue({ error: 'Comentari requerit' }),
@@ -140,6 +162,34 @@ describe('ExperienceService', () => {
       await expect(
         ExperienceService.createExperience({ refuge_id: 'refuge-123', comment: '' })
       ).rejects.toThrow('Comentari requerit');
+    });
+  });
+
+  describe('updateExperience', () => {
+    it('hauria de fer PATCH JSON només amb el comentari', async () => {
+      (apiPatch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({ experience: { id: 'exp-1', comment: 'Nou' } }),
+      });
+
+      await ExperienceService.updateExperience('exp-1', { comment: 'Nou' });
+
+      expect(apiPatch).toHaveBeenCalledWith(
+        'https://refugislliures-backend.onrender.com/api/experiences/exp-1/',
+        { comment: 'Nou' }
+      );
+    });
+
+    it('hauria de llançar error 403 si no és el propietari', async () => {
+      (apiPatch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: jest.fn().mockResolvedValue({ error: 'not_owner' }),
+      });
+
+      await expect(ExperienceService.updateExperience('exp-1', { comment: 'x' })).rejects.toThrow(
+        'No tens permisos per editar aquesta experiència'
+      );
     });
   });
 });

@@ -49,20 +49,87 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
           "borderRadius": 20,
           "height": 40,
           "justifyContent": "center",
+          "left": 10,
           "opacity": 1,
           "position": "absolute",
-          "right": 10,
           "top": 10,
           "width": 40,
           "zIndex": 10,
         }
       }
+      testID="photo-viewer-close"
     >
       <TrashIcon
         color="#FFFFFF"
         height={24}
         width={24}
       />
+    </View>
+    <View
+      accessibilityLabel="media.viewer.moreOptions"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 10,
+          "left": 10,
+          "right": 10,
+          "top": 10,
+        }
+      }
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "alignItems": "center",
+          "borderRadius": 20,
+          "height": 40,
+          "justifyContent": "center",
+          "opacity": 1,
+          "position": "absolute",
+          "right": 10,
+          "top": 10,
+          "width": 40,
+          "zIndex": 11,
+        }
+      }
+      testID="photo-menu-button"
+    >
+      <Text
+        style={
+          {
+            "color": "#FFFFFF",
+            "fontSize": 26,
+            "fontWeight": "700",
+            "lineHeight": 30,
+          }
+        }
+      >
+        ⋮
+      </Text>
     </View>
     <RCTScrollView
       horizontal={true}
@@ -87,10 +154,13 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
             }
           }
         >
-          <Image
-            resizeMode="contain"
+          <ExpoImage
+            cachePolicy="disk"
+            contentFit="contain"
+            recyclingKey="photo-1"
             source={
               {
+                "cacheKey": "photo-1",
                 "uri": "https://example.com/photo1.jpg",
               }
             }
@@ -101,6 +171,7 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
                 "width": 750,
               }
             }
+            transition={150}
           />
         </View>
         <View
@@ -113,10 +184,13 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
             }
           }
         >
-          <Image
-            resizeMode="contain"
+          <ExpoImage
+            cachePolicy="disk"
+            contentFit="contain"
+            recyclingKey="photo-2"
             source={
               {
+                "cacheKey": "photo-2",
                 "uri": "https://example.com/photo2.jpg",
               }
             }
@@ -127,6 +201,7 @@ exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal
                 "width": 750,
               }
             }
+            transition={150}
           />
         </View>
         <View

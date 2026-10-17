@@ -51,6 +51,11 @@ jest.mock('../../../components/AvatarPopup', () => ({
 }));
 
 // Mock RefugeCard
+// Avisos de moderació: es proven a part
+jest.mock('../../../components/ModerationNoticesCard', () => ({
+  ModerationNoticesCard: () => null,
+}));
+
 jest.mock('../../../components/RefugeCard', () => ({
   RefugeCard: ({ refuge, onPress, onViewMap }: any) => {
     const { View, Text, TouchableOpacity } = require('react-native');

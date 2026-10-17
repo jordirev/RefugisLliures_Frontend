@@ -18,7 +18,7 @@ export function mapAvatarMetadataFromDTO(avatarDTO: any | undefined): any | unde
  * Converteix un UserDTO al format User del frontend
  */
 export function mapUserFromDTO(userDTO: UserDTO): User {
-  return {
+  const user: User = {
     uid: userDTO.uid,
     username: userDTO.username,
     avatar_metadata: mapAvatarMetadataFromDTO(userDTO.avatar_metadata) || null,
@@ -30,4 +30,9 @@ export function mapUserFromDTO(userDTO: UserDTO): User {
     num_renovated_refuges: userDTO.num_renovated_refuges ?? null,
     created_at: userDTO.created_at,
   };
+  // Només s'informa si el backend l'envia (backends antics no el tenen)
+  if (typeof userDTO.age_confirmed === 'boolean') {
+    user.age_confirmed = userDTO.age_confirmed;
+  }
+  return user;
 }

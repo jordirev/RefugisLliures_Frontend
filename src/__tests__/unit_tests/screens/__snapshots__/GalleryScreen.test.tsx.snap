@@ -166,10 +166,13 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
             }
           }
         >
-          <Image
-            resizeMode="cover"
+          <ExpoImage
+            cachePolicy="disk"
+            contentFit="cover"
+            recyclingKey="photo-1"
             source={
               {
+                "cacheKey": "photo-1",
                 "uri": "https://example.com/photo1.jpg",
               }
             }
@@ -179,6 +182,7 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
                 "width": "100%",
               }
             }
+            transition={150}
           />
         </View>
         <View
@@ -220,10 +224,13 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
             }
           }
         >
-          <Image
-            resizeMode="cover"
+          <ExpoImage
+            cachePolicy="disk"
+            contentFit="cover"
+            recyclingKey="photo-2"
             source={
               {
+                "cacheKey": "photo-2",
                 "uri": "https://example.com/photo2.jpg",
               }
             }
@@ -233,6 +240,7 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
                 "width": "100%",
               }
             }
+            transition={150}
           />
         </View>
         <View
@@ -274,10 +282,13 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
             }
           }
         >
-          <Image
-            resizeMode="cover"
+          <ExpoImage
+            cachePolicy="disk"
+            contentFit="cover"
+            recyclingKey="photo-3"
             source={
               {
+                "cacheKey": "photo-3",
                 "uri": "https://example.com/photo3.jpg",
               }
             }
@@ -287,6 +298,7 @@ exports[`GalleryScreen Renderització bàsica snapshot test 1`] = `
                 "width": "100%",
               }
             }
+            transition={150}
           />
         </View>
       </View>

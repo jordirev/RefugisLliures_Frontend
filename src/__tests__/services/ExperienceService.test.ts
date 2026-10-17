@@ -3,13 +3,15 @@
  */
 
 import { ExperienceService } from '../../services/ExperienceService';
-import { apiGet, apiClient } from '../../services/apiClient';
+import { apiGet, apiClient, apiPost, apiPatch } from '../../services/apiClient';
 
 // Mock apiClient
 jest.mock('../../services/apiClient');
 
 const mockedApiGet = apiGet as jest.MockedFunction<typeof apiGet>;
 const mockedApiClient = apiClient as jest.MockedFunction<typeof apiClient>;
+const mockedApiPost = apiPost as jest.MockedFunction<typeof apiPost>;
+const mockedApiPatch = apiPatch as jest.MockedFunction<typeof apiPatch>;
 
 // Mock data
 const mockExperienceDTO = {
@@ -114,7 +116,7 @@ describe('ExperienceService', () => {
 
   describe('createExperience', () => {
     it('should create a new experience', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPost.mockResolvedValue({
         ok: true,
         status: 201,
         json: async () => mockCreateResponse,
@@ -124,32 +126,30 @@ describe('ExperienceService', () => {
       const result = await ExperienceService.createExperience(request);
 
       expect(result).toEqual(mockCreateResponse);
-      expect(mockedApiClient).toHaveBeenCalledWith(
+      // Flux nou: JSON (els fitxers es pugen després amb upload-intents)
+      expect(mockedApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/',
-        expect.objectContaining({
-          method: 'POST',
-          body: expect.any(FormData),
-        })
+        { refuge_id: 'refuge-1', comment: 'Great experience!' }
       );
     });
 
     it('should create experience with files', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPost.mockResolvedValue({
         ok: true,
         status: 201,
         json: async () => mockCreateResponse,
       } as Response);
 
-      const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+      const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
       const request = { refuge_id: 'refuge-1', comment: 'Great!', files: [mockFile] };
       
       await ExperienceService.createExperience(request);
 
-      expect(mockedApiClient).toHaveBeenCalled();
+      expect(mockedApiPost).toHaveBeenCalled();
     });
 
     it('should throw error on invalid data', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPost.mockResolvedValue({
         ok: false,
         status: 400,
         json: async () => ({ error: 'Dades invàlides' }),
@@ -160,7 +160,7 @@ describe('ExperienceService', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPost.mockResolvedValue({
         ok: false,
         status: 401,
         json: async () => ({ error: 'No autenticat' }),
@@ -171,7 +171,7 @@ describe('ExperienceService', () => {
     });
 
     it('should throw error when refuge not found', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPost.mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({ error: 'Refugi no trobat' }),
@@ -184,7 +184,7 @@ describe('ExperienceService', () => {
 
   describe('updateExperience', () => {
     it('should update an experience', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: true,
         status: 200,
         json: async () => mockUpdateResponse,
@@ -193,31 +193,28 @@ describe('ExperienceService', () => {
       const result = await ExperienceService.updateExperience('exp-1', { comment: 'Updated comment' });
 
       expect(result).toEqual(mockUpdateResponse);
-      expect(mockedApiClient).toHaveBeenCalledWith(
+      expect(mockedApiPatch).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/exp-1/',
-        expect.objectContaining({
-          method: 'PATCH',
-          body: expect.any(FormData),
-        })
+        { comment: 'Updated comment' }
       );
     });
 
     it('should update experience with files', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: true,
         status: 200,
         json: async () => mockUpdateResponse,
       } as Response);
 
-      const mockFile = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
+      const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
       
       await ExperienceService.updateExperience('exp-1', { files: [mockFile] });
 
-      expect(mockedApiClient).toHaveBeenCalled();
+      expect(mockedApiPatch).toHaveBeenCalled();
     });
 
     it('should throw error on invalid data', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: false,
         status: 400,
         json: async () => ({ error: 'Dades invàlides' }),
@@ -228,7 +225,7 @@ describe('ExperienceService', () => {
     });
 
     it('should throw error when not authenticated', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: false,
         status: 401,
         json: async () => ({ error: 'No autenticat' }),
@@ -239,7 +236,7 @@ describe('ExperienceService', () => {
     });
 
     it('should throw error when not authorized', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: false,
         status: 403,
         json: async () => ({}),
@@ -250,7 +247,7 @@ describe('ExperienceService', () => {
     });
 
     it('should throw error when experience not found', async () => {
-      mockedApiClient.mockResolvedValue({
+      mockedApiPatch.mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({ error: 'Experiència no trobada' }),

@@ -95,7 +95,8 @@ describe('GalleryScreen', () => {
 
     it('hauria de renderitzar les fotos', () => {
       const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      // Miniatures amb expo-image (mock host 'ExpoImage')
+      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
       expect(images.length).toBe(mockPhotos.length);
     });
 
@@ -242,7 +243,8 @@ describe('GalleryScreen', () => {
 
     it('hauria de renderitzar fotos en grid', () => {
       const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      // Miniatures amb expo-image (mock host 'ExpoImage')
+      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
       expect(images.length).toBe(mockPhotos.length);
     });
   });

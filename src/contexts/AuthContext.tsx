@@ -6,6 +6,7 @@ import { UsersService } from '../services/UsersService';
 import { changeLanguage, LanguageCode, LANGUAGES } from '../i18n';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../config/queryClient';
+import { resetSessionRights } from '../services/mediaSession';
 
 interface AuthContextType {
   firebaseUser: FirebaseUser | null;
@@ -20,7 +21,9 @@ interface AuthContextType {
   setVisitedRefugeIds: (ids: string[]) => void;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  signup: (email: string, password: string, username: string, language: string) => Promise<void>;
+  signup: (email: string, password: string, username: string, language: string, birthDate?: string) => Promise<void>;
+  /** Confirma l'edat mínima (usuaris existents i de Google). Llança ApiError `underage` si < 16 */
+  confirmAge: (birthDate: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
@@ -122,12 +125,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
-  const signup = async (email: string, password: string, username: string, language: string) => {
-    await AuthService.signUp({ email, password, username, language });
+  const signup = async (email: string, password: string, username: string, language: string, birthDate?: string) => {
+    await AuthService.signUp({ email, password, username, language, birthDate });
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
   const logout = async () => {
+    // La declaració de drets de pujada és per sessió
+    resetSessionRights();
     await AuthService.logout();
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
@@ -185,6 +190,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.error('Error refreshing user data:', error);
       }
     }
+  };
+
+  const confirmAge = async (birthDate: string) => {
+    if (!firebaseUser) {
+      throw new Error('No user is logged in');
+    }
+    const updated = await UsersService.confirmAge(firebaseUser.uid, birthDate);
+    // El backend retorna l'usuari serialitzat (age_confirmed: true); si no, actualització local
+    setBackendUser((prev) =>
+      updated ? { ...updated, age_confirmed: true } : prev ? { ...prev, age_confirmed: true } : prev
+    );
+    queryClient.invalidateQueries({ queryKey: queryKeys.user(firebaseUser.uid) });
   };
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
@@ -252,6 +269,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     loginWithGoogle,
     signup,
+    confirmAge,
     logout,
     deleteAccount,
     refreshToken,

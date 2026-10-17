@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import { PhotoViewerModal, VideoThumbnail } from '../../../components/PhotoViewerModal';
+import { PhotoViewerModal, VideoThumbnail, getPhotoMenuPermissions } from '../../../components/PhotoViewerModal';
 import { ImageMetadata } from '../../../models';
 import { RefugeMediaService } from '../../../services/RefugeMediaService';
 
@@ -85,6 +85,7 @@ let mockCreatorData: any = { uid: 'user-1', username: 'TestUser', avatar_metadat
 let mockIsLoading = false;
 const mockInvalidateQueries = jest.fn();
 jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
   useQuery: jest.fn(({ queryKey, queryFn, enabled }) => {
     if (enabled === false) {
       return { data: null, isLoading: false };
@@ -96,7 +97,33 @@ jest.mock('@tanstack/react-query', () => ({
   }),
   useQueryClient: jest.fn(() => ({
     invalidateQueries: mockInvalidateQueries,
+    setQueryData: jest.fn(),
   })),
+  // useMutation mínim: executa mutationFn i els callbacks de mutate()
+  useMutation: jest.fn((options: any) => ({
+    isPending: false,
+    mutate: async (variables: any, callbacks: any = {}) => {
+      try {
+        const data = await options.mutationFn(variables);
+        options.onSuccess?.(data, variables);
+        callbacks.onSuccess?.(data, variables);
+      } catch (error) {
+        callbacks.onError?.(error, variables);
+      }
+    },
+  })),
+}));
+
+// Mock navegació (per comprovar la ruta ReportMedia)
+const mockNavigate = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({ navigate: mockNavigate, goBack: jest.fn() }),
+}));
+
+// Mock rol d'admin
+let mockIsAdmin = false;
+jest.mock('../../../utils/authUtils', () => ({
+  isUserAdmin: jest.fn(() => Promise.resolve(mockIsAdmin)),
 }));
 
 // Mock SVG icons
@@ -140,6 +167,7 @@ describe('PhotoViewerModal Component', () => {
     jest.clearAllMocks();
     mockCreatorData = { uid: 'user-1', username: 'TestUser', avatar_metadata: { url: 'https://example.com/avatar.jpg' } };
     mockIsLoading = false;
+    mockIsAdmin = false;
   });
 
   describe('Renderització bàsica', () => {
@@ -188,13 +216,25 @@ describe('PhotoViewerModal Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar totes les imatges en scroll', () => {
+    it('hauria de mostrar totes les imatges en scroll (expo-image amb cacheKey)', () => {
       const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
-      
-      // Les imatges s'haurien de renderitzar dins del ScrollView
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
-      // Hi ha 2 imatges (la 3a és vídeo)
-      expect(images.length).toBeGreaterThanOrEqual(2);
+
+      // Les imatges es renderitzen amb expo-image (mock host 'ExpoImage'); la 3a és vídeo
+      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      expect(images.length).toBe(2);
+      // Al visor es fa servir la URL completa i la clau R2 com a cacheKey
+      expect(images[0].props.source).toEqual({ uri: 'https://example.com/photo1.jpg', cacheKey: 'photo-1' });
+    });
+
+    it('hauria de fer servir el blurhash com a placeholder si existeix', () => {
+      const photos: ImageMetadata[] = [
+        { ...mockPhotos[0], blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj', thumb_url: 'https://example.com/photo1_thumb.webp' },
+      ];
+      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} photos={photos} />);
+      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      expect(images[0].props.placeholder).toEqual({ blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj' });
+      // Al visor (variant full) NO es fa servir la miniatura
+      expect(images[0].props.source.uri).toBe('https://example.com/photo1.jpg');
     });
   });
 
@@ -344,196 +384,153 @@ describe('PhotoViewerModal Component', () => {
     });
   });
 
-  describe('Eliminació de fotos', () => {
-    it('hauria de mostrar botó d\'eliminar si l\'usuari és el propietari', () => {
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
+  describe("Menú ⋮ (Denunciar / Eliminar)", () => {
+    const ownPhotos: ImageMetadata[] = [
+      {
+        key: 'photo-1',
+        url: 'https://example.com/photo1.jpg',
+        uploaded_at: '2025-01-15T10:30:00Z',
+        creator_uid: 'current-user-uid',
+      },
+    ];
 
-      const { toJSON } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
-      expect(toJSON()).toBeTruthy();
+    it("mostra Denunciar i amaga Eliminar si l'usuari NO és l'autor", async () => {
+      const { getByTestId, queryByTestId } = render(<PhotoViewerModal {...defaultProps} />);
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      expect(getByTestId('photo-menu-report')).toBeTruthy();
+      expect(queryByTestId('photo-menu-delete')).toBeNull();
     });
 
-    it('no hauria de mostrar botó d\'eliminar si l\'usuari no és el propietari', () => {
-      const { toJSON } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
+    it("amaga Denunciar i mostra Eliminar si l'usuari és l'autor", async () => {
+      const { getByTestId, queryByTestId } = render(
+        <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
-
-      expect(toJSON()).toBeTruthy();
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      expect(queryByTestId('photo-menu-report')).toBeNull();
+      expect(getByTestId('photo-menu-delete')).toBeTruthy();
     });
 
-    it('hauria de cridar handleDelete quan es prem el botó eliminar', async () => {
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
-
-      const { UNSAFE_root } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
-      // Buscar el botó d'eliminar (hauria de ser l'últim TouchableOpacity)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
-      
-      // El darrer touchable probablement és el botó d'eliminar
-      if (touchables.length > 1) {
-        await act(async () => {
-          fireEvent.press(touchables[touchables.length - 1]);
-        });
-        
-        // Hauria d'haver mostrat l'alerta
-        expect(mockShowAlert).toHaveBeenCalled();
-      }
+    it("mostra Eliminar i Denunciar a un admin que no és l'autor", async () => {
+      mockIsAdmin = true;
+      const { getByTestId } = render(<PhotoViewerModal {...defaultProps} />);
+      await waitFor(() => expect(require('../../../utils/authUtils').isUserAdmin).toHaveBeenCalled());
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      expect(getByTestId('photo-menu-report')).toBeTruthy();
+      await waitFor(() => expect(getByTestId('photo-menu-delete')).toBeTruthy());
     });
 
-    it('hauria d\'eliminar foto quan es confirma l\'eliminació', async () => {
+    it('Denunciar tanca el visor i navega a ReportMedia amb refugeId i mediaKey', async () => {
+      const { getByTestId } = render(<PhotoViewerModal {...defaultProps} initialIndex={0} />);
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-report'));
+      });
+      expect(mockOnClose).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith('ReportMedia', { refugeId: 'refuge-1', mediaKey: 'photo-1' });
+    });
+
+    it("l'autor pot eliminar la foto (confirmació, servei i onPhotoDeleted)", async () => {
       (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockResolvedValueOnce(undefined);
-
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
-
-      const { UNSAFE_root } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
+      const { getByTestId } = render(
+        <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
-
-      // Buscar el botó d'eliminar
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
-      
-      if (touchables.length > 1) {
-        await act(async () => {
-          fireEvent.press(touchables[touchables.length - 1]);
-        });
-        
-        // Verificar que s'ha mostrat l'alerta
-        expect(mockShowAlert).toHaveBeenCalled();
-
-        // Obtenir el botó "Eliminar" de l'alerta i executar el callback
-        const deleteButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Eliminar');
-        if (deleteButton?.onPress) {
-          await act(async () => {
-            await deleteButton.onPress();
-          });
-
-          // Verificar que s'ha cridat el servei d'eliminació
-          await waitFor(() => {
-            expect(RefugeMediaService.deleteRefugeMedia).toHaveBeenCalledWith('refuge-1', 'photo-1');
-          });
-
-          // Verificar que s'ha cridat onPhotoDeleted
-          expect(mockOnPhotoDeleted).toHaveBeenCalled();
-        }
-      }
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-delete'));
+      });
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'media.viewer.deleteTitle',
+        'media.viewer.deleteMessage',
+        expect.any(Array)
+      );
+      const deleteButton = mockAlertState.lastButtons.find((b: any) => b.style === 'destructive');
+      await act(async () => {
+        await deleteButton.onPress();
+      });
+      await waitFor(() => {
+        expect(RefugeMediaService.deleteRefugeMedia).toHaveBeenCalledWith('refuge-1', 'photo-1');
+      });
+      expect(mockOnPhotoDeleted).toHaveBeenCalled();
+      expect(mockOnClose).toHaveBeenCalled();
+      // Invalidacions via registre de claus
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ['refuges', 'detail', 'refuge-1'] });
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ['users', 'detail', 'current-user-uid'] });
     });
 
-    it('hauria de gestionar errors durant l\'eliminació i mostrar alerta d\'error', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockRejectedValueOnce(
-        new Error('Error d\'eliminació')
+    it("mostra una alerta d'error si l'eliminació falla", async () => {
+      (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockRejectedValueOnce(new Error('boom'));
+      const { getByTestId } = render(
+        <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
-
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
-
-      const { UNSAFE_root } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
-      // Buscar el botó d'eliminar
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
-      
-      if (touchables.length > 1) {
-        await act(async () => {
-          fireEvent.press(touchables[touchables.length - 1]);
-        });
-
-        // Obtenir el botó "Eliminar" i executar el callback
-        const deleteButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Eliminar');
-        if (deleteButton?.onPress) {
-          await act(async () => {
-            await deleteButton.onPress();
-          });
-
-          // Verificar que s'ha cridat el servei d'eliminació
-          await waitFor(() => {
-            expect(RefugeMediaService.deleteRefugeMedia).toHaveBeenCalled();
-          });
-
-          // Verificar que s'ha mostrat l'alerta d'error
-          expect(mockShowAlert).toHaveBeenCalledWith('Error', expect.stringContaining('eliminar'));
-        }
-      }
-      
-      consoleSpy.mockRestore();
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-delete'));
+      });
+      const deleteButton = mockAlertState.lastButtons.find((b: any) => b.style === 'destructive');
+      await act(async () => {
+        await deleteButton.onPress();
+      });
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith('common.error', 'media.viewer.deleteError');
+      });
+      expect(mockOnPhotoDeleted).not.toHaveBeenCalled();
     });
 
-    it('hauria de gestionar errors durant l\'eliminació', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockRejectedValueOnce(
-        new Error('Error d\'eliminació')
+    it("el creador de l'experiència pot eliminar fotos de la seva experiència", async () => {
+      const { getByTestId, queryByTestId } = render(
+        <PhotoViewerModal {...defaultProps} experienceCreatorUid="current-user-uid" hideMetadata />
       );
+      await act(async () => {
+        fireEvent.press(getByTestId('photo-menu-button'));
+      });
+      expect(getByTestId('photo-menu-delete')).toBeTruthy();
+      expect(queryByTestId('photo-menu-report')).toBeNull();
+    });
+  });
 
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
+  describe('getPhotoMenuPermissions', () => {
+    it('autor: no pot denunciar, pot eliminar', () => {
+      expect(getPhotoMenuPermissions({ currentUid: 'a', creatorUid: 'a', isAdmin: false })).toEqual({
+        isAuthor: true,
+        canReport: false,
+        canDelete: true,
+      });
+    });
 
-      const { toJSON } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
+    it('altre usuari: pot denunciar, no pot eliminar', () => {
+      expect(getPhotoMenuPermissions({ currentUid: 'b', creatorUid: 'a', isAdmin: false })).toEqual({
+        isAuthor: false,
+        canReport: true,
+        canDelete: false,
+      });
+    });
 
-      expect(toJSON()).toBeTruthy();
-      consoleSpy.mockRestore();
+    it('admin (no autor): pot denunciar i eliminar', () => {
+      expect(getPhotoMenuPermissions({ currentUid: 'b', creatorUid: 'a', isAdmin: true })).toEqual({
+        isAuthor: false,
+        canReport: true,
+        canDelete: true,
+      });
+    });
+
+    it('sense sessió: res', () => {
+      expect(getPhotoMenuPermissions({ currentUid: null, creatorUid: 'a', isAdmin: false })).toEqual({
+        isAuthor: false,
+        canReport: false,
+        canDelete: false,
+      });
     });
   });
 
@@ -582,7 +579,7 @@ describe('PhotoViewerModal Component', () => {
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
-      expect(getByText('Anònim')).toBeTruthy();
+      expect(getByText('media.viewer.anonymous')).toBeTruthy();
     });
 
     it('hauria de mostrar avatar del creador', () => {
@@ -626,58 +623,6 @@ describe('PhotoViewerModal Component', () => {
     it('hauria de formatar la data correctament', () => {
       const { toJSON } = render(<PhotoViewerModal {...defaultProps} />);
       // El format hauria de ser "15 gen 2025" o similar
-      expect(toJSON()).toBeTruthy();
-    });
-  });
-
-  describe('Experience creator context', () => {
-    it('hauria de permetre eliminar si l\'usuari és el creador de l\'experiència', () => {
-      const { UNSAFE_root } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          experienceCreatorUid="current-user-uid"
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
-      // Hauria de mostrar el botó d'eliminar
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
-      expect(touchables.length).toBeGreaterThan(1);
-    });
-
-    it('no hauria de permetre eliminar si l\'usuari no és el creador de l\'experiència', () => {
-      const { toJSON } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          experienceCreatorUid="other-user-uid"
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
-      expect(toJSON()).toBeTruthy();
-    });
-  });
-
-  describe('Botó eliminar amb hideMetadata', () => {
-    it('hauria de mostrar botó eliminar en posició diferent quan hideMetadata és true', () => {
-      const photosOwnedByCurrentUser: ImageMetadata[] = [
-        {
-          key: 'photo-1',
-          url: 'https://example.com/photo1.jpg',
-          uploaded_at: '2025-01-15T10:30:00Z',
-          creator_uid: 'current-user-uid',
-        },
-      ];
-
-      const { toJSON } = render(
-        <PhotoViewerModal
-          {...defaultProps}
-          photos={photosOwnedByCurrentUser}
-          hideMetadata={true}
-          onPhotoDeleted={mockOnPhotoDeleted}
-        />
-      );
-
       expect(toJSON()).toBeTruthy();
     });
   });

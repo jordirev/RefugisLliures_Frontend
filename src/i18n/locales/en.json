@@ -167,7 +167,8 @@
         "title": "Delete account",
         "confirmTitle": "Delete account?",
         "confirmMessage": "This action will permanently delete your account and associated data. Are you sure?"
-      }
+      },
+      "mediaReportsManagement": "Photo reports management"
     },
     "languageSelector": {
       "title": "Select language",
@@ -480,7 +481,9 @@
       "numberPassword": "\t• Minimum one number",
       "specialCharPassword": "\t• Minimum one special character (!,@,#,$,%,^,&,*)",
       "passwordMismatch": "Passwords do not match",
-      "registrationFailed": "Could not create account. If you have an existing account, try signing in or recovering your password."
+      "registrationFailed": "Could not create account. If you have an existing account, try signing in or recovering your password.",
+      "usernameTooShort": "The username must be at least 2 characters long",
+      "selectLanguage": "Please select a language"
     }
   },
   "editProfile": {
@@ -625,7 +628,8 @@
       "descriptionTooLong": "Description cannot exceed 3000 characters",
       "commentTooLong": "Comment cannot exceed 3000 characters",
       "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
-    }  },
+    }
+  },
   "doubts": {
     "title": "Doubts section",
     "noDoubts": "No doubts yet. Be the first to ask a question!",
@@ -714,7 +718,7 @@
       "loadDetailError": "Could not load proposal details",
       "approveError": "Could not approve the proposal",
       "rejectError": "Could not reject the proposal"
-    }  
+    }
   },
   "experiences": {
     "title": "Experiences",
@@ -859,5 +863,156 @@
         "content": "All data is transmitted securely using HTTPS protocols and stored in infrastructures with high security standards (Firebase/Cloudflare)."
       }
     }
+  },
+  "media": {
+    "errors": {
+      "invalidType": "Only photos (JPEG, PNG, WebP, HEIC) and videos (MP4, MOV, WebM) can be uploaded",
+      "tooLarge": "The file is too large (photos up to 15 MB, videos up to 50 MB)",
+      "tooLong": "The video exceeds the maximum length of {{seconds}} seconds",
+      "tooManyFiles": "You can upload at most {{max}} files at once",
+      "ageNotConfirmed": "You must confirm your age before uploading photos or videos",
+      "userBlocked": "Your account is blocked for breaching the rules and cannot publish content",
+      "notOwner": "Only the creator of the experience can add photos to it",
+      "notFound": "The refuge or experience no longer exists",
+      "uploadFailed": "The files could not be uploaded. Please try again",
+      "notAllowedTitle": "Action not allowed",
+      "rejectedTitle": "Some files will not be sent"
+    },
+    "failureReasons": {
+      "missing_object": "The file did not reach the server",
+      "too_large": "File too large",
+      "invalid_type": "Not a valid photo or video",
+      "processing_error": "Error processing the file",
+      "moderation_blocked": "Blocked by moderation",
+      "put_failed": "Network error uploading the file",
+      "unknown": "Unknown error"
+    },
+    "permissions": {
+      "title": "Permissions required",
+      "message": "We need permission to access your photos and videos."
+    },
+    "upload": {
+      "success": "{{count}} file(s) uploaded successfully",
+      "partial": "{{uploaded}} file(s) uploaded; {{failed}} could not be uploaded:"
+    },
+    "rights": {
+      "title": "Before publishing",
+      "intro": "The photos and videos you upload will be visible to all registered users. By publishing you declare that:",
+      "authorship": "You are the author or have permission from the author",
+      "peopleConsent": "You have the consent of the people who appear (and, for minors, of their guardians)",
+      "noIllegal": "It contains no illegal, sexual or violent content, nor other people's personal data",
+      "visibility": "We remove GPS location and device data from photos. You can report or delete content from the ⋮ menu.",
+      "checkbox": "I declare this and accept the community rules",
+      "accept": "Continue"
+    },
+    "viewer": {
+      "moreOptions": "More options",
+      "report": "Report",
+      "deleteTitle": "Delete photo",
+      "deleteMessage": "Are you sure you want to delete this photo? This action cannot be undone.",
+      "deleteError": "The photo could not be deleted",
+      "anonymous": "Anonymous"
+    },
+    "report": {
+      "title": "Report content",
+      "intro": "Tell us why you think this content shouldn't be in the app. We will review the report and, in serious cases, hide it immediately.",
+      "groups": {
+        "childSafety": "Child safety",
+        "sexualContent": "Sexual content",
+        "violenceHate": "Violence and hate",
+        "animalCruelty": "Animal cruelty",
+        "selfHarm": "Self-harm",
+        "illegal": "Illegal",
+        "privacyRights": "Privacy and rights",
+        "fraudSpam": "Fraud and spam",
+        "other": "Other"
+      },
+      "reasons": {
+        "child_sexual_abuse": "Child sexual abuse or exploitation",
+        "child_endangerment": "Children at risk / inappropriate images of minors",
+        "sexual_nonconsensual": "Nudity or sexual content (including non-consensual intimate images and deepfakes)",
+        "violence_gore": "Graphic violence or gore",
+        "terrorism_extremism": "Terrorism or violent extremism",
+        "hate_speech": "Hate or discrimination",
+        "harassment_bullying": "Harassment or bullying",
+        "animal_cruelty": "Animal cruelty",
+        "self_harm": "Suicide or self-harm",
+        "illegal_goods": "Drugs, weapons or illegal activities",
+        "my_image": "I appear in it without my consent (right to one's own image)",
+        "privacy_personal_data": "Other people's personal data (documents, number plates, addresses)",
+        "intellectual_property": "Copyright or trademark (it doesn't belong to the uploader)",
+        "fraud_scam_spam": "Fraud, scam, spam or advertising",
+        "misleading_irrelevant": "Fake or doesn't belong to this refuge",
+        "other": "Other (description required)"
+      },
+      "detailsLabel": "Details (optional)",
+      "detailsRequiredLabel": "Details (required)",
+      "detailsPlaceholder": "Briefly explain the problem",
+      "goodFaith": "I declare in good faith that the information in this report is accurate and complete",
+      "submit": "Send report",
+      "footnote": "You can also write to {{email}}. False or abusive reports may lead to the account being blocked.",
+      "successTitle": "Report sent",
+      "successMessage": "Thank you. We will review it as soon as possible. To provide more information or appeal a decision, write to {{email}}.",
+      "errors": {
+        "reasonRequired": "Choose a reason",
+        "detailsRequired": "A description is required for the \"Other\" reason",
+        "detailsTooLong": "The description cannot exceed 1000 characters",
+        "goodFaithRequired": "You must accept the good-faith declaration",
+        "generic": "The report could not be sent. Please try again",
+        "ownMedia": "You cannot report your own content",
+        "alreadyReported": "You have already reported this content",
+        "notFound": "This content no longer exists"
+      }
+    },
+    "admin": {
+      "title": "Photo reports",
+      "status": {
+        "pending": "Pending",
+        "resolved": "Resolved"
+      },
+      "empty": "There are no reports",
+      "loadError": "The reports could not be loaded",
+      "priority": "Priority: {{priority}}",
+      "reportsCount": "Reports: {{count}}",
+      "resolutionAction": "Action",
+      "actions": {
+        "dismiss": "Dismiss",
+        "remove": "Remove",
+        "remove_and_strike": "Remove + strike"
+      },
+      "statementLabel": "Statement of reasons (will be sent to the author)",
+      "statementPlaceholder": "Explain the reasons for the decision",
+      "statementRequired": "A statement of reasons is required",
+      "resolved": "Report resolved",
+      "resolveError": "The report could not be resolved"
+    },
+    "notices": {
+      "title": "Moderation notices",
+      "actions": {
+        "remove": "Content removed",
+        "remove_and_strike": "Content removed with a strike",
+        "hide": "Content hidden pending review",
+        "block": "Account blocked",
+        "dismiss": "Report dismissed",
+        "other": "Notice"
+      },
+      "strikes": "Strikes: {{count}} of 3",
+      "appeal": "If you disagree you can appeal by writing to {{email}}."
+    }
+  },
+  "age": {
+    "birthDateLabel": "Date of birth",
+    "dayPlaceholder": "DD",
+    "monthPlaceholder": "MM",
+    "yearPlaceholder": "YYYY",
+    "birthDateHint": "We only use it to check that you are at least 16; we don't store it.",
+    "gateTitle": "Confirm your age",
+    "gateMessage": "To keep using the app you must be at least {{age}} years old. Enter your date of birth.",
+    "invalidDate": "Enter a valid date (DD/MM/YYYY)",
+    "underageTitle": "Age requirement not met",
+    "underageMessage": "You must be at least {{age}} years old to use Refugis Lliures.",
+    "confirmError": "Your age could not be confirmed. Please try again",
+    "logout": "Log out",
+    "privacyNote": "We only store that you confirmed the minimum age, not your date of birth."
   }
 }
