@@ -9,13 +9,14 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import { useTranslation } from '../hooks/useTranslation';
 import { UsersService } from '../services/UsersService';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { CustomAlert } from './CustomAlert';
+import { useMediaUpload, getFailureReasonKey } from '../hooks/useMediaUpload';
+import { RightsDeclarationModal } from './RightsDeclarationModal';
+import type { PickedAsset } from '../services/MediaUploadService';
 
 // Icons
 import CrossIcon from '../assets/icons/x.svg';
@@ -41,8 +42,9 @@ export function AvatarPopup({
 }: AvatarPopupProps) {
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
-  const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Pujada amb target=avatar (només imatges): drets → compressió → intents → PUT → confirm
+  const { pickAndUpload, ensureRightsConfirmed, isUploading, rightsModalProps } = useMediaUpload({ showAlert });
 
   const getInitials = () => {
     if (!username) return '?';
@@ -54,149 +56,77 @@ export function AvatarPopup({
 
   const handleChangePhoto = async () => {
     try {
-      // Comprovar si s'està executant amb Expo Go
+      // Development build: retall circular amb react-native-image-crop-picker.
+      // Web i Expo Go: expo-image-picker (dins de useMediaUpload.pickMedia).
       const isExpoGo = Constants.executionEnvironment === 'storeClient';
-      
-      // Per web, utilitzar expo-image-picker
-      if (Platform.OS === 'web') {
-        const currentPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
-        let isGranted = currentPermission.status === 'granted';
+      let assets: PickedAsset[] | undefined;
 
-        if (!isGranted) {
-          const requestResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-          isGranted = requestResult.status === 'granted';
-        }
+      if (Platform.OS !== 'web' && !isExpoGo) {
+        const accepted = await ensureRightsConfirmed();
+        if (!accepted) return;
 
-        if (!isGranted) {
-          showAlert(
-            t('common.error'),
-            t('profile.avatar.permissionMessage'),
-            [{ text: t('common.ok'), onPress: hideAlert }]
-          );
-          return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.8,
+        const ImageCropPicker = require('react-native-image-crop-picker').default;
+        const image = await ImageCropPicker.openPicker({
+          width: 512,
+          height: 512,
+          cropping: true,
+          cropperCircleOverlay: true,
+          cropperToolbarTitle: t('profile.avatar.cropTitle', { defaultValue: 'Retalla la imatge' }),
+          // Colors clars per fer els botons visibles
+          cropperStatusBarColor: '#FFFFFF',
+          cropperToolbarColor: '#FFFFFF',
+          cropperActiveWidgetColor: '#FF6900',
+          cropperToolbarWidgetColor: '#FF6900', // Color taronja per als botons
+          freeStyleCropEnabled: false,
+          compressImageQuality: 0.9,
+          includeBase64: false,
+          mediaType: 'photo',
         });
-
-        if (result.canceled) {
-          return;
-        }
-
-        const selectedImage = result.assets[0];
-        setIsUploading(true);
-
-        try {
-          const fileUri = selectedImage.uri;
-          const fileName = fileUri.split('/').pop() || 'avatar.jpg';
-          const fileType = selectedImage.type === 'image' 
-            ? `image/${fileName.split('.').pop()}`
-            : 'image/jpeg';
-
-          const response = await fetch(fileUri);
-          const blob = await response.blob();
-          const file = new File([blob], fileName, { type: fileType });
-
-          await UsersService.uploadAvatar(uid, file);
-          
-          if (onAvatarUpdated) {
-            onAvatarUpdated();
-          }
-          
-          showAlert(
-            t('profile.avatar.uploadSuccess'),
-            t('profile.avatar.uploadSuccessMessage'),
-            [{ text: t('common.ok'), onPress: () => { hideAlert(); onClose(); } }]
-          );
-        } catch (error: any) {
-          console.error('Error uploading avatar:', error);
-          showAlert(
-            t('common.error'),
-            error.message || t('profile.avatar.uploadError'),
-            [{ text: t('common.ok'), onPress: hideAlert }]
-          );
-        } finally {
-          setIsUploading(false);
-        }
-        return;
+        assets = [
+          {
+            uri: image.path,
+            mimeType: image.mime,
+            fileName: image.filename || image.path?.split('/').pop(),
+            fileSize: image.size,
+            width: image.width,
+            height: image.height,
+          },
+        ];
       }
 
-      // Mòbil: comprovar si és Expo Go
-      if (isExpoGo) {
-        showAlert(
-          t('profile.avatar.expoGoTitle', { defaultValue: 'Funcionalitat no disponible' }),
-          t('profile.avatar.expoGoMessage', { defaultValue: 'La funcionalitat de canviar avatar amb cropper personalitzat no està disponible amb Expo Go. Si us plau, utilitza un Development Build per accedir a aquesta funcionalitat.' }),
-          [{ text: t('common.ok'), onPress: hideAlert }]
-        );
-        return;
-      }
+      const result = await pickAndUpload(
+        { target: 'avatar', uid },
+        { imagesOnly: true, multiple: false, assets },
+        { showResultAlert: false }
+      );
+      if (!result) return; // cancel·lat o error (el hook ja ha mostrat l'avís)
 
-      // Development Build: utilitzar react-native-image-crop-picker amb colors visibles
-      const ImageCropPicker = require('react-native-image-crop-picker').default;
-      const image = await ImageCropPicker.openPicker({
-        width: 400,
-        height: 400,
-        cropping: true,
-        cropperCircleOverlay: true,
-        cropperToolbarTitle: t('profile.avatar.cropTitle', { defaultValue: 'Retalla la imatge' }),
-        // Colors clars per fer els botons visibles
-        cropperStatusBarColor: '#FFFFFF',
-        cropperToolbarColor: '#FFFFFF',
-        cropperActiveWidgetColor: '#FF6900',
-        cropperToolbarWidgetColor: '#FF6900', // Color taronja per als botons
-        freeStyleCropEnabled: false,
-        compressImageQuality: 0.8,
-        includeBase64: false,
-        mediaType: 'photo',
-      });
-
-      setIsUploading(true);
-      
-      try {
-        const fileUri = image.path;
-        const fileName = fileUri.split('/').pop() || 'avatar.jpg';
-        const fileType = image.mime || 'image/jpeg';
-
-        const file = {
-          uri: fileUri,
-          name: fileName,
-          type: fileType,
-        } as any;
-
-        await UsersService.uploadAvatar(uid, file);
-        
+      if (result.uploaded.length > 0) {
         if (onAvatarUpdated) {
           onAvatarUpdated();
         }
-        
         showAlert(
           t('profile.avatar.uploadSuccess'),
           t('profile.avatar.uploadSuccessMessage'),
           [{ text: t('common.ok'), onPress: () => { hideAlert(); onClose(); } }]
         );
-      } catch (error: any) {
-        console.error('Error uploading avatar:', error);
+      } else {
+        const reason = result.failed[0]?.reason;
         showAlert(
           t('common.error'),
-          error.message || t('profile.avatar.uploadError'),
+          `${t('profile.avatar.uploadError')}\n${t(getFailureReasonKey(reason))}`,
           [{ text: t('common.ok'), onPress: hideAlert }]
         );
-      } finally {
-        setIsUploading(false);
       }
     } catch (error: any) {
-      if (error.code === 'E_PICKER_CANCELLED') {
+      if (error?.code === 'E_PICKER_CANCELLED') {
         return;
       }
       
       console.error('Error selecting image:', error);
       showAlert(
         t('common.error'),
-        error.message || t('profile.avatar.selectError'),
+        t('profile.avatar.selectError'),
         [{ text: t('common.ok'), onPress: hideAlert }]
       );
     }
@@ -312,6 +242,9 @@ export function AvatarPopup({
           </View>
         </View>
       </Modal>
+
+      {/* Declaració de drets (1 cop per sessió) */}
+      <RightsDeclarationModal {...rightsModalProps} />
 
       {/* CustomAlert for confirmations and errors */}
       {alertConfig && (

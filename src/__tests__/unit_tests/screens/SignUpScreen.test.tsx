@@ -814,6 +814,9 @@ describe('SignUpScreen - Unit Tests', () => {
       await waitFor(() => {
         expect(getByTestId('signup-button')).toBeTruthy();
       });
+      fireEvent.changeText(getByTestId('birthdate-day'), '20');
+      fireEvent.changeText(getByTestId('birthdate-month'), '05');
+      fireEvent.changeText(getByTestId('birthdate-year'), '1990');
     };
 
     it('hauria de registrar un usuari correctament', async () => {
@@ -835,7 +838,8 @@ describe('SignUpScreen - Unit Tests', () => {
           'test@example.com',
           'Test1234!',
           'testuser',
-          'ca'
+          'ca',
+          '1990-05-20'
         );
         expect(mockShowAlert).toHaveBeenCalledWith(
           'Èxit',
@@ -843,6 +847,63 @@ describe('SignUpScreen - Unit Tests', () => {
           expect.any(Array)
         );
       });
+    });
+
+    it('hauria de mostrar error i no registrar si la data de naixement és invàlida', async () => {
+      const { getByTestId } = render(
+        <SignUpScreen
+          onSignUpSuccess={mockOnSignUpSuccess}
+          onBackToLogin={mockOnBackToLogin}
+        />
+      );
+
+      await completeForm(getByTestId);
+      fireEvent.changeText(getByTestId('birthdate-day'), '31');
+      fireEvent.changeText(getByTestId('birthdate-month'), '02');
+      fireEvent.press(getByTestId('signup-button'));
+
+      await waitFor(() => {
+        expect(getByTestId('birthdate-error')).toBeTruthy();
+      });
+      expect(mockSignup).not.toHaveBeenCalled();
+    });
+
+    it('hauria de bloquejar localment un menor de 16 anys sense crear el compte', async () => {
+      const { getByTestId } = render(
+        <SignUpScreen
+          onSignUpSuccess={mockOnSignUpSuccess}
+          onBackToLogin={mockOnBackToLogin}
+        />
+      );
+
+      await completeForm(getByTestId);
+      const thisYear = new Date().getFullYear();
+      fireEvent.changeText(getByTestId('birthdate-year'), String(thisYear - 10));
+      fireEvent.press(getByTestId('signup-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage');
+      });
+      expect(mockSignup).not.toHaveBeenCalled();
+    });
+
+    it('hauria de mostrar el missatge d\'edat si el backend respon 403 underage', async () => {
+      mockSignup.mockRejectedValue({ code: 'underage', message: 'UNDERAGE' });
+
+      const { getByTestId } = render(
+        <SignUpScreen
+          onSignUpSuccess={mockOnSignUpSuccess}
+          onBackToLogin={mockOnBackToLogin}
+        />
+      );
+
+      await completeForm(getByTestId);
+      fireEvent.press(getByTestId('signup-button'));
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage');
+      });
+      expect(mockGetErrorMessageKey).not.toHaveBeenCalled();
     });
 
     it('hauria de gestionar error d\'email ja en ús', async () => {
@@ -1043,6 +1104,9 @@ describe('SignUpScreen - Unit Tests', () => {
       await waitFor(() => {
         expect(getByTestId('signup-button')).toBeTruthy();
       });
+      fireEvent.changeText(getByTestId('birthdate-day'), '20');
+      fireEvent.changeText(getByTestId('birthdate-month'), '05');
+      fireEvent.changeText(getByTestId('birthdate-year'), '1990');
 
       fireEvent.press(getByTestId('signup-button'));
 

@@ -200,62 +200,39 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Afegir fotos', () => {
-    it('hauria de permetre afegir fotos', async () => {
+    // La pujada la gestiona el pare (useMediaUpload); el menú només delega i es tanca
+    it('hauria de delegar la pujada al pare i tancar el menú', () => {
+      const mockOnAddPhoto = jest.fn();
       const { getByTestId } = render(
         <QuickActionsMenu
           {...defaultProps}
-          onPhotoUploaded={mockOnPhotoUploaded}
+          onAddPhoto={mockOnAddPhoto}
         />
       );
 
       fireEvent.press(getByTestId('menu-photo'));
-      await waitFor(() => {
-        expect(mockOnPhotoUploaded).toHaveBeenCalled();
-      });
+      expect(mockOnAddPhoto).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onClose).toHaveBeenCalled();
     });
 
-    it('hauria de gestionar errors en afegir fotos', async () => {
-      const { RefugeMediaService } = require('../../../services/RefugeMediaService');
-      RefugeMediaService.uploadRefugeMedia.mockRejectedValueOnce(new Error('Upload failed'));
+    it('no hauria de fallar si no hi ha onAddPhoto', () => {
+      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
+      expect(() => fireEvent.press(getByTestId('menu-photo'))).not.toThrow();
+    });
 
-      const { getByTestId } = render(
+    it('hauria de mostrar estat de càrrega i desactivar el botó durant la pujada', () => {
+      const mockOnAddPhoto = jest.fn();
+      const { getByTestId, getByText } = render(
         <QuickActionsMenu
           {...defaultProps}
-          onPhotoUploaded={mockOnPhotoUploaded}
+          onAddPhoto={mockOnAddPhoto}
+          isUploadingPhotos
         />
       );
 
+      expect(getByText('common.loading')).toBeTruthy();
       fireEvent.press(getByTestId('menu-photo'));
-      await waitFor(() => {
-        expect(mockOnShowAlert).toHaveBeenCalled();
-      });
-    });
-
-    it('hauria de gestionar cancel·lació de selecció de fotos', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({ canceled: true });
-
-      const { getByTestId } = render(
-        <QuickActionsMenu
-          {...defaultProps}
-          onPhotoUploaded={mockOnPhotoUploaded}
-        />
-      );
-
-      fireEvent.press(getByTestId('menu-photo'));
-      // No hauria de pujar res
-    });
-
-    it('hauria de gestionar permisos denegats', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
-
-      const { getByTestId } = render(
-        <QuickActionsMenu {...defaultProps} />
-      );
-
-      fireEvent.press(getByTestId('menu-photo'));
-      // No hauria de llençar excepció
+      expect(mockOnAddPhoto).not.toHaveBeenCalled();
     });
   });
 
@@ -588,7 +565,7 @@ describe('QuickActionsMenu Component', () => {
           {...defaultProps}
           onEdit={mockOnEdit}
           onDelete={mockOnDelete}
-          onPhotoUploaded={mockOnPhotoUploaded}
+          onAddPhoto={mockOnPhotoUploaded}
           onViewMap={mockOnViewMap}
           onNavigateToDoubts={mockOnNavigateToDoubts}
           onNavigateToExperiences={mockOnNavigateToExperiences}

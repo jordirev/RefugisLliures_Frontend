@@ -36,6 +36,8 @@ export interface SignUpData {
   password: string;
   username: string;
   language: string;
+  /** Data de naixement (YYYY-MM-DD) per a la comprovació d'edat mínima del backend */
+  birthDate?: string;
 }
 
 export interface LoginData {
@@ -69,26 +71,42 @@ export class AuthService {
         displayName: signUpData.username
       });
 
-      // 3. Enviar email de verificació
-      await sendEmailVerification(firebaseUser);
-
-      // 4. Obtenir el token d'autenticació
+      // 3. Obtenir el token d'autenticació
       const token = await firebaseUser.getIdToken();
 
-      // 5. Crear l'usuari al backend
+      // 4. Crear l'usuari al backend (amb la data de naixement: el backend rebutja < 16 anys)
       const userData: UserCreateData = {
         username: signUpData.username,
         email: signUpData.email,
         language: signUpData.language,
       };
+      if (signUpData.birthDate) {
+        userData.birth_date = signUpData.birthDate;
+      }
 
-      const backendUser = await UsersService.createUser(userData, token);
+      let backendUser;
+      try {
+        backendUser = await UsersService.createUser(userData, token);
+      } catch (error: any) {
+        // 403 underage (o error inesperat): s'esborra el compte de Firebase acabat de crear
+        await firebaseUser.delete().catch((e: any) => console.error('Error esborrant l\'usuari de Firebase:', e));
+        if (error?.code === 'underage') {
+          const underage: any = new Error('UNDERAGE');
+          underage.code = 'underage';
+          throw underage;
+        }
+        throw error;
+      }
 
       if (!backendUser) {
         // Si falla la creació al backend, eliminem l'usuari de Firebase
         await firebaseUser.delete();
         throw new Error('Error creant l\'usuari al backend');
       }
+
+      // 5. Enviar email de verificació (després de crear l'usuari al backend, perquè no
+      //    arribi un correu d'un compte que s'acaba esborrant)
+      await sendEmailVerification(firebaseUser);
 
       // 6. Tancar la sessió perquè l'usuari hagi de fer login després de verificar el correu
       await signOut(auth);

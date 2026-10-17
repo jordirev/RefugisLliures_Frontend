@@ -75,15 +75,30 @@ function determineCondition(refugiDTO: RefugiDTO): number | undefined {
   return 0;
 }
 
+/**
+ * Converteix un MediaItem del backend al model del frontend.
+ * Els camps nous (miniatura, blurhash, mides...) només s'afegeixen si hi són,
+ * de manera que els items antics continuen funcionant (fallback a `url`).
+ */
 export function mapImageMetadataFromDTO(imageDTO: ImageMetadataDTO): ImageMetadata {
-  return {
+  const media: ImageMetadata = {
     key: imageDTO.key,
     url: imageDTO.url,
     uploaded_at: imageDTO.uploaded_at,
     creator_uid: imageDTO.creator_uid,
     experience_id: imageDTO.experience_id,
   };
+  if (imageDTO.thumb_url) media.thumb_url = imageDTO.thumb_url;
+  if (imageDTO.media_type === 'image' || imageDTO.media_type === 'video') media.media_type = imageDTO.media_type;
+  if (imageDTO.width != null) media.width = imageDTO.width;
+  if (imageDTO.height != null) media.height = imageDTO.height;
+  if (imageDTO.blurhash) media.blurhash = imageDTO.blurhash;
+  if (imageDTO.taken_at !== undefined) media.taken_at = imageDTO.taken_at;
+  return media;
 }
+
+/** Àlies amb el nom del contracte d'API */
+export const mapMediaItemFromDTO = mapImageMetadataFromDTO;
 
 /**
  * Converteix un RefugiDTO al format Location del frontend

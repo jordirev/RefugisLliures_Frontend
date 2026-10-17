@@ -5,15 +5,16 @@
 ## Serveis i xarxa
 1. **NO retornis `null`/`false` per amagar errors HTTP.** `UsersService` ho fa (`src/services/UsersService.ts:50-61,112-123,209-227,...`) i provoca que les mutacions reportin èxit i no facin rollback **[FET]**. Llança un `Error` amb `status`.
 2. **NO facis `fetch` directe** al backend: usa `apiGet/apiPost/...` de `src/services/apiClient.ts` (token + reintent 401). Excepcions actuals: `MapCacheService.ts:326`.
-3. **NO fixis `Content-Type` amb `FormData`**: deixa que RN posi el boundary (com `UsersService.uploadAvatar`).
+3. **NO fixis `Content-Type` amb `FormData`**: deixa que RN posi el boundary. Per a fotos/vídeos **no** facis multipart: usa `useMediaUpload` (URL PUT prefirmada).
+3b. **El PUT a la URL prefirmada de R2 no ha de passar per `apiClient`** ni portar `Authorization`; envia exactament les `headers` de l'intent (el `Content-Type` i la mida estan signats) (`MediaUploadService.putFile`) **[FET]**.
 4. L'URL del backend està **hard-coded a 9 serveis**; si la canvies, canvia-la a tots (o centralitza-la). No hi ha manera d'apuntar a un backend local per configuració **[FET]**.
 5. `fetchWithLog` substitueix `global.fetch` també en producció i llegeix el cos de totes les respostes (`index.js:4-17`, `src/services/fetchWithLog.ts:33-45`) **[FET]**: no hi posis lògica pesada.
 6. Codifica els paràmetres de query (`encodeURIComponent`); `ExperienceService.ts:49` i `DoubtsService.ts:40` no ho fan **[FET]**.
 
 ## React Query
-7. **NO cridis serveis de mutació directament des de la UI**: passa per un hook amb invalidacions. Les pujades/esborrats de fotos i l'avatar no ho fan i deixen comptadors i llistes desfasats **[FET]**.
+7. **NO cridis serveis de mutació directament des de la UI**: passa per un hook amb invalidacions. Fotos/vídeos/avatar: `useMediaUpload`; esborrat: `useDeleteRefugeMedia`; invalidacions comunes a `src/hooks/mediaInvalidation.ts`. Queda pendent l'esborrat d'avatar (`AvatarPopup`) **[FET]**.
 8. Crida `mutate()` amb el **tipus exacte** que espera `mutationFn` (bug de `useDeleteRenovation`, `RenovationDetailScreen.tsx:199`) **[FET]**.
-9. Usa el registre `queryKeys` (`src/config/queryClient.ts:39-67`); claus divergents (`['user', uid]` vs `['users','detail',uid]`) dupliquen dades **[FET]**.
+9. Usa el registre `queryKeys` (`src/config/queryClient.ts`); claus divergents dupliquen dades. (`PhotoViewerModal` ja usa `useUser` → `['users','detail',uid]`.)
 10. **NO facis `.sort()` in-place** sobre arrays que vénen de la cache o de props (`useUsersQuery.ts:391`, `useRefugesQuery.ts:46`) **[FET]**.
 11. En canviar d'usuari, la cache **no es buida** (cap `queryClient.clear()` a `src/`) **[FET]**: si afegeixes dades per usuari, inclou l'`uid` a la clau.
 12. Si una mutació canvia comptadors de l'usuari al backend (fotos, experiències, renovations), invalida `['users','detail']`.
@@ -32,7 +33,7 @@
 21. Abans d'operacions sensibles de Firebase (`user.delete()`, `updatePassword`), cal **reautenticar**; `deleteAccount` no ho fa i esborra primer el backend (`AuthService.ts:328-335`) **[FET]**.
 
 ## i18n i textos
-22. Afegeix cada clau a **les quatre** locales (`src/i18n/locales/{ca,es,en,fr}.json`). Hi ha claus que falten i es mostren crues (`signup.errors.usernameTooShort`, `proposals.errorLoading`, `refuge.gallery.permissionDenied`) **[FET]**.
+22. Afegeix cada clau a **les quatre** locales (`src/i18n/locales/{ca,es,en,fr}.json`). Hi ha claus que falten i es mostren crues (`proposals.errorLoading`) **[FET]**.
 23. **NO posis textos d'usuari als serveis** (avui molts llancen missatges en català que la UI mostra directament) **[FET]**.
 24. Canvia l'idioma amb el helper `changeLanguage` de `src/i18n/index.ts` (desa a AsyncStorage), no amb `i18n.changeLanguage` directe (`SignUpScreen.tsx:73`) **[FET]**.
 25. L'idioma al backend s'envia en minúscules (`'ca'`) al registre però en majúscules des de Settings (`LanguageSelector.tsx:35`) **[FET]**: tria'n un.
@@ -43,6 +44,14 @@
 ## Mapa
 27. Les tiles offline es descarreguen però **no s'usen**; Leaflet ve de CDN. No prometis funcionalitat offline del mapa **[FET]**.
 28. L'efecte que injecta marcadors ignora llistes buides (`LeafletWebMap.tsx:54`) **[FET]**.
+
+## Mitjans (feature `images`)
+32. **Valida abans d'enviar**: només fotos i vídeos de la llista blanca (MIME **i** extensió, `MediaUploadService.validateAsset`); obre el picker amb `mediaTypes: ['images','videos']` (avatar `['images']`). Mai forcis el MIME **[FET]**.
+33. Mostra `<RightsDeclarationModal {...rightsModalProps} />` a qualsevol pantalla que usi `useMediaUpload`; si no, la promesa de `pickMedia` queda penjada esperant la declaració **[FET]**.
+34. Un `<Modal>` sempre queda per sobre de la pila: **tanca'l abans de `navigate`** (p. ex. visor → `ReportMedia`). Les rutes que han de tapar els overlays d'`AppNavigator` s'han d'afegir a `ROUTES_ABOVE_OVERLAYS` **[FET]**.
+35. Renderitza mitjans amb `MediaImage`/`MediaThumbnail` (expo-image, `cacheKey` = clau R2, `blurhash`): una `Image` amb la URL prefirmada no aprofita mai la cache perquè la URL canvia **[FET]**.
+36. `react-native-compressor` és un mòdul natiu: requereix build EAS/dev client; el codi el carrega amb `require` i, si falla, puja el vídeo original **[FET]**. Als tests està mockejat a `jest.setup.js` (també `expo-image`, `expo-image-manipulator`, `expo-image-picker`).
+37. Els codis d'error (`age_not_confirmed`, `user_blocked`, `not_owner`, `underage`) es llegeixen de l'`ApiError.code`, mai del text **[FET]**.
 
 ## Tests i CI
 29. CI fa `npm run test:coverage -- -u`: **els snapshots s'actualitzen sols** i mai fallen a CI (`.github/workflows/main.yml:33`) **[FET]**. Revisa snapshots en local.

@@ -24,6 +24,8 @@ import VisibleIcon from '../assets/icons/visible.svg';
 import VisibleOffIcon from '../assets/icons/visibleOff2.svg';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { BirthDateInput, BirthDateValue } from '../components/BirthDateInput';
+import { buildBirthDate, isUnderMinAge, MIN_AGE } from '../utils/ageUtils';
 
 // Logo provisional
 const AppLogo = require('../assets/images/logo.png');
@@ -64,6 +66,9 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // Data de naixement (pas final del wizard): el backend rebutja < 16 anys
+  const [birthDate, setBirthDate] = useState<BirthDateValue>({ day: '', month: '', year: '' });
+  const [birthDateError, setBirthDateError] = useState<string | null>(null);
 
   const handleSelectLanguage = (lang: Language) => {
     setSelectedLanguage(lang);
@@ -248,7 +253,19 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
     }
 
     if (!selectedLanguage) {
-      showAlert(t('common.error'), 'Si us plau, selecciona un idioma');
+      showAlert(t('common.error'), t('signup.errors.selectLanguage'));
+      return;
+    }
+
+    // Data de naixement: validació local (el backend és qui decideix: 403 underage)
+    const isoBirthDate = buildBirthDate(birthDate.day, birthDate.month, birthDate.year);
+    if (!isoBirthDate) {
+      setBirthDateError(t('age.invalidDate'));
+      return;
+    }
+    setBirthDateError(null);
+    if (isUnderMinAge(isoBirthDate)) {
+      showAlert(t('age.underageTitle'), t('age.underageMessage', { age: MIN_AGE }));
       return;
     }
 
@@ -260,7 +277,8 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
         email.trim(),
         password,
         username.trim(),
-        selectedLanguage
+        selectedLanguage,
+        isoBirthDate
       );
       
       showAlert(
@@ -275,6 +293,12 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
       );
     } catch (error: any) {
       console.error('Error durant el registre:', error);
+
+      // Menor de 16 anys segons el backend: el compte de Firebase ja s'ha esborrat
+      if (error?.code === 'underage') {
+        showAlert(t('age.underageTitle'), t('age.underageMessage', { age: MIN_AGE }));
+        return;
+      }
       
       // Obtenir missatge d'error traduït
       const errorCode = error?.code || 'unknown';
@@ -565,6 +589,19 @@ export function SignUpScreen({ onSignUpSuccess, onBackToLogin }: SignUpScreenPro
 
             {step === "register" && !usernameError && !emailError && (
               <>
+                {/* Data de naixement (edat mínima 16 anys) */}
+                <View style={styles.inputContainer}>
+                  <BirthDateInput
+                    value={birthDate}
+                    onChange={(value) => {
+                      setBirthDate(value);
+                      setBirthDateError(null);
+                    }}
+                    editable={!isLoading}
+                    error={birthDateError}
+                  />
+                </View>
+
                 {/* Botó de registre */}
                 <TouchableOpacity
                   testID="signup-button"

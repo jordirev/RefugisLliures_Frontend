@@ -23,6 +23,10 @@ import { RefugeBottomSheet } from './RefugeBottomSheet';
 import { RefugeDetailScreen } from '../screens/RefugeDetailScreen';
 import { RenovationDetailScreen } from '../screens/RenovationDetailScreen';
 import { DeleteRefugePopUp } from './DeleteRefugePopUp';
+import { ReportMediaScreen } from '../screens/ReportMediaScreen';
+import { MediaReportsScreen } from '../screens/MediaReportsScreen';
+import { AgeGateScreen } from '../screens/AgeGateScreen';
+import { useAuth } from '../contexts/AuthContext';
 
 import { Location } from '../models';
 import { useDeleteRefugeProposal } from '../hooks/useProposalsQuery';
@@ -32,10 +36,20 @@ import { useCustomAlert } from '../hooks/useCustomAlert';
 
 const Stack = createNativeStackNavigator();
 
+/**
+ * Rutes de pila que s'han de veure per sobre dels overlays (detall de refugi, experiències...).
+ * Quan una d'aquestes és al cim de la pila, els overlays s'amaguen (sense desmuntar-los).
+ */
+const ROUTES_ABOVE_OVERLAYS = ['ReportMedia', 'MediaReports'];
+
 export function AppNavigator() {
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
   const navigation = useNavigation<any>();
+  const { backendUser } = useAuth();
+  // Ruta al cim de la pila (per amagar els overlays quan s'obre ReportMedia)
+  const [topRouteName, setTopRouteName] = useState<string | undefined>(undefined);
+  const hideOverlays = !!topRouteName && ROUTES_ABOVE_OVERLAYS.includes(topRouteName);
   
   // Mutation for deleting refuge proposal
   const deleteProposalMutation = useDeleteRefugeProposal();
@@ -147,6 +161,10 @@ export function AppNavigator() {
     if (Platform.OS !== 'android') return;
 
     const onBackPress = () => {
+      // Una pantalla de pila per sobre dels overlays (p. ex. ReportMedia): deixa que la pila torni enrere
+      if (hideOverlays) {
+        return false;
+      }
       if (showExperiencesScreen) {
         setShowExperiencesScreen(false);
         setExperiencesParams(null);
@@ -174,12 +192,25 @@ export function AppNavigator() {
 
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
-  }, [showBottomSheet, showDetailScreen, refugeToEdit, showDoubtsScreen, showExperiencesScreen]);
+  }, [showBottomSheet, showDetailScreen, refugeToEdit, showDoubtsScreen, showExperiencesScreen, hideOverlays]);
+
+  // Pantalla bloquejant d'edat: usuaris existents i de Google sense confirmació d'edat
+  if (backendUser?.age_confirmed === false) {
+    return <AgeGateScreen />;
+  }
 
   return (
     <View style={styles.container}>
       <Stack.Navigator 
         screenOptions={{ headerShown: false }}
+        screenListeners={{
+          state: (e: any) => {
+            const state = e?.data?.state;
+            if (state && Array.isArray(state.routes)) {
+              setTopRouteName(state.routes[state.index]?.name);
+            }
+          },
+        }}
       >
         {/* Pantalla principal amb tabs */}
         <Stack.Screen name="MainTabs">
@@ -208,6 +239,8 @@ export function AppNavigator() {
         <Stack.Screen name="ProposalDetail" component={ProposalDetailScreen} />
         <Stack.Screen name="DoubtsScreen" component={DoubtsScreen} />
         <Stack.Screen name="ExperiencesScreen" component={ExperiencesScreen} />
+        <Stack.Screen name="ReportMedia" component={ReportMediaScreen} />
+        <Stack.Screen name="MediaReports" component={MediaReportsScreen} />
         <Stack.Screen name="RefromDetail">
           {({ navigation: nav }: any) => (
             <RenovationDetailScreen
@@ -273,7 +306,7 @@ export function AppNavigator() {
 
       {/* Pantalla de detall del refugi - Per sobre de tot */}
       {selectedLocation && showDetailScreen && !refugeToEdit && (
-        <View style={styles.detailScreenOverlay}>
+        <View style={[styles.detailScreenOverlay, hideOverlays && styles.hidden]}>
           <RefugeDetailScreen
             refugeId={selectedLocation.id}
             onEdit={(location: Location) => {
@@ -301,7 +334,7 @@ export function AppNavigator() {
 
       {/* Edit Refuge Screen overlay - Per sobre de RefugeDetailScreen */}
       {refugeToEdit && (
-        <View style={styles.editRefugeOverlay}>
+        <View style={[styles.editRefugeOverlay, hideOverlays && styles.hidden]}>
           <EditRefugeScreen 
             refuge={refugeToEdit} 
             onCancel={() => setRefugeToEdit(undefined)}
@@ -311,7 +344,7 @@ export function AppNavigator() {
 
       {/* Doubts Screen overlay - Per sobre de RefugeDetailScreen */}
       {showDoubtsScreen && doubtsParams && (
-        <View style={styles.editRefugeOverlay}>
+        <View style={[styles.editRefugeOverlay, hideOverlays && styles.hidden]}>
           <DoubtsScreen 
             refugeId={doubtsParams.refugeId}
             refugeName={doubtsParams.refugeName}
@@ -325,7 +358,7 @@ export function AppNavigator() {
 
       {/* Experiences Screen overlay - Per sobre de RefugeDetailScreen */}
       {showExperiencesScreen && experiencesParams && (
-        <View style={styles.editRefugeOverlay}>
+        <View style={[styles.editRefugeOverlay, hideOverlays && styles.hidden]}>
           <ExperiencesScreen 
             refugeId={experiencesParams.refugeId}
             refugeName={experiencesParams.refugeName}
@@ -382,5 +415,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'white',
     zIndex: 1001,
+  },
+  hidden: {
+    display: 'none',
   },
 });

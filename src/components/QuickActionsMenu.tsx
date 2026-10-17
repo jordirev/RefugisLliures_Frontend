@@ -10,18 +10,14 @@ import {
   Dimensions,
   Share,
   Image,
-  Alert,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location } from '../models';
 import useVisited from '../hooks/useVisited';
-import { RefugeMediaService } from '../services/RefugeMediaService';
 
 // Icons
 import HeartIcon from '../assets/icons/fav-white.svg';
@@ -45,7 +41,10 @@ interface QuickActionsMenuProps {
   onShowAlert: (title: string, message: string) => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  onPhotoUploaded?: () => void;
+  /** Inicia la pujada de fotos (la gestiona el pare amb `useMediaUpload`) */
+  onAddPhoto?: () => void;
+  /** Hi ha una pujada en curs */
+  isUploadingPhotos?: boolean;
   onViewMap?: () => void;
   onNavigateToDoubts?: (refugeId: string, refugeName: string) => void;
   onNavigateToExperiences?: (refugeId: string, refugeName: string) => void;
@@ -61,7 +60,8 @@ export function QuickActionsMenu({
   onShowAlert,
   onDelete,
   onEdit,
-  onPhotoUploaded,
+  onAddPhoto,
+  isUploadingPhotos = false,
   onViewMap,
   onNavigateToDoubts,
   onNavigateToExperiences,
@@ -70,7 +70,7 @@ export function QuickActionsMenu({
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { isVisited, toggleVisited, isProcessing } = useVisited(refuge.id);
-  const [uploadingPhotos, setUploadingPhotos] = React.useState(false);
+  const uploadingPhotos = isUploadingPhotos;
 
   const screenWidth = Dimensions.get('window').width;
   const sideMenuWidth = Math.min(120, screenWidth * 0.40);
@@ -162,66 +162,12 @@ export function QuickActionsMenu({
     }
   };
 
-  const handleAddPhoto = async () => {
-    try {
-      // Request permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permisos necessaris',
-          'Necessitem permisos per accedir a les teves fotos i vídeos.'
-        );
-        return;
-      }
-
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images', 'videos'],
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        ...(Platform.OS === 'ios' && {
-          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
-        }),
-      });
-
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        return;
-      }
-
-      setUploadingPhotos(true);
-
-      // Prepare files for upload using URIs directly (React Native compatible)
-      const files: any[] = [];
-      for (const asset of result.assets) {
-        const fileName = asset.uri.split('/').pop() || `photo_${Date.now()}.jpg`;
-        const mimeType = asset.mimeType || 'image/jpeg';
-        
-        // Create file object compatible with React Native FormData
-        files.push({
-          uri: asset.uri,
-          type: mimeType,
-          name: fileName,
-        });
-      }
-
-      // Upload photos
-      await RefugeMediaService.uploadRefugeMedia(refuge.id, files as any);
-      
-      // Notify parent to refetch refuge data
-      if (onPhotoUploaded) {
-        onPhotoUploaded();
-      }
-      
-      onShowAlert('Èxit', `S'han pujat ${files.length} foto(s) correctament.`);
-    } catch (error) {
-      console.error('Error uploading photos:', error);
-      onShowAlert('Error', 'No s\'han pogut pujar les fotos. Intenta-ho de nou.');
-    } finally {
-      setUploadingPhotos(false);
-    }
+  // La pujada és única (useMediaUpload a RefugeDetailScreen): aquí només es delega
+  const handleAddPhoto = () => {
     onClose();
+    if (onAddPhoto) {
+      onAddPhoto();
+    }
   };
 
   const handleEditRefuge = () => {

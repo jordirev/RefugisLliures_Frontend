@@ -12,6 +12,7 @@
 | Estat de sessió | React Context (`AuthContext`) | `src/contexts/AuthContext.tsx` |
 | Auth | Firebase JS SDK 12 + Google Sign-In natiu | `src/services/firebase.ts`, `src/services/AuthService.ts` |
 | Backend | REST a Render (URL fixa) | [integrations/backend-api.md](integrations/backend-api.md) |
+| Mitjans | `expo-image` (cache per clau + blurhash), `expo-image-manipulator` (WebP 2048 px), `react-native-compressor` (vídeo, natiu), pujada amb URL PUT prefirmada | `src/services/MediaUploadService.ts`, `src/hooks/useMediaUpload.ts`, [flows/09](flows/09-refuge-photos-gallery.md) |
 | Mapa | Leaflet dins `react-native-webview` | [integrations/maps-leaflet-tiles.md](integrations/maps-leaflet-tiles.md) |
 | i18n | i18next + react-i18next, ca/es/en/fr, fallback `ca` | `src/i18n/index.ts`, [architecture/i18n.md](architecture/i18n.md) |
 | Tests | Jest (preset react-native), Testing Library, MSW, emulador Firebase Auth | `jest.config.js`, `jest.config.e2e.js` |
@@ -55,7 +56,9 @@ Patrons aplicats (capes, Repository, DTO, Mapper, Facade, Decorator, Optimistic 
 
 ## 4. Navegació
 - **Pre-login** (sense navigator): `App.js` alterna `LoginScreen`/`SignUpScreen` per estat; entra a `AppNavigator` si `isAuthenticated` (Firebase user + `emailVerified`) o `isOfflineMode` (`App.js:59-72`, `AuthContext.tsx:245`).
-- **AppNavigator** (native-stack, `src/components/AppNavigator.tsx:181-260`): `MainTabs`, `Settings`, `ChangePassword`, `ChangeEmail`, `EditProfile`, `HelpSupport`, `AboutTheApp`, `CreateRenovation`, `CreateRefuge`, `EditRefuge`, `EditRenovation`, `Proposals`, `ProposalDetail`, `DoubtsScreen`, `ExperiencesScreen`, `RefromDetail` (detall de renovation, amb errata), `RefugeDetail`.
+- **AppNavigator** (native-stack, `src/components/AppNavigator.tsx:181-260`): `MainTabs`, `Settings`, `ChangePassword`, `ChangeEmail`, `EditProfile`, `HelpSupport`, `AboutTheApp`, `CreateRenovation`, `CreateRefuge`, `EditRefuge`, `EditRenovation`, `Proposals`, `ProposalDetail`, `DoubtsScreen`, `ExperiencesScreen`, `ReportMedia` (denúncia d'un mitjà), `MediaReports` (admin), `RefromDetail` (detall de renovation, amb errata), `RefugeDetail`.
+- **AgeGate**: si `backendUser.age_confirmed === false`, `AppNavigator` retorna `AgeGateScreen` (bloquejant) en lloc de la pila.
+- `ReportMedia` i `MediaReports` són a `ROUTES_ABOVE_OVERLAYS`: mentre són al cim de la pila (llegit amb `screenListeners.state`) els overlays s'amaguen sense desmuntar-se i el botó enrere d'Android torna a la pila.
 - **Overlays per estat** a `AppNavigator` (L44-55, 262-348): bottom sheet, detall de refugi, edició, dubtes, experiències, popup d'eliminació. Diverses pantalles existeixen **alhora** com a overlay i com a ruta.
 - **Tabs** (`src/components/TabsNavigator.tsx`): Map, Favorites, Renovations, Profile.
 - Sense `ParamList` tipada: navegació amb `any` **[FET]**.
@@ -96,8 +99,8 @@ Claus de query: registre `queryKeys` (`src/config/queryClient.ts:39-67`) per a r
 | Claus de cache divergents | `PhotoViewerModal.tsx:109` (`['user', uid]`) |
 
 ## 9. Tests
-- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`).
-- Integració: `src/__tests__/integration/{components,screens}` amb MSW (`setup/mswServer.ts`, `mswHandlers.ts`) i mocks de Firebase (`setup/firebaseMocks.ts`).
+- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`). `jest.setup.js` mocka globalment `react-native-compressor`, `expo-image`, `expo-image-manipulator`, `expo-image-picker` i `expo-file-system/legacy` (incl. `createUploadTask`).
+- Integració: `src/__tests__/integration/{components,screens,services}` amb MSW (inclou el flux intent→PUT→confirm, `services/MediaUpload.integration.test.tsx`) (`setup/mswServer.ts`, `mswHandlers.ts`) i mocks de Firebase (`setup/firebaseMocks.ts`).
 - E2E: `src/__tests__/E2E/auth.e2e.test.ts` contra l'emulador d'Auth (`firebase.json`).
 - Duplicats: `src/__tests__/services`, `src/__tests__/hooks`, `src/__tests__/services/mappers` repeteixen tests de `unit_tests/` **[FET]**.
 - Comandes: `npm test`, `npm run test:unit`, `npm run test:integration`, `npm run test:coverage`, `npm run test:e2e`.

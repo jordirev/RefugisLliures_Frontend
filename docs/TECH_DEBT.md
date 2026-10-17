@@ -1,7 +1,7 @@
 # Deute tècnic detectat
 
 > **[FET]** comprovat al codi · **[INFERÈNCIA]** deducció · **[NO VERIFICAT]** depèn de config externa.
-> Inventari; res no s'ha corregit al codi. B14 (docs antigues de `README/` que descrivien comportament inexistent) està **resolt**: la carpeta s'ha eliminat i el contingut vàlid s'ha migrat a `docs/` (octubre 2026).
+> Inventari. Resolts per la feature `images` (octubre 2026): M4, M5, B12, part de B3, B5 i B7 (marcats ~~ratllats~~). B14 (docs antigues de `README/` que descrivien comportament inexistent) està **resolt**: la carpeta s'ha eliminat i el contingut vàlid s'ha migrat a `docs/` (octubre 2026).
 
 ## Alt (funcionalitat trencada o dades incorrectes)
 | # | Problema | Evidència | Tipus |
@@ -21,8 +21,8 @@
 | M1 | Marcadors antics quan un filtre retorna 0 resultats | `src/components/LeafletWebMap.tsx:54` | FET |
 | M2 | Ruta inexistent `'RefugeDetails'` | `src/screens/EditRefugeScreen.tsx:70` | FET |
 | M3 | Errata de ruta `RefromDetail`, tipada com `'RenovationDetail'` | `src/components/AppNavigator.tsx:211`, `src/screens/RenovationDetailScreen.tsx:40` | FET |
-| M4 | Pujada/esborrat de fotos sense hook → no invalida usuari ni llistes; codi duplicat | `RefugeDetailScreen.tsx:542-599`, `QuickActionsMenu.tsx:165-225`, `PhotoViewerModal.tsx:156-164`; hooks sense ús a `src/hooks/useRefugeMediaQuery.ts` | FET |
-| M5 | URL incorrecta `/refugis/{id}/media/` (codi mort) | `src/services/RefugeMediaService.ts:59` | FET |
+| ~~M4~~ | ~~Pujada/esborrat de fotos sense hook~~ **Resolt**: `useMediaUpload` + `useDeleteRefugeMedia` amb `invalidateMediaQueries` | `RefugeDetailScreen.tsx:542-599`, `QuickActionsMenu.tsx:165-225`, `PhotoViewerModal.tsx:156-164`; hooks sense ús a `src/hooks/useRefugeMediaQuery.ts` | FET |
+| ~~M5~~ | ~~URL incorrecta `/refugis/{id}/media/`~~ **Resolt** (`/refuges/`, mapeja `MediaItem`) | `src/services/RefugeMediaService.ts:59` | FET |
 | M6 | Refresc de propostes d'admin escriu a una clau diferent de la viva | `src/hooks/useProposalsQuery.ts:51-59` vs `14-19` | INFERÈNCIA |
 | M7 | Hook condicional | `src/screens/ProposalsScreen.tsx:66-68` | FET |
 | M8 | EditRenovation 409 obre la renovation equivocada | `src/screens/EditRenovationScreen.tsx:112-117` | FET |
@@ -36,14 +36,14 @@
 | M16 | `getRefugiById` / `getRenovationById` converteixen errors en `null` (sense retry ni missatge útil) | `src/services/RefugisService.ts:18-29`, `src/services/RenovationService.ts:82-85` | FET |
 | M17 | CI actualitza snapshots (`-u`) | `.github/workflows/main.yml:33` | FET |
 | M18 | Atribució de tiles desactivada | `src/components/LeafletWebMap.tsx:214` | FET |
-| M19 | `CustomAlert` es tanca després de l'`onPress` (alertes encadenades perdudes); alertes amagades amb la galeria oberta | `src/components/CustomAlert.tsx:35-42`, `RefugeDetailScreen.tsx:704-1195` | FET |
+| M19 | `CustomAlert` es tanca després de l'`onPress` (alertes encadenades perdudes); ~~alertes amagades amb la galeria oberta~~ (resolt: `CustomAlert` fora del bloc condicional) | `src/components/CustomAlert.tsx:35-42`, `RefugeDetailScreen.tsx:704-1195` | FET |
 
 ## Baix
 | # | Problema | Evidència |
 |---|---|---|
 | B1 | URL del backend duplicada a 9 serveis, sense config | `src/services/*Service.ts` (vegeu `docs/integrations/backend-api.md`) |
 | B2 | `fetchWithLog` actiu en producció i llegeix tots els cossos | `index.js:4-17`, `src/services/fetchWithLog.ts:33-45` |
-| B3 | `queryKeys` no usat de manera consistent; clau `['user', uid]` duplicada | `src/hooks/useRenovationsQuery.ts`, `useRefugeVisitsQuery.ts`, `PhotoViewerModal.tsx:109` |
+| B3 | `queryKeys` no usat de manera consistent (~~clau `['user', uid]` del visor~~ resolta) | `src/hooks/useRenovationsQuery.ts`, `useRefugeVisitsQuery.ts`, `PhotoViewerModal.tsx:109` |
 | B4 | Bloc d'actualització de llistes de propostes copiat 5 vegades | `src/hooks/useProposalsQuery.ts` |
 | B5 | Helpers duplicats (detecció de vídeo, icones de serveis) | `RefugeDetailScreen.tsx:70,250-263`, `GalleryScreen.tsx:35`, `PhotoViewerModal.tsx:44`, `RefugeBottomSheet.tsx:13`, `UserExperience.tsx:39`, `RefugeForm.tsx:550-563` |
 | B6 | Strings hard-coded (català/anglès) fora d'i18n | `LoginScreen.tsx:95-105,169-179,236`, `OfflineMapManager.tsx`, `RefugeOccupationModal.tsx:186`, serveis |
@@ -52,8 +52,17 @@
 | B9 | `POST /users/` envia `email` que el backend no espera | `src/services/UsersService.ts:11-16` |
 | B10 | Termes i condicions no acceptats ni registrats | `src/components/TermsAndConditionsModal.tsx:187-200` |
 | B11 | `Linking.openURL` sense `catch` | `RenovationDetailScreen.tsx:112`, `RenovationCard.tsx:46` |
-| B12 | Opcions de picker incoherents (MIME forçat, `MediaTypeOptions.All` obsolet, `aspect` sense `allowsEditing`) | `ExperiencesScreen.tsx:148,157`, `UserExperience.tsx:154`, `RefugeDetailScreen.tsx:559` |
+| ~~B12~~ | ~~Opcions de picker incoherents~~ **Resolt**: picker únic a `useMediaUpload` | `ExperiencesScreen.tsx:148,157`, `UserExperience.tsx:154`, `RefugeDetailScreen.tsx:559` |
 | B13 | Tests duplicats en dues carpetes | `src/__tests__/services` vs `src/__tests__/unit_tests/services` (també `hooks`, `mappers`) |
 
+## Nou deute detectat (feature `images`)
+| # | Problema | Evidència | Severitat |
+|---|---|---|---|
+| I1 | Correus de contacte de denúncies/privacitat són placeholders | `src/config/legal.ts` | Mitjà (bloqueja publicació) |
+| I2 | Overlays d'`AppNavigator` amagats amb `display:none` per mostrar `ReportMedia`/`MediaReports` (solució provisional fins a unificar overlays i pila) | `src/components/AppNavigator.tsx` (`ROUTES_ABOVE_OVERLAYS`) | Baix |
+| I3 | Esborrat d'avatar encara sense hook (crida `UsersService.deleteAvatar` directament) | `src/components/AvatarPopup.tsx` | Baix |
+| I4 | Sense mòdul natiu de compressió (Expo Go/web) els vídeos es pugen sense recomprimir | `src/services/MediaUploadService.ts` (`compressVideo`) | Baix |
+| I5 | En mode offline no hi ha `backendUser`: l'AgeGate no s'aplica fins que hi ha connexió | `src/components/AppNavigator.tsx` | Baix |
+
 ## Codi mort / sense ús
-`src/utils/mockData.ts` (no importat; no encaixa amb `Location`) · `useCreateRefuge/useUpdateRefuge/useDeleteRefuge` (`useRefugesQuery.ts:76-130`) · `useRefugeMedia`, `useUploadRefugeMedia`, `useDeleteRefugeMedia` (`useRefugeMediaQuery.ts`) · `useUserVisits` (`useRefugeVisitsQuery.ts:32`) · `MapCacheService.getTileUrl/hasTile/getTileLocalPath` · `AppNavigator.handleToggleFavorite` (no-op) · prop `onNavigate` · `Share` a `QuickActionsMenu.tsx:11` · `deleteMediaMutation` (`ExperiencesScreen.tsx:106`) · imports `@env` a `src/services/firebase.ts:26-34` · paràmetres `authToken?` de `UsersService` i estat `authToken` del context · `const stack` a `App.js:36` · dependències `expo-auth-session`, `expo-image-manipulator` · `export *` de mòduls amb `default` a `src/hooks/index.ts:7-8`.
+`src/utils/mockData.ts` (no importat; no encaixa amb `Location`) · `useCreateRefuge/useUpdateRefuge/useDeleteRefuge` (`useRefugesQuery.ts:76-130`) · `useRefugeMedia` (`useRefugeMediaQuery.ts`; `useUploadRefugeMedia` eliminat, `useDeleteRefugeMedia` ja s'usa) · `useUserVisits` (`useRefugeVisitsQuery.ts:32`) · `MapCacheService.getTileUrl/hasTile/getTileLocalPath` · `AppNavigator.handleToggleFavorite` (no-op) · prop `onNavigate` · `Share` a `QuickActionsMenu.tsx:11` · imports `@env` a `src/services/firebase.ts:26-34` · paràmetres `authToken?` de `UsersService` i estat `authToken` del context · `const stack` a `App.js:36` · dependència `expo-auth-session` (`expo-image-manipulator` ja s'usa per comprimir) · `export *` de mòduls amb `default` a `src/hooks/index.ts:7-8`.

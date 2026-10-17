@@ -9,13 +9,12 @@ import {
   Dimensions,
   TextInput,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { User, Experience, ImageMetadata } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
-import { VideoThumbnail } from './PhotoViewerModal';
+import { MediaThumbnail } from './MediaThumbnail';
+import type { PreparedMediaFile } from '../services/MediaUploadService';
 
 // Icons
 // @ts-ignore
@@ -29,18 +28,16 @@ interface UserExperienceProps {
   user: User | null;
   experience: Experience;
   isAnswer?: boolean;
-  onEdit?: (experienceId: string, newComment: string, newFiles: File[]) => void;
+  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
   onDelete?: () => void;
   onPhotoPress: (photos: ImageMetadata[], index: number) => void;
   refugeCreatorUid?: string; // UID del creador de l'experiència per PhotoViewerModal
+  /**
+   * Selecció de fotos/vídeos (validats i comprimits) per afegir en editar.
+   * La proporciona el pare amb `useMediaUpload().pickMedia` (llista blanca, drets, compressió).
+   */
+  onPickMedia?: () => Promise<PreparedMediaFile[] | null>;
 }
-
-// Helper to check if URL is a video
-const isVideo = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext));
-};
 
 export function UserExperience({
   user,
@@ -50,13 +47,14 @@ export function UserExperience({
   onDelete,
   onPhotoPress,
   refugeCreatorUid,
+  onPickMedia,
 }: UserExperienceProps) {
   const { t } = useTranslation();
   const { backendUser: currentUser } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedComment, setEditedComment] = useState(experience.comment);
-  const [newFiles, setNewFiles] = useState<any[]>([]);
+  const [newFiles, setNewFiles] = useState<PreparedMediaFile[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -127,40 +125,11 @@ export function UserExperience({
   };
 
   const handleAddPhotos = async () => {
+    if (!onPickMedia) return;
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        alert(t('refuge.gallery.permissionDenied'));
-        return;
-      }
-
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['videos', 'images'],
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
-        quality: 0.8,
-        ...(Platform.OS === 'ios' && {
-          presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
-        }),
-      });
-
-      if (!result.canceled && result.assets) {
-        const files = result.assets.map((asset) => {
-          // Convert to File-like object
-          const uri = asset.uri;
-          const name = uri.split('/').pop() || 'photo.jpg';
-          const type = asset.type === 'video' ? 'video/mp4' : 'image/jpeg';
-
-          return {
-            uri,
-            name,
-            type,
-          } as any;
-        });
-
-        setNewFiles([...newFiles, ...files]);
+      const files = await onPickMedia();
+      if (files && files.length > 0) {
+        setNewFiles((prev) => [...prev, ...files]);
       }
     } catch (error) {
       console.error('Error selecting photos:', error);
@@ -236,22 +205,7 @@ export function UserExperience({
                 onPress={() => onPhotoPress(images, index)}
                 style={styles.imageContainer}
               >
-                {isVideo(image.url) ? (
-                  <>
-                    <VideoThumbnail uri={image.url} style={styles.carouselImage} />
-                    <View style={styles.videoOverlay}>
-                      <View style={styles.playIconContainer}>
-                        <Text style={styles.playIcon}>▶</Text>
-                      </View>
-                    </View>
-                  </>
-                ) : (
-                  <Image
-                    source={{ uri: image.url }}
-                    style={styles.carouselImage}
-                    resizeMode="cover"
-                  />
-                )}
+                <MediaThumbnail media={image} style={styles.carouselImage} />
               </TouchableOpacity>
             ))}
           </ScrollView>

@@ -100,6 +100,12 @@ jest.mock('../../../screens/ExperiencesScreen', () => ({
   ExperiencesScreen: () => null,
 }));
 
+// AuthContext: per defecte sense sessió (els tests poden sobreescriure useAuth)
+jest.mock('../../../contexts/AuthContext', () => ({
+  ...jest.requireActual('../../../contexts/AuthContext'),
+  useAuth: jest.fn(() => ({ backendUser: null, firebaseUser: null })),
+}));
+
 jest.mock('../../../components/RefugeBottomSheet', () => ({
   RefugeBottomSheet: () => null,
 }));
@@ -192,6 +198,33 @@ describe('AppNavigator - Tests d\'integració', () => {
       });
 
       expect(UNSAFE_root).toBeTruthy();
+    });
+  });
+
+  describe("Pantalla d'edat (AgeGate)", () => {
+    it('bloqueja l\'app si backendUser.age_confirmed === false', () => {
+      const { getByText, getByTestId, UNSAFE_root } = renderWithProviders(<AppNavigator />, {
+        mockAuthValue: {
+          isAuthenticated: true,
+          firebaseUser: { uid: 'test-uid' },
+          backendUser: { uid: 'test-uid', username: 'Test', age_confirmed: false },
+        },
+      });
+
+      expect(getByText('age.gateTitle')).toBeTruthy();
+      expect(getByTestId('agegate-submit')).toBeTruthy();
+      expect(UNSAFE_root.findAllByType('Navigator' as any)).toHaveLength(0);
+    });
+
+    it('no bloqueja si age_confirmed === true', () => {
+      const { queryByText } = renderWithProviders(<AppNavigator />, {
+        mockAuthValue: {
+          isAuthenticated: true,
+          firebaseUser: { uid: 'test-uid' },
+          backendUser: { uid: 'test-uid', username: 'Test', age_confirmed: true },
+        },
+      });
+      expect(queryByText('age.gateTitle')).toBeNull();
     });
   });
 });

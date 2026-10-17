@@ -64,4 +64,13 @@ export const queryKeys = {
   myProposals: (status?: string) => 
     status ? ['proposals', 'my', status] : ['proposals', 'my'] as const,
   proposal: (id: string) => ['proposals', 'detail', id] as const,
+
+  // Media (fotos i vídeos)
+  refugeMedia: (refugeId: string) => ['refugeMedia', refugeId] as const,
+  refugeExperiences: (refugeId: string) => ['experiences', 'refuge', refugeId] as const,
+
+  // Moderació
+  mediaReports: (status?: string) =>
+    status ? ['mediaReports', status] : ['mediaReports'] as const,
+  moderationNotices: (uid: string) => ['users', uid, 'moderationNotices'] as const,
 } as const;

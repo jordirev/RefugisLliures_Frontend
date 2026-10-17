@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ImageMetadata } from '../models';
-import { PhotoViewerModal, VideoThumbnail } from '../components/PhotoViewerModal';
+import { PhotoViewerModal } from '../components/PhotoViewerModal';
+import { MediaThumbnail } from '../components/MediaThumbnail';
 import { useTranslation } from '../hooks/useTranslation';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -30,13 +31,6 @@ interface GalleryScreenProps {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PHOTO_SIZE = (SCREEN_WIDTH - 16) / 3; // 3 columns with padding and gaps
-
-// Helper function to check if a media is a video based on URL extension
-const isVideo = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.m4v'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext));
-};
 
 export function GalleryScreen({
   photos,
@@ -114,22 +108,8 @@ export function GalleryScreen({
                 onPress={() => handlePhotoPress(index)}
                 activeOpacity={0.7}
               >
-                {isVideo(photo.url) ? (
-                  <>
-                    <VideoThumbnail uri={photo.url} style={styles.photoImage} />
-                    <View style={styles.videoOverlay}>
-                      <View style={styles.playIconContainer}>
-                        <Text style={styles.playIcon}>▶</Text>
-                      </View>
-                    </View>
-                  </>
-                ) : (
-                  <Image
-                    source={{ uri: photo.url }}
-                    style={styles.photoImage}
-                    resizeMode="cover"
-                  />
-                )}
+                {/* Miniatura (thumb_url + blurhash + cache per clau); vídeos amb pòster */}
+                <MediaThumbnail media={photo} style={styles.photoImage} />
               </TouchableOpacity>
             ))}
           </View>

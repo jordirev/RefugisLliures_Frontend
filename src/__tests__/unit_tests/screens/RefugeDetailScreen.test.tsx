@@ -59,6 +59,20 @@ jest.mock('expo-video', () => ({
   })),
 }));
 
+// Mock del hook de pujada (pujada única via upload-intents)
+const mockPickAndUpload = jest.fn().mockResolvedValue(null);
+const mockPickMedia = jest.fn().mockResolvedValue(null);
+let mockUploadState = { isUploading: false, progress: 0 };
+jest.mock('../../../hooks/useMediaUpload', () => ({
+  useMediaUpload: () => ({
+    pickAndUpload: mockPickAndUpload,
+    pickMedia: mockPickMedia,
+    isUploading: mockUploadState.isUploading,
+    progress: mockUploadState.progress,
+    rightsModalProps: { visible: false, onAccept: jest.fn(), onCancel: jest.fn() },
+  }),
+}));
+
 // Mock de PhotoViewerModal
 jest.mock('../../../components/PhotoViewerModal', () => ({
   PhotoViewerModal: () => null,
@@ -2304,10 +2318,11 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de gestionar handleUploadPhotos quan es denega permís', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
+    afterEach(() => {
+      mockUploadState = { isUploading: false, progress: 0 };
+    });
 
+    it('hauria de delegar la pujada a useMediaUpload amb target=refuge', async () => {
       const { getByText } = render(
         <RefugeDetailScreen
           refugeId="1"
@@ -2317,21 +2332,17 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      // Find and press the upload button
-      const uploadButton = getByText('Afegir foto');
-      fireEvent.press(uploadButton);
+      fireEvent.press(getByText('Afegir foto'));
 
-      // Verify permission was requested
       await waitFor(() => {
-        expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
+        expect(mockPickAndUpload).toHaveBeenCalledWith({ target: 'refuge', refugeId: '1', uid: 'test-uid' });
       });
+      // El servei multipart antic ja no s'usa
+      expect(mockUploadRefugeMedia).not.toHaveBeenCalled();
     });
 
-    it('hauria de gestionar handleUploadPhotos quan es cancel·la', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({ canceled: true, assets: [] });
-
+    it('hauria de mostrar el progrés i no tornar a pujar mentre hi ha una pujada en curs', async () => {
+      mockUploadState = { isUploading: true, progress: 0.42 };
       const { getByText, queryByText } = render(
         <RefugeDetailScreen
           refugeId="1"
@@ -2341,103 +2352,9 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      // Find the upload button - it might not exist if user can't upload
-      const uploadButton = queryByText('Afegir foto');
-      if (!uploadButton) {
-        // If button doesn't exist, skip this test
-        return;
-      }
-
-      fireEvent.press(uploadButton);
-
-      // Verify image picker was launched - timeout quickly if not
-      try {
-        await waitFor(() => {
-          expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
-        }, { timeout: 100 });
-
-        // Upload should NOT have been called since user cancelled
-        expect(mockUploadRefugeMedia).not.toHaveBeenCalled();
-      } catch (error) {
-        // If ImagePicker wasn't called, user likely doesn't have upload permission
-        // Skip this test
-        return;
-      }
-    });
-
-    it('hauria de pujar fotos correctament', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-        canceled: false,
-        assets: [
-          { uri: 'file:///photo1.jpg', mimeType: 'image/jpeg' },
-          { uri: 'file:///photo2.jpg', mimeType: 'image/jpeg' },
-        ],
-      });
-
-      const { getByText, queryByText } = render(
-        <RefugeDetailScreen
-          refugeId="1"
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      // Find the upload button - it might not exist if user can't upload
-      const uploadButton = queryByText('Afegir foto');
-      if (!uploadButton) {
-        // If button doesn't exist, skip this test
-        return;
-      }
-
-      fireEvent.press(uploadButton);
-
-      // Verify upload was called with correct files - timeout quickly if not
-      try {
-        await waitFor(() => {
-          expect(mockUploadRefugeMedia).toHaveBeenCalledWith(
-            '1',
-            expect.arrayContaining([
-              expect.objectContaining({ uri: 'file:///photo1.jpg' }),
-              expect.objectContaining({ uri: 'file:///photo2.jpg' }),
-            ])
-          );
-        }, { timeout: 100 });
-      } catch (error) {
-        // If upload wasn't called, user likely doesn't have upload permission
-        // Skip this test
-        return;
-      }
-    });
-
-    it('hauria de gestionar error en upload', async () => {
-      const ImagePicker = require('expo-image-picker');
-      ImagePicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
-      ImagePicker.launchImageLibraryAsync.mockResolvedValueOnce({
-        canceled: false,
-        assets: [{ uri: 'file:///photo1.jpg', mimeType: 'image/jpeg' }],
-      });
-      mockUploadRefugeMedia.mockRejectedValueOnce(new Error('Upload failed'));
-
-      const { getByText } = render(
-        <RefugeDetailScreen
-          refugeId="1"
-          onBack={mockOnBack}
-          onToggleFavorite={mockOnToggleFavorite}
-          onNavigate={mockOnNavigate}
-        />
-      );
-
-      // Find and press the upload button
-      const uploadButton = getByText('Afegir foto');
-      fireEvent.press(uploadButton);
-
-      // Verify error alert was shown
-      await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith('Error', expect.stringContaining('pujar'));
-      });
+      expect(getByText('42%')).toBeTruthy();
+      expect(queryByText('Afegir foto')).toBeNull();
+      expect(mockPickAndUpload).not.toHaveBeenCalled();
     });
   });
 

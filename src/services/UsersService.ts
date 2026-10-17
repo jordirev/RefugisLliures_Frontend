@@ -2,6 +2,7 @@ import { User, Location, AvatarMetadata } from '../models';
 import { UserRefugiInfoResponseDTO, UserDTO } from './dto';
 import { mapperUserRefugiInfoDTO, mapperUserRefugiInfoResponseDTO, mapUserFromDTO } from './mappers';
 import { apiGet, apiPost, apiPatch, apiDelete, apiClient } from './apiClient';
+import { ApiError, readJsonSafe } from './apiErrors';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -13,6 +14,8 @@ export interface UserCreateData {
   email: string;
   language: string;
   avatar?: string;
+  /** Data de naixement (YYYY-MM-DD). El backend NO la desa: només age_confirmed_at */
+  birth_date?: string;
 }
 
 /**
@@ -39,6 +42,7 @@ export class UsersService {
    * @param userData - Dades de l'usuari a crear
    * @param authToken - Token d'autenticació de Firebase (opcional)
    * @returns L'usuari creat o null si hi ha error
+   * @throws ApiError amb codi `underage` (403) si l'usuari té menys de 16 anys
    */
   static async createUser(userData: UserCreateData, authToken?: string): Promise<User | null> {
     try {
@@ -48,17 +52,49 @@ export class UsersService {
       const response = await apiPost(url, userData);
       
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await readJsonSafe(response);
         console.error('Error creating user:', errorData);
+        if (response.status === 403) {
+          // L'únic 403 del registre és l'edat mínima (contracte: 403 underage)
+          throw new ApiError('Edat inferior a la mínima', 'underage', 403, errorData);
+        }
         return null;
       }
       
       const data: UserDTO = await response.json();
       return mapUserFromDTO(data);
     } catch (err) {
+      if (err instanceof ApiError) throw err;
       console.error('Error creating user:', err);
       return null;
     }
+  }
+
+  /**
+   * Confirma l'edat mínima d'un usuari existent (usuaris antics i de Google).
+   * PATCH /api/users/{uid}/age-confirmation/  {birth_date}
+   * El backend desa només age_confirmed_at i age_threshold (minimització).
+   *
+   * @throws ApiError amb codi `underage` (403) o `unknown`
+   */
+  static async confirmAge(uid: string, birthDate: string): Promise<User | null> {
+    const url = `${API_BASE_URL}/users/${encodeURIComponent(uid)}/age-confirmation/`;
+    const response = await apiPatch(url, { birth_date: birthDate });
+    if (response.ok) {
+      // 200 → usuari serialitzat amb age_confirmed: true
+      const user = await readJsonSafe(response);
+      return user && typeof user === 'object' && user.uid ? mapUserFromDTO(user as UserDTO) : null;
+    }
+    const data = await readJsonSafe(response);
+    if (response.status === 403) {
+      throw new ApiError('Edat inferior a la mínima', 'underage', 403, data);
+    }
+    throw new ApiError(
+      (data && (data.error || data.detail)) || 'No s\'ha pogut confirmar l\'edat',
+      response.status === 400 ? 'validation' : 'unknown',
+      response.status,
+      data
+    );
   }
 
   /**
@@ -355,66 +391,8 @@ export class UsersService {
     }
   }
 
-  /**
-   * Puja o actualitza l'avatar d'un usuari
-   * PATCH /users/{uid}/avatar/
-   * 
-   * Formats acceptats: JPEG, JPG, PNG, WebP, HEIC, HEIF
-   * 
-   * @param uid - UID de l'usuari
-   * @param file - Fitxer d'imatge de l'avatar (File object)
-   * @returns Metadades de l'avatar pujat o null si hi ha error
-   * @throws Error amb missatge descriptiu en cas d'error
-   */
-  static async uploadAvatar(uid: string, file: File): Promise<AvatarMetadata> {
-    try {
-      if (!file) {
-        throw new Error('No s\'ha proporcionat cap fitxer');
-      }
-
-      const url = `${API_BASE_URL}/users/${uid}/avatar/`;
-      
-      // Crear FormData per enviar el fitxer
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Fer la petició amb FormData (no afegir Content-Type, el navegador ho farà automàticament)
-      const response = await apiClient(url, {
-        method: 'PATCH',
-        body: formData
-        // No afegir headers Content-Type per deixar que el navegador estableixi el boundary correcte
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ 
-          error: `Error ${response.status}: ${response.statusText}` 
-        }));
-        
-        if (response.status === 400) {
-          throw new Error(errorData.error || 'Fitxer invàlid o format no acceptat');
-        } else if (response.status === 401) {
-          throw new Error('No estàs autenticat. Si us plau, inicia sessió.');
-        } else if (response.status === 403) {
-          throw new Error('No tens permisos per modificar aquest avatar. Només el mateix usuari pot fer-ho.');
-        } else if (response.status === 404) {
-          throw new Error('Usuari no trobat');
-        } else if (response.status === 500) {
-          throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
-        }
-        
-        throw new Error(errorData.error || 'No s\'ha pogut pujar l\'avatar');
-      }
-      
-      const avatarMetadata: AvatarMetadata = await response.json();
-      return avatarMetadata;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      console.error('Error uploading avatar:', error);
-      throw new Error('No s\'ha pogut pujar l\'avatar');
-    }
-  }
+  // La pujada de l'avatar es fa amb URL PUT prefirmada (MediaUploadService,
+  // target=avatar) des de useMediaUpload; l'antic PATCH multipart /avatar/ ja no s'usa.
 
   /**
    * Elimina l'avatar d'un usuari

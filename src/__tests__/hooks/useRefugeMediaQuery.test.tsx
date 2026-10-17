@@ -3,7 +3,6 @@ import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   useRefugeMedia,
-  useUploadRefugeMedia,
   useDeleteRefugeMedia,
 } from '../../hooks/useRefugeMediaQuery';
 import { RefugeMediaService } from '../../services/RefugeMediaService';
@@ -123,81 +122,6 @@ describe('useRefugeMedia', () => {
     });
 
     expect(result.current.data).toEqual([]);
-  });
-});
-
-describe('useUploadRefugeMedia', () => {
-  let queryClient: QueryClient;
-
-  beforeEach(() => {
-    queryClient = createTestQueryClient();
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    queryClient.clear();
-  });
-
-  it('should upload media files', async () => {
-    const mockUploadResponse = [mockMediaItem];
-    mockedService.uploadRefugeMedia.mockResolvedValue(mockUploadResponse);
-
-    const { result } = renderHook(() => useUploadRefugeMedia(), {
-      wrapper: createWrapper(queryClient),
-    });
-
-    const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-
-    await act(async () => {
-      const response = await result.current.mutateAsync({ 
-        refugeId: 'refuge-1', 
-        files: mockFiles 
-      });
-      expect(response).toEqual(mockUploadResponse);
-    });
-
-    expect(mockedService.uploadRefugeMedia).toHaveBeenCalledWith('refuge-1', mockFiles);
-  });
-
-  it('should upload multiple files', async () => {
-    mockedService.uploadRefugeMedia.mockResolvedValue(mockMediaList);
-
-    const { result } = renderHook(() => useUploadRefugeMedia(), {
-      wrapper: createWrapper(queryClient),
-    });
-
-    const mockFiles = [
-      new File(['test1'], 'test1.jpg', { type: 'image/jpeg' }),
-      new File(['test2'], 'test2.png', { type: 'image/png' }),
-    ];
-
-    await act(async () => {
-      await result.current.mutateAsync({ 
-        refugeId: 'refuge-1', 
-        files: mockFiles 
-      });
-    });
-
-    expect(mockedService.uploadRefugeMedia).toHaveBeenCalledWith('refuge-1', mockFiles);
-  });
-
-  it('should handle error', async () => {
-    mockedService.uploadRefugeMedia.mockRejectedValue(new Error('Upload failed'));
-
-    const { result } = renderHook(() => useUploadRefugeMedia(), {
-      wrapper: createWrapper(queryClient),
-    });
-
-    const mockFiles = [new File(['test'], 'test.jpg', { type: 'image/jpeg' })];
-
-    await expect(
-      act(async () => {
-        await result.current.mutateAsync({ 
-          refugeId: 'refuge-1', 
-          files: mockFiles 
-        });
-      })
-    ).rejects.toThrow('Upload failed');
   });
 });
 

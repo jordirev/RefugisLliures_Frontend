@@ -9,6 +9,7 @@ import { getCurrentLanguage } from '../i18n';
 import { useAuth } from '../contexts/AuthContext';
 import { RefugeCard } from '../components/RefugeCard';
 import { AvatarPopup } from '../components/AvatarPopup';
+import { ModerationNoticesCard } from '../components/ModerationNoticesCard';
 import { useUser, useVisitedRefuges } from '../hooks/useUsersQuery';
 import { Location } from '../models';
 
@@ -169,6 +170,9 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
           </View>
         </View>
         
+        {/* Avisos de moderació (declaració de motius, art. 17 DSA) */}
+        <ModerationNoticesCard uid={firebaseUser?.uid} />
+
         <View style={styles.content}>
           <View style={[styles.section, styles.sectionStatics]}>
             <View style={styles.sectionTitle}>

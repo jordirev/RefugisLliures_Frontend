@@ -80,7 +80,9 @@ export default {
         }
       ],
       "@react-native-google-signin/google-signin",
-      "expo-video"
+      "expo-video",
+      // Compressió de vídeo al client (mòdul natiu: cal un nou build EAS / dev client)
+      "react-native-compressor"
     ],
 
     extra: {

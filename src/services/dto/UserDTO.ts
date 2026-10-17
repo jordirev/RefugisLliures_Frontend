@@ -20,4 +20,5 @@ export interface UserDTO {
     num_shared_experiences?: number | null;
     num_renovated_refuges?: number | null;
     created_at: string; // ISO date string
+    age_confirmed?: boolean | null;
 }

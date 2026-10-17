@@ -302,6 +302,32 @@ jest.mock('../../../components/CustomAlert', () => ({
   },
 }));
 
+// Mock pantalles noves (feature images)
+jest.mock('../../../screens/ReportMediaScreen', () => ({
+  ReportMediaScreen: () => {
+    const { View } = require('react-native');
+    return <View testID="report-media-screen" />;
+  },
+}));
+jest.mock('../../../screens/MediaReportsScreen', () => ({
+  MediaReportsScreen: () => {
+    const { View } = require('react-native');
+    return <View testID="media-reports-screen" />;
+  },
+}));
+jest.mock('../../../screens/AgeGateScreen', () => ({
+  AgeGateScreen: () => {
+    const { View } = require('react-native');
+    return <View testID="age-gate-screen" />;
+  },
+}));
+
+// Mock AuthContext (backendUser mutable per provar la pantalla d'edat)
+let mockBackendUser: any = { uid: 'test-uid', username: 'Test', age_confirmed: true };
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({ backendUser: mockBackendUser, firebaseUser: { uid: 'test-uid' } }),
+}));
+
 // Mock hooks
 const mockDeleteMutate = jest.fn();
 jest.mock('../../../hooks/useProposalsQuery', () => ({
@@ -372,6 +398,31 @@ const renderAppNavigator = () => {
 describe('AppNavigator', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("Pantalla bloquejant d'edat (AgeGate)", () => {
+    afterEach(() => {
+      mockBackendUser = { uid: 'test-uid', username: 'Test', age_confirmed: true };
+    });
+
+    it('hauria de mostrar AgeGateScreen si age_confirmed === false', () => {
+      mockBackendUser = { uid: 'test-uid', username: 'Test', age_confirmed: false };
+      const { getByTestId, queryByTestId } = renderAppNavigator();
+      expect(getByTestId('age-gate-screen')).toBeTruthy();
+      expect(queryByTestId('tabs-navigator')).toBeNull();
+    });
+
+    it('no hauria de bloquejar si age_confirmed és undefined (backend antic)', () => {
+      mockBackendUser = { uid: 'test-uid', username: 'Test' };
+      const { queryByTestId, getByTestId } = renderAppNavigator();
+      expect(queryByTestId('age-gate-screen')).toBeNull();
+      expect(getByTestId('tabs-navigator')).toBeTruthy();
+    });
+
+    it('no hauria de bloquejar si age_confirmed === true', () => {
+      const { queryByTestId } = renderAppNavigator();
+      expect(queryByTestId('age-gate-screen')).toBeNull();
+    });
   });
 
   describe('Renderització bàsica', () => {
