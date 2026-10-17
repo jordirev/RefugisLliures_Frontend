@@ -144,9 +144,23 @@ const defaultProps = {
   isLoading: false,
 };
 
+// Data congelada: els tests usen dates fixes (gener-febrer 2026) i el component no pot
+// dependre del dia real en què s'executen. Només es falseja Date; els timers són reals.
+const FIXED_NOW = new Date('2026-01-10T12:00:00');
+const REAL_TIMER_APIS: ('setTimeout' | 'clearTimeout' | 'setInterval' | 'clearInterval' | 'setImmediate' | 'clearImmediate' | 'nextTick' | 'queueMicrotask' | 'requestAnimationFrame' | 'cancelAnimationFrame' | 'requestIdleCallback' | 'cancelIdleCallback' | 'performance' | 'hrtime')[] = [
+  'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate',
+  'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame',
+  'requestIdleCallback', 'cancelIdleCallback', 'performance', 'hrtime',
+];
+
 describe('RenovationForm Component', () => {
   beforeEach(() => {
+    jest.useFakeTimers({ now: FIXED_NOW, doNotFake: REAL_TIMER_APIS });
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('Renderització mode create', () => {
