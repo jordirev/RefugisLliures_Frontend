@@ -80,6 +80,7 @@ export default {
       "expo-video",
       "expo-image",
       "expo-sharing",
+      "expo-status-bar",
       // Compressió de vídeo al client (mòdul natiu: cal un nou build EAS / dev client)
       "react-native-compressor"
     ],

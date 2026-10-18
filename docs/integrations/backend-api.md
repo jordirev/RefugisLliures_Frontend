@@ -17,7 +17,7 @@
 
 Fotos, vídeos i avatar **ja no** es pugen en multipart: es fa amb URL PUT prefirmada (secció [Mitjans](#mitjans-moderació-i-edat-feature-images)). El PUT a R2 **no** passa per `apiClient` (no ha de portar `Authorization`). Els errors amb codi es normalitzen amb `src/services/apiErrors.ts` (`ApiError`, `extractApiErrorCode`).
 
-`fetchWithLog` (`src/services/fetchWithLog.ts`) fa log de mètode, URL, status i temps; `index.js:4-17` substitueix `global.fetch` per aquest wrapper **també en producció** i el wrapper llegeix el cos de **totes** les respostes (`fetchWithLog.ts:33-45`) **[FET]**.
+`fetchWithLog` (`src/services/fetchWithLog.ts`) fa log de mètode, URL, status i temps; `index.js:4-17` substitueix `global.fetch` per aquest wrapper **també en producció** i el wrapper llegeix el cos de **totes** les respostes (`fetchWithLog.ts:33-45`) **[FET]**. A SDK 56 `expo/fetch` és el `fetch` global: `fetchWithLog` el captura via `__originalFetch` i `response.clone()` hi funciona; no s'ha fet opt-out **[INFERÈNCIA]**.
 
 ## Patró dels serveis [FET]
 - Classes amb mètodes `static async` (p. ex. `RenovationService`, `src/services/RenovationService.ts:41`).

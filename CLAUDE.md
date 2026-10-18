@@ -4,7 +4,7 @@ App mòbil Expo / React Native (TypeScript) per consultar refugis lliures: mapa,
 Documentació detallada a [`docs/`](docs/README.md). Llegenda: **[FET]** / **[INFERÈNCIA]** / **[NO VERIFICAT]**.
 
 ## Stack
-- Expo SDK ~55 (55.0.x), React Native 0.83, React 19.2 (New Architecture i edge-to-edge obligatoris). Node ≥ 22 (CI usa 22.x; SDK 58 exigirà ≥ 22.13). Android via EAS; no hi ha `ios/`.
+- Expo SDK ~56 (56.0.x), React Native 0.85, React 19.2, TypeScript 6 (Hermes v1 per defecte; `expo/fetch` és el `fetch` global; New Architecture i edge-to-edge obligatoris). Node ≥ 22 (CI usa 22.x; SDK 58 exigirà ≥ 22.13). Android via EAS; no hi ha `ios/`.
 - React Navigation 7 (native-stack + bottom-tabs, navigators tipats amb `RootStackParamList`); TanStack React Query 5; Context per a la sessió.
 - Firebase Auth (JS SDK) + Google Sign-In natiu; backend REST a Render (URL fixa a cada servei).
 - Mapa: Leaflet dins `react-native-webview` (tiles OpenTopoMap/OSM, Leaflet via CDN unpkg).

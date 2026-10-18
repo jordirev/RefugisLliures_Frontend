@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gradientFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   buttonIcon: {
     width: 20,

@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testMatch: [
     '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
@@ -13,6 +13,8 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
+  // Marge per a renders freds sota càrrega (CI, workers en paral·lel): evita timeouts intermitents
+  testTimeout: 15000,
   // Force exit to handle worker processes that don't exit cleanly
   forceExit: true,
   // Run tests in a single worker to reduce open handle issues

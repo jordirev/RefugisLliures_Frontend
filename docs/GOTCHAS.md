@@ -58,4 +58,7 @@
 29. CI fa `npm run test:coverage -- -u`: **els snapshots s'actualitzen sols** i mai fallen a CI (`.github/workflows/main.yml:33`) **[FET]**. Revisa snapshots en local.
 30. Hi ha tests duplicats a `src/__tests__/services` i `src/__tests__/unit_tests/services` (i `hooks`, `mappers`): actualitza tots dos o elimina'n un **[FET]**.
 31. `@env` es mapeja a `__mocks__/env.js` als tests: afegeix-hi qualsevol variable nova.
-32. `react-test-renderer` ha d'estar fixat a 19.2.0, exactament la versió de React (RNTL 13); `babel-preset-expo` és devDependency perquè jest el necessita hoisted **[FET]**.
+32. `react-test-renderer` ha d'estar fixat a la mateixa versió que React (19.2.3; RNTL 13 ho comprova); `babel-preset-expo` és devDependency perquè jest el necessita hoisted **[FET]**.
+33. TypeScript 6 activa `strict` per defecte i buida `types`; `tsconfig.json` fixa `strict: false` (el mode anterior; amb `strict` sortirien ~50 errors a `src/` fora de tests) i `types: ["jest","node"]` (sense això els tests perden els globals de jest) **[FET]**.
+34. `StyleSheet.absoluteFillObject` s'ha eliminat dels tipus de RN 0.85: usa `StyleSheet.absoluteFill` **[FET]**.
+35. RN 0.85 mou el preset de jest a `@react-native/jest-preset` (devDependency; `jest.config.js` el referencia) **[FET]**.

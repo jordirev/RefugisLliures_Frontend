@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 8, // Bores arrodonides però menys pronunciades per imatges petites
   },
   videoOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',

@@ -797,28 +797,26 @@ describe('SignUpScreen - Unit Tests', () => {
   // FLUX DE REGISTRE
   // ============================================
   describe('Flux de registre', () => {
+    // El formulari és per passos (cada camp apareix en completar l'anterior): esperem
+    // cada camp amb una sola waitFor i omplim amb fireEvent (ja va dins d'act).
+    const fillWhenVisible = async (getByTestId: any, id: string, value: string) => {
+      await waitFor(() => expect(getByTestId(id)).toBeTruthy());
+      fireEvent.changeText(getByTestId(id), value);
+    };
     const completeForm = async (getByTestId: any) => {
       fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
-      });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
-      });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
-      });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
-      });
-      await waitFor(() => {
-        expect(getByTestId('signup-button')).toBeTruthy();
-      });
+      await fillWhenVisible(getByTestId, 'username-input', 'testuser');
+      await fillWhenVisible(getByTestId, 'email-input', 'test@example.com');
+      await fillWhenVisible(getByTestId, 'password-input', 'Test1234!');
+      await fillWhenVisible(getByTestId, 'confirm-password-input', 'Test1234!');
+      await waitFor(() => expect(getByTestId('signup-button')).toBeTruthy());
       fireEvent.changeText(getByTestId('birthdate-day'), '20');
       fireEvent.changeText(getByTestId('birthdate-month'), '05');
       fireEvent.changeText(getByTestId('birthdate-year'), '1990');
     };
 
+    // Timeout explícit: amb la CPU carregada (execució paral·lela completa) el primer
+    // render en fred de la pantalla pot superar els 5 s per defecte.
     it('hauria de registrar un usuari correctament', async () => {
       mockSignup.mockResolvedValue(undefined);
 
@@ -847,7 +845,7 @@ describe('SignUpScreen - Unit Tests', () => {
           expect.any(Array)
         );
       });
-    });
+    }, 20000);
 
     it('hauria de mostrar error i no registrar si la data de naixement és invàlida', async () => {
       const { getByTestId } = render(

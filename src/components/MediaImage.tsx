@@ -76,7 +76,7 @@ export function VideoPoster({ media, style }: { media: ImageMetadata; style?: St
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
   },

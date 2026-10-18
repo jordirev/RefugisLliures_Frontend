@@ -395,11 +395,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   gradientFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
   },
   gradientDisabledFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
     backgroundColor: '#dadadaff',
   },

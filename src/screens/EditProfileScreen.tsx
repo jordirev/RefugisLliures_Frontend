@@ -430,12 +430,12 @@ const styles = StyleSheet.create({
   },
   /* gradient background that fills the button */
   gradientFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
   },
   /* disabled background fill (flat color) */
   gradientDisabledFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
     backgroundColor: '#dadadaff',
   },

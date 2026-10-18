@@ -3,7 +3,7 @@
 > **[FET]** comprovat al codi · **[INFERÈNCIA]** deducció · **[NO VERIFICAT]** depèn de config externa.
 
 ## Expo
-- Expo SDK ~54, React Native 0.81.5, React 19.1; nova arquitectura i edge-to-edge obligatòries (ja no hi ha `newArchEnabled`/`edgeToEdgeEnabled` a `app.config.js`).
+- Expo SDK ~56, React Native 0.85.3, React 19.2.3, TypeScript ~6.0; nova arquitectura i edge-to-edge obligatòries (ja no hi ha `newArchEnabled`/`edgeToEdgeEnabled` a `app.config.js`). Hermes v1 és el motor per defecte (regressió de memòria coneguda a SDK 56, corregida a SDK 57). `expo/fetch` és el `fetch` global (no cal canviar `fetchWithLog` ni `MediaUploadService`). `expo-status-bar` és a `plugins`.
 - `app.config.js`: nom "Refugis Lliures", `android.package` `com.refugislliures.app`, `ios.bundleIdentifier` `cat.refugislliures.app` (comentari: "Cambiar valor"), permisos d'ubicació i emmagatzematge, plugins `expo-location`, `@react-native-google-signin/google-signin`, `expo-video` (L28-98).
 - La carpeta `android/` existeix en local però **no** està versionada (`git ls-files android` buit); no hi ha `ios/` **[FET]**.
 - Comandes: `npm start` (expo start), `npm run android` (`expo run:android`).
@@ -24,7 +24,7 @@ Push/PR a `main`, `develop`; Node 22: `npm ci` → `npm run test:coverage -- -u`
 
 ## Tests (Jest)
 - `metro.config.js`: `babelTransformerPath` = `react-native-svg-transformer/expo` (l'entrada genèrica trencava el bundling de Metro a SDK 55) **[FET]**.
-- `jest.config.js`: preset `react-native`, `testEnvironment: 'node'`, mapeja `@env` → `__mocks__/env.js`, `expo-constants` → mock; `forceExit: true`.
+- `jest.config.js`: preset `@react-native/jest-preset` (paquet separat des de RN 0.85), `testEnvironment: 'node'`, mapeja `@env` → `__mocks__/env.js`, `expo-constants` → mock; `forceExit: true`.
 - `jest.setup.js`: mocks d'AsyncStorage, BackHandler, native-stack, etc.
 - Integració amb **MSW**: `src/__tests__/integration/setup/mswServer.ts`, `mswHandlers.ts`, `firebaseMocks.ts`, `testUtils.tsx`.
 - E2E: `jest.config.e2e.js` + `firebase emulators:exec --only auth` (`package.json` script `test:e2e`), `src/__tests__/E2E/auth.e2e.test.ts`.
