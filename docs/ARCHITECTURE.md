@@ -5,9 +5,9 @@
 ## 1. Stack
 | Peça | Detall | Font |
 |---|---|---|
-| Framework | Expo SDK ~54, React Native 0.81.5, React 19.1, New Architecture | `package.json`, `app.config.js:36` |
+| Framework | Expo SDK ~55 (55.0.x), React Native 0.83, React 19.2, New Architecture i edge-to-edge obligatoris | `package.json`, `app.config.js:36` |
 | Llenguatge | TypeScript a `src/` (`App.js`, `index.js` en JS) | — |
-| Navegació | React Navigation 6 (native-stack + bottom-tabs) | `src/components/AppNavigator.tsx`, `src/components/TabsNavigator.tsx` |
+| Navegació | React Navigation 7 (native-stack + bottom-tabs) | `src/components/AppNavigator.tsx`, `src/components/TabsNavigator.tsx` |
 | Estat del servidor | TanStack React Query 5 | `src/config/queryClient.ts` |
 | Estat de sessió | React Context (`AuthContext`) | `src/contexts/AuthContext.tsx` |
 | Auth | Firebase JS SDK 12 + Google Sign-In natiu | `src/services/firebase.ts`, `src/services/AuthService.ts` |
@@ -61,7 +61,8 @@ Patrons aplicats (capes, Repository, DTO, Mapper, Facade, Decorator, Optimistic 
 - `ReportMedia` i `MediaReports` són a `ROUTES_ABOVE_OVERLAYS`: mentre són al cim de la pila (llegit amb `screenListeners.state`) els overlays s'amaguen sense desmuntar-se i el botó enrere d'Android torna a la pila.
 - **Overlays per estat** a `AppNavigator` (L44-55, 262-348): bottom sheet, detall de refugi, edició, dubtes, experiències, popup d'eliminació. Diverses pantalles existeixen **alhora** com a overlay i com a ruta.
 - **Tabs** (`src/components/TabsNavigator.tsx`): Map, Favorites, Renovations, Profile.
-- Sense `ParamList` tipada: navegació amb `any` **[FET]**.
+- Navigators tipats: `RootStackParamList` exportat des d'`AppNavigator.tsx` i `TabParamList` local a `TabsNavigator.tsx`; cada `Navigator` necessita `id={undefined}` (desajust de tipus entre `@react-navigation/native` 7.5.1 i `core` 7.24) **[FET]**.
+- Semàntica v7: `navigate` a una ruta existent ja no torna enrere; el codi usa `popTo(...)` / `navigate(..., { pop: true })` per mantenir el comportament de v6 (vegeu GOTCHAS) **[FET]**.
 
 ## 5. Estat
 | Tipus | On | Notes |
@@ -99,7 +100,7 @@ Claus de query: registre `queryKeys` (`src/config/queryClient.ts:39-67`) per a r
 | Claus de cache divergents | `PhotoViewerModal.tsx:109` (`['user', uid]`) |
 
 ## 9. Tests
-- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`). `jest.setup.js` mocka globalment `react-native-compressor`, `expo-image`, `expo-image-manipulator`, `expo-image-picker` i `expo-file-system/legacy` (incl. `createUploadTask`).
+- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`). `jest.setup.js` mocka globalment `react-native-compressor`, `expo-image`, `expo-image-manipulator`, `expo-image-picker`, `expo-file-system` (`File`/`Directory`/`Paths`) i `expo-file-system/legacy` (només `createUploadTask`).
 - Integració: `src/__tests__/integration/{components,screens,services}` amb MSW (inclou el flux intent→PUT→confirm, `services/MediaUpload.integration.test.tsx`) (`setup/mswServer.ts`, `mswHandlers.ts`) i mocks de Firebase (`setup/firebaseMocks.ts`).
 - E2E: `src/__tests__/E2E/auth.e2e.test.ts` contra l'emulador d'Auth (`firebase.json`).
 - Duplicats: `src/__tests__/services`, `src/__tests__/hooks`, `src/__tests__/services/mappers` repeteixen tests de `unit_tests/` **[FET]**.

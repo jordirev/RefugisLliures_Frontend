@@ -50,6 +50,7 @@ jest.mock('@react-navigation/native-stack', () => {
         if (typeof childContent === 'function') {
           const mockNavigation = {
             navigate: jest.fn(),
+            popTo: jest.fn(),
             goBack: jest.fn(),
             setParams: jest.fn(),
             addListener: jest.fn(() => jest.fn()),
@@ -83,6 +84,7 @@ jest.mock('@react-navigation/native-stack', () => {
       if (Component) {
         const mockNavigation = {
           navigate: jest.fn(),
+          popTo: jest.fn(),
           goBack: jest.fn(),
           setParams: jest.fn(),
           addListener: jest.fn(() => jest.fn()),
@@ -154,15 +156,45 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(() => ({})),
 }));
 
-// Mock expo-file-system/legacy
+// Mock expo-file-system (API d'objectes: File / Directory / Paths)
+jest.mock('expo-file-system', () => {
+  const joinUri = (parts) =>
+    parts
+      .map((p) => (typeof p === 'string' ? p : p.uri))
+      .reduce((acc, p) => (acc ? `${acc.replace(/\/$/, '')}/${p.replace(/^\//, '')}` : p), '');
+  class File {
+    constructor(...parts) {
+      this.uri = joinUri(parts);
+      this.exists = true;
+      this.size = 1024;
+      this.type = 'application/octet-stream';
+      this.contentUri = `content://${this.uri}`;
+      this.create = jest.fn();
+      this.write = jest.fn().mockResolvedValue(undefined);
+      this.delete = jest.fn();
+    }
+  }
+  File.downloadFileAsync = jest.fn().mockResolvedValue(undefined);
+  class Directory {
+    constructor(...parts) {
+      this.uri = joinUri(parts);
+      this.exists = true;
+      this.create = jest.fn();
+      this.delete = jest.fn();
+      this.list = jest.fn(() => []);
+      this.createFile = jest.fn((name) => new File(this.uri, name));
+    }
+  }
+  Directory.pickDirectoryAsync = jest.fn().mockResolvedValue(new Directory('file://saf/'));
+  const Paths = {
+    document: { uri: 'file://documents/' },
+    cache: { uri: 'file://cache/' },
+  };
+  return { File, Directory, Paths };
+});
+
+// Mock expo-file-system/legacy: només la pujada directa a R2 (MediaUploadService.putFile)
 jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: 'file://documents/',
-  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
-  EncodingType: {
-    UTF8: 'utf8',
-  },
-  // Pujada directa a R2 (MediaUploadService.putFile)
-  getInfoAsync: jest.fn().mockResolvedValue({ exists: true, size: 1024 }),
   FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
   createUploadTask: jest.fn((url, fileUri, options, callback) => ({
     uploadAsync: jest.fn(async () => {
@@ -200,6 +232,7 @@ jest.mock('@react-navigation/native', () => {
     NavigationContainer: ({ children }) => React.createElement('NavigationContainer', null, children),
     useNavigation: () => ({
       navigate: jest.fn(),
+      popTo: jest.fn(),
       goBack: jest.fn(),
       reset: jest.fn(),
       setOptions: jest.fn(),
@@ -227,6 +260,7 @@ jest.mock('@react-navigation/native', () => {
     }),
     CommonActions: {
       navigate: jest.fn(),
+      popTo: jest.fn(),
       reset: jest.fn(),
       goBack: jest.fn(),
     },
@@ -293,6 +327,7 @@ jest.mock('@react-navigation/bottom-tabs', () => {
         if (typeof childContent === 'function') {
           const mockNavigation = {
             navigate: jest.fn(),
+            popTo: jest.fn(),
             goBack: jest.fn(),
             setParams: jest.fn(),
             addListener: jest.fn((event, callback) => {
@@ -417,9 +452,20 @@ jest.mock('expo-image', () => {
 
 // Mock d'expo-image-manipulator (compressió d'imatges al client)
 jest.mock('expo-image-manipulator', () => ({
-  manipulateAsync: jest.fn((uri, actions) =>
-    Promise.resolve({ uri: `${uri}.webp`, width: 2048, height: 1536 })
-  ),
+  // API contextual: manipulate(uri).resize(...).renderAsync() → image.saveAsync(opcions)
+  ImageManipulator: {
+    manipulate: jest.fn((uri) => {
+      const context = {
+        resize: jest.fn(() => context),
+        renderAsync: jest.fn(() =>
+          Promise.resolve({
+            saveAsync: jest.fn(() => Promise.resolve({ uri: `${uri}.webp`, width: 2048, height: 1536 })),
+          })
+        ),
+      };
+      return context;
+    }),
+  },
   SaveFormat: { JPEG: 'jpeg', PNG: 'png', WEBP: 'webp' },
   FlipType: { Vertical: 'vertical', Horizontal: 'horizontal' },
 }));

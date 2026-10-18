@@ -24,6 +24,7 @@
 14. Usa `setState` funcional quan el nou valor depèn de l'anterior (`useFavourite.ts:40,47` no ho fa) **[FET]**.
 15. `CustomAlert` crida `onDismiss` **després** de l'`onPress` del botó (`src/components/CustomAlert.tsx:35-42`): un `showAlert` síncron dins un `onPress` es tanca immediatament **[FET]**.
 16. Revisa el nom de ruta exacte: `RefromDetail` (renovation) és el registrat; `EditRefugeScreen.tsx:70` navega a `'RefugeDetails'`, que no existeix **[FET]**.
+16b. React Navigation 7: `navigate('X')` cap a una ruta ja existent a la pila **ja no** retrocedeix (v6 sí). Per mantenir-ho, usa `navigation.popTo('Settings')`, `popTo('RefromDetail', params)` o `navigate('MainTabs', { screen }, { pop: true })`. Els `Navigator` necessiten `id={undefined}` pel desajust de tipus `native` 7.5.1 / `core` 7.24 **[FET]**.
 
 ## Auth i seguretat
 17. La UI **no és una barrera de seguretat**: botons d'eliminar/editar i el mode admin depenen de comparacions locals de `uid` i de paràmetres de ruta. El backend és qui autoritza **[FET]**.
@@ -57,3 +58,4 @@
 29. CI fa `npm run test:coverage -- -u`: **els snapshots s'actualitzen sols** i mai fallen a CI (`.github/workflows/main.yml:33`) **[FET]**. Revisa snapshots en local.
 30. Hi ha tests duplicats a `src/__tests__/services` i `src/__tests__/unit_tests/services` (i `hooks`, `mappers`): actualitza tots dos o elimina'n un **[FET]**.
 31. `@env` es mapeja a `__mocks__/env.js` als tests: afegeix-hi qualsevol variable nova.
+32. `react-test-renderer` ha d'estar fixat a 19.2.0, exactament la versió de React (RNTL 13); `babel-preset-expo` és devDependency perquè jest el necessita hoisted **[FET]**.

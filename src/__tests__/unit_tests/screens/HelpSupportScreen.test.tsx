@@ -29,11 +29,13 @@ jest.mock('../../../assets/icons/navigation.svg', () => 'NavigationIcon');
 jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: () => ({
     navigate: mockNavigate,
+    popTo: mockPopTo,
     goBack: jest.fn(),
   }),
 }));
@@ -70,7 +72,7 @@ describe('HelpSupportScreen', () => {
         fireEvent.press(touchables[0]);
       }
       
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 

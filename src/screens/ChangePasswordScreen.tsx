@@ -149,7 +149,7 @@ export function ChangePasswordScreen() {
     setCurrentPasswordError(null);
     setPasswordRequirements([]);
     setConfirmPasswordError(null);
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
 
   // Handle Android hardware back button
@@ -163,7 +163,7 @@ export function ChangePasswordScreen() {
       setCurrentPasswordError(null);
       setPasswordRequirements([]);
       setConfirmPasswordError(null);
-      navigation.navigate('Settings');
+      navigation.popTo('Settings');
       return true;
     };
 

@@ -83,7 +83,7 @@ export function CreateRenovationScreen() {
                   style: 'cancel',
                   onPress: () => {
                     hideAlert();
-                    navigation.navigate('Renovations');
+                    navigation.navigate('MainTabs', { screen: 'Renovations' }, { pop: true });
                   },
                 },
                 {
@@ -108,7 +108,7 @@ export function CreateRenovationScreen() {
   };
 
   const handleCancel = () => {
-    navigation.navigate('Renovations');
+    navigation.navigate('MainTabs', { screen: 'Renovations' }, { pop: true });
   };
 
   return (

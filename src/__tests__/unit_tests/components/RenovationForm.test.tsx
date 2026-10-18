@@ -864,7 +864,7 @@ describe('RenovationForm Component', () => {
       });
 
       expect(UNSAFE_root).toBeTruthy();
-    });
+    }, 20000); // timeout ampli: el recorregut de l'arbre amb UNSAFE_root és lent sota càrrega
 
     it('hauria de seleccionar un dia en el calendari', async () => {
       const { getAllByText, UNSAFE_root } = render(

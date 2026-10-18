@@ -182,7 +182,7 @@ describe('EditRefugeScreen', () => {
       const cancelButton = getByTestId('cancel-button');
       fireEvent.press(cancelButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('RefugeDetails', { refugeId: 'refuge-1' });
+      expect(mockNavigate).toHaveBeenCalledWith('RefugeDetail', { refugeId: 'refuge-1' }, { pop: true });
     });
   });
 

@@ -147,7 +147,7 @@ describe('CreateRenovationScreen', () => {
       const cancelButton = getByTestId('cancel-button');
       fireEvent.press(cancelButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Renovations');
+      expect(mockNavigate).toHaveBeenCalledWith('MainTabs', { screen: 'Renovations' }, { pop: true });
     });
 
     it('hauria de navegar enrere quan es prem el botó back', () => {
@@ -494,7 +494,7 @@ describe('CreateRenovationScreen', () => {
 
       await waitFor(() => {
         expect(mockHideAlert).toHaveBeenCalled();
-        expect(mockNavigate).toHaveBeenCalledWith('Renovations');
+        expect(mockNavigate).toHaveBeenCalledWith('MainTabs', { screen: 'Renovations' }, { pop: true });
       });
 
       consoleError.mockRestore();

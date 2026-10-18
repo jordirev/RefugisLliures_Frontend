@@ -71,7 +71,7 @@ export function EditRenovationScreen() {
 
 
   const handleCancel = () => {
-    navigation.navigate('RefromDetail', { 
+    navigation.popTo('RefromDetail', { 
       renovationId: renovationId
     });
   };
@@ -87,7 +87,7 @@ export function EditRenovationScreen() {
       updateMutation.mutate({ id: renovationId, updates: changedFields }, {
         onSuccess: (editedRenovation) => {
           // Success - navigate to renovations detail
-          navigation.navigate('RefromDetail', { 
+          navigation.popTo('RefromDetail', { 
             renovationId: editedRenovation.id,
             renovation: editedRenovation
           });

@@ -63,7 +63,7 @@ export function EditProfileScreen() {
     // Check if username has actually changed
     if (username.trim() === originalUsername.trim()) {
       // No changes, just navigate back
-      navigation.navigate('Profile');
+      navigation.navigate('MainTabs', { screen: 'Profile' }, { pop: true });
       return;
     }
     
@@ -71,7 +71,7 @@ export function EditProfileScreen() {
     
     try {
       await updateUsername(username);
-      navigation.navigate('Profile');
+      navigation.navigate('MainTabs', { screen: 'Profile' }, { pop: true });
     } catch (error: any) {
       console.error('Error actualitzant nom d\'usuari:', error);
       
@@ -94,7 +94,7 @@ export function EditProfileScreen() {
     // Clear all fields when going back
     setUsername('');
     setUsernameError(null);
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
   
   const handleAvatarPress = () => {

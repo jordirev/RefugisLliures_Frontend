@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { version } from 'os';
 import path from 'path';
 
 // 1. Ruta a l'arrel del projecte (on Expo busca per defecte durant el prebuild)
@@ -33,7 +32,6 @@ export default {
     orientation: "portrait",
     icon: "./assets/logo.png",
     userInterfaceStyle: "light",
-    newArchEnabled: true,
     owner: "jordirevs-organization",
     
     splash: {
@@ -61,7 +59,6 @@ export default {
       versionCode: 1, // S'incrementar amb cada nova versió de producció
       // IMPORTANT: Expo farà servir aquest fitxer de l'arrel per generar la carpeta android/
       googleServicesFile: "./google-services.json",
-      edgeToEdgeEnabled: true,
       permissions: [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -81,6 +78,8 @@ export default {
       ],
       "@react-native-google-signin/google-signin",
       "expo-video",
+      "expo-image",
+      "expo-sharing",
       // Compressió de vídeo al client (mòdul natiu: cal un nou build EAS / dev client)
       "react-native-compressor"
     ],

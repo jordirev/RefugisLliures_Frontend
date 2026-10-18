@@ -24,7 +24,7 @@ const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      gcTime: 0,
+      gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
     },
     mutations: {
       retry: false,

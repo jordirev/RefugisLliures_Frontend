@@ -85,7 +85,7 @@ const createTestQueryClient = () =>
       queries: {
         retry: false,
         staleTime: 0,
-        gcTime: 0,
+        gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
       },
       mutations: {
         retry: false,

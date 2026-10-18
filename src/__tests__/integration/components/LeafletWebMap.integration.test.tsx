@@ -31,15 +31,23 @@ jest.mock('../../../services/MapCacheService', () => ({
   },
 }));
 
-// Mock expo-file-system
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: 'file:///mock/documents/',
-  getInfoAsync: jest.fn(),
-  makeDirectoryAsync: jest.fn(),
-  downloadAsync: jest.fn(),
-  readDirectoryAsync: jest.fn(),
-  deleteAsync: jest.fn(),
-}));
+// Mock expo-file-system (API d'objectes: File / Directory / Paths)
+jest.mock('expo-file-system', () => {
+  class File {
+    uri = '';
+    exists = false;
+    size = 0;
+    static downloadFileAsync = jest.fn();
+  }
+  class Directory {
+    uri = '';
+    exists = false;
+    create = jest.fn();
+    delete = jest.fn();
+    list = jest.fn(() => []);
+  }
+  return { File, Directory, Paths: { document: { uri: 'file:///mock/documents/' } } };
+});
 
 import { LeafletWebMap } from '../../../components/LeafletWebMap';
 import { MapCacheService } from '../../../services/MapCacheService';

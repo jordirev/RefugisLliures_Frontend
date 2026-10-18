@@ -114,7 +114,7 @@ export function ChangeEmailScreen() {
     setNewEmail('');
     setPasswordError(null);
     setEmailError(null);
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
 
   // Handle Android hardware back button
@@ -126,7 +126,7 @@ export function ChangeEmailScreen() {
       setNewEmail('');
       setPasswordError(null);
       setEmailError(null);
-      navigation.navigate('Settings');
+      navigation.popTo('Settings');
       return true;
     };
 

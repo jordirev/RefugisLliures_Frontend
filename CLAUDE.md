@@ -4,8 +4,8 @@ App mòbil Expo / React Native (TypeScript) per consultar refugis lliures: mapa,
 Documentació detallada a [`docs/`](docs/README.md). Llegenda: **[FET]** / **[INFERÈNCIA]** / **[NO VERIFICAT]**.
 
 ## Stack
-- Expo SDK ~54, React Native 0.81.5, React 19.1 (New Architecture). Android via EAS; no hi ha `ios/`.
-- React Navigation 6 (native-stack + bottom-tabs); TanStack React Query 5; Context per a la sessió.
+- Expo SDK ~55 (55.0.x), React Native 0.83, React 19.2 (New Architecture i edge-to-edge obligatoris). Node ≥ 22 (CI usa 22.x; SDK 58 exigirà ≥ 22.13). Android via EAS; no hi ha `ios/`.
+- React Navigation 7 (native-stack + bottom-tabs, navigators tipats amb `RootStackParamList`); TanStack React Query 5; Context per a la sessió.
 - Firebase Auth (JS SDK) + Google Sign-In natiu; backend REST a Render (URL fixa a cada servei).
 - Mapa: Leaflet dins `react-native-webview` (tiles OpenTopoMap/OSM, Leaflet via CDN unpkg).
 - i18n: i18next, idiomes `ca` (fallback), `es`, `en`, `fr`.
@@ -48,7 +48,8 @@ Screen → hook use*Query (React Query) → *Service (static, retorna DTO) → a
 7. No decideixis èxit/error pel text del missatge (`RefugeForm` mostra èxit si l'error conté "coord").
 8. `CustomAlert` es tanca després d'`onPress`: no encadenis `showAlert` síncrons.
 9. Els mapes offline no funcionen (tiles mai llegides, Leaflet via CDN).
-10. CI fa `test:coverage -- -u`: els snapshots no fallen mai a CI.
+10. React Navigation 7: `navigate` a una ruta existent ja no fa tornar enrere; usa `popTo(...)` o `navigate(..., { pop: true })`.
+11. CI fa `test:coverage -- -u`: els snapshots no fallen mai a CI.
 
 ## Seguretat
 - **No llegeixis ni imprimeixis** `.env`, `google-services.json`, `GoogleService-Info.plist` ni secrets d'EAS; només noms de variables.

@@ -3,7 +3,7 @@
 > **[FET]** comprovat al codi · **[INFERÈNCIA]** deducció · **[NO VERIFICAT]** depèn de config externa.
 
 ## Expo
-- Expo SDK ~54, React Native 0.81.5, React 19.1, `newArchEnabled: true` (`package.json`, `app.config.js:36`).
+- Expo SDK ~54, React Native 0.81.5, React 19.1; nova arquitectura i edge-to-edge obligatòries (ja no hi ha `newArchEnabled`/`edgeToEdgeEnabled` a `app.config.js`).
 - `app.config.js`: nom "Refugis Lliures", `android.package` `com.refugislliures.app`, `ios.bundleIdentifier` `cat.refugislliures.app` (comentari: "Cambiar valor"), permisos d'ubicació i emmagatzematge, plugins `expo-location`, `@react-native-google-signin/google-signin`, `expo-video` (L28-98).
 - La carpeta `android/` existeix en local però **no** està versionada (`git ls-files android` buit); no hi ha `ios/` **[FET]**.
 - Comandes: `npm start` (expo start), `npm run android` (`expo run:android`).
@@ -16,13 +16,14 @@
 - `GOOGLE_SERVICES_JSON_BASE64` (variable d'EAS) genera `google-services.json` a `app.config.js:9-26`. Les variables `FIREBASE_*` a EAS: **[NO VERIFICAT]**.
 
 ## GitHub Actions (`.github/workflows/main.yml`)
-Push/PR a `main`, `develop`; Node 20: `npm ci` → `npm run test:coverage -- -u` → `npm run test:e2e` (emulador d'Auth) → Codecov (`coverage/lcov.info`) → SonarQube (`sonarcloud.io`).
+Push/PR a `main`, `develop`; Node 22: `npm ci` → `npm run test:coverage -- -u` → `npm run test:e2e` (emulador d'Auth) → Codecov (`coverage/lcov.info`) → SonarQube (`sonarcloud.io`).
 - **`-u` actualitza els snapshots a CI** → els tests de snapshot **mai fallen** a CI **[FET]** (L33).
 
 ## SonarCloud (`sonar-project.properties`)
 `projectKey=jordirev_RefugisLliures_Frontend`, `sources=src`, `tests=src/__tests__`; exclou del coverage dto, models, índexs, `mockData.ts`, `firebase.ts`, locales, `App.js`, `index.js`.
 
 ## Tests (Jest)
+- `metro.config.js`: `babelTransformerPath` = `react-native-svg-transformer/expo` (l'entrada genèrica trencava el bundling de Metro a SDK 55) **[FET]**.
 - `jest.config.js`: preset `react-native`, `testEnvironment: 'node'`, mapeja `@env` → `__mocks__/env.js`, `expo-constants` → mock; `forceExit: true`.
 - `jest.setup.js`: mocks d'AsyncStorage, BackHandler, native-stack, etc.
 - Integració amb **MSW**: `src/__tests__/integration/setup/mswServer.ts`, `mswHandlers.ts`, `firebaseMocks.ts`, `testUtils.tsx`.

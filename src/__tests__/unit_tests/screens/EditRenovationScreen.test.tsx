@@ -135,13 +135,13 @@ jest.mock('../../../hooks/useRenovationsQuery', () => ({
 }));
 
 const mockMutate = jest.fn();
-const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 const mockGoBack = jest.fn();
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: () => ({
-    navigate: mockNavigate,
+    popTo: mockPopTo,
     goBack: mockGoBack,
   }),
   useRoute: () => ({
@@ -228,7 +228,7 @@ describe('EditRenovationScreen', () => {
         fireEvent.press(cancelButton);
       });
 
-      expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', { 
+      expect(mockPopTo).toHaveBeenCalledWith('RefromDetail', { 
         renovationId: 'renovation-1'
       });
     });
@@ -241,7 +241,7 @@ describe('EditRenovationScreen', () => {
         fireEvent.press(submitNoChangesButton);
       });
 
-      expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', { 
+      expect(mockPopTo).toHaveBeenCalledWith('RefromDetail', { 
         renovationId: 'renovation-1'
       });
     });
@@ -256,7 +256,7 @@ describe('EditRenovationScreen', () => {
         }
       });
 
-      expect(mockNavigate).toHaveBeenCalled();
+      expect(mockPopTo).toHaveBeenCalled();
     });
   });
 
@@ -292,7 +292,7 @@ describe('EditRenovationScreen', () => {
         fireEvent.press(submitButton);
       });
 
-      expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', {
+      expect(mockPopTo).toHaveBeenCalledWith('RefromDetail', {
         renovationId: updatedRenovation.id,
         renovation: updatedRenovation,
       });
@@ -395,7 +395,7 @@ describe('EditRenovationScreen', () => {
       fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', {
+        expect(mockPopTo).toHaveBeenCalledWith('RefromDetail', {
           renovationId: updatedRenovation.id,
           renovation: updatedRenovation,
         });
@@ -512,7 +512,7 @@ describe('EditRenovationScreen', () => {
       }
 
       expect(mockHideAlert).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalled();
+      expect(mockPopTo).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
 

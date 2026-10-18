@@ -85,7 +85,7 @@ describe('useDoubtsQuery Hooks', () => {
       defaultOptions: {
         queries: {
           retry: false,
-          gcTime: 0,
+          gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
         },
         mutations: {
           retry: false,

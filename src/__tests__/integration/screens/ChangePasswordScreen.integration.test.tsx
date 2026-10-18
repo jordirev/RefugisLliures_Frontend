@@ -31,6 +31,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 
 // Mock de navigation
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 const mockGoBack = jest.fn();
 const mockAddListener = jest.fn(() => jest.fn());
 jest.mock('@react-navigation/native', () => {
@@ -39,6 +40,7 @@ jest.mock('@react-navigation/native', () => {
     ...actualNav,
     useNavigation: () => ({
       navigate: mockNavigate,
+      popTo: mockPopTo,
       goBack: mockGoBack,
       addListener: mockAddListener,
     }),
@@ -479,7 +481,7 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
       const backButton = getByTestId('back-button');
       fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
     it('hauria de netejar els camps quan torna enrere', () => {
@@ -494,7 +496,7 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
       const backButton = getByTestId('back-button');
       fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 

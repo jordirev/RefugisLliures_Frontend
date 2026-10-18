@@ -336,7 +336,7 @@ describe('RenovationDetailScreen', () => {
       if (touchables.length > 0) {
         fireEvent.press(touchables[0]);
       }
-      expect(mockNavigate).toHaveBeenCalledWith('Renovations');
+      expect(mockNavigate).toHaveBeenCalledWith('MainTabs', { screen: 'Renovations' }, { pop: true });
     });
 
     it('hauria de navegar a RefugeDetail quan es prem el card', () => {

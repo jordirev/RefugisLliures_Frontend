@@ -23,25 +23,29 @@ jest.mock('expo-image-picker', () => ({
   },
 }));
 
-// Mock d'expo-file-system/legacy
+// Mock d'expo-file-system (API d'objectes: File / Directory / Paths)
 const mockWriteAsStringAsync = jest.fn().mockResolvedValue(undefined);
-const mockGetContentUriAsync = jest.fn().mockResolvedValue('content://mock-uri');
-const mockRequestDirectoryPermissionsAsync = jest.fn().mockResolvedValue({ granted: true, directoryUri: 'file:///mock/dir' });
-const mockCreateFileAsync = jest.fn().mockResolvedValue('file:///mock/dir/test.gpx');
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: '/mock/documents/',
-  cacheDirectory: '/mock/cache/',
-  writeAsStringAsync: mockWriteAsStringAsync,
-  getContentUriAsync: mockGetContentUriAsync,
-  EncodingType: {
-    UTF8: 'utf8',
-  },
-  StorageAccessFramework: {
-    requestDirectoryPermissionsAsync: mockRequestDirectoryPermissionsAsync,
-    createFileAsync: mockCreateFileAsync,
-    writeAsStringAsync: mockWriteAsStringAsync,
-  },
-}));
+const mockGetContentUri = jest.fn().mockReturnValue('content://mock-uri');
+const mockCreateFile = jest.fn(() => ({ write: mockWriteAsStringAsync }));
+const mockSafDirectory = { createFile: mockCreateFile };
+const mockPickDirectoryAsync = jest.fn().mockResolvedValue(mockSafDirectory);
+jest.mock('expo-file-system', () => {
+  class File {
+    uri: string;
+    constructor(...parts: any[]) {
+      this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('');
+    }
+    create() {}
+    write(content: string) {
+      return mockWriteAsStringAsync(content);
+    }
+    get contentUri() {
+      return mockGetContentUri(this.uri);
+    }
+  }
+  const Directory = { pickDirectoryAsync: (...args: any[]) => mockPickDirectoryAsync(...args) };
+  return { File, Directory, Paths: { document: { uri: '/mock/documents/' } } };
+});
 
 // Mock d'expo-sharing
 jest.mock('expo-sharing', () => ({
@@ -2491,7 +2495,7 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de guardar fitxer en Android amb SAF', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: true, directoryUri: 'file:///mock/dir' });
+      mockPickDirectoryAsync.mockResolvedValueOnce(mockSafDirectory);
 
       const { getByTestId } = render(
         <RefugeDetailScreen
@@ -2528,7 +2532,7 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de gestionar permisos denegats en Android SAF', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: false });
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('Permission denied'));
 
       const { getByTestId, UNSAFE_root } = render(
         <RefugeDetailScreen
@@ -2571,7 +2575,7 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de gestionar fallback quan SAF falla', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockRejectedValueOnce(new Error('SAF error'));
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('SAF error'));
 
       const { getByTestId, UNSAFE_root } = render(
         <RefugeDetailScreen
@@ -4683,7 +4687,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar descàrrega amb permisos denegats', async () => {
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: false });
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('Permission denied'));
 
       const { getByTestId } = render(
         <RefugeDetailScreen
@@ -5315,7 +5319,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar error en getContentUriAsync', async () => {
       const Sharing = require('expo-sharing');
       Sharing.isAvailableAsync.mockResolvedValueOnce(true);
-      mockGetContentUriAsync.mockRejectedValueOnce(new Error('Content URI failed'));
+      mockGetContentUri.mockImplementationOnce(() => { throw new Error('Content URI failed'); });
 
       const { getByTestId } = render(
         <RefugeDetailScreen
@@ -5337,7 +5341,7 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       // Reset mock
-      mockGetContentUriAsync.mockResolvedValue('content://mock-uri');
+      mockGetContentUri.mockReturnValue('content://mock-uri');
     });
   });
 
@@ -5659,7 +5663,7 @@ describe('RefugeDetailScreen Component', () => {
 
   describe('Gestió de saveFile amb diferents escenaris', () => {
     it('hauria de gestionar error de StorageAccessFramework', async () => {
-      const SAF = mockRequestDirectoryPermissionsAsync;
+      const SAF = mockPickDirectoryAsync;
       SAF.mockRejectedValueOnce(new Error('SAF failed'));
 
       const { getByTestId } = render(
@@ -5681,7 +5685,7 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       // Reset
-      SAF.mockResolvedValue({ granted: true, directoryUri: 'file:///mock/dir' });
+      SAF.mockResolvedValue(mockSafDirectory);
     });
 
     it('hauria de gestionar writeAsStringAsync fallit', async () => {

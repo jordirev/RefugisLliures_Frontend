@@ -25,6 +25,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 
 // Mock de useNavigation
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 const mockGoBack = jest.fn();
 const mockAddListener = jest.fn((event, callback) => {
   return () => {}; // unsubscribe function
@@ -36,6 +37,7 @@ jest.mock('@react-navigation/native', () => {
     ...actualNav,
     useNavigation: () => ({
       navigate: mockNavigate,
+      popTo: mockPopTo,
       goBack: mockGoBack,
       addListener: mockAddListener,
     }),
@@ -431,7 +433,7 @@ describe('ChangeEmailScreen - Unit Tests', () => {
 
       fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 
@@ -635,7 +637,7 @@ describe('ChangeEmailScreen - Unit Tests', () => {
       const result = backPressCallback!();
       
       expect(result).toBe(true);
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
     it('should not register BackHandler on iOS', () => {

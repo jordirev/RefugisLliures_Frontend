@@ -41,7 +41,7 @@ Contracte compartit amb el backend (`Backend/.../docs/flows/03-refuge-media-uplo
 | Endpoint | Cos / resposta | Client |
 |---|---|---|
 | `POST /api/media/upload-intents/` | `{target: "refuge"\|"experience"\|"avatar", refuge_id?, experience_id?, rights_confirmed: true, files: [{content_type, size}]}` (màx. 10) → `201 {uploads: [{upload_id, put_url, headers, expires_in: 600}]}`. Errors: 400 · 403 `age_not_confirmed` / `user_blocked` / `not_owner` · 404 | `MediaUploadService.createUploadIntents` |
-| `PUT {put_url}` (R2) | cos binari, capçaleres retornades (`Content-Type`), **sense Bearer** | `MediaUploadService.putFile` (`FileSystem.createUploadTask`, amb progrés; fetch+Blob a web) |
+| `PUT {put_url}` (R2) | cos binari, capçaleres retornades (`Content-Type`), **sense Bearer** | `MediaUploadService.putFile` (`expo-file-system/legacy` `createUploadTask`, amb progrés; fetch+Blob a web) |
 | `POST /api/media/upload-intents/confirm/` | `{upload_ids}` → `200 {uploaded: MediaItem[], failed: [{upload_id, reason}]}`; `reason ∈ missing_object\|too_large\|invalid_type\|processing_error\|moderation_blocked` (el client hi afegeix `put_failed`) | `MediaUploadService.confirmUploads` |
 | `POST /api/experiences/`, `PATCH /api/experiences/{id}/` | JSON sense fitxers (`{refuge_id, comment}` / `{comment}`); els fitxers van després per intents amb `target=experience` | `ExperienceService` |
 | `POST /api/media/reports/` | `{refuge_id, media_key, reason, details?}` (`details` obligatori si `other`, ≤1000) → 201 · 403 (pròpia foto) · 409 (ja denunciada) | `MediaModerationService.reportMedia` |

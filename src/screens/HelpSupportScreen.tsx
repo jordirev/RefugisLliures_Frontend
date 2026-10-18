@@ -17,7 +17,7 @@ export function HelpSupportScreen() {
   const supportEmail = 'jordi.reverter.tuset@estudiantat.upc.edu';
   
   const handleGoBack = () => {
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
   
   const handleEmailPress = () => {

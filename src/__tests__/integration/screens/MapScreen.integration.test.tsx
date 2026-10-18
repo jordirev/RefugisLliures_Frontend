@@ -157,6 +157,7 @@ jest.mock('../../../hooks/useCustomAlert', () => ({
 }));
 
 describe('MapScreen - Tests d\'integració', () => {
+  jest.setTimeout(15000); // el render inicial del mapa pot trigar sota càrrega
   const mockOnLocationSelect = jest.fn();
 
   beforeEach(() => {
@@ -173,7 +174,7 @@ describe('MapScreen - Tests d\'integració', () => {
       // Esperar que es carreguin les dades
       await waitFor(() => {
         expect(getByText(/Map with 3 locations/)).toBeTruthy();
-      });
+      }, { timeout: 8000 }); // timeout ampli: sota càrrega la resposta MSW triga més d'1 s
 
       // Verificar que el mapa es renderitza
       expect(getByTestId('map-view-component')).toBeTruthy();

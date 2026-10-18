@@ -34,21 +34,26 @@ jest.mock('react-native/Libraries/Linking/Linking', () => ({
   canOpenURL: jest.fn(() => Promise.resolve(true)),
 }));
 
-// Mock de expo-file-system
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: 'file:///mock/documents/',
-  cacheDirectory: 'file:///mock/cache/',
-  writeAsStringAsync: jest.fn(() => Promise.resolve()),
-  getInfoAsync: jest.fn(() => Promise.resolve({ exists: false })),
-  deleteAsync: jest.fn(() => Promise.resolve()),
-  getContentUriAsync: jest.fn((uri: string) => Promise.resolve(uri)),
-  EncodingType: { UTF8: 'utf8' },
-  StorageAccessFramework: {
-    requestDirectoryPermissionsAsync: jest.fn(() => Promise.resolve({ granted: false })),
-    createFileAsync: jest.fn(() => Promise.resolve('file:///mock/newfile.gpx')),
-    writeAsStringAsync: jest.fn(() => Promise.resolve()),
-  },
-}));
+// Mock de expo-file-system (API d'objectes: File / Directory / Paths)
+jest.mock('expo-file-system', () => {
+  class File {
+    uri: string;
+    contentUri: string;
+    constructor(...parts: any[]) {
+      this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('');
+      this.contentUri = this.uri;
+    }
+    create() {}
+    write() {
+      return Promise.resolve();
+    }
+  }
+  const Directory = {
+    // Permís de carpeta denegat per defecte (cancel·lat)
+    pickDirectoryAsync: jest.fn(() => Promise.reject(new Error('cancelled'))),
+  };
+  return { File, Directory, Paths: { document: { uri: 'file:///mock/documents/' } } };
+});
 
 // Mock de expo-sharing
 jest.mock('expo-sharing', () => ({

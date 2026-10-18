@@ -25,6 +25,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 
 // Mock de navigation
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 const mockGoBack = jest.fn();
 const mockAddListener = jest.fn(() => jest.fn()); // Returns unsubscribe function
 jest.mock('@react-navigation/native', () => {
@@ -33,6 +34,7 @@ jest.mock('@react-navigation/native', () => {
     ...actualNav,
     useNavigation: () => ({
       navigate: mockNavigate,
+      popTo: mockPopTo,
       goBack: mockGoBack,
       addListener: mockAddListener,
     }),
@@ -316,7 +318,7 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
       const backButton = getByTestId('back-button');
       fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
     it('hauria de netejar els camps quan torna enrere', () => {
@@ -331,7 +333,7 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
       fireEvent.press(backButton);
 
       // Els camps haurien d'estar nets després de tornar
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 

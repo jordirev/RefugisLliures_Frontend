@@ -5,7 +5,8 @@
    - Pantalla de pila → `<Stack.Screen name="<Nom>" component={...} />` a `src/components/AppNavigator.tsx:181-260`.
    - Pestanya → `<Tab.Screen>` a `src/components/TabsNavigator.tsx` (avui: Map, Favorites, Renovations, Profile).
    - Pantalles pre-login (Login/SignUp) **no** usen navigator: es trien per estat a `App.js:59-72`.
-3. **Navegació**: no hi ha `ParamList` tipada; es fa servir `navigation.navigate('<Nom>', params)` amb `any`. Comprova el nom exacte de la ruta (existeix l'errata `RefromDetail` per al detall de renovation).
+   - Afegeix també la ruta (i els seus params) a `RootStackParamList`, exportat des d'`AppNavigator.tsx`; les pestanyes, a `TabParamList` de `TabsNavigator.tsx`.
+3. **Navegació** (React Navigation 7): `navigation.navigate('<Nom>', params)` ja és tipat. Comprova el nom exacte de la ruta (existeix l'errata `RefromDetail` per al detall de renovation). En v7 `navigate` a una ruta que ja és a la pila **no** torna enrere: per tornar-hi usa `navigation.popTo('<Nom>', params)` o `navigate('MainTabs', { screen }, { pop: true })`. Els `Navigator` porten `id={undefined}`.
 4. **Dades**: hooks de `src/hooks/` (React Query) i `useAuth()` per a usuari/sessió; no cridis serveis directament des de la pantalla si ja hi ha hook.
 5. **Textos**: `const { t } = useTranslation()` (`src/hooks/useTranslation.ts`) i claus a les **quatre** locales.
 6. **Alertes**: `useCustomAlert()` + `<CustomAlert />`, no `Alert.alert`.

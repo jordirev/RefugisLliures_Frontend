@@ -4,7 +4,7 @@
 > Configuració prèvia necessària: [firebase-setup.md](firebase-setup.md) (obligatori) i [google-signin-setup.md](google-signin-setup.md) (per al login amb Google).
 
 ## 1. Prerequisits
-- Node.js 20 (és la versió de CI, `.github/workflows/main.yml`) i npm.
+- Node.js ≥ 22 (CI usa 22.x, `.github/workflows/main.yml`; localment s'ha provat amb 22.16; Expo SDK 58 exigirà ≥ 22.13) i npm.
 - Android Studio amb un emulador o un dispositiu Android amb depuració USB. No hi ha carpeta `ios/` ni configuració d'iOS mantinguda.
 - Java JDK (per a `keytool` i la build nativa d'Android).
 - Opcional: `firebase-tools` per als tests E2E (emulador d'Auth).

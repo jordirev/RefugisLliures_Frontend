@@ -16,7 +16,7 @@ export function AboutTheAppScreen() {
   const insets = useSafeAreaInsets();
   
   const handleGoBack = () => {
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
   
   const handleLinkPress = (url: string) => {

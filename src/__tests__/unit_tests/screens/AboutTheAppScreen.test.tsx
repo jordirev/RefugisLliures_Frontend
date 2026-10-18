@@ -31,10 +31,12 @@ jest.mock('../../../assets/icons/arrow-left.svg', () => 'BackIcon');
 jest.mock('../../../assets/images/logo.png', () => 'AppLogo');
 
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useNavigation: () => ({
     navigate: mockNavigate,
+    popTo: mockPopTo,
     goBack: jest.fn(),
   }),
 }));
@@ -79,7 +81,7 @@ describe('AboutTheAppScreen', () => {
       // El primer touchable hauria de ser el botó enrere
       if (touchables.length > 0) {
         fireEvent.press(touchables[0]);
-        expect(mockNavigate).toHaveBeenCalledWith('Settings');
+        expect(mockPopTo).toHaveBeenCalledWith('Settings');
       }
     });
   });

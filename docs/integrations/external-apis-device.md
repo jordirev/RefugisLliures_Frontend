@@ -25,4 +25,4 @@ Cap d'aquests serveis requereix clau **[FET]**. Disponibilitat i límits d'Open-
 | Emmagatzematge local | `@react-native-async-storage/async-storage` | idioma (`src/i18n/index.ts:22,56`), cache de mapes |
 | Vídeo | `expo-video` | plugin a `app.config.js:83` |
 
-Dependències declarades sense ús a `src/`: `expo-image-manipulator`, `expo-auth-session` **[FET]**. Hi ha un mock `__mocks__/@react-native-clipboard/clipboard.js` però el paquet no és a `package.json` ni s'usa a `src/` **[FET]**.
+`expo-image-manipulator` s'usa amb l'API nova (`ImageManipulator.manipulate(...).renderAsync()/saveAsync()`, no el `manipulateAsync` obsolet) **[FET]**; `expo-auth-session` i altres dependències sense ús s'han eliminat. Hi ha un mock `__mocks__/@react-native-clipboard/clipboard.js` però el paquet no és a `package.json` ni s'usa a `src/` **[FET]**.
