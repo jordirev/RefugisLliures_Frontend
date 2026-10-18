@@ -64,9 +64,9 @@ sequenceDiagram
     RD->>H: useLeaveRenovation.mutate({renovationId, participantUid})
     H->>S: DELETE /api/renovations/{id}/participants/{uid}/
     U->>RD: Eliminar (creador)
-    RD->>H: useDeleteRenovation.mutate(renovation.id) — string!
-    H->>S: deleteRenovation(undefined)
-    S->>BE: DELETE /api/renovations/undefined/?id=undefined → 404
+    RD->>H: useDeleteRenovation.mutate({id, refugeId})
+    H->>S: deleteRenovation(id)
+    S->>BE: DELETE /api/renovations/{id}/?id={id}
 ```
 
 ## Passos
@@ -75,7 +75,7 @@ sequenceDiagram
 - Servei: `GET /renovations/` (46-61), `GET /renovations/{id}/` (67-86), `GET /refuges/{id}/renovations/` (95-110), `POST` (118-154), `PATCH` (168), `DELETE` (209), join/leave (237-301).
 
 ## Gotchas i bugs
-- **Esborrar renovation està trencat**: `deleteMutation.mutate(renovation.id)` (`RenovationDetailScreen.tsx:199`) però el hook espera `{id, refugeId}` (`useRenovationsQuery.ts:108`) → `DELETE /api/renovations/undefined/` **[FET]**.
+- Esborrar renovation: `deleteMutation.mutate({ id, refugeId })` coincideix amb el tipus de `mutationFn` (`useRenovationsQuery.ts:108`) **[FET]**.
 - Ruta amb errata `RefromDetail` (AppNavigator i 5 crides) mentre la pantalla es tipa com `'RenovationDetail'` (`RenovationDetailScreen.tsx:40`) **[FET]**.
 - EditRenovation: el botó "veure solapada" del 409 obre la renovation actual (`EditRenovationScreen.tsx:112-117`) **[FET]**.
 - `materials_needed` no es pot buidar en editar (s'envia `undefined` i `JSON.stringify` l'elimina, `RenovationForm.tsx:277-278`); >500 caràcters bloqueja l'enviament sense missatge (232-234) **[FET]**.

@@ -6,7 +6,6 @@
 ## Alt (funcionalitat trencada o dades incorrectes)
 | # | Problema | Evidència | Tipus |
 |---|---|---|---|
-| A1 | Eliminar una renovation des del detall envia `DELETE /api/renovations/undefined/` | `src/screens/RenovationDetailScreen.tsx:199` vs `src/hooks/useRenovationsQuery.ts:108` | FET |
 | A2 | Errors de serveis d'usuari reportats com a èxit (preferits, visitats, perfil, idioma): retornen `null`/`false`, sense rollback | `src/services/UsersService.ts:50-61,112-123,209-227,245-255,309-327,345-355`; `src/hooks/useFavourite.ts:40,47`; `src/hooks/useVisited.ts:40,47`; `src/components/LanguageSelector.tsx:37-49` | FET |
 | A3 | Esborrar compte: backend primer, sense reautenticació → compte de Firebase orfe si `requires-recent-login` | `src/services/AuthService.ts:328-335` | FET (ordre) + INFERÈNCIA (efecte) |
 | A4 | Errors de proposta amb "coord" al missatge es mostren com a **èxit**; errors d'eliminació silenciats | `src/components/RefugeForm.tsx:515-541`, `src/components/AppNavigator.tsx:98-108` | FET |

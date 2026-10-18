@@ -13,7 +13,7 @@
 
 ## React Query
 7. **NO cridis serveis de mutació directament des de la UI**: passa per un hook amb invalidacions. Fotos/vídeos/avatar: `useMediaUpload`; esborrat: `useDeleteRefugeMedia`; invalidacions comunes a `src/hooks/mediaInvalidation.ts`. Queda pendent l'esborrat d'avatar (`AvatarPopup`) **[FET]**.
-8. Crida `mutate()` amb el **tipus exacte** que espera `mutationFn` (bug de `useDeleteRenovation`, `RenovationDetailScreen.tsx:199`) **[FET]**.
+8. Crida `mutate()` amb el **tipus exacte** que espera `mutationFn` (bug resolt a `useDeleteRenovation`: ara es passa `{ id, refugeId }`) **[FET]**.
 9. Usa el registre `queryKeys` (`src/config/queryClient.ts`); claus divergents dupliquen dades. (`PhotoViewerModal` ja usa `useUser` → `['users','detail',uid]`.)
 10. **NO facis `.sort()` in-place** sobre arrays que vénen de la cache o de props (`useUsersQuery.ts:391`, `useRefugesQuery.ts:46`) **[FET]**.
 11. En canviar d'usuari, la cache **no es buida** (cap `queryClient.clear()` a `src/`) **[FET]**: si afegeixes dades per usuari, inclou l'`uid` a la clau.

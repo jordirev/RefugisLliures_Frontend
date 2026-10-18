@@ -196,7 +196,7 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
           text: t('common.delete'),
           style: 'destructive',
           onPress: () => {
-            deleteMutation.mutate(renovation.id, {
+            deleteMutation.mutate({ id: renovation.id, refugeId: renovation.refuge_id }, {
               onSuccess: () => {
                 handleGoBack();
               },
