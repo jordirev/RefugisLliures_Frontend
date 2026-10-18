@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`UserMessage Component Mode resposta hauria d'aplicar estils de resposta quan isAnswer és true 1`] = `
 <View

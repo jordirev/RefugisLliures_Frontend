@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -33,7 +34,7 @@ export function ProfileScreen({ onViewDetail, onViewMap }: ProfileScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser, backendUser, refreshUserData } = useAuth();
   const insets = useSafeAreaInsets();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   
   const [showAvatarPopup, setShowAvatarPopup] = useState(false);
   

@@ -3,35 +3,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-// Mock BackHandler for navigation tests
-const mockBackHandler = {
-  addEventListener: jest.fn((event, callback) => ({
-    remove: jest.fn(),
-  })),
-  removeEventListener: jest.fn(),
-  exitApp: jest.fn(),
-};
-
-// Mock all BackHandler module paths
-// Note: react-native's index.js requires BackHandler.default
-jest.mock('react-native/Libraries/Utilities/BackHandler', () => ({
-  __esModule: true,
-  default: mockBackHandler,
-  ...mockBackHandler,
+// Mock de BackHandler via l'API pública de react-native (sense imports profunds de Libraries/*,
+// que amb l'Strict TypeScript API de RN 0.87+ ja no formen part de l'API suportada)
+const { BackHandler } = require('react-native');
+jest.spyOn(BackHandler, 'addEventListener').mockImplementation(() => ({
+  remove: jest.fn(),
 }));
-
-// Mock platform-specific versions
-jest.mock('react-native/Libraries/Utilities/BackHandler.android', () => ({
-  __esModule: true,
-  default: mockBackHandler,
-  ...mockBackHandler,
-}));
-
-jest.mock('react-native/Libraries/Utilities/BackHandler.ios', () => ({
-  __esModule: true,
-  default: mockBackHandler,
-  ...mockBackHandler,
-}));
+jest.spyOn(BackHandler, 'exitApp').mockImplementation(() => {});
 
 // Mock @react-navigation/native-stack
 jest.mock('@react-navigation/native-stack', () => {

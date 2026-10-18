@@ -10,6 +10,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { User, Experience, ImageMetadata } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
@@ -56,7 +57,7 @@ export function UserExperience({
   const [editedComment, setEditedComment] = useState(experience.comment);
   const [newFiles, setNewFiles] = useState<PreparedMediaFile[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
 
   const formatDate = (dateString: string) => {
     if (!dateString || dateString === 'null' || dateString === 'undefined') return 'Sense data';

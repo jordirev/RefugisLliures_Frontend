@@ -196,7 +196,7 @@ export function MediaReportsScreen() {
 
       <ScrollView
         contentContainerStyle={{ paddingTop: HEADER_HEIGHT + 12, paddingBottom: Math.max(insets.bottom, 16) + 16 }}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => refetch()} />}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => { void refetch(); }} />}
       >
         <View style={styles.tabs}>
           {(['pending', 'resolved'] as StatusFilter[]).map((s) => (

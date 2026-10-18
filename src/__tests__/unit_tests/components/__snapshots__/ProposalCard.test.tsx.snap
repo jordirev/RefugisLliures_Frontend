@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`ProposalCard Component Snapshots hauria de coincidir amb el snapshot amb status approved 1`] = `
 <View

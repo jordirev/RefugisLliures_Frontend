@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`AppNavigator Snapshot tests hauria de coincidir amb el snapshot - estat inicial 1`] = `
 <NavigationContainer>

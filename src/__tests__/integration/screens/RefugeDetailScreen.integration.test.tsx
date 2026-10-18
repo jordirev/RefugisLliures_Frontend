@@ -25,14 +25,13 @@ jest.mock('expo-image-picker', () => ({
 }));
 
 import React from 'react';
+import { Linking } from 'react-native';
 import { renderWithProviders, fireEvent } from '../setup/testUtils';
 import { RefugeDetailScreen } from '../../../screens/RefugeDetailScreen';
 
-// Mock de Linking
-jest.mock('react-native/Libraries/Linking/Linking', () => ({
-  openURL: jest.fn(() => Promise.resolve()),
-  canOpenURL: jest.fn(() => Promise.resolve(true)),
-}));
+// Linking via l'API pública (sense imports profunds de react-native/Libraries/*)
+jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true);
 
 // Mock de expo-file-system (API d'objectes: File / Directory / Paths)
 jest.mock('expo-file-system', () => {

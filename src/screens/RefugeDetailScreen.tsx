@@ -13,6 +13,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
 import { Directory, File, Paths } from 'expo-file-system';
 // Use a runtime require for expo-sharing so the code still typechecks if the
@@ -185,7 +186,7 @@ export function RefugeDetailScreen({
   const [photoViewerVisible, setPhotoViewerVisible] = React.useState(false);
   const [photoViewerIndex, setPhotoViewerIndex] = React.useState(0);
   const [galleryScreenVisible, setGalleryScreenVisible] = React.useState(false);
-  const imageScrollRef = React.useRef<ScrollView>(null);
+  const imageScrollRef = React.useRef<ScrollViewInstance>(null);
 
   // Experience photo viewer states
   const [selectedPhotos, setSelectedPhotos] = React.useState<ImageMetadata[]>([]);

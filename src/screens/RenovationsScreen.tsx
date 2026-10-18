@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
@@ -30,7 +31,7 @@ export function RenovationsScreen({ onViewMap }: RenovationsScreenProps) {
   const navigation = useNavigation<any>();
   const { firebaseUser } = useAuth();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   
   const [joiningRenovationId, setJoiningRenovationId] = useState<string | null>(null);
   

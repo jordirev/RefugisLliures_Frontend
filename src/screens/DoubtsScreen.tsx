@@ -11,6 +11,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
+import type { ScrollViewInstance, TextInputInstance } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from '../hooks/useTranslation';
@@ -126,8 +127,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [inputContainerHeight, setInputContainerHeight] = useState(0);
 
-  const scrollViewRef = useRef<ScrollView>(null);
-  const inputRef = useRef<TextInput>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   const HEADER_HEIGHT = 96;
 
