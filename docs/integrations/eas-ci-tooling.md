@@ -6,7 +6,7 @@
 - Expo SDK ~54, React Native 0.81.5, React 19.1, `newArchEnabled: true` (`package.json`, `app.config.js:36`).
 - `app.config.js`: nom "Refugis Lliures", `android.package` `com.refugislliures.app`, `ios.bundleIdentifier` `cat.refugislliures.app` (comentari: "Cambiar valor"), permisos d'ubicació i emmagatzematge, plugins `expo-location`, `@react-native-google-signin/google-signin`, `expo-video` (L28-98).
 - La carpeta `android/` existeix en local però **no** està versionada (`git ls-files android` buit); no hi ha `ios/` **[FET]**.
-- Comandes: `npm start` (expo start), `npm run android` (`expo run:android`), `npm run web`.
+- Comandes: `npm start` (expo start), `npm run android` (`expo run:android`).
 - Google Sign-In i `react-native-image-crop-picker` necessiten **build nativa** (dev client), no Expo Go **[FET pel codi de fallback]**.
 - Passos per posar en marxa l'entorn: [guides/getting-started.md](../guides/getting-started.md).
 

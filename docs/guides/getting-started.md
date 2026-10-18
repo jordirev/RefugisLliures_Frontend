@@ -23,7 +23,6 @@ cp .env.example .env      # i omple'l: vegeu firebase-setup.md
 | Build nativa d'Android (dev client) | `npm run android` (`expo run:android`) | **Recomanada.** Necessària per a Google Sign-In i el retall d'avatar (`react-native-image-crop-picker`). |
 | Servidor Metro | `npm start` (`expo start`) | Un cop instal·lada la build de desenvolupament; prem `a` per obrir-la a Android. |
 | Expo Go | `npm start` i escanejar el QR | Només per a proves ràpides: **no** funcionen Google Sign-In ni el retall d'avatar (el codi mostra un avís). |
-| Web | `npm run web` | No suportat de manera fiable (mapa en WebView, mòduls natius). |
 
 Perfils d'EAS (`eas.json`): `development` (dev client, APK intern), `preview` (APK intern), `production` (app-bundle). Vegeu [integrations/eas-ci-tooling.md](../integrations/eas-ci-tooling.md).
 
@@ -33,7 +32,6 @@ Perfils d'EAS (`eas.json`): `development` (dev client, APK intern), `preview` (A
 ```bash
 npm start                  # expo start
 npm run android            # expo run:android (build nativa)
-npm run web                # expo start --web
 npm test                   # unit + integració amb coverage, i després E2E
 npm run test:unit          # jest __tests__/unit_tests
 npm run test:integration   # jest __tests__/integration (MSW)

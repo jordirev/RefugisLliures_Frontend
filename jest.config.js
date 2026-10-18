@@ -9,7 +9,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.js' }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-maps|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@mswjs|@ptomasroos|until-async)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@mswjs|@ptomasroos|until-async)/)',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
