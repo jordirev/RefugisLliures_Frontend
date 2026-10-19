@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`PhotoViewerModal Component Renderització bàsica snapshot test - modal amb fotos 1`] = `
 <Modal

@@ -81,8 +81,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar amb la informació bàsica del refugi', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar amb la informació bàsica del refugi', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -96,8 +96,8 @@ describe('RenovationCard Component', () => {
       expect(getByText("Val d'Aran")).toBeTruthy();
     });
 
-    it('hauria de mostrar la descripció de la renovació', () => {
-      const { getByText } = render(
+    it('hauria de mostrar la descripció de la renovació', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -110,8 +110,8 @@ describe('RenovationCard Component', () => {
       expect(getByText('Renovació del sostre i millora de les instal·lacions')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nom per defecte quan no hi ha refugi', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nom per defecte quan no hi ha refugi', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           onViewOnMap={mockOnViewOnMap}
@@ -123,14 +123,14 @@ describe('RenovationCard Component', () => {
       expect(getByText('refuge.title')).toBeTruthy();
     });
 
-    it('hauria de mostrar "common.unknown" quan no hi ha regió', () => {
+    it('hauria de mostrar "common.unknown" quan no hi ha regió', async () => {
       const refugeSenseRegio: Location = {
         ...mockRefuge,
         region: undefined,
         departement: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={refugeSenseRegio}
@@ -145,8 +145,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Format de dates', () => {
-    it('hauria de mostrar un rang de dates quan ini_date i fin_date són diferents', () => {
-      const { getByText } = render(
+    it('hauria de mostrar un rang de dates quan ini_date i fin_date són diferents', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -159,13 +159,13 @@ describe('RenovationCard Component', () => {
       expect(getByText('15/07/2025 - 20/07/2025')).toBeTruthy();
     });
 
-    it('hauria de mostrar només una data quan ini_date i fin_date són iguals', () => {
+    it('hauria de mostrar només una data quan ini_date i fin_date són iguals', async () => {
       const renovationMateixDia: Renovation = {
         ...mockRenovation,
         fin_date: '2025-07-15',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RenovationCard
           renovation={renovationMateixDia}
           refuge={mockRefuge}
@@ -178,13 +178,13 @@ describe('RenovationCard Component', () => {
       expect(getByText('15/07/2025')).toBeTruthy();
     });
 
-    it('hauria de mostrar només ini_date quan no hi ha fin_date', () => {
+    it('hauria de mostrar només ini_date quan no hi ha fin_date', async () => {
       const renovationSenseFi: Renovation = {
         ...mockRenovation,
         fin_date: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RenovationCard
           renovation={renovationSenseFi}
           refuge={mockRefuge}
@@ -197,14 +197,14 @@ describe('RenovationCard Component', () => {
       expect(getByText('15/07/2025')).toBeTruthy();
     });
 
-    it('hauria de retornar el string original si la data és invàlida', () => {
+    it('hauria de retornar el string original si la data és invàlida', async () => {
       const renovationDataInvalida: Renovation = {
         ...mockRenovation,
         ini_date: 'invalid-date',
         fin_date: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RenovationCard
           renovation={renovationDataInvalida}
           refuge={mockRefuge}
@@ -219,8 +219,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Botons d\'acció', () => {
-    it('hauria de cridar onViewOnMap quan es prem el botó', () => {
-      const { getByText } = render(
+    it('hauria de cridar onViewOnMap quan es prem el botó', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -230,12 +230,12 @@ describe('RenovationCard Component', () => {
         />
       );
 
-      fireEvent.press(getByText('refuge.actions.viewOnMap'));
+      await fireEvent.press(getByText('refuge.actions.viewOnMap'));
       expect(mockOnViewOnMap).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onMoreInfo quan es prem el botó', () => {
-      const { getByText } = render(
+    it('hauria de cridar onMoreInfo quan es prem el botó', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -245,12 +245,12 @@ describe('RenovationCard Component', () => {
         />
       );
 
-      fireEvent.press(getByText('+ renovations.moreInfo'));
+      await fireEvent.press(getByText('+ renovations.moreInfo'));
       expect(mockOnMoreInfo).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onJoin quan es prem el botó (mode visitant)', () => {
-      const { getByText } = render(
+    it('hauria de cridar onJoin quan es prem el botó (mode visitant)', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -261,12 +261,12 @@ describe('RenovationCard Component', () => {
         />
       );
 
-      fireEvent.press(getByText('renovations.join'));
+      await fireEvent.press(getByText('renovations.join'));
       expect(mockOnJoin).toHaveBeenCalled();
     });
 
-    it('no hauria de mostrar el botó "unir-se" quan isUserRenovation és true', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar el botó "unir-se" quan isUserRenovation és true', async () => {
+      const { queryByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -282,8 +282,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Enllaços de grup', () => {
-    it('hauria de mostrar botó de WhatsApp per a usuaris membres', () => {
-      const { getByText } = render(
+    it('hauria de mostrar botó de WhatsApp per a usuaris membres', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -297,13 +297,13 @@ describe('RenovationCard Component', () => {
       expect(getByText('renovations.join_whatapp_link')).toBeTruthy();
     });
 
-    it('hauria de mostrar botó de Telegram quan l\'enllaç és de Telegram', () => {
+    it('hauria de mostrar botó de Telegram quan l\'enllaç és de Telegram', async () => {
       const renovationTelegram: Renovation = {
         ...mockRenovation,
         group_link: 'https://t.me/gruptest',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RenovationCard
           renovation={renovationTelegram}
           refuge={mockRefuge}
@@ -317,8 +317,8 @@ describe('RenovationCard Component', () => {
       expect(getByText('renovations.join_telegram_link')).toBeTruthy();
     });
 
-    it('hauria d\'obrir l\'enllaç de grup quan es prem', () => {
-      const { getByText } = render(
+    it('hauria d\'obrir l\'enllaç de grup quan es prem', async () => {
+      const { getByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -329,17 +329,17 @@ describe('RenovationCard Component', () => {
         />
       );
 
-      fireEvent.press(getByText('renovations.join_whatapp_link'));
+      await fireEvent.press(getByText('renovations.join_whatapp_link'));
       expect(Linking.openURL).toHaveBeenCalledWith('https://chat.whatsapp.com/abcd1234');
     });
 
-    it('no hauria de mostrar botó de grup si no hi ha group_link', () => {
+    it('no hauria de mostrar botó de grup si no hi ha group_link', async () => {
       const renovationSenseGrup: Renovation = {
         ...mockRenovation,
         group_link: undefined,
       };
 
-      const { queryByText } = render(
+      const { queryByText } = await render(
         <RenovationCard
           renovation={renovationSenseGrup}
           refuge={mockRefuge}
@@ -356,8 +356,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Estat de càrrega', () => {
-    it('hauria de mostrar ActivityIndicator quan isJoining és true', () => {
-      const { getByTestId, queryByText } = render(
+    it('hauria de mostrar ActivityIndicator quan isJoining és true', async () => {
+      const { getByTestId, queryByText } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -374,13 +374,13 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Imatges i vídeos', () => {
-    it('hauria de renderitzar VideoThumbnail per a URLs de vídeo', () => {
+    it('hauria de renderitzar VideoThumbnail per a URLs de vídeo', async () => {
       const refugeAmbVideo: Location = {
         ...mockRefuge,
         images_metadata: [{ url: 'https://example.com/video.mp4' }],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={refugeAmbVideo}
@@ -395,8 +395,8 @@ describe('RenovationCard Component', () => {
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot en mode visitant', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot en mode visitant', async () => {
+      const { toJSON } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}
@@ -410,8 +410,8 @@ describe('RenovationCard Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot en mode usuari', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot en mode usuari', async () => {
+      const { toJSON } = await render(
         <RenovationCard
           renovation={mockRenovation}
           refuge={mockRefuge}

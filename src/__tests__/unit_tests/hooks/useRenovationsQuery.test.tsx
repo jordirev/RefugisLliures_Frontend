@@ -78,7 +78,7 @@ describe('useRenovationsQuery Hooks', () => {
       defaultOptions: {
         queries: {
           retry: false,
-          gcTime: 0,
+          gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
         },
         mutations: {
           retry: false,
@@ -96,7 +96,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de fer fetch de totes les renovacions', async () => {
       (RenovationService.getAllRenovations as jest.Mock).mockResolvedValue([mockRenovationDTO]);
 
-      const { result } = renderHook(() => useRenovations(), {
+      const { result } = await renderHook(() => useRenovations(), {
         wrapper: createWrapper(),
       });
 
@@ -112,7 +112,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de retornar llista buida si no hi ha renovacions', async () => {
       (RenovationService.getAllRenovations as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRenovations(), {
+      const { result } = await renderHook(() => useRenovations(), {
         wrapper: createWrapper(),
       });
 
@@ -128,7 +128,7 @@ describe('useRenovationsQuery Hooks', () => {
         new Error('Network error')
       );
 
-      const { result } = renderHook(() => useRenovations(), {
+      const { result } = await renderHook(() => useRenovations(), {
         wrapper: createWrapper(),
       });
 
@@ -144,7 +144,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de fer fetch d\'una renovació per ID', async () => {
       (RenovationService.getRenovationById as jest.Mock).mockResolvedValue(mockRenovationDTO);
 
-      const { result } = renderHook(() => useRenovation('renovation-1'), {
+      const { result } = await renderHook(() => useRenovation('renovation-1'), {
         wrapper: createWrapper(),
       });
 
@@ -157,7 +157,7 @@ describe('useRenovationsQuery Hooks', () => {
     });
 
     it('no hauria de fer fetch si no hi ha ID', async () => {
-      const { result } = renderHook(() => useRenovation(undefined), {
+      const { result } = await renderHook(() => useRenovation(undefined), {
         wrapper: createWrapper(),
       });
 
@@ -169,7 +169,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de gestionar error quan no es troba la renovació', async () => {
       (RenovationService.getRenovationById as jest.Mock).mockResolvedValue(null);
 
-      const { result } = renderHook(() => useRenovation('nonexistent'), {
+      const { result } = await renderHook(() => useRenovation('nonexistent'), {
         wrapper: createWrapper(),
       });
 
@@ -185,7 +185,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de fer fetch de renovacions per refugi', async () => {
       (RenovationService.getRenovationsByRefugeId as jest.Mock).mockResolvedValue([mockRenovationDTO]);
 
-      const { result } = renderHook(() => useRefugeRenovations('refuge-1'), {
+      const { result } = await renderHook(() => useRefugeRenovations('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -198,7 +198,7 @@ describe('useRenovationsQuery Hooks', () => {
     });
 
     it('no hauria de fer fetch si no hi ha refugeId', async () => {
-      const { result } = renderHook(() => useRefugeRenovations(undefined), {
+      const { result } = await renderHook(() => useRefugeRenovations(undefined), {
         wrapper: createWrapper(),
       });
 
@@ -211,7 +211,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria de crear una renovació', async () => {
       (RenovationService.createRenovation as jest.Mock).mockResolvedValue(mockRenovationDTO);
 
-      const { result } = renderHook(() => useCreateRenovation(), {
+      const { result } = await renderHook(() => useCreateRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -234,7 +234,7 @@ describe('useRenovationsQuery Hooks', () => {
         new Error('Validation error')
       );
 
-      const { result } = renderHook(() => useCreateRenovation(), {
+      const { result } = await renderHook(() => useCreateRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -261,7 +261,7 @@ describe('useRenovationsQuery Hooks', () => {
       const updatedRenovation = { ...mockRenovationDTO, description: 'Actualitzada' };
       (RenovationService.updateRenovation as jest.Mock).mockResolvedValue(updatedRenovation);
 
-      const { result } = renderHook(() => useUpdateRenovation(), {
+      const { result } = await renderHook(() => useUpdateRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -282,7 +282,7 @@ describe('useRenovationsQuery Hooks', () => {
     it('hauria d\'eliminar una renovació', async () => {
       (RenovationService.deleteRenovation as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteRenovation(), {
+      const { result } = await renderHook(() => useDeleteRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -305,7 +305,7 @@ describe('useRenovationsQuery Hooks', () => {
       };
       (RenovationService.joinRenovation as jest.Mock).mockResolvedValue(joinedRenovation);
 
-      const { result } = renderHook(() => useJoinRenovation(), {
+      const { result } = await renderHook(() => useJoinRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -321,7 +321,7 @@ describe('useRenovationsQuery Hooks', () => {
         new Error("L'usuari ja és participant")
       );
 
-      const { result } = renderHook(() => useJoinRenovation(), {
+      const { result } = await renderHook(() => useJoinRenovation(), {
         wrapper: createWrapper(),
       });
 
@@ -347,7 +347,7 @@ describe('useRenovationsQuery Hooks', () => {
       };
       (RenovationService.removeParticipant as jest.Mock).mockResolvedValue(leftRenovation);
 
-      const { result } = renderHook(() => useLeaveRenovation(), {
+      const { result } = await renderHook(() => useLeaveRenovation(), {
         wrapper: createWrapper(),
       });
 

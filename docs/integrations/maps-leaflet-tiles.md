@@ -17,7 +17,7 @@
 Els objectes `Location` complets es serialitzen a JSON a cada actualització **[FET]** (pot ser pesat **[INFERÈNCIA]**).
 
 ## Cache offline (`src/services/MapCacheService.ts`)
-- Tiles a `documentDirectory/map_cache/{z}_{x}_{y}.png` (expo-file-system/legacy); metadades a AsyncStorage `map_cache_metadata`; llista de refugis a `map_cache_refuges` (L39-41).
+- Tiles a `documentDirectory/map_cache/{z}_{x}_{y}.png` (`expo-file-system`, API `File`/`Directory`/`Paths`); metadades a AsyncStorage `map_cache_metadata`; llista de refugis a `map_cache_refuges` (L39-41).
 - `downloadTilesForArea` amb lots de 5 i 100 ms d'espera (L167-192); refugis via `fetch` directe a `GET /api/refuges/` (L326-327).
 - **Les tiles descarregades no es fan servir**: `getTileUrl`/`hasTile`/`getTileLocalPath` (L212-234) no tenen cap crida **[FET]**.
 

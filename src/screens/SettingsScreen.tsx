@@ -56,7 +56,7 @@ export function SettingsScreen() {
   
   const handleGoBack = () => {
     // Navigate to the Profile tab
-    navigation.navigate('Profile');
+    navigation.navigate('MainTabs', { screen: 'Profile' }, { pop: true });
   };
   
   return (

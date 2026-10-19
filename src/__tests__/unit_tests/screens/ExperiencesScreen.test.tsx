@@ -22,6 +22,7 @@ import {
 import { useDeleteRefugeMedia } from '../../../hooks/useRefugeMediaQuery';
 import { useUser } from '../../../hooks/useUsersQuery';
 import { useAuth } from '../../../contexts/AuthContext';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock hooks
 jest.mock('../../../hooks/useExperiencesQuery', () => ({
@@ -216,13 +217,13 @@ describe('ExperiencesScreen', () => {
     });
   });
 
-  it('hauria de mostrar estat de càrrega', () => {
+  it('hauria de mostrar estat de càrrega', async () => {
     (useExperiences as jest.Mock).mockReturnValue({
       data: [],
       isLoading: true,
     });
 
-    render(
+    await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -235,7 +236,7 @@ describe('ExperiencesScreen', () => {
       isLoading: false,
     });
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -250,7 +251,7 @@ describe('ExperiencesScreen', () => {
       isLoading: false,
     });
 
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -266,7 +267,7 @@ describe('ExperiencesScreen', () => {
       isLoading: false,
     });
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -282,7 +283,7 @@ describe('ExperiencesScreen', () => {
       isLoading: false,
     });
 
-    const { toJSON } = render(
+    const { toJSON } = await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" onClose={mockOnClose} />
     );
     
@@ -301,7 +302,7 @@ describe('ExperiencesScreen', () => {
       isLoading: false,
     });
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -310,7 +311,7 @@ describe('ExperiencesScreen', () => {
     });
 
     // Note: Delete button triggers confirmation dialog first
-    fireEvent.press(getByTestId('delete-btn'));
+    await fireEvent.press(getByTestId('delete-btn'));
     
     // The actual mutation would be called after confirmation
     expect(useDeleteExperience).toHaveBeenCalled();
@@ -330,13 +331,13 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // El placeholder real és 'experiences.placeholder' segons l'output del test
       const input = getByPlaceholderText('experiences.placeholder');
-      fireEvent.changeText(input, 'Nova experiència de prova');
+      await fireEvent.changeText(input, 'Nova experiència de prova');
 
       expect(useCreateExperience).toHaveBeenCalled();
     });
@@ -354,14 +355,14 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar indicador de càrrega quan isPending és true', () => {
+    it('hauria de mostrar indicador de càrrega quan isPending és true', async () => {
       (useCreateExperience as jest.Mock).mockReturnValue({
         mutate: jest.fn(),
         isPending: true,
@@ -371,7 +372,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -393,7 +394,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -401,7 +402,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('edit-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('edit-btn'));
+      await fireEvent.press(getByTestId('edit-btn'));
       expect(useUpdateExperience).toHaveBeenCalled();
     });
 
@@ -418,7 +419,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -433,14 +434,14 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
 
       expect(mockGoBack).toHaveBeenCalled();
@@ -459,7 +460,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -477,7 +478,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -491,7 +492,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -504,7 +505,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -524,20 +525,20 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Deixar el comentari buit
       const input = getByPlaceholderText('experiences.placeholder');
-      fireEvent.changeText(input, '');
+      await fireEvent.changeText(input, '');
 
       // Buscar el botó d'enviar
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       // L'últim sol ser el botó d'enviar
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       // No s'hauria d'haver cridat mutate
@@ -550,19 +551,19 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
       const longComment = 'a'.repeat(2100); // Més de 2000 caràcters
-      fireEvent.changeText(input, longComment);
+      await fireEvent.changeText(input, longComment);
 
       // Buscar el botó d'enviar
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       // El hook hauria de validar la longitud
@@ -582,17 +583,17 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
-      fireEvent.changeText(input, 'Nova experiència');
+      await fireEvent.changeText(input, 'Nova experiència');
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -613,17 +614,17 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
-      fireEvent.changeText(input, 'Experiència amb fotos fallides');
+      await fireEvent.changeText(input, 'Experiència amb fotos fallides');
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -646,7 +647,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -654,7 +655,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('edit-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('edit-btn'));
+      await fireEvent.press(getByTestId('edit-btn'));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -674,7 +675,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -682,7 +683,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('edit-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('edit-btn'));
+      await fireEvent.press(getByTestId('edit-btn'));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -703,7 +704,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -711,7 +712,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('delete-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('delete-btn'));
+      await fireEvent.press(getByTestId('delete-btn'));
 
       expect(useDeleteExperience).toHaveBeenCalled();
     });
@@ -728,7 +729,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -744,14 +745,14 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" onClose={mockOnClose} />
       );
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
 
       expect(mockOnClose).toHaveBeenCalled();
@@ -765,7 +766,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
       
-      render(
+      await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -783,7 +784,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      render(
+      await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -810,7 +811,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -819,7 +820,7 @@ describe('ExperiencesScreen', () => {
       });
 
       // Press the photo button to trigger handlePhotoPress
-      fireEvent.press(getByTestId('photo-press-btn'));
+      await fireEvent.press(getByTestId('photo-press-btn'));
 
       // The photo modal should now be visible (state changed)
       expect(getByTestId('photo-press-btn')).toBeTruthy();
@@ -838,7 +839,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -847,7 +848,7 @@ describe('ExperiencesScreen', () => {
       });
 
       // Press the photo button to open the modal
-      fireEvent.press(getByTestId('photo-press-btn'));
+      await fireEvent.press(getByTestId('photo-press-btn'));
 
       // Wait for the modal to appear
       await waitFor(() => {
@@ -855,7 +856,7 @@ describe('ExperiencesScreen', () => {
       });
 
       // Press the delete photo button to trigger handlePhotoDeleted
-      fireEvent.press(getByTestId('delete-photo-btn'));
+      await fireEvent.press(getByTestId('delete-photo-btn'));
 
       // The modal should close after deletion
       await waitFor(() => {
@@ -871,14 +872,14 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
       
       // Simulate content size change
-      fireEvent(input, 'contentSizeChange', {
+      await fireEvent(input, 'contentSizeChange', {
         nativeEvent: {
           contentSize: { width: 200, height: 60 }
         }
@@ -889,12 +890,12 @@ describe('ExperiencesScreen', () => {
   });
 
   describe('Add photos button', () => {
-    const pressAllTouchables = (UNSAFE_root: any) => {
+    const pressAllTouchables = async (container: any) => {
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       for (const touchable of touchables) {
         try {
-          fireEvent.press(touchable);
+          await fireEvent.press(touchable);
         } catch (e) {
           // Ignore
         }
@@ -908,11 +909,11 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      pressAllTouchables(UNSAFE_root);
+      await pressAllTouchables(container);
 
       await waitFor(() => {
         expect(mockPickMedia).toHaveBeenCalled();
@@ -935,19 +936,19 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root, getByPlaceholderText } = render(
+      const { container, getByPlaceholderText } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Obrir el selector (i afegir els fitxers preparats)
       await act(async () => {
-        pressAllTouchables(UNSAFE_root);
+        await pressAllTouchables(container);
       });
       await waitFor(() => expect(mockPickMedia).toHaveBeenCalled());
 
-      fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Amb fotos');
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Amb fotos');
       await act(async () => {
-        pressAllTouchables(UNSAFE_root);
+        await pressAllTouchables(container);
       });
 
       await waitFor(() => {
@@ -971,13 +972,13 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root, getByPlaceholderText } = render(
+      const { container, getByPlaceholderText } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
       mockPickMedia.mockResolvedValue(null);
-      fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text');
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text');
       await act(async () => {
-        pressAllTouchables(UNSAFE_root);
+        await pressAllTouchables(container);
       });
 
       await waitFor(() => {
@@ -997,22 +998,22 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       
       for (const touchable of touchables) {
         try {
-          fireEvent.press(touchable);
+          await fireEvent.press(touchable);
         } catch (e) {
           // Ignore
         }
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1031,18 +1032,18 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root, queryByText } = render(
+      const { container, queryByText } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // First, trigger the add photo button
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       
       // Press all buttons to try to trigger addPhotos
       for (const touchable of touchables) {
         try {
-          fireEvent.press(touchable);
+          await fireEvent.press(touchable);
         } catch (e) {
           // Ignore
         }
@@ -1051,14 +1052,14 @@ describe('ExperiencesScreen', () => {
       // Wait for photos to be added
       await waitFor(() => {
         // After adding photos, there should be a remove button (✕)
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       });
 
       // Try to find and press the remove button
-      const allTouchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const allTouchables = findAllByType(container, TouchableOpacity);
       for (const touchable of allTouchables) {
         try {
-          fireEvent.press(touchable);
+          await fireEvent.press(touchable);
         } catch (e) {
           // Ignore
         }
@@ -1079,7 +1080,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1088,7 +1089,7 @@ describe('ExperiencesScreen', () => {
       });
 
       // Press delete button - this triggers showAlert with buttons
-      fireEvent.press(getByTestId('delete-btn'));
+      await fireEvent.press(getByTestId('delete-btn'));
 
       // Find the delete confirmation button and press it
       await waitFor(() => {
@@ -1119,7 +1120,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1127,7 +1128,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('delete-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('delete-btn'));
+      await fireEvent.press(getByTestId('delete-btn'));
 
       await waitFor(() => {
         expect(capturedAlertButtons.length).toBe(2);
@@ -1150,7 +1151,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1158,7 +1159,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('delete-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('delete-btn'));
+      await fireEvent.press(getByTestId('delete-btn'));
 
       await waitFor(() => {
         expect(capturedAlertButtons.length).toBe(2);
@@ -1183,7 +1184,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1192,7 +1193,7 @@ describe('ExperiencesScreen', () => {
       });
 
       // Press the edit button with a long comment (> 2000 chars)
-      fireEvent.press(getByTestId('edit-long-btn'));
+      await fireEvent.press(getByTestId('edit-long-btn'));
 
       // The mutation should NOT be called since the comment is too long
       expect(mockMutate).not.toHaveBeenCalled();
@@ -1211,7 +1212,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1219,7 +1220,7 @@ describe('ExperiencesScreen', () => {
         expect(getByTestId('edit-btn')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('edit-btn'));
+      await fireEvent.press(getByTestId('edit-btn'));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -1241,7 +1242,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1261,17 +1262,17 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
-      fireEvent.changeText(input, 'Test experience');
+      await fireEvent.changeText(input, 'Test experience');
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -1287,7 +1288,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1306,7 +1307,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -1328,7 +1329,7 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 

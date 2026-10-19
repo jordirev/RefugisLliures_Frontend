@@ -9,7 +9,7 @@
  */
 
 import * as ImageManipulator from 'expo-image-manipulator';
-import * as FileSystem from 'expo-file-system/legacy';
+import * as FileSystemLegacy from 'expo-file-system/legacy';
 import {
   MediaUploadService,
   MediaUploadError,
@@ -24,6 +24,20 @@ jest.mock('../../../services/apiClient', () => ({
   apiPost: jest.fn(),
 }));
 
+// Info del fitxer local que retorna el mock de File (exists / size)
+let mockFileInfo = { exists: true, size: 300 * 1024 };
+jest.mock('expo-file-system', () => ({
+  File: jest.fn().mockImplementation((uri: string) => ({
+    uri,
+    get exists() {
+      return mockFileInfo.exists;
+    },
+    get size() {
+      return mockFileInfo.size;
+    },
+  })),
+}));
+
 const compressor = require('react-native-compressor');
 const mockedApiPost = apiPost as jest.Mock;
 
@@ -33,14 +47,22 @@ const jsonResponse = (status: number, body: any) => ({
   json: jest.fn().mockResolvedValue(body),
 });
 
+let mockContext: any;
+let mockSaveAsync: jest.Mock;
+
 describe('MediaUploadService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     MediaUploadService.resetSessionRights();
-    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: true, size: 300 * 1024 });
-    (ImageManipulator.manipulateAsync as jest.Mock).mockImplementation((uri: string) =>
-      Promise.resolve({ uri: `${uri}.webp`, width: 2048, height: 1536 })
-    );
+    mockFileInfo = { exists: true, size: 300 * 1024 };
+    (ImageManipulator.ImageManipulator.manipulate as jest.Mock).mockImplementation((uri: string) => {
+      mockSaveAsync = jest.fn().mockResolvedValue({ uri: `${uri}.webp`, width: 2048, height: 1536 });
+      mockContext = {
+        resize: jest.fn(() => mockContext),
+        renderAsync: jest.fn().mockResolvedValue({ saveAsync: mockSaveAsync }),
+      };
+      return mockContext;
+    });
     compressor.Video.compress.mockImplementation((uri: string) => Promise.resolve(`${uri}.compressed.mp4`));
   });
 
@@ -102,11 +124,9 @@ describe('MediaUploadService', () => {
         height: 3000,
       });
 
-      expect(ImageManipulator.manipulateAsync).toHaveBeenCalledWith(
-        'file:///big.jpg',
-        [{ resize: { width: IMAGE_MAX_LONG_EDGE } }],
-        { compress: 0.8, format: 'webp' }
-      );
+      expect(ImageManipulator.ImageManipulator.manipulate).toHaveBeenCalledWith('file:///big.jpg');
+      expect(mockContext.resize).toHaveBeenCalledWith({ width: IMAGE_MAX_LONG_EDGE });
+      expect(mockSaveAsync).toHaveBeenCalledWith({ compress: 0.8, format: 'webp' });
       expect(file).toEqual(
         expect.objectContaining({ uri: 'file:///big.jpg.webp', contentType: 'image/webp', mediaType: 'image', size: 300 * 1024 })
       );
@@ -114,18 +134,18 @@ describe('MediaUploadService', () => {
 
     it('redimensiona per alçada si la foto és vertical', async () => {
       await MediaUploadService.prepareAsset({ uri: 'file:///v.jpg', mimeType: 'image/jpeg', width: 3000, height: 4000 });
-      expect((ImageManipulator.manipulateAsync as jest.Mock).mock.calls[0][1]).toEqual([
-        { resize: { height: IMAGE_MAX_LONG_EDGE } },
-      ]);
+      expect(mockContext.resize).toHaveBeenCalledTimes(1);
+      expect(mockContext.resize).toHaveBeenCalledWith({ height: IMAGE_MAX_LONG_EDGE });
     });
 
     it('no redimensiona les imatges petites però sí les recodifica', async () => {
       await MediaUploadService.prepareAsset({ uri: 'file:///s.png', mimeType: 'image/png', width: 800, height: 600 });
-      expect((ImageManipulator.manipulateAsync as jest.Mock).mock.calls[0][1]).toEqual([]);
+      expect(mockContext.resize).not.toHaveBeenCalled();
+      expect(mockSaveAsync).toHaveBeenCalled();
     });
 
     it('rebutja una imatge > 15 MB després de comprimir', async () => {
-      (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: true, size: MAX_IMAGE_BYTES + 1 });
+      mockFileInfo = { exists: true, size: MAX_IMAGE_BYTES + 1 };
       await expect(
         MediaUploadService.prepareAsset({ uri: 'file:///x.jpg', mimeType: 'image/jpeg', width: 100, height: 100 })
       ).rejects.toMatchObject({ code: 'too_large' });
@@ -158,7 +178,7 @@ describe('MediaUploadService', () => {
     });
 
     it('rebutja vídeos > 50 MB després de comprimir', async () => {
-      (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: true, size: MAX_VIDEO_BYTES + 1 });
+      mockFileInfo = { exists: true, size: MAX_VIDEO_BYTES + 1 };
       await expect(
         MediaUploadService.prepareAsset({ uri: 'file:///big.mp4', mimeType: 'video/mp4', duration: 10000 })
       ).rejects.toMatchObject({ code: 'too_large' });
@@ -168,7 +188,7 @@ describe('MediaUploadService', () => {
       await expect(
         MediaUploadService.prepareAsset({ uri: 'file:///doc.pdf', mimeType: 'application/pdf' })
       ).rejects.toBeInstanceOf(MediaUploadError);
-      expect(ImageManipulator.manipulateAsync).not.toHaveBeenCalled();
+      expect(ImageManipulator.ImageManipulator.manipulate).not.toHaveBeenCalled();
       expect(mockedApiPost).not.toHaveBeenCalled();
     });
   });
@@ -282,7 +302,7 @@ describe('MediaUploadService', () => {
         ],
       });
       // PUT amb les capçaleres retornades (cap Authorization)
-      const uploadTaskCalls = (FileSystem.createUploadTask as jest.Mock).mock.calls;
+      const uploadTaskCalls = (FileSystemLegacy.createUploadTask as jest.Mock).mock.calls;
       expect(uploadTaskCalls).toHaveLength(2);
       expect(uploadTaskCalls[0][0]).toBe('https://r2/u1');
       expect(uploadTaskCalls[0][1]).toBe('file:///a.webp');
@@ -302,7 +322,7 @@ describe('MediaUploadService', () => {
     });
 
     it('un PUT fallit no atura la resta i es retorna com a put_failed', async () => {
-      (FileSystem.createUploadTask as jest.Mock)
+      (FileSystemLegacy.createUploadTask as jest.Mock)
         .mockImplementationOnce(() => ({ uploadAsync: jest.fn().mockResolvedValue({ status: 403 }) }))
         .mockImplementationOnce(() => ({ uploadAsync: jest.fn().mockResolvedValue({ status: 200 }) }));
       mockedApiPost

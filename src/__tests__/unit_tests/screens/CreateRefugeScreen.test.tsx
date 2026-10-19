@@ -13,6 +13,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { CreateRefugeScreen } from '../../../screens/CreateRefugeScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -71,8 +72,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -86,41 +87,41 @@ describe('CreateRefugeScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(<CreateRefugeScreen />);
+    it('hauria de renderitzar correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<CreateRefugeScreen />);
 
       expect(getByText('createRefuge.title')).toBeTruthy();
       expect(getByTestId('refuge-form')).toBeTruthy();
     });
 
-    it('hauria de mostrar el formulari en mode create', () => {
-      const { getByText } = renderWithProviders(<CreateRefugeScreen />);
+    it('hauria de mostrar el formulari en mode create', async () => {
+      const { getByText } = await renderWithProviders(<CreateRefugeScreen />);
 
       expect(getByText('Mode: create')).toBeTruthy();
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = renderWithProviders(<CreateRefugeScreen />);
+    it('snapshot test', async () => {
+      const { toJSON } = await renderWithProviders(<CreateRefugeScreen />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Navegació', () => {
-    it('hauria de tornar enrere quan es prem cancel', () => {
-      const { getByTestId } = renderWithProviders(<CreateRefugeScreen />);
+    it('hauria de tornar enrere quan es prem cancel', async () => {
+      const { getByTestId } = await renderWithProviders(<CreateRefugeScreen />);
 
       const cancelButton = getByTestId('cancel-button');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
 
       expect(mockGoBack).toHaveBeenCalled();
     });
 
-    it('hauria de tornar enrere quan es prem el botó back', () => {
-      const { UNSAFE_root } = renderWithProviders(<CreateRefugeScreen />);
+    it('hauria de tornar enrere quan es prem el botó back', async () => {
+      const { container } = await renderWithProviders(<CreateRefugeScreen />);
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
         expect(mockGoBack).toHaveBeenCalled();
       }
     });
@@ -132,10 +133,10 @@ describe('CreateRefugeScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRefugeScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRefugeScreen />);
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -149,10 +150,10 @@ describe('CreateRefugeScreen', () => {
     });
 
     it('hauria de tenir callback onError definit', async () => {
-      const { getByTestId } = renderWithProviders(<CreateRefugeScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRefugeScreen />);
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // Verificar que mutate s'ha cridat amb callbacks
       await waitFor(() => {

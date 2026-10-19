@@ -46,6 +46,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { AppNavigator } from '../../../components/AppNavigator';
 import { renderWithProviders } from '../setup/testUtils';
+import { findAllByType, findByType } from '../../testHelpers/findByType';
 
 // Mock dels screens per simplificar els tests d'integració
 jest.mock('../../../screens/MapScreen', () => ({
@@ -112,25 +113,25 @@ jest.mock('../../../components/RefugeBottomSheet', () => ({
 
 describe('AppNavigator - Tests d\'integració', () => {
   describe('Renderització del navegador', () => {
-    it('hauria de renderitzar-se sense errors', () => {
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
-      expect(UNSAFE_root).toBeTruthy();
+    it('hauria de renderitzar-se sense errors', async () => {
+      const { container } = await renderWithProviders(<AppNavigator />);
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de contenir el navegador de tabs', () => {
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
+    it('hauria de contenir el navegador de tabs', async () => {
+      const { container } = await renderWithProviders(<AppNavigator />);
       
       // Verificar que el component Navigator està present
-      const navigatorElement = UNSAFE_root.findByType('Navigator' as any);
+      const navigatorElement = findByType(container, 'Navigator' as any);
       expect(navigatorElement).toBeTruthy();
     });
 
-    it('hauria de tenir el Stack Navigator amb múltiples pantalles', () => {
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
+    it('hauria de tenir el Stack Navigator amb múltiples pantalles', async () => {
+      const { container } = await renderWithProviders(<AppNavigator />);
       
       // Verificar que hi ha almenys un Navigator amb screens (poden ser del Tab o del Stack)
-      const navigatorElement = UNSAFE_root.findByType('Navigator' as any);
-      const screens = navigatorElement.findAllByType('Screen' as any);
+      const navigatorElement = findByType(container, 'Navigator' as any);
+      const screens = findAllByType(navigatorElement, 'Screen' as any);
       
       // El TabsNavigator té 4 screens (Map, Favorites, Renovations, Profile)
       expect(screens.length).toBeGreaterThanOrEqual(4);
@@ -138,21 +139,21 @@ describe('AppNavigator - Tests d\'integració', () => {
   });
 
   describe('Configuració de pantalles', () => {
-    it('hauria de configurar les pantalles principals del tab bar', () => {
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
+    it('hauria de configurar les pantalles principals del tab bar', async () => {
+      const { container } = await renderWithProviders(<AppNavigator />);
       
-      const navigatorElement = UNSAFE_root.findByType('Navigator' as any);
-      const screens = navigatorElement.findAllByType('Screen' as any);
+      const navigatorElement = findByType(container, 'Navigator' as any);
+      const screens = findAllByType(navigatorElement, 'Screen' as any);
       
       // Verificar que hi ha el nombre correcte de pantalles
       expect(screens.length).toBeGreaterThanOrEqual(4);
     });
 
-    it('hauria de configurar pantalles ocultes (Settings, ChangePassword, etc.)', () => {
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
+    it('hauria de configurar pantalles ocultes (Settings, ChangePassword, etc.)', async () => {
+      const { container } = await renderWithProviders(<AppNavigator />);
       
-      const navigatorElement = UNSAFE_root.findByType('Navigator' as any);
-      const screens = navigatorElement.findAllByType('Screen' as any);
+      const navigatorElement = findByType(container, 'Navigator' as any);
+      const screens = findAllByType(navigatorElement, 'Screen' as any);
       
       // Verificar que hi ha múltiples pantalles configurades
       expect(screens.length).toBeGreaterThan(1);
@@ -160,36 +161,36 @@ describe('AppNavigator - Tests d\'integració', () => {
   });
 
   describe('Integració amb providers', () => {
-    it('hauria de funcionar amb AuthContext', () => {
+    it('hauria de funcionar amb AuthContext', async () => {
       const mockAuthValue = {
         isAuthenticated: true,
         firebaseUser: { uid: 'test-uid', email: 'test@test.com' },
       };
 
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />, {
+      const { container } = await renderWithProviders(<AppNavigator />, {
         mockAuthValue,
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de funcionar amb SafeAreaProvider', () => {
+    it('hauria de funcionar amb SafeAreaProvider', async () => {
       // renderWithProviders ja inclou SafeAreaProvider
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
-      expect(UNSAFE_root).toBeTruthy();
+      const { container } = await renderWithProviders(<AppNavigator />);
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de funcionar amb NavigationContainer', () => {
+    it('hauria de funcionar amb NavigationContainer', async () => {
       // renderWithProviders ja inclou NavigationContainer
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />);
-      expect(UNSAFE_root).toBeTruthy();
+      const { container } = await renderWithProviders(<AppNavigator />);
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Gestió d\'errors', () => {
-    it('hauria de gestionar contextos undefined correctament', () => {
+    it('hauria de gestionar contextos undefined correctament', async () => {
       // Verificar que el component no peta amb contextos buits
-      const { UNSAFE_root } = renderWithProviders(<AppNavigator />, {
+      const { container } = await renderWithProviders(<AppNavigator />, {
         mockAuthValue: {
           isAuthenticated: false,
           firebaseUser: null,
@@ -197,13 +198,13 @@ describe('AppNavigator - Tests d\'integració', () => {
         },
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe("Pantalla d'edat (AgeGate)", () => {
-    it('bloqueja l\'app si backendUser.age_confirmed === false', () => {
-      const { getByText, getByTestId, UNSAFE_root } = renderWithProviders(<AppNavigator />, {
+    it('bloqueja l\'app si backendUser.age_confirmed === false', async () => {
+      const { getByText, getByTestId, container } = await renderWithProviders(<AppNavigator />, {
         mockAuthValue: {
           isAuthenticated: true,
           firebaseUser: { uid: 'test-uid' },
@@ -213,11 +214,11 @@ describe('AppNavigator - Tests d\'integració', () => {
 
       expect(getByText('age.gateTitle')).toBeTruthy();
       expect(getByTestId('agegate-submit')).toBeTruthy();
-      expect(UNSAFE_root.findAllByType('Navigator' as any)).toHaveLength(0);
+      expect(findAllByType(container, 'Navigator' as any)).toHaveLength(0);
     });
 
-    it('no bloqueja si age_confirmed === true', () => {
-      const { queryByText } = renderWithProviders(<AppNavigator />, {
+    it('no bloqueja si age_confirmed === true', async () => {
+      const { queryByText } = await renderWithProviders(<AppNavigator />, {
         mockAuthValue: {
           isAuthenticated: true,
           firebaseUser: { uid: 'test-uid' },

@@ -149,7 +149,7 @@ export function ChangePasswordScreen() {
     setCurrentPasswordError(null);
     setPasswordRequirements([]);
     setConfirmPasswordError(null);
-    navigation.navigate('Settings');
+    navigation.popTo('Settings');
   };
 
   // Handle Android hardware back button
@@ -163,7 +163,7 @@ export function ChangePasswordScreen() {
       setCurrentPasswordError(null);
       setPasswordRequirements([]);
       setConfirmPasswordError(null);
-      navigation.navigate('Settings');
+      navigation.popTo('Settings');
       return true;
     };
 
@@ -471,11 +471,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   gradientFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
   },
   gradientDisabledFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 8,
     backgroundColor: '#dadadaff',
   },

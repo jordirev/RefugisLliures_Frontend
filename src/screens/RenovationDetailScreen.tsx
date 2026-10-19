@@ -114,7 +114,7 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
   };
 
   const handleGoBack = () => {
-    navigation.navigate('Renovations')
+    navigation.navigate('MainTabs', { screen: 'Renovations' }, { pop: true })
   };
 
   const handleJoinRenovation = () => {

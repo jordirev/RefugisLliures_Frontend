@@ -20,14 +20,54 @@ import { MapCacheService } from '../../../services/MapCacheService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock de les dependències
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: 'file://documents/',
-  getInfoAsync: jest.fn(),
-  makeDirectoryAsync: jest.fn(),
-  deleteAsync: jest.fn(),
-  readDirectoryAsync: jest.fn(),
-  downloadAsync: jest.fn(),
-}));
+// Doble síncron de l'API d'objectes d'expo-file-system (File / Directory / Paths):
+// els jest.fn de `mockFs` són els punts de control de cada test.
+const mockFs = {
+  getInfo: jest.fn(), // { exists, size } d'una ruta (el llegeixen `exists` i `size`)
+  createDir: jest.fn(), // Directory.create(uri, opcions)
+  deleteDir: jest.fn(), // Directory.delete(uri)
+  listDir: jest.fn(), // Directory.list() → noms de fitxer
+  download: jest.fn(), // File.downloadFileAsync(url, uri)
+};
+
+jest.mock('expo-file-system', () => {
+  class File {
+    uri: string;
+    private lastInfo: any = null;
+    constructor(...parts: any[]) {
+      this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('');
+    }
+    get exists() {
+      this.lastInfo = mockFs.getInfo(this.uri);
+      return !!this.lastInfo?.exists;
+    }
+    get size() {
+      return this.lastInfo?.size ?? 0;
+    }
+    static downloadFileAsync(url: string, destination: any) {
+      return mockFs.download(url, destination.uri);
+    }
+  }
+  class Directory {
+    uri: string;
+    constructor(uri: string) {
+      this.uri = uri;
+    }
+    get exists() {
+      return !!mockFs.getInfo(this.uri)?.exists;
+    }
+    create(options?: any) {
+      return mockFs.createDir(this.uri, options);
+    }
+    delete() {
+      return mockFs.deleteDir(this.uri);
+    }
+    list() {
+      return (mockFs.listDir(this.uri) as string[]).map((name) => new File(this.uri, name));
+    }
+  }
+  return { File, Directory, Paths: { document: { uri: 'file://documents/' } } };
+});
 
 jest.mock('@react-native-async-storage/async-storage');
 
@@ -36,7 +76,6 @@ jest.mock('../../../services/fetchWithLog', () => ({
 }));
 
 // Import després dels mocks
-const FileSystem = require('expo-file-system/legacy');
 const { logApi } = require('../../../services/fetchWithLog');
 
 // Type assertion for AsyncStorage mock
@@ -54,26 +93,26 @@ describe('MapCacheService', () => {
   describe('initializeCache', () => {
     it('ha de crear el directori de cache si no existeix', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: mockCacheDir,
         size: 0,
         modificationTime: 0
       });
-      FileSystem.makeDirectoryAsync.mockResolvedValue(undefined);
+      mockFs.createDir.mockResolvedValue(undefined);
 
       // Act
       await MapCacheService.initializeCache();
 
       // Assert
-      expect(FileSystem.getInfoAsync).toHaveBeenCalledWith(mockCacheDir);
-      expect(FileSystem.makeDirectoryAsync).toHaveBeenCalledWith(mockCacheDir, { intermediates: true });
+      expect(mockFs.getInfo).toHaveBeenCalledWith(mockCacheDir);
+      expect(mockFs.createDir).toHaveBeenCalledWith(mockCacheDir, { intermediates: true });
     });
 
     it('no ha de crear el directori si ja existeix', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: true,
         uri: mockCacheDir,
@@ -85,14 +124,14 @@ describe('MapCacheService', () => {
       await MapCacheService.initializeCache();
 
       // Assert
-      expect(FileSystem.getInfoAsync).toHaveBeenCalledWith(mockCacheDir);
-      expect(FileSystem.makeDirectoryAsync).not.toHaveBeenCalled();
+      expect(mockFs.getInfo).toHaveBeenCalledWith(mockCacheDir);
+      expect(mockFs.createDir).not.toHaveBeenCalled();
     });
 
     it('ha de llançar error si la inicialització falla', async () => {
       // Arrange
       const error = new Error('Permission denied');
-      FileSystem.getInfoAsync.mockRejectedValue(error);
+      mockFs.getInfo.mockImplementation(() => { throw error; });
 
       // Act & Assert
       await expect(MapCacheService.initializeCache()).rejects.toThrow('Permission denied');
@@ -246,15 +285,15 @@ describe('MapCacheService', () => {
 
     it('ha de descarregar un tile correctament', async () => {
       // Arrange
-      FileSystem.getInfoAsync
-        .mockResolvedValueOnce({ // Primera crida: comprovar si existeix
+      mockFs.getInfo
+        .mockReturnValueOnce({ // Primera crida: comprovar si existeix
           exists: false,
           isDirectory: false,
           uri: '',
           size: 0,
           modificationTime: 0
         })
-        .mockResolvedValueOnce({ // Segona crida: verificar descàrrega
+        .mockReturnValueOnce({ // Segona crida: verificar descàrrega
           exists: true,
           isDirectory: false,
           uri: `${mockCacheDir}10_100_200.png`,
@@ -262,7 +301,7 @@ describe('MapCacheService', () => {
           modificationTime: Date.now()
         });
 
-      FileSystem.downloadAsync.mockResolvedValue({
+      mockFs.download.mockResolvedValue({
         uri: `${mockCacheDir}10_100_200.png`,
         status: 200,
         headers: {},
@@ -274,16 +313,16 @@ describe('MapCacheService', () => {
 
       // Assert
       expect(result).toBe(true);
-      expect(FileSystem.downloadAsync).toHaveBeenCalledWith(
+      expect(mockFs.download).toHaveBeenCalledWith(
         'https://a.tile.opentopomap.org/10/100/200.png',
         `${mockCacheDir}10_100_200.png`
       );
-      expect(FileSystem.getInfoAsync).toHaveBeenCalledTimes(2);
+      expect(mockFs.getInfo).toHaveBeenCalledTimes(2);
     });
 
     it('ha de retornar true si el tile ja existeix', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: `${mockCacheDir}10_100_200.png`,
@@ -296,20 +335,20 @@ describe('MapCacheService', () => {
 
       // Assert
       expect(result).toBe(true);
-      expect(FileSystem.downloadAsync).not.toHaveBeenCalled();
+      expect(mockFs.download).not.toHaveBeenCalled();
     });
 
     it('ha de retornar false si la descàrrega falla', async () => {
       // Arrange
-      FileSystem.getInfoAsync
-        .mockResolvedValueOnce({
+      mockFs.getInfo
+        .mockReturnValueOnce({
           exists: false,
           isDirectory: false,
           uri: '',
           size: 0,
           modificationTime: 0
         })
-        .mockResolvedValueOnce({
+        .mockReturnValueOnce({
           exists: false, // Descàrrega fallida
           isDirectory: false,
           uri: '',
@@ -317,7 +356,7 @@ describe('MapCacheService', () => {
           modificationTime: 0
         });
 
-      FileSystem.downloadAsync.mockResolvedValue({
+      mockFs.download.mockResolvedValue({
         uri: '',
         status: 404,
         headers: {},
@@ -333,15 +372,15 @@ describe('MapCacheService', () => {
 
     it('ha de retornar false si el fitxer descarregat té mida 0', async () => {
       // Arrange
-      FileSystem.getInfoAsync
-        .mockResolvedValueOnce({
+      mockFs.getInfo
+        .mockReturnValueOnce({
           exists: false,
           isDirectory: false,
           uri: '',
           size: 0,
           modificationTime: 0
         })
-        .mockResolvedValueOnce({
+        .mockReturnValueOnce({
           exists: true,
           isDirectory: false,
           uri: `${mockCacheDir}10_100_200.png`,
@@ -349,7 +388,7 @@ describe('MapCacheService', () => {
           modificationTime: Date.now()
         });
 
-      FileSystem.downloadAsync.mockResolvedValue({
+      mockFs.download.mockResolvedValue({
         uri: `${mockCacheDir}10_100_200.png`,
         status: 200,
         headers: {},
@@ -365,7 +404,7 @@ describe('MapCacheService', () => {
 
     it('ha de gestionar errors de xarxa durant la descàrrega', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
@@ -374,7 +413,7 @@ describe('MapCacheService', () => {
       });
 
       const networkError = new Error('Network connection failed');
-      FileSystem.downloadAsync.mockRejectedValue(networkError);
+      mockFs.download.mockRejectedValue(networkError);
 
       // Act
       const result = await MapCacheService.downloadTile(mockTile);
@@ -417,15 +456,15 @@ describe('MapCacheService', () => {
         })
       });
       
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
         size: 0,
         modificationTime: 0
       });
-      FileSystem.makeDirectoryAsync.mockResolvedValue(undefined);
-      FileSystem.downloadAsync.mockResolvedValue({
+      mockFs.createDir.mockResolvedValue(undefined);
+      mockFs.download.mockResolvedValue({
         uri: '',
         status: 200,
         headers: {},
@@ -444,7 +483,7 @@ describe('MapCacheService', () => {
         west: 1.45
       };
 
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: '',
@@ -486,7 +525,7 @@ describe('MapCacheService', () => {
         west: 1.48
       };
 
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: '',
@@ -525,7 +564,7 @@ describe('MapCacheService', () => {
         west: 1.48
       };
 
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: '',
@@ -566,7 +605,7 @@ describe('MapCacheService', () => {
         west: 1.48
       };
 
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: '',
@@ -592,7 +631,7 @@ describe('MapCacheService', () => {
     it('ha de gestionar errors durant la descàrrega', async () => {
       // Arrange
       const error = new Error('Disk full');
-      FileSystem.getInfoAsync.mockRejectedValue(error);
+      mockFs.getInfo.mockImplementation(() => { throw error; });
 
       const onComplete = jest.fn();
 
@@ -613,7 +652,7 @@ describe('MapCacheService', () => {
 
     it('ha d\'utilitzar els bounds dels Pirineus per defecte', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: '',
@@ -648,7 +687,7 @@ describe('MapCacheService', () => {
     it('ha de retornar true si el tile existeix', async () => {
       // Arrange
       const tile = { x: 100, y: 200, z: 10 };
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: `${mockCacheDir}10_100_200.png`,
@@ -666,7 +705,7 @@ describe('MapCacheService', () => {
     it('ha de retornar false si el tile no existeix', async () => {
       // Arrange
       const tile = { x: 100, y: 200, z: 10 };
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
@@ -716,7 +755,7 @@ describe('MapCacheService', () => {
     it('ha de retornar URL local si el tile existeix en cache', async () => {
       // Arrange
       const tile = { x: 100, y: 200, z: 10 };
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: false,
         uri: `${mockCacheDir}10_100_200.png`,
@@ -734,7 +773,7 @@ describe('MapCacheService', () => {
     it('ha de retornar URL online si el tile no existeix en cache', async () => {
       // Arrange
       const tile = { x: 100, y: 200, z: 10 };
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
@@ -851,28 +890,28 @@ describe('MapCacheService', () => {
   describe('clearCache', () => {
     it('ha d\'eliminar el directori de cache i metadata', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: true,
         uri: mockCacheDir,
         size: 100000,
         modificationTime: Date.now()
       });
-      FileSystem.deleteAsync.mockResolvedValue(undefined);
+      mockFs.deleteDir.mockResolvedValue(undefined);
       mockedAsyncStorage.removeItem.mockResolvedValue(undefined);
 
       // Act
       await MapCacheService.clearCache();
 
       // Assert
-      expect(FileSystem.deleteAsync).toHaveBeenCalledWith(mockCacheDir);
+      expect(mockFs.deleteDir).toHaveBeenCalledWith(mockCacheDir);
       expect(mockedAsyncStorage.removeItem).toHaveBeenCalledWith('map_cache_metadata');
       expect(logApi).toHaveBeenCalledWith('CACHE', 'Cache cleared successfully');
     });
 
     it('no ha d\'intentar eliminar si el directori no existeix', async () => {
       // Arrange
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
@@ -885,14 +924,14 @@ describe('MapCacheService', () => {
       await MapCacheService.clearCache();
 
       // Assert
-      expect(FileSystem.deleteAsync).not.toHaveBeenCalled();
+      expect(mockFs.deleteDir).not.toHaveBeenCalled();
       expect(mockedAsyncStorage.removeItem).toHaveBeenCalled();
     });
 
     it('ha de gestionar errors durant l\'eliminació', async () => {
       // Arrange
       const error = new Error('Permission denied');
-      FileSystem.getInfoAsync.mockRejectedValue(error);
+      mockFs.getInfo.mockImplementation(() => { throw error; });
 
       // Act
       await MapCacheService.clearCache();
@@ -918,7 +957,7 @@ describe('MapCacheService', () => {
 
       mockedAsyncStorage.getItem.mockResolvedValue(JSON.stringify(metadata));
       
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: true,
         uri: mockCacheDir,
@@ -926,35 +965,35 @@ describe('MapCacheService', () => {
         modificationTime: Date.now()
       });
 
-      FileSystem.readDirectoryAsync.mockResolvedValue([
+      mockFs.listDir.mockReturnValue([
         '10_100_200.png',
         '10_101_200.png',
         '11_200_400.png'
       ]);
 
-      FileSystem.getInfoAsync
-        .mockResolvedValueOnce({ // directori
+      mockFs.getInfo
+        .mockReturnValueOnce({ // directori
           exists: true,
           isDirectory: true,
           uri: mockCacheDir,
           size: 1000000,
           modificationTime: Date.now()
         })
-        .mockResolvedValueOnce({ // fitxer 1
+        .mockReturnValueOnce({ // fitxer 1
           exists: true,
           isDirectory: false,
           uri: `${mockCacheDir}10_100_200.png`,
           size: 5000,
           modificationTime: Date.now()
         })
-        .mockResolvedValueOnce({ // fitxer 2
+        .mockReturnValueOnce({ // fitxer 2
           exists: true,
           isDirectory: false,
           uri: `${mockCacheDir}10_101_200.png`,
           size: 5500,
           modificationTime: Date.now()
         })
-        .mockResolvedValueOnce({ // fitxer 3
+        .mockReturnValueOnce({ // fitxer 3
           exists: true,
           isDirectory: false,
           uri: `${mockCacheDir}11_200_400.png`,
@@ -974,7 +1013,7 @@ describe('MapCacheService', () => {
     it('ha de retornar estat no inicialitzat si el directori no existeix', async () => {
       // Arrange
       mockedAsyncStorage.getItem.mockResolvedValue(null);
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: false,
         isDirectory: false,
         uri: '',
@@ -994,7 +1033,7 @@ describe('MapCacheService', () => {
     it('ha de gestionar errors al calcular la mida', async () => {
       // Arrange
       mockedAsyncStorage.getItem.mockResolvedValue(null);
-      FileSystem.getInfoAsync.mockResolvedValue({
+      mockFs.getInfo.mockReturnValue({
         exists: true,
         isDirectory: true,
         uri: mockCacheDir,
@@ -1003,7 +1042,7 @@ describe('MapCacheService', () => {
       });
 
       const error = new Error('Cannot read directory');
-      FileSystem.readDirectoryAsync.mockRejectedValue(error);
+      mockFs.listDir.mockImplementation(() => { throw error; });
 
       // Act
       const status = await MapCacheService.getCacheStatus();

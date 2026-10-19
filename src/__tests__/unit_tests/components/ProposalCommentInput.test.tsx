@@ -22,8 +22,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Renderització per mode create', () => {
-    it('hauria de renderitzar amb placeholder de create', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria de renderitzar amb placeholder de create', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -36,8 +36,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByPlaceholderText('createRefuge.adminCommentPlaceholder')).toBeTruthy();
     });
 
-    it('no hauria de mostrar advertència de caràcters mínims en mode create', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar advertència de caràcters mínims en mode create', async () => {
+      const { queryByText } = await render(
         <ProposalCommentInput
           mode="create"
           value="Curt"
@@ -53,8 +53,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Renderització per mode edit', () => {
-    it('hauria de renderitzar amb placeholder de edit', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria de renderitzar amb placeholder de edit', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="edit"
           value=""
@@ -67,8 +67,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByPlaceholderText('editRefuge.adminCommentPlaceholder')).toBeTruthy();
     });
 
-    it('hauria de mostrar advertència quan hi ha menys caràcters dels mínims', () => {
-      const { getByText } = render(
+    it('hauria de mostrar advertència quan hi ha menys caràcters dels mínims', async () => {
+      const { getByText } = await render(
         <ProposalCommentInput
           mode="edit"
           value="Curt"
@@ -81,8 +81,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByText(/editRefuge.minChars/)).toBeTruthy();
     });
 
-    it('no hauria de mostrar advertència quan s\'assoleix el mínim', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar advertència quan s\'assoleix el mínim', async () => {
+      const { queryByText } = await render(
         <ProposalCommentInput
           mode="edit"
           value={'A'.repeat(60)}
@@ -97,8 +97,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Renderització per mode delete', () => {
-    it('hauria de renderitzar amb placeholder de delete', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria de renderitzar amb placeholder de delete', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="delete"
           value=""
@@ -111,8 +111,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByPlaceholderText('deleteRefuge.commentPlaceholder')).toBeTruthy();
     });
 
-    it('hauria de mostrar label en mode delete', () => {
-      const { getByText } = render(
+    it('hauria de mostrar label en mode delete', async () => {
+      const { getByText } = await render(
         <ProposalCommentInput
           mode="delete"
           value=""
@@ -127,8 +127,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Comptador de caràcters', () => {
-    it('hauria de mostrar el comptador de caràcters', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el comptador de caràcters', async () => {
+      const { getByText } = await render(
         <ProposalCommentInput
           mode="create"
           value="Hola"
@@ -141,8 +141,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByText(/4\/500/)).toBeTruthy();
     });
 
-    it('hauria d\'actualitzar el comptador quan canvia el text', () => {
-      const { getByPlaceholderText, getByText, rerender } = render(
+    it('hauria d\'actualitzar el comptador quan canvia el text', async () => {
+      const { getByPlaceholderText, getByText, rerender } = await render(
         <ProposalCommentInput
           mode="create"
           value="Hola"
@@ -153,7 +153,7 @@ describe('ProposalCommentInput Component', () => {
       );
 
       const input = getByPlaceholderText('createRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(input, 'Hola món!');
+      await fireEvent.changeText(input, 'Hola món!');
 
       // onChange s'hauria d'haver cridat
       expect(mockOnChange).toHaveBeenCalledWith('Hola món!');
@@ -161,8 +161,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Límit de caràcters', () => {
-    it('no hauria de permetre més caràcters que maxChars', () => {
-      const { getByPlaceholderText } = render(
+    it('no hauria de permetre més caràcters que maxChars', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -173,14 +173,14 @@ describe('ProposalCommentInput Component', () => {
       );
 
       const input = getByPlaceholderText('createRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(input, 'Això és massa llarg');
+      await fireEvent.changeText(input, 'Això és massa llarg');
 
       // No s'hauria de cridar onChange perquè supera el límit
       expect(mockOnChange).not.toHaveBeenCalled();
     });
 
-    it('hauria de permetre exactament maxChars', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria de permetre exactament maxChars', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -191,15 +191,15 @@ describe('ProposalCommentInput Component', () => {
       );
 
       const input = getByPlaceholderText('createRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(input, '1234567890');
+      await fireEvent.changeText(input, '1234567890');
 
       expect(mockOnChange).toHaveBeenCalledWith('1234567890');
     });
   });
 
   describe('Gestió d\'errors', () => {
-    it('hauria de mostrar missatge d\'error quan hi ha error', () => {
-      const { getByText } = render(
+    it('hauria de mostrar missatge d\'error quan hi ha error', async () => {
+      const { getByText } = await render(
         <ProposalCommentInput
           mode="edit"
           value=""
@@ -213,8 +213,8 @@ describe('ProposalCommentInput Component', () => {
       expect(getByText('Aquest camp és obligatori')).toBeTruthy();
     });
 
-    it('hauria de cridar onClearError quan s\'escriu amb error', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria de cridar onClearError quan s\'escriu amb error', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="edit"
           value=""
@@ -227,15 +227,15 @@ describe('ProposalCommentInput Component', () => {
       );
 
       const input = getByPlaceholderText('editRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(input, 'Text');
+      await fireEvent.changeText(input, 'Text');
 
       expect(mockOnClearError).toHaveBeenCalled();
     });
   });
 
   describe('Props adicionals', () => {
-    it('hauria d\'utilitzar numberOfLines personalitzat', () => {
-      const { getByPlaceholderText } = render(
+    it('hauria d\'utilitzar numberOfLines personalitzat', async () => {
+      const { getByPlaceholderText } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -250,8 +250,8 @@ describe('ProposalCommentInput Component', () => {
       expect(input.props.numberOfLines).toBe(8);
     });
 
-    it('hauria d\'utilitzar testID personalitzat', () => {
-      const { getByTestId } = render(
+    it('hauria d\'utilitzar testID personalitzat', async () => {
+      const { getByTestId } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -267,8 +267,8 @@ describe('ProposalCommentInput Component', () => {
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot per mode create', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per mode create', async () => {
+      const { toJSON } = await render(
         <ProposalCommentInput
           mode="create"
           value=""
@@ -281,8 +281,8 @@ describe('ProposalCommentInput Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot per mode edit amb warning', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per mode edit amb warning', async () => {
+      const { toJSON } = await render(
         <ProposalCommentInput
           mode="edit"
           value="Curt"
@@ -295,8 +295,8 @@ describe('ProposalCommentInput Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot per mode delete amb error', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per mode delete amb error', async () => {
+      const { toJSON } = await render(
         <ProposalCommentInput
           mode="delete"
           value=""

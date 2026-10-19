@@ -44,8 +44,8 @@ describe('UserMessage Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el nom d\'usuari', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el nom d\'usuari', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -57,8 +57,8 @@ describe('UserMessage Component', () => {
       expect(getByText('TestUser')).toBeTruthy();
     });
 
-    it('hauria de renderitzar el missatge', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el missatge', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -70,8 +70,8 @@ describe('UserMessage Component', () => {
       expect(getByText(shortMessage)).toBeTruthy();
     });
 
-    it('hauria de mostrar "common.unknown" quan no hi ha usuari', () => {
-      const { getByText } = render(
+    it('hauria de mostrar "common.unknown" quan no hi ha usuari', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={null}
           message={shortMessage}
@@ -85,8 +85,8 @@ describe('UserMessage Component', () => {
   });
 
   describe('Avatar', () => {
-    it('hauria de renderitzar correctament amb avatar', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar correctament amb avatar', async () => {
+      const { toJSON } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -98,13 +98,13 @@ describe('UserMessage Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar placeholder amb inicial quan no hi ha avatar', () => {
+    it('hauria de mostrar placeholder amb inicial quan no hi ha avatar', async () => {
       const userSenseAvatar: User = {
         ...mockUser,
         avatar_metadata: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserMessage
           user={userSenseAvatar}
           message={shortMessage}
@@ -116,14 +116,14 @@ describe('UserMessage Component', () => {
       expect(getByText('T')).toBeTruthy(); // Inicial de 'TestUser'
     });
 
-    it('hauria de mostrar "?" quan no hi ha username', () => {
+    it('hauria de mostrar "?" quan no hi ha username', async () => {
       const userSenseUsername: User = {
         ...mockUser,
         username: undefined as any,
         avatar_metadata: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserMessage
           user={userSenseUsername}
           message={shortMessage}
@@ -137,8 +137,8 @@ describe('UserMessage Component', () => {
   });
 
   describe('Format de dates', () => {
-    it('hauria de formatar la data correctament', () => {
-      const { getByText } = render(
+    it('hauria de formatar la data correctament', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -152,8 +152,8 @@ describe('UserMessage Component', () => {
   });
 
   describe('Truncament de missatges', () => {
-    it('no hauria de truncar missatges curts', () => {
-      const { getByText, queryByText } = render(
+    it('no hauria de truncar missatges curts', async () => {
+      const { getByText, queryByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -166,8 +166,8 @@ describe('UserMessage Component', () => {
       expect(queryByText('common.readMore')).toBeNull();
     });
 
-    it('hauria de truncar missatges llargs', () => {
-      const { getByText } = render(
+    it('hauria de truncar missatges llargs', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={longMessage}
@@ -181,8 +181,8 @@ describe('UserMessage Component', () => {
       expect(getByText('common.readMore')).toBeTruthy();
     });
 
-    it('hauria de expandir el missatge quan es prem "llegir més"', () => {
-      const { getByText } = render(
+    it('hauria de expandir el missatge quan es prem "llegir més"', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={longMessage}
@@ -191,14 +191,14 @@ describe('UserMessage Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.readMore'));
+      await fireEvent.press(getByText('common.readMore'));
       
       expect(getByText(longMessage)).toBeTruthy();
       expect(getByText('common.readLess')).toBeTruthy();
     });
 
-    it('hauria de col·lapsar el missatge quan es prem "llegir menys"', () => {
-      const { getByText } = render(
+    it('hauria de col·lapsar el missatge quan es prem "llegir menys"', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={longMessage}
@@ -208,17 +208,17 @@ describe('UserMessage Component', () => {
       );
 
       // Expandim
-      fireEvent.press(getByText('common.readMore'));
+      await fireEvent.press(getByText('common.readMore'));
       // Col·lapsem
-      fireEvent.press(getByText('common.readLess'));
+      await fireEvent.press(getByText('common.readLess'));
       
       expect(getByText('A'.repeat(150) + '...')).toBeTruthy();
     });
   });
 
   describe('Botons d\'acció', () => {
-    it('hauria de mostrar el botó de respondre', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el botó de respondre', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -230,8 +230,8 @@ describe('UserMessage Component', () => {
       expect(getByText('doubts.reply')).toBeTruthy();
     });
 
-    it('hauria de cridar onReply quan es prem respondre', () => {
-      const { getByText } = render(
+    it('hauria de cridar onReply quan es prem respondre', async () => {
+      const { getByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -240,17 +240,17 @@ describe('UserMessage Component', () => {
         />
       );
 
-      fireEvent.press(getByText('doubts.reply'));
+      await fireEvent.press(getByText('doubts.reply'));
       expect(mockOnReply).toHaveBeenCalled();
     });
 
-    it('hauria de mostrar el botó d\'eliminar quan l\'usuari és el creador', () => {
+    it('hauria de mostrar el botó d\'eliminar quan l\'usuari és el creador', async () => {
       const currentUserMessage: User = {
         ...mockUser,
         uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserMessage
           user={currentUserMessage}
           message={shortMessage}
@@ -263,8 +263,8 @@ describe('UserMessage Component', () => {
       expect(getByText('common.delete')).toBeTruthy();
     });
 
-    it('no hauria de mostrar el botó d\'eliminar quan l\'usuari no és el creador', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar el botó d\'eliminar quan l\'usuari no és el creador', async () => {
+      const { queryByText } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -277,13 +277,13 @@ describe('UserMessage Component', () => {
       expect(queryByText('common.delete')).toBeNull();
     });
 
-    it('hauria de cridar onDelete quan es prem eliminar', () => {
+    it('hauria de cridar onDelete quan es prem eliminar', async () => {
       const currentUserMessage: User = {
         ...mockUser,
         uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserMessage
           user={currentUserMessage}
           message={shortMessage}
@@ -293,14 +293,14 @@ describe('UserMessage Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.delete'));
+      await fireEvent.press(getByText('common.delete'));
       expect(mockOnDelete).toHaveBeenCalled();
     });
   });
 
   describe('Mode resposta', () => {
-    it('hauria d\'aplicar estils de resposta quan isAnswer és true', () => {
-      const { toJSON } = render(
+    it('hauria d\'aplicar estils de resposta quan isAnswer és true', async () => {
+      const { toJSON } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -316,8 +316,8 @@ describe('UserMessage Component', () => {
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot bàsic', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot bàsic', async () => {
+      const { toJSON } = await render(
         <UserMessage
           user={mockUser}
           message={shortMessage}
@@ -329,8 +329,8 @@ describe('UserMessage Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb missatge llarg', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot amb missatge llarg', async () => {
+      const { toJSON } = await render(
         <UserMessage
           user={mockUser}
           message={longMessage}

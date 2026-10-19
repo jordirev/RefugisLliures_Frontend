@@ -15,6 +15,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ProposalsScreen } from '../../../screens/ProposalsScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock SVG icons
 jest.mock('../../../assets/icons/arrow-left.svg', () => 'BackIcon');
@@ -121,8 +122,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -139,71 +140,71 @@ describe('ProposalsScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de renderitzar correctament', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar el títol admin', () => {
-      const { getByText } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de mostrar el títol admin', async () => {
+      const { getByText } = await renderWithProviders(<ProposalsScreen />);
       expect(getByText('proposals.titleAdmin')).toBeTruthy();
     });
 
-    it('hauria de mostrar el títol my quan mode és my', () => {
+    it('hauria de mostrar el títol my quan mode és my', async () => {
       mockMode = 'my';
-      const { getByText } = renderWithProviders(<ProposalsScreen />);
+      const { getByText } = await renderWithProviders(<ProposalsScreen />);
       expect(getByText('proposals.titleMy')).toBeTruthy();
     });
 
-    it('hauria de renderitzar mode admin', () => {
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de renderitzar mode admin', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar mode my', () => {
+    it('hauria de renderitzar mode my', async () => {
       mockMode = 'my';
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Filtres', () => {
-    it('hauria de mostrar tots els filtres', () => {
-      const { getByText } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de mostrar tots els filtres', async () => {
+      const { getByText } = await renderWithProviders(<ProposalsScreen />);
       expect(getByText('proposals.filters.all')).toBeTruthy();
       expect(getByText('proposals.filters.pending')).toBeTruthy();
       expect(getByText('proposals.filters.approved')).toBeTruthy();
       expect(getByText('proposals.filters.rejected')).toBeTruthy();
     });
 
-    it('hauria de tenir pending seleccionat per defecte en mode admin', () => {
+    it('hauria de tenir pending seleccionat per defecte en mode admin', async () => {
       // En mode admin, el filtre per defecte és 'pending'
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de tenir all seleccionat per defecte en mode my', () => {
+    it('hauria de tenir all seleccionat per defecte en mode my', async () => {
       mockMode = 'my';
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de canviar el filtre quan es prem', () => {
-      const { getByText } = renderWithProviders(<ProposalsScreen />);
-      fireEvent.press(getByText('proposals.filters.approved'));
+    it('hauria de canviar el filtre quan es prem', async () => {
+      const { getByText } = await renderWithProviders(<ProposalsScreen />);
+      await fireEvent.press(getByText('proposals.filters.approved'));
       // El filtre hauria de canviar
     });
   });
 
   describe('Llista de proposals', () => {
-    it('hauria de mostrar les proposals', () => {
-      const { getByTestId } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de mostrar les proposals', async () => {
+      const { getByTestId } = await renderWithProviders(<ProposalsScreen />);
       expect(getByTestId('proposal-card-proposal-1')).toBeTruthy();
     });
 
-    it('hauria de navegar a detall quan es prem una proposal', () => {
-      const { getByTestId } = renderWithProviders(<ProposalsScreen />);
-      fireEvent.press(getByTestId('proposal-card-proposal-1'));
+    it('hauria de navegar a detall quan es prem una proposal', async () => {
+      const { getByTestId } = await renderWithProviders(<ProposalsScreen />);
+      await fireEvent.press(getByTestId('proposal-card-proposal-1'));
       
       expect(mockNavigate).toHaveBeenCalledWith('ProposalDetail', {
         proposal: mockProposals[0],
@@ -211,22 +212,22 @@ describe('ProposalsScreen', () => {
       });
     });
 
-    it('hauria de mostrar info del creador en mode admin', () => {
-      const { getAllByTestId } = renderWithProviders(<ProposalsScreen />);
+    it('hauria de mostrar info del creador en mode admin', async () => {
+      const { getAllByTestId } = await renderWithProviders(<ProposalsScreen />);
       const creatorInfos = getAllByTestId('creator-info');
       expect(creatorInfos.length).toBeGreaterThan(0);
     });
 
-    it('no hauria de mostrar info del creador en mode my', () => {
+    it('no hauria de mostrar info del creador en mode my', async () => {
       mockMode = 'my';
-      const { queryAllByTestId } = renderWithProviders(<ProposalsScreen />);
+      const { queryAllByTestId } = await renderWithProviders(<ProposalsScreen />);
       const creatorInfos = queryAllByTestId('creator-info');
       expect(creatorInfos.length).toBe(0);
     });
   });
 
   describe('Empty state', () => {
-    it('hauria de mostrar empty state quan no hi ha proposals', () => {
+    it('hauria de mostrar empty state quan no hi ha proposals', async () => {
       jest.spyOn(require('../../../hooks/useProposalsQuery'), 'useProposals').mockReturnValue({
         data: [],
         isLoading: false,
@@ -234,15 +235,15 @@ describe('ProposalsScreen', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = renderWithProviders(<ProposalsScreen />);
+      const { getByText } = await renderWithProviders(<ProposalsScreen />);
       expect(getByText('proposals.emptyState')).toBeTruthy();
     });
   });
 
   describe('Loading state', () => {
-    it('hauria de mostrar loading quan carrega', () => {
+    it('hauria de mostrar loading quan carrega', async () => {
       mockIsLoading = true;
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       // El component mostra loading correctament
       expect(toJSON()).toBeTruthy();
     });
@@ -251,7 +252,7 @@ describe('ProposalsScreen', () => {
   describe('Error state', () => {
     it('hauria de gestionar errors correctament', async () => {
       mockIsError = true;
-      const { toJSON } = renderWithProviders(<ProposalsScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalsScreen />);
       
       // El component gestiona l'error
       expect(toJSON()).toBeTruthy();
@@ -259,21 +260,21 @@ describe('ProposalsScreen', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de navegar enrere quan es prem back', () => {
-      const { UNSAFE_root } = renderWithProviders(<ProposalsScreen />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria de navegar enrere quan es prem back', async () => {
+      const { container } = await renderWithProviders(<ProposalsScreen />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // El primer touchable és el botó back
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
       expect(mockGoBack).toHaveBeenCalled();
     });
   });
 
   describe('Pull to refresh', () => {
-    it('hauria de tenir RefreshControl', () => {
-      const { UNSAFE_root } = renderWithProviders(<ProposalsScreen />);
-      const flatLists = UNSAFE_root.findAllByType(require('react-native').FlatList);
+    it('hauria de tenir RefreshControl', async () => {
+      const { container } = await renderWithProviders(<ProposalsScreen />);
+      const flatLists = findAllByType(container, require('react-native').FlatList);
       expect(flatLists.length).toBeGreaterThan(0);
     });
   });

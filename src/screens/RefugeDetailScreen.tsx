@@ -13,8 +13,9 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 // Use the legacy API to avoid deprecation warnings for writeAsStringAsync
-import * as FileSystem from 'expo-file-system/legacy';
+import { Directory, File, Paths } from 'expo-file-system';
 // Use a runtime require for expo-sharing so the code still typechecks if the
 // package hasn't been installed yet. At runtime, if it's missing, we'll
 // gracefully fall back to notifying the user.
@@ -185,7 +186,7 @@ export function RefugeDetailScreen({
   const [photoViewerVisible, setPhotoViewerVisible] = React.useState(false);
   const [photoViewerIndex, setPhotoViewerIndex] = React.useState(0);
   const [galleryScreenVisible, setGalleryScreenVisible] = React.useState(false);
-  const imageScrollRef = React.useRef<ScrollView>(null);
+  const imageScrollRef = React.useRef<ScrollViewInstance>(null);
 
   // Experience photo viewer states
   const [selectedPhotos, setSelectedPhotos] = React.useState<ImageMetadata[]>([]);
@@ -350,32 +351,19 @@ export function RefugeDetailScreen({
         return;
       }
 
-      const fsAny: any = FileSystem as any;
-
-      // Android: intentar StorageAccessFramework per desar directament a Downloads o carpeta triada
-      if (Platform.OS === 'android' && fsAny.StorageAccessFramework) {
+      // Android: deixar triar la carpeta de destí (Storage Access Framework) i desar-hi el fitxer
+      if (Platform.OS === 'android') {
         try {
-          const SAF = fsAny.StorageAccessFramework;
-          // Obre el selector de directori
-          // requestDirectoryPermissionsAsync retorna { granted: boolean, directoryUri }
-          // Si l'usuari selecciona una carpeta, guardem allà el fitxer
-          // @ts-ignore
-          const permission = await SAF.requestDirectoryPermissionsAsync();
-          if (!permission || !permission.granted) {
+          let directory: Directory;
+          try {
+            directory = await Directory.pickDirectoryAsync();
+          } catch {
+            // L'usuari ha cancel·lat o no ha concedit el permís
             showAlert(t('alerts.permissionRequired'), t('alerts.permissionDenied'));
             return;
           }
-          const directoryUri = permission.directoryUri;
-          // @ts-ignore
-          const newFileUri = await SAF.createFileAsync(directoryUri, fileName, mimeType);
-          // Escriure el contingut al nou URI
-          if (SAF.writeAsStringAsync) {
-            // @ts-ignore
-            await SAF.writeAsStringAsync(newFileUri, content);
-          } else {
-            // fallback: intentar escriure amb FileSystem
-            await fsAny.writeAsStringAsync(newFileUri, content);
-          }
+          const safFile = directory.createFile(fileName, mimeType);
+          await safFile.write(content);
           showAlert(t('alerts.fileSaved'), t('alerts.fileSavedLocation'));
           return;
         } catch (e) {
@@ -384,10 +372,11 @@ export function RefugeDetailScreen({
         }
       }
 
-      // Fallback general: guardar a documentDirectory
-      const baseDir = fsAny.documentDirectory || fsAny.cacheDirectory || '';
-      const fileUri = baseDir + fileName;
-      await fsAny.writeAsStringAsync(fileUri, content);
+      // Fallback general: guardar al directori de documents
+      const localFile = new File(Paths.document, fileName);
+      localFile.create({ overwrite: true });
+      await localFile.write(content);
+      const fileUri = localFile.uri;
 
       // iOS: presentar directament el diàleg de "Save to Files" mitjançant Sharing
       if (Platform.OS === 'ios' && Sharing && (await Sharing.isAvailableAsync())) {
@@ -437,10 +426,10 @@ export function RefugeDetailScreen({
         return;
       }
 
-      const fsAny: any = FileSystem as any;
-      const baseDir = fsAny.documentDirectory || fsAny.cacheDirectory || '';
-      const fileUri = baseDir + fileName;
-      await fsAny.writeAsStringAsync(fileUri, content);
+      const localFile = new File(Paths.document, fileName);
+      localFile.create({ overwrite: true });
+      await localFile.write(content);
+      const fileUri = localFile.uri;
 
       // Preferir l'API d'sharing nativa si està disponible
       const isAvailable = await Sharing.isAvailableAsync();
@@ -448,10 +437,7 @@ export function RefugeDetailScreen({
         // En Android cal a vegades convertir a contentUri
         if (Platform.OS === 'android') {
           try {
-            const fsAny2: any = FileSystem as any;
-            // @ts-ignore
-            const contentUriObj: any = await fsAny2.getContentUriAsync(fileUri);
-            const shareUri = typeof contentUriObj === 'string' ? contentUriObj : (contentUriObj?.uri ?? fileUri);
+            const shareUri = localFile.contentUri || fileUri;
             await Sharing.shareAsync(shareUri);
             return;
           } catch (_e) {

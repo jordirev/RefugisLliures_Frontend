@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir amb el snapshot - amb location amb totes les propietats 1`] = `
 <NavigationContainer>

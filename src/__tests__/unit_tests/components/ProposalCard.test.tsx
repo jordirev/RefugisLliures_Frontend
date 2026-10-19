@@ -71,35 +71,35 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el nom del refugi des del snapshot', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el nom del refugi des del snapshot', async () => {
+      const { getByText } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
       expect(getByText('Refugi Original')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nom del payload si no hi ha snapshot', () => {
+    it('hauria de mostrar el nom del payload si no hi ha snapshot', async () => {
       const proposalSenseSnapshot: RefugeProposal = {
         ...mockProposal,
         refuge_snapshot: undefined,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalSenseSnapshot} onPress={mockOnPress} />
       );
 
       expect(getByText('Nou Refugi de Test')).toBeTruthy();
     });
 
-    it('hauria de mostrar "proposals.card.unknownRefuge" si no hi ha nom', () => {
+    it('hauria de mostrar "proposals.card.unknownRefuge" si no hi ha nom', async () => {
       const proposalSenseNom: RefugeProposal = {
         ...mockProposal,
         refuge_snapshot: undefined,
         payload: {},
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalSenseNom} onPress={mockOnPress} />
       );
 
@@ -108,8 +108,8 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Format de dates', () => {
-    it('hauria de formatar correctament la data de creació', () => {
-      const { getByText } = render(
+    it('hauria de formatar correctament la data de creació', async () => {
+      const { getByText } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
@@ -117,13 +117,13 @@ describe('ProposalCard Component', () => {
       expect(getByText('15/06/2025')).toBeTruthy();
     });
 
-    it('hauria de mostrar "-" si no hi ha data', () => {
+    it('hauria de mostrar "-" si no hi ha data', async () => {
       const proposalSenseData: RefugeProposal = {
         ...mockProposal,
         created_at: null as any,
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalSenseData} onPress={mockOnPress} />
       );
 
@@ -132,34 +132,34 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Badges d\'acció', () => {
-    it('hauria de mostrar badge de create per accions de creació', () => {
-      const { getByText } = render(
+    it('hauria de mostrar badge de create per accions de creació', async () => {
+      const { getByText } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
       expect(getByText('proposals.actions.create')).toBeTruthy();
     });
 
-    it('hauria de mostrar badge de update per accions d\'edició', () => {
+    it('hauria de mostrar badge de update per accions d\'edició', async () => {
       const proposalUpdate: RefugeProposal = {
         ...mockProposal,
         action: 'update',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalUpdate} onPress={mockOnPress} />
       );
 
       expect(getByText('proposals.actions.update')).toBeTruthy();
     });
 
-    it('hauria de mostrar badge de delete per accions d\'eliminació', () => {
+    it('hauria de mostrar badge de delete per accions d\'eliminació', async () => {
       const proposalDelete: RefugeProposal = {
         ...mockProposal,
         action: 'delete',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalDelete} onPress={mockOnPress} />
       );
 
@@ -168,34 +168,34 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Badges d\'estat', () => {
-    it('hauria de mostrar badge pending', () => {
-      const { getByText } = render(
+    it('hauria de mostrar badge pending', async () => {
+      const { getByText } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
       expect(getByText('proposals.status.pending')).toBeTruthy();
     });
 
-    it('hauria de mostrar badge approved', () => {
+    it('hauria de mostrar badge approved', async () => {
       const proposalApproved: RefugeProposal = {
         ...mockProposal,
         status: 'approved',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalApproved} onPress={mockOnPress} />
       );
 
       expect(getByText('proposals.status.approved')).toBeTruthy();
     });
 
-    it('hauria de mostrar badge rejected', () => {
+    it('hauria de mostrar badge rejected', async () => {
       const proposalRejected: RefugeProposal = {
         ...mockProposal,
         status: 'rejected',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard proposal={proposalRejected} onPress={mockOnPress} />
       );
 
@@ -204,19 +204,19 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Interacció', () => {
-    it('hauria de cridar onPress amb la proposta quan es prem', () => {
-      const { getByText } = render(
+    it('hauria de cridar onPress amb la proposta quan es prem', async () => {
+      const { getByText } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
-      fireEvent.press(getByText('Refugi Original'));
+      await fireEvent.press(getByText('Refugi Original'));
       expect(mockOnPress).toHaveBeenCalledWith(mockProposal);
     });
   });
 
   describe('Mode admin (showCreatorInfo)', () => {
     it('hauria de mostrar informació del creador quan showCreatorInfo és true', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <ProposalCard 
           proposal={mockProposal} 
           onPress={mockOnPress} 
@@ -229,8 +229,8 @@ describe('ProposalCard Component', () => {
       });
     });
 
-    it('no hauria de mostrar info del creador quan showCreatorInfo és false', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar info del creador quan showCreatorInfo és false', async () => {
+      const { queryByText } = await render(
         <ProposalCard 
           proposal={mockProposal} 
           onPress={mockOnPress} 
@@ -243,22 +243,22 @@ describe('ProposalCard Component', () => {
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot en mode bàsic', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot en mode bàsic', async () => {
+      const { toJSON } = await render(
         <ProposalCard proposal={mockProposal} onPress={mockOnPress} />
       );
 
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb status approved', () => {
+    it('hauria de coincidir amb el snapshot amb status approved', async () => {
       const proposalApproved: RefugeProposal = {
         ...mockProposal,
         status: 'approved',
         action: 'update',
       };
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <ProposalCard proposal={proposalApproved} onPress={mockOnPress} />
       );
 

@@ -181,8 +181,8 @@ const defaultProps = {
   selectedLocation: undefined,
 };
 
-const renderWithNavigation = (props = defaultProps) => {
-  return render(
+const renderWithNavigation = async (props = defaultProps) => {
+  return await render(
     <NavigationContainer>
       <TabsNavigator {...props} />
     </NavigationContainer>
@@ -199,31 +199,31 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el component', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de renderitzar el component', async () => {
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb NavigationContainer', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de renderitzar amb NavigationContainer', async () => {
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar el Navigator correctament', () => {
-      const { UNSAFE_root } = renderWithNavigation();
+    it('hauria de renderitzar el Navigator correctament', async () => {
+      const { container } = await renderWithNavigation();
       // El Navigator s'ha renderitzat
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar les pantalles', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de renderitzar les pantalles', async () => {
+      const { toJSON } = await renderWithNavigation();
       const json = toJSON();
       // Verificar que el component s'ha renderitzat sense errors
       expect(json).not.toBeNull();
     });
 
-    it('hauria de acceptar selectedLocation com a prop', () => {
-      const { toJSON } = renderWithNavigation({
+    it('hauria de acceptar selectedLocation com a prop', async () => {
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: mockLocation,
       });
@@ -233,17 +233,17 @@ describe('TabsNavigator Component', () => {
 
   describe('Navegació entre tabs', () => {
     it('hauria de tenir estructura de navigator', async () => {
-      const { toJSON } = renderWithNavigation();
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toBeTruthy();
     });
 
     it('hauria de renderitzar el component amb props per defecte', async () => {
-      const { toJSON } = renderWithNavigation();
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toBeTruthy();
     });
 
     it('hauria de renderitzar sense selectedLocation', async () => {
-      const { toJSON } = renderWithNavigation({
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: undefined,
       });
@@ -251,7 +251,7 @@ describe('TabsNavigator Component', () => {
     });
 
     it('hauria de renderitzar amb selectedLocation', async () => {
-      const { toJSON } = renderWithNavigation({
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: mockLocation,
       });
@@ -260,106 +260,106 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Callbacks de MapScreen', () => {
-    it('hauria de rebre props correctament', () => {
-      renderWithNavigation();
+    it('hauria de rebre props correctament', async () => {
+      await renderWithNavigation();
       // El component s'ha renderitzat correctament amb les props
       expect(defaultProps.onLocationSelect).toBeDefined();
     });
 
-    it('hauria de acceptar selectedLocation com a prop', () => {
+    it('hauria de acceptar selectedLocation com a prop', async () => {
       const propsWithLocation = {
         ...defaultProps,
         selectedLocation: mockLocation,
       };
-      const { toJSON } = renderWithNavigation(propsWithLocation);
+      const { toJSON } = await renderWithNavigation(propsWithLocation);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de tenir onLocationSelect definit', () => {
-      renderWithNavigation();
+    it('hauria de tenir onLocationSelect definit', async () => {
+      await renderWithNavigation();
       expect(defaultProps.onLocationSelect).toBeDefined();
     });
 
-    it('hauria de tenir tipus de callback correcte per onLocationSelect', () => {
-      renderWithNavigation();
+    it('hauria de tenir tipus de callback correcte per onLocationSelect', async () => {
+      await renderWithNavigation();
       expect(typeof defaultProps.onLocationSelect).toBe('function');
     });
   });
 
   describe('Callbacks de FavoritesScreen', () => {
     it('hauria de tenir onViewDetail definit', async () => {
-      renderWithNavigation();
+      await renderWithNavigation();
       expect(defaultProps.onViewDetail).toBeDefined();
     });
 
     it('hauria de tenir onViewMap definit', async () => {
-      renderWithNavigation();
+      await renderWithNavigation();
       expect(defaultProps.onViewMap).toBeDefined();
     });
 
-    it('hauria de tenir tipus de callback correcte per onViewDetail', () => {
-      renderWithNavigation();
+    it('hauria de tenir tipus de callback correcte per onViewDetail', async () => {
+      await renderWithNavigation();
       expect(typeof defaultProps.onViewDetail).toBe('function');
     });
   });
 
   describe('Callbacks de RenovationsScreen', () => {
     it('hauria de tenir onViewMap definit', async () => {
-      renderWithNavigation();
+      await renderWithNavigation();
       expect(defaultProps.onViewMap).toBeDefined();
     });
 
-    it('hauria de tenir tipus de callback correcte per onViewMap', () => {
-      renderWithNavigation();
+    it('hauria de tenir tipus de callback correcte per onViewMap', async () => {
+      await renderWithNavigation();
       expect(typeof defaultProps.onViewMap).toBe('function');
     });
   });
 
   describe('Callbacks de ProfileScreen', () => {
     it('hauria de tenir onViewDetail i onViewMap definits', async () => {
-      renderWithNavigation();
+      await renderWithNavigation();
       expect(defaultProps.onViewDetail).toBeDefined();
       expect(defaultProps.onViewMap).toBeDefined();
     });
 
-    it('hauria de tenir tipus de callbacks correcte per ProfileScreen', () => {
-      renderWithNavigation();
+    it('hauria de tenir tipus de callbacks correcte per ProfileScreen', async () => {
+      await renderWithNavigation();
       expect(typeof defaultProps.onViewDetail).toBe('function');
       expect(typeof defaultProps.onViewMap).toBe('function');
     });
   });
 
   describe('Amb selectedLocation', () => {
-    it('hauria de renderitzar amb selectedLocation', () => {
+    it('hauria de renderitzar amb selectedLocation', async () => {
       const propsWithLocation = {
         ...defaultProps,
         selectedLocation: mockLocation,
       };
 
-      const { toJSON } = renderWithNavigation(propsWithLocation);
+      const { toJSON } = await renderWithNavigation(propsWithLocation);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de acceptar selectedLocation amb totes les propietats', () => {
+    it('hauria de acceptar selectedLocation amb totes les propietats', async () => {
       const propsWithLocation = {
         ...defaultProps,
         selectedLocation: mockLocation,
       };
 
-      renderWithNavigation(propsWithLocation);
+      await renderWithNavigation(propsWithLocation);
       
       // El component es renderitza correctament amb selectedLocation
       expect(propsWithLocation.selectedLocation).toEqual(mockLocation);
     });
 
     it('hauria de gestionar canvis de selectedLocation', async () => {
-      const { rerender, toJSON } = renderWithNavigation();
+      const { rerender, toJSON } = await renderWithNavigation();
       
       // Inicialment no hi ha selectedLocation
       expect(defaultProps.selectedLocation).toBeUndefined();
       
       // Actualitzar amb una nova selectedLocation
-      rerender(
+      await rerender(
         <NavigationContainer>
           <TabsNavigator {...defaultProps} selectedLocation={mockLocation} />
         </NavigationContainer>
@@ -374,9 +374,9 @@ describe('TabsNavigator Component', () => {
         selectedLocation: mockLocation,
       };
       
-      const { rerender, toJSON } = renderWithNavigation(propsWithLocation);
+      const { rerender, toJSON } = await renderWithNavigation(propsWithLocation);
       
-      rerender(
+      await rerender(
         <NavigationContainer>
           <TabsNavigator {...defaultProps} selectedLocation={undefined} />
         </NavigationContainer>
@@ -385,13 +385,13 @@ describe('TabsNavigator Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar-se sense errors amb selectedLocation', () => {
+    it('hauria de renderitzar-se sense errors amb selectedLocation', async () => {
       const propsWithLocation = {
         ...defaultProps,
         selectedLocation: mockLocation,
       };
       
-      const { toJSON } = renderWithNavigation(propsWithLocation);
+      const { toJSON } = await renderWithNavigation(propsWithLocation);
       
       // El component es renderitza correctament
       expect(toJSON()).toBeTruthy();
@@ -401,21 +401,21 @@ describe('TabsNavigator Component', () => {
   describe('Efecte de neteja de selectedLocation', () => {
     it('hauria de tenir onLocationSelect definit per netejar selectedLocation', async () => {
       // Aquest test verifica que el cleanup effect té la funció disponible
-      renderWithNavigation();
+      await renderWithNavigation();
       
       // El onLocationSelect hauria de ser definit
       expect(mockOnLocationSelect).toBeDefined();
       expect(typeof mockOnLocationSelect).toBe('function');
     });
 
-    it('hauria de gestionar Location amb coordenades zero', () => {
+    it('hauria de gestionar Location amb coordenades zero', async () => {
       const locationWithZeroCoords = {
         id: 'zero-coords',
         name: 'Zero Coords Location',
         coord: { lat: 0, long: 0 },
       };
       
-      const { toJSON } = renderWithNavigation({
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: locationWithZeroCoords,
       });
@@ -423,25 +423,25 @@ describe('TabsNavigator Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar-se correctament sense errors després de múltiples rerenders', () => {
-      const { rerender, toJSON } = renderWithNavigation();
+    it('hauria de renderitzar-se correctament sense errors després de múltiples rerenders', async () => {
+      const { rerender, toJSON } = await renderWithNavigation();
       
       // Primer rerender amb location
-      rerender(
+      await rerender(
         <NavigationContainer>
           <TabsNavigator {...defaultProps} selectedLocation={mockLocation} />
         </NavigationContainer>
       );
       
       // Segon rerender sense location
-      rerender(
+      await rerender(
         <NavigationContainer>
           <TabsNavigator {...defaultProps} selectedLocation={undefined} />
         </NavigationContainer>
       );
       
       // Tercer rerender amb altra location
-      rerender(
+      await rerender(
         <NavigationContainer>
           <TabsNavigator {...defaultProps} selectedLocation={{ 
             id: 'other', 
@@ -456,8 +456,8 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Props callbacks', () => {
-    it('hauria de tenir els callbacks definits', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de tenir els callbacks definits', async () => {
+      const { toJSON } = await renderWithNavigation();
       
       expect(toJSON()).toBeTruthy();
       expect(mockOnLocationSelect).toBeDefined();
@@ -465,15 +465,15 @@ describe('TabsNavigator Component', () => {
       expect(mockOnViewMap).toBeDefined();
     });
 
-    it('hauria de tenir selectedLocation undefined per defecte', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de tenir selectedLocation undefined per defecte', async () => {
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toBeTruthy();
       expect(defaultProps.selectedLocation).toBeUndefined();
     });
   });
 
   describe('Props validation', () => {
-    it('hauria d\'acceptar callbacks vàlids', () => {
+    it('hauria d\'acceptar callbacks vàlids', async () => {
       const customProps = {
         onLocationSelect: jest.fn(),
         onViewDetail: jest.fn(),
@@ -481,11 +481,11 @@ describe('TabsNavigator Component', () => {
         selectedLocation: undefined,
       };
 
-      const { toJSON } = renderWithNavigation(customProps);
+      const { toJSON } = await renderWithNavigation(customProps);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria d\'acceptar una Location vàlida', () => {
+    it('hauria d\'acceptar una Location vàlida', async () => {
       const customProps = {
         ...defaultProps,
         selectedLocation: {
@@ -495,11 +495,11 @@ describe('TabsNavigator Component', () => {
         },
       };
 
-      const { toJSON } = renderWithNavigation(customProps);
+      const { toJSON } = await renderWithNavigation(customProps);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria d\'acceptar Location amb propietats opcionals', () => {
+    it('hauria d\'acceptar Location amb propietats opcionals', async () => {
       const customProps = {
         ...defaultProps,
         selectedLocation: {
@@ -514,20 +514,20 @@ describe('TabsNavigator Component', () => {
         },
       };
 
-      const { toJSON } = renderWithNavigation(customProps);
+      const { toJSON } = await renderWithNavigation(customProps);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Tab bar styling', () => {
-    it('hauria de renderitzar tab bar amb estils correctes', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de renderitzar tab bar amb estils correctes', async () => {
+      const { toJSON } = await renderWithNavigation();
       const tree = toJSON();
       expect(tree).toBeTruthy();
     });
 
     it('hauria de renderitzar correctament', async () => {
-      const { toJSON } = renderWithNavigation();
+      const { toJSON } = await renderWithNavigation();
       
       // Verificar que el component es renderitza
       expect(toJSON()).toBeTruthy();
@@ -535,30 +535,30 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Snapshot tests', () => {
-    it('hauria de coincidir amb el snapshot - estat inicial', () => {
-      const { toJSON } = renderWithNavigation();
+    it('hauria de coincidir amb el snapshot - estat inicial', async () => {
+      const { toJSON } = await renderWithNavigation();
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot - amb selectedLocation', () => {
+    it('hauria de coincidir amb el snapshot - amb selectedLocation', async () => {
       const propsWithLocation = {
         ...defaultProps,
         selectedLocation: mockLocation,
       };
-      const { toJSON } = renderWithNavigation(propsWithLocation);
+      const { toJSON } = await renderWithNavigation(propsWithLocation);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Edge cases', () => {
-    it('hauria de gestionar Location amb coordenades extremes', () => {
+    it('hauria de gestionar Location amb coordenades extremes', async () => {
       const extremeLocation = {
         id: 'extreme',
         name: 'Extreme Location',
         coord: { lat: -90, long: 180 },
       };
       
-      const { toJSON } = renderWithNavigation({
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: extremeLocation,
       });
@@ -567,15 +567,15 @@ describe('TabsNavigator Component', () => {
     });
 
     it('hauria de renderitzar-se sense errors', async () => {
-      const { toJSON } = renderWithNavigation();
+      const { toJSON } = await renderWithNavigation();
       
       await waitFor(() => {
         expect(toJSON()).toBeTruthy();
       });
     });
 
-    it('hauria de gestionar callbacks correctament', () => {
-      renderWithNavigation();
+    it('hauria de gestionar callbacks correctament', async () => {
+      await renderWithNavigation();
       
       // Verificar que els callbacks estan definits
       expect(defaultProps.onLocationSelect).toBeDefined();
@@ -585,8 +585,8 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Tab Navigator basics', () => {
-    it('hauria de renderitzar correctament amb totes les props', () => {
-      const { toJSON } = renderWithNavigation({
+    it('hauria de renderitzar correctament amb totes les props', async () => {
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: mockLocation,
       });
@@ -594,8 +594,8 @@ describe('TabsNavigator Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar correctament sense selectedLocation', () => {
-      const { toJSON } = renderWithNavigation({
+    it('hauria de renderitzar correctament sense selectedLocation', async () => {
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: undefined,
       });
@@ -603,8 +603,8 @@ describe('TabsNavigator Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de gestionar callbacks buits', () => {
-      const { toJSON } = renderWithNavigation({
+    it('hauria de gestionar callbacks buits', async () => {
+      const { toJSON } = await renderWithNavigation({
         onLocationSelect: jest.fn(),
         onViewDetail: jest.fn(),
         onViewMap: jest.fn(),
@@ -616,7 +616,7 @@ describe('TabsNavigator Component', () => {
   });
 
   describe('Snapshot tests adicionals', () => {
-    it('hauria de coincidir amb el snapshot - amb location amb totes les propietats', () => {
+    it('hauria de coincidir amb el snapshot - amb location amb totes les propietats', async () => {
       const fullLocation = {
         id: 'full-refuge',
         name: 'Full Refuge',
@@ -630,7 +630,7 @@ describe('TabsNavigator Component', () => {
         departement: 'Lleida',
       };
       
-      const { toJSON } = renderWithNavigation({
+      const { toJSON } = await renderWithNavigation({
         ...defaultProps,
         selectedLocation: fullLocation,
       });

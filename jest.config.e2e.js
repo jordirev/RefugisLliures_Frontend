@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testMatch: [
     '**/__tests__/E2E/**/*.(test|spec).(ts|tsx|js)',
@@ -8,7 +8,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.js' }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|react-native-svg|react-native-maps|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|firebase)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|react-native-svg|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|firebase)/)',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.e2e.js'],
   testEnvironment: 'node',

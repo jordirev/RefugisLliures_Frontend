@@ -73,7 +73,7 @@ export function AvatarPopup({
           cropperCircleOverlay: true,
           cropperToolbarTitle: t('profile.avatar.cropTitle', { defaultValue: 'Retalla la imatge' }),
           // Colors clars per fer els botons visibles
-          cropperStatusBarColor: '#FFFFFF',
+          cropperStatusBarLight: true, // Barra d'estat clara (icones fosques) sobre la barra blanca
           cropperToolbarColor: '#FFFFFF',
           cropperActiveWidgetColor: '#FF6900',
           cropperToolbarWidgetColor: '#FF6900', // Color taronja per als botons
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   gradientFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   buttonIcon: {
     width: 20,

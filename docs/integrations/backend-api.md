@@ -17,7 +17,7 @@
 
 Fotos, vídeos i avatar **ja no** es pugen en multipart: es fa amb URL PUT prefirmada (secció [Mitjans](#mitjans-moderació-i-edat-feature-images)). El PUT a R2 **no** passa per `apiClient` (no ha de portar `Authorization`). Els errors amb codi es normalitzen amb `src/services/apiErrors.ts` (`ApiError`, `extractApiErrorCode`).
 
-`fetchWithLog` (`src/services/fetchWithLog.ts`) fa log de mètode, URL, status i temps; `index.js:4-17` substitueix `global.fetch` per aquest wrapper **també en producció** i el wrapper llegeix el cos de **totes** les respostes (`fetchWithLog.ts:33-45`) **[FET]**.
+`fetchWithLog` (`src/services/fetchWithLog.ts`) fa log de mètode, URL, status i temps; `index.js:4-17` substitueix `global.fetch` per aquest wrapper **també en producció** i el wrapper llegeix el cos de **totes** les respostes (`fetchWithLog.ts:33-45`) **[FET]**. Des d'SDK 56 (vigent a SDK 57) `expo/fetch` és el `fetch` global: `fetchWithLog` el captura via `__originalFetch` i `response.clone()` hi funciona; no s'ha fet opt-out **[INFERÈNCIA]**.
 
 ## Patró dels serveis [FET]
 - Classes amb mètodes `static async` (p. ex. `RenovationService`, `src/services/RenovationService.ts:41`).
@@ -41,7 +41,7 @@ Contracte compartit amb el backend (`Backend/.../docs/flows/03-refuge-media-uplo
 | Endpoint | Cos / resposta | Client |
 |---|---|---|
 | `POST /api/media/upload-intents/` | `{target: "refuge"\|"experience"\|"avatar", refuge_id?, experience_id?, rights_confirmed: true, files: [{content_type, size}]}` (màx. 10) → `201 {uploads: [{upload_id, put_url, headers, expires_in: 600}]}`. Errors: 400 · 403 `age_not_confirmed` / `user_blocked` / `not_owner` · 404 | `MediaUploadService.createUploadIntents` |
-| `PUT {put_url}` (R2) | cos binari, capçaleres retornades (`Content-Type`), **sense Bearer** | `MediaUploadService.putFile` (`FileSystem.createUploadTask`, amb progrés; fetch+Blob a web) |
+| `PUT {put_url}` (R2) | cos binari, capçaleres retornades (`Content-Type`), **sense Bearer** | `MediaUploadService.putFile` (`expo-file-system/legacy` `createUploadTask`, amb progrés; fetch+Blob a web) |
 | `POST /api/media/upload-intents/confirm/` | `{upload_ids}` → `200 {uploaded: MediaItem[], failed: [{upload_id, reason}]}`; `reason ∈ missing_object\|too_large\|invalid_type\|processing_error\|moderation_blocked` (el client hi afegeix `put_failed`) | `MediaUploadService.confirmUploads` |
 | `POST /api/experiences/`, `PATCH /api/experiences/{id}/` | JSON sense fitxers (`{refuge_id, comment}` / `{comment}`); els fitxers van després per intents amb `target=experience` | `ExperienceService` |
 | `POST /api/media/reports/` | `{refuge_id, media_key, reason, details?}` (`details` obligatori si `other`, ≤1000) → 201 · 403 (pròpia foto) · 409 (ja denunciada) | `MediaModerationService.reportMedia` |

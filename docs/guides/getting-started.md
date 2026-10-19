@@ -4,7 +4,7 @@
 > Configuració prèvia necessària: [firebase-setup.md](firebase-setup.md) (obligatori) i [google-signin-setup.md](google-signin-setup.md) (per al login amb Google).
 
 ## 1. Prerequisits
-- Node.js 20 (és la versió de CI, `.github/workflows/main.yml`) i npm.
+- Node.js ≥ 22.13 (exigit per Expo SDK 58; CI usa 22.x, `.github/workflows/main.yml`; localment s'ha provat amb 22.16) i npm.
 - Android Studio amb un emulador o un dispositiu Android amb depuració USB. No hi ha carpeta `ios/` ni configuració d'iOS mantinguda.
 - Java JDK (per a `keytool` i la build nativa d'Android).
 - Opcional: `firebase-tools` per als tests E2E (emulador d'Auth).
@@ -23,7 +23,6 @@ cp .env.example .env      # i omple'l: vegeu firebase-setup.md
 | Build nativa d'Android (dev client) | `npm run android` (`expo run:android`) | **Recomanada.** Necessària per a Google Sign-In i el retall d'avatar (`react-native-image-crop-picker`). |
 | Servidor Metro | `npm start` (`expo start`) | Un cop instal·lada la build de desenvolupament; prem `a` per obrir-la a Android. |
 | Expo Go | `npm start` i escanejar el QR | Només per a proves ràpides: **no** funcionen Google Sign-In ni el retall d'avatar (el codi mostra un avís). |
-| Web | `npm run web` | No suportat de manera fiable (mapa en WebView, mòduls natius). |
 
 Perfils d'EAS (`eas.json`): `development` (dev client, APK intern), `preview` (APK intern), `production` (app-bundle). Vegeu [integrations/eas-ci-tooling.md](../integrations/eas-ci-tooling.md).
 
@@ -33,7 +32,6 @@ Perfils d'EAS (`eas.json`): `development` (dev client, APK intern), `preview` (A
 ```bash
 npm start                  # expo start
 npm run android            # expo run:android (build nativa)
-npm run web                # expo start --web
 npm test                   # unit + integració amb coverage, i després E2E
 npm run test:unit          # jest __tests__/unit_tests
 npm run test:integration   # jest __tests__/integration (MSW)
@@ -58,6 +56,7 @@ npm run test:e2e:ui        # arrenca l'emulador d'Auth amb UI
 | `Missing App configuration value: "projectId"` o `auth/invalid-api-key` | `.env` absent o incomplet: [firebase-setup.md §6](firebase-setup.md#6-solució-de-problemes). |
 | El login amb Google diu que no està disponible | Estàs a Expo Go: cal la build nativa ([google-signin-setup.md](google-signin-setup.md)). |
 | `Cannot find module '@env'` a l'editor | Ja hi ha `src/types/env.d.ts`; reinicia el servidor de TypeScript de VS Code. |
+| Windows: `ninja: error: ... Filename longer than 260 characters` o `ninja: error: mkdir(CMakeFiles/...): No such file or directory` en compilar | Activa els camins llargs de Windows i força CMake 3.31.6 (ninja 1.12) amb l'init script global de Gradle: vegeu [GOTCHAS #40](../GOTCHAS.md). |
 
 ## 7. Recursos
 [Expo](https://docs.expo.dev/) · [React Native](https://reactnative.dev/) · [React Navigation](https://reactnavigation.org/) · [TanStack Query](https://tanstack.com/query/latest)

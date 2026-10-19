@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import type { ScrollViewInstance, ViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location, InfoComp } from '../models';
@@ -36,19 +37,19 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
   // Scroll ref
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
 
   // Field refs for scroll-to-error
-  const nameRef = useRef<View>(null);
-  const latitudeRef = useRef<View>(null);
-  const longitudeRef = useRef<View>(null);
-  const regionRef = useRef<View>(null);
-  const departementRef = useRef<View>(null);
-  const altitudeRef = useRef<View>(null);
-  const placesRef = useRef<View>(null);
-  const descriptionRef = useRef<View>(null);
-  const commentRef = useRef<View>(null);
-  const linksRef = useRef<View>(null);
+  const nameRef = useRef<ViewInstance>(null);
+  const latitudeRef = useRef<ViewInstance>(null);
+  const longitudeRef = useRef<ViewInstance>(null);
+  const regionRef = useRef<ViewInstance>(null);
+  const departementRef = useRef<ViewInstance>(null);
+  const altitudeRef = useRef<ViewInstance>(null);
+  const placesRef = useRef<ViewInstance>(null);
+  const descriptionRef = useRef<ViewInstance>(null);
+  const commentRef = useRef<ViewInstance>(null);
+  const linksRef = useRef<ViewInstance>(null);
 
   const fieldRefs: { [key: string]: React.RefObject<any> } = {
     name: nameRef,

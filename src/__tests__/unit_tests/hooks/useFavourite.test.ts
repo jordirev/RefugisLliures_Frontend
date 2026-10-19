@@ -71,45 +71,45 @@ describe('useFavourite Hook', () => {
   });
 
   describe('Inicialització', () => {
-    it('hauria de retornar isFavourite=true si el refugi està als favorits', () => {
-      const { result } = renderHook(() => useFavourite('10'));
+    it('hauria de retornar isFavourite=true si el refugi està als favorits', async () => {
+      const { result } = await renderHook(() => useFavourite('10'));
       
       expect(result.current.isFavourite).toBe(true);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isFavourite=false si el refugi NO està als favorits', () => {
-      const { result } = renderHook(() => useFavourite('99'));
+    it('hauria de retornar isFavourite=false si el refugi NO està als favorits', async () => {
+      const { result } = await renderHook(() => useFavourite('99'));
       
       expect(result.current.isFavourite).toBe(false);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isFavourite=false si refugeId és undefined', () => {
-      const { result } = renderHook(() => useFavourite(undefined));
+    it('hauria de retornar isFavourite=false si refugeId és undefined', async () => {
+      const { result } = await renderHook(() => useFavourite(undefined));
       
       expect(result.current.isFavourite).toBe(false);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isFavourite=false si favouriteRefugeIds és buit', () => {
+    it('hauria de retornar isFavourite=false si favouriteRefugeIds és buit', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         favouriteRefugeIds: [],
       });
 
-      const { result } = renderHook(() => useFavourite('10'));
+      const { result } = await renderHook(() => useFavourite('10'));
       
       expect(result.current.isFavourite).toBe(false);
     });
 
-    it('hauria de retornar isFavourite=false si no hi ha firebaseUser', () => {
+    it('hauria de retornar isFavourite=false si no hi ha firebaseUser', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         firebaseUser: null,
       });
 
-      const { result } = renderHook(() => useFavourite('10'));
+      const { result } = await renderHook(() => useFavourite('10'));
       
       // Encara retorna true perquè l'estat local es basa en favouriteRefugeIds
       expect(result.current.isFavourite).toBe(true);
@@ -123,7 +123,7 @@ describe('useFavourite Hook', () => {
         favouriteRefugeIds: ['10', '20'], // No inclou '50'
       });
 
-      const { result } = renderHook(() => useFavourite('50'));
+      const { result } = await renderHook(() => useFavourite('50'));
       
       expect(result.current.isFavourite).toBe(false);
       
@@ -138,7 +138,7 @@ describe('useFavourite Hook', () => {
     });
 
     it('NO hauria de fer res si refugeId és undefined', async () => {
-      const { result } = renderHook(() => useFavourite(undefined));
+      const { result } = await renderHook(() => useFavourite(undefined));
       
       await act(async () => {
         await result.current.toggleFavourite();
@@ -154,7 +154,7 @@ describe('useFavourite Hook', () => {
         firebaseUser: null,
       });
 
-      const { result } = renderHook(() => useFavourite('50'));
+      const { result } = await renderHook(() => useFavourite('50'));
       
       await act(async () => {
         await result.current.toggleFavourite();
@@ -166,7 +166,7 @@ describe('useFavourite Hook', () => {
 
   describe('toggleFavourite - Eliminar favorit', () => {
     it('hauria d\'eliminar un refugi dels favorits', async () => {
-      const { result } = renderHook(() => useFavourite('10'));
+      const { result } = await renderHook(() => useFavourite('10'));
       
       expect(result.current.isFavourite).toBe(true);
       
@@ -190,7 +190,7 @@ describe('useFavourite Hook', () => {
         favouriteRefugeIds: [], // No és favorit, així que s'afegirà
       });
 
-      const { result } = renderHook(() => useFavourite('50'));
+      const { result } = await renderHook(() => useFavourite('50'));
       
       await expect(act(async () => {
         await result.current.toggleFavourite();
@@ -205,7 +205,7 @@ describe('useFavourite Hook', () => {
         favouriteRefugeIds: [],
       });
 
-      const { result } = renderHook(() => useFavourite('50'));
+      const { result } = await renderHook(() => useFavourite('50'));
       
       try {
         await act(async () => {
@@ -220,25 +220,25 @@ describe('useFavourite Hook', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar IDs numèrics com a strings', () => {
+    it('hauria de gestionar IDs numèrics com a strings', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         favouriteRefugeIds: ['123', '456'],
       });
 
-      const { result } = renderHook(() => useFavourite('123'));
+      const { result } = await renderHook(() => useFavourite('123'));
       
       expect(result.current.isFavourite).toBe(true);
     });
 
-    it('hauria de comparar correctament IDs en string', () => {
+    it('hauria de comparar correctament IDs en string', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         favouriteRefugeIds: ['10', '20'],
       });
 
-      const { result: resultMatch } = renderHook(() => useFavourite('10'));
-      const { result: resultNoMatch } = renderHook(() => useFavourite('100'));
+      const { result: resultMatch } = await renderHook(() => useFavourite('10'));
+      const { result: resultNoMatch } = await renderHook(() => useFavourite('100'));
       
       expect(resultMatch.current.isFavourite).toBe(true);
       expect(resultNoMatch.current.isFavourite).toBe(false);

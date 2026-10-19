@@ -16,6 +16,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { TouchableOpacity, ScrollView } from 'react-native';
 import { LanguageSelector } from '../../../components/LanguageSelector';
 import * as i18n from '../../../i18n';
+import { findAllByType, findByType } from '../../testHelpers/findByType';
 
 // Mock de i18n
 jest.mock('../../../i18n', () => ({
@@ -99,20 +100,20 @@ describe('LanguageSelector Component', () => {
   });
 
   describe('Renderització del modal', () => {
-    it('hauria de mostrar el títol del selector', () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de mostrar el títol del selector', async () => {
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
       expect(getByText('Selecciona idioma')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó de tancar', () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de mostrar el botó de tancar', async () => {
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
       expect(getByText('✕')).toBeTruthy();
     });
 
-    it('hauria de mostrar tots els idiomes disponibles', () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de mostrar tots els idiomes disponibles', async () => {
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
       expect(getByText('Català')).toBeTruthy();
       expect(getByText('Español')).toBeTruthy();
@@ -120,8 +121,8 @@ describe('LanguageSelector Component', () => {
       expect(getByText('Français')).toBeTruthy();
     });
 
-    it('hauria de mostrar els codis d\'idioma en majúscules', () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de mostrar els codis d\'idioma en majúscules', async () => {
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
       expect(getByText('CA')).toBeTruthy();
       expect(getByText('ES')).toBeTruthy();
@@ -129,8 +130,8 @@ describe('LanguageSelector Component', () => {
       expect(getByText('FR')).toBeTruthy();
     });
 
-    it('NO hauria de mostrar res quan visible=false', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar res quan visible=false', async () => {
+      const { queryByText } = await render(
         <LanguageSelector {...defaultProps} visible={false} />
       );
       
@@ -139,31 +140,31 @@ describe('LanguageSelector Component', () => {
   });
 
   describe('Idioma seleccionat', () => {
-    it('hauria de marcar l\'idioma actual amb un checkmark', () => {
+    it('hauria de marcar l\'idioma actual amb un checkmark', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('ca');
-      const { getAllByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getAllByText } = await render(<LanguageSelector {...defaultProps} />);
       
       const checkmarks = getAllByText('✓');
       expect(checkmarks.length).toBe(1);
     });
 
-    it('hauria de aplicar estil seleccionat a l\'idioma actual', () => {
+    it('hauria de aplicar estil seleccionat a l\'idioma actual', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('es');
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
       const selectedLanguage = getByText('Español');
       expect(selectedLanguage).toBeTruthy();
     });
 
-    it('hauria de canviar el checkmark quan canvia l\'idioma', () => {
-      const { rerender, getAllByText } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de canviar el checkmark quan canvia l\'idioma', async () => {
+      const { rerender, getAllByText } = await render(<LanguageSelector {...defaultProps} />);
       
       // Inicialment catàla
       expect(getAllByText('✓').length).toBe(1);
       
       // Canviar a espanyol
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('es');
-      rerender(<LanguageSelector {...defaultProps} />);
+      await rerender(<LanguageSelector {...defaultProps} />);
       
       expect(getAllByText('✓').length).toBe(1);
     });
@@ -171,9 +172,9 @@ describe('LanguageSelector Component', () => {
 
   describe('Selecció d\'idioma', () => {
     it('hauria de cridar changeLanguage quan es selecciona un idioma', async () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('Español'));
+      await fireEvent.press(getByText('Español'));
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('es');
@@ -181,9 +182,9 @@ describe('LanguageSelector Component', () => {
     });
 
     it('hauria de actualitzar l\'idioma al backend per usuaris autenticats', async () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -194,9 +195,9 @@ describe('LanguageSelector Component', () => {
     });
 
     it('hauria de recarregar l\'usuari després d\'actualitzar', async () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('Français'));
+      await fireEvent.press(getByText('Français'));
       
       await waitFor(() => {
         expect(mockReloadUser).toHaveBeenCalled();
@@ -205,11 +206,11 @@ describe('LanguageSelector Component', () => {
 
     it('hauria de tancar el modal després de seleccionar idioma', async () => {
       const onClose = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(onClose).toHaveBeenCalled();
@@ -224,9 +225,9 @@ describe('LanguageSelector Component', () => {
         reloadUser: mockReloadUser,
       });
 
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
@@ -243,9 +244,9 @@ describe('LanguageSelector Component', () => {
         reloadUser: mockReloadUser,
       });
 
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
@@ -264,9 +265,9 @@ describe('LanguageSelector Component', () => {
         }
       });
 
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -285,11 +286,11 @@ describe('LanguageSelector Component', () => {
       });
 
       const onClose = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
@@ -303,9 +304,9 @@ describe('LanguageSelector Component', () => {
         new Error('Language error')
       );
 
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', 'Error');
@@ -318,11 +319,11 @@ describe('LanguageSelector Component', () => {
       );
 
       const onClose = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      fireEvent.press(getByText('English'));
+      await fireEvent.press(getByText('English'));
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -340,16 +341,19 @@ describe('LanguageSelector Component', () => {
       });
       (i18n.changeLanguage as jest.Mock).mockReturnValue(updatePromise);
 
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      // Primer click
-      fireEvent.press(getByText('English'));
+      // Primer click: a RNTL 14 `fireEvent` espera la promesa que retorna el handler,
+      // així que no s'espera fins que es resol `updatePromise`
+      const firstPress = fireEvent.press(getByText('English'));
+      await waitFor(() => expect(i18n.changeLanguage).toHaveBeenCalledTimes(1));
       
       // Segon click ràpid
-      fireEvent.press(getByText('Français'));
+      await fireEvent.press(getByText('Français'));
       
       // Resoldre la promesa
       resolveUpdate!();
+      await firstPress;
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledTimes(1);
@@ -358,45 +362,45 @@ describe('LanguageSelector Component', () => {
   });
 
   describe('Botó de tancar', () => {
-    it('hauria de cridar onClose quan es prem el botó de tancar', () => {
+    it('hauria de cridar onClose quan es prem el botó de tancar', async () => {
       const onClose = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      fireEvent.press(getByText('✕'));
+      await fireEvent.press(getByText('✕'));
       
       expect(onClose).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onClose quan es prem l\'overlay', () => {
+    it('hauria de cridar onClose quan es prem l\'overlay', async () => {
       const onClose = jest.fn();
-      const { UNSAFE_getAllByType } = render(
+      const { container } = await render(
         <LanguageSelector {...defaultProps} onClose={onClose} />
       );
       
-      const touchables = UNSAFE_getAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       // El primer touchable hauria de ser l'overlay
-      fireEvent.press(touchables[0]);
+      await fireEvent.press(touchables[0]);
       
       expect(onClose).toHaveBeenCalled();
     });
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar getCurrentLanguage retornant undefined', () => {
+    it('hauria de gestionar getCurrentLanguage retornant undefined', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue(undefined);
       
-      const { queryAllByText } = render(<LanguageSelector {...defaultProps} />);
+      const { queryAllByText } = await render(<LanguageSelector {...defaultProps} />);
       
       // No hauria de mostrar cap checkmark
       expect(queryAllByText('✓')).toHaveLength(0);
     });
 
-    it('hauria de gestionar getCurrentLanguage retornant idioma no vàlid', () => {
+    it('hauria de gestionar getCurrentLanguage retornant idioma no vàlid', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('invalid');
       
-      const { queryAllByText } = render(<LanguageSelector {...defaultProps} />);
+      const { queryAllByText } = await render(<LanguageSelector {...defaultProps} />);
       
       // No hauria de mostrar cap checkmark
       expect(queryAllByText('✓')).toHaveLength(0);
@@ -405,9 +409,9 @@ describe('LanguageSelector Component', () => {
     it('hauria de gestionar selecció del mateix idioma', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('ca');
       
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      fireEvent.press(getByText('Català'));
+      await fireEvent.press(getByText('Català'));
       
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('ca');
@@ -415,12 +419,23 @@ describe('LanguageSelector Component', () => {
     });
 
     it('hauria de gestionar múltiples clics ràpids en diferents idiomes', async () => {
-      const { getByText } = render(<LanguageSelector {...defaultProps} />);
+      const { getByText } = await render(<LanguageSelector {...defaultProps} />);
       
-      // Clicks ràpids
-      fireEvent.press(getByText('English'));
-      fireEvent.press(getByText('Français'));
-      fireEvent.press(getByText('Español'));
+      // El canvi d'idioma queda pendent mentre es fan els clics ràpids
+      let resolveUpdate: () => void;
+      (i18n.changeLanguage as jest.Mock).mockReturnValue(
+        new Promise<void>(resolve => {
+          resolveUpdate = resolve;
+        })
+      );
+
+      // Clicks ràpids (a RNTL 14 `fireEvent` espera la promesa del handler: el primer no s'espera)
+      const firstPress = fireEvent.press(getByText('English'));
+      await waitFor(() => expect(i18n.changeLanguage).toHaveBeenCalledTimes(1));
+      await fireEvent.press(getByText('Français'));
+      await fireEvent.press(getByText('Español'));
+      resolveUpdate!();
+      await firstPress;
       
       // Només el primer hauria de processar-se
       await waitFor(() => {
@@ -430,30 +445,30 @@ describe('LanguageSelector Component', () => {
   });
 
   describe('ScrollView', () => {
-    it('hauria de tenir un ScrollView per la llista d\'idiomes', () => {
-      const { UNSAFE_getByType } = render(<LanguageSelector {...defaultProps} />);
+    it('hauria de tenir un ScrollView per la llista d\'idiomes', async () => {
+      const { container } = await render(<LanguageSelector {...defaultProps} />);
       
-      const scrollView = UNSAFE_getByType(ScrollView);
+      const scrollView = findByType(container, ScrollView);
       expect(scrollView).toBeTruthy();
     });
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot quan visible=true', () => {
-      const tree = render(<LanguageSelector {...defaultProps} />).toJSON();
+    it('hauria de coincidir amb el snapshot quan visible=true', async () => {
+      const tree = (await render(<LanguageSelector {...defaultProps} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot quan visible=false', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot quan visible=false', async () => {
+      const tree = (await render(
         <LanguageSelector {...defaultProps} visible={false} />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb idioma seleccionat', () => {
+    it('hauria de coincidir amb el snapshot amb idioma seleccionat', async () => {
       (i18n.getCurrentLanguage as jest.Mock).mockReturnValue('es');
-      const tree = render(<LanguageSelector {...defaultProps} />).toJSON();
+      const tree = (await render(<LanguageSelector {...defaultProps} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

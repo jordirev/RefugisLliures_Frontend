@@ -76,7 +76,7 @@ describe('useExperiencesQuery Hooks', () => {
       defaultOptions: {
         queries: {
           retry: false,
-          gcTime: 0,
+          gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
         },
         mutations: {
           retry: false,
@@ -94,7 +94,7 @@ describe('useExperiencesQuery Hooks', () => {
     it('hauria de fer fetch de les experiències d\'un refugi', async () => {
       (ExperienceService.getExperiencesByRefuge as jest.Mock).mockResolvedValue([mockExperienceDTO]);
 
-      const { result } = renderHook(() => useExperiences('refuge-1'), {
+      const { result } = await renderHook(() => useExperiences('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -108,7 +108,7 @@ describe('useExperiencesQuery Hooks', () => {
     });
 
     it('no hauria de fer fetch si no hi ha refugeId', async () => {
-      const { result } = renderHook(() => useExperiences(undefined), {
+      const { result } = await renderHook(() => useExperiences(undefined), {
         wrapper: createWrapper(),
       });
 
@@ -121,7 +121,7 @@ describe('useExperiencesQuery Hooks', () => {
         new Error('Network error')
       );
 
-      const { result } = renderHook(() => useExperiences('refuge-1'), {
+      const { result } = await renderHook(() => useExperiences('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -135,7 +135,7 @@ describe('useExperiencesQuery Hooks', () => {
     it('hauria de retornar llista buida si no hi ha experiències', async () => {
       (ExperienceService.getExperiencesByRefuge as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useExperiences('refuge-1'), {
+      const { result } = await renderHook(() => useExperiences('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -156,7 +156,7 @@ describe('useExperiencesQuery Hooks', () => {
         message: 'Success',
       });
 
-      const { result } = renderHook(() => useCreateExperience(), {
+      const { result } = await renderHook(() => useCreateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -176,7 +176,7 @@ describe('useExperiencesQuery Hooks', () => {
       // Primer carreguem experiències existents
       (ExperienceService.getExperiencesByRefuge as jest.Mock).mockResolvedValue([mockExperienceDTO]);
       
-      const { result: expResult } = renderHook(() => useExperiences('refuge-1'), {
+      const { result: expResult } = await renderHook(() => useExperiences('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -193,7 +193,7 @@ describe('useExperiencesQuery Hooks', () => {
         message: 'Success',
       });
 
-      const { result: createResult } = renderHook(() => useCreateExperience(), {
+      const { result: createResult } = await renderHook(() => useCreateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -216,7 +216,7 @@ describe('useExperiencesQuery Hooks', () => {
         new Error('No tens permisos')
       );
 
-      const { result } = renderHook(() => useCreateExperience(), {
+      const { result } = await renderHook(() => useCreateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -262,7 +262,7 @@ describe('useExperiencesQuery Hooks', () => {
         { uri: 'file://clip.mp4', contentType: 'video/mp4', size: 200, mediaType: 'video' as const },
       ];
 
-      const { result } = renderHook(() => useCreateExperience(), {
+      const { result } = await renderHook(() => useCreateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -302,7 +302,7 @@ describe('useExperiencesQuery Hooks', () => {
       err.code = 'user_blocked';
       (MediaUploadService.uploadFiles as jest.Mock).mockRejectedValue(err);
 
-      const { result } = renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
 
       let data: any;
       await act(async () => {
@@ -319,7 +319,7 @@ describe('useExperiencesQuery Hooks', () => {
 
     it('no hauria de cridar la pujada si no hi ha fitxers', async () => {
       (ExperienceService.createExperience as jest.Mock).mockResolvedValue({ experience: mockExperienceDTO });
-      const { result } = renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
       await act(async () => {
         await result.current.mutateAsync({ refuge_id: 'refuge-1', comment: 'x' });
       });
@@ -337,7 +337,7 @@ describe('useExperiencesQuery Hooks', () => {
         message: 'Success',
       });
 
-      const { result } = renderHook(() => useUpdateExperience(), {
+      const { result } = await renderHook(() => useUpdateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -359,7 +359,7 @@ describe('useExperiencesQuery Hooks', () => {
         new Error('Només el creador pot actualitzar')
       );
 
-      const { result } = renderHook(() => useUpdateExperience(), {
+      const { result } = await renderHook(() => useUpdateExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -385,7 +385,7 @@ describe('useExperiencesQuery Hooks', () => {
     it('hauria d\'eliminar una experiència', async () => {
       (ExperienceService.deleteExperience as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteExperience(), {
+      const { result } = await renderHook(() => useDeleteExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -403,7 +403,7 @@ describe('useExperiencesQuery Hooks', () => {
       // Primer carreguem experiències existents
       (ExperienceService.getExperiencesByRefuge as jest.Mock).mockResolvedValue([mockExperienceDTO]);
       
-      const { result: expResult } = renderHook(() => useExperiences('refuge-1'), {
+      const { result: expResult } = await renderHook(() => useExperiences('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -414,7 +414,7 @@ describe('useExperiencesQuery Hooks', () => {
       // Ara eliminem l'experiència
       (ExperienceService.deleteExperience as jest.Mock).mockResolvedValue(undefined);
 
-      const { result: deleteResult } = renderHook(() => useDeleteExperience(), {
+      const { result: deleteResult } = await renderHook(() => useDeleteExperience(), {
         wrapper: createWrapper(),
       });
 
@@ -435,7 +435,7 @@ describe('useExperiencesQuery Hooks', () => {
         new Error('Només el creador pot eliminar')
       );
 
-      const { result } = renderHook(() => useDeleteExperience(), {
+      const { result } = await renderHook(() => useDeleteExperience(), {
         wrapper: createWrapper(),
       });
 

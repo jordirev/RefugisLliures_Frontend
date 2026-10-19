@@ -82,7 +82,7 @@ describe('useAuth Hook', () => {
         return jest.fn(); // unsubscribe function
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -100,7 +100,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -128,7 +128,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -150,7 +150,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      renderHook(() => useAuth(), { wrapper: createWrapper() });
+      await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(changeLanguage).toHaveBeenCalledWith('ca');
@@ -170,7 +170,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -191,7 +191,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -215,7 +215,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -237,7 +237,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -258,7 +258,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -280,7 +280,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -306,7 +306,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -328,7 +328,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -350,7 +350,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -372,7 +372,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -394,7 +394,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -427,7 +427,7 @@ describe('useAuth Hook', () => {
         .mockResolvedValueOnce(mockBackendUser)
         .mockResolvedValueOnce(updatedBackendUser);
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser?.username).toBe('testuser');
@@ -452,7 +452,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -474,7 +474,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -499,7 +499,7 @@ describe('useAuth Hook', () => {
       });
       (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser).toBeTruthy();
@@ -526,7 +526,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -547,7 +547,7 @@ describe('useAuth Hook', () => {
       });
       (UsersService.getUserByUid as jest.Mock).mockResolvedValue(mockBackendUser);
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.backendUser).toBeTruthy();
@@ -574,7 +574,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -604,7 +604,7 @@ describe('useAuth Hook', () => {
         return jest.fn();
       });
 
-      const { result } = renderHook(() => useAuth(), { wrapper: createWrapper() });
+      const { result } = await renderHook(() => useAuth(), { wrapper: createWrapper() });
 
       // Esperar a que es processi el primer intent
       await act(async () => {

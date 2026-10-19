@@ -31,7 +31,7 @@ export function MediaThumbnail({ media, style }: { media: ImageMetadata; style?:
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
   },

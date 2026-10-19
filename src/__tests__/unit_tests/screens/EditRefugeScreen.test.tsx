@@ -94,8 +94,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -109,8 +109,8 @@ describe('EditRefugeScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament amb refuge prop', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de renderitzar correctament amb refuge prop', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
@@ -118,30 +118,30 @@ describe('EditRefugeScreen', () => {
       expect(getByTestId('refuge-form')).toBeTruthy();
     });
 
-    it('hauria de mostrar el formulari en mode edit', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar el formulari en mode edit', async () => {
+      const { getByText } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       expect(getByText('Mode: edit')).toBeTruthy();
     });
 
-    it('hauria de mostrar les dades inicials del refugi', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar les dades inicials del refugi', async () => {
+      const { getByText } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       expect(getByText('Initial: Test Refuge')).toBeTruthy();
     });
 
-    it('hauria d\'usar el refugi del route si no es proporciona prop', () => {
-      const { getByText } = renderWithProviders(<EditRefugeScreen />);
+    it('hauria d\'usar el refugi del route si no es proporciona prop', async () => {
+      const { getByText } = await renderWithProviders(<EditRefugeScreen />);
 
       expect(getByText('Initial: Refugi Route')).toBeTruthy();
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = renderWithProviders(
+    it('snapshot test', async () => {
+      const { toJSON } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
       expect(toJSON()).toMatchSnapshot();
@@ -149,40 +149,40 @@ describe('EditRefugeScreen', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de cridar onCancel prop quan es proporciona', () => {
+    it('hauria de cridar onCancel prop quan es proporciona', async () => {
       const mockOnCancel = jest.fn();
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} onCancel={mockOnCancel} />
       );
 
       const cancelButton = getByTestId('cancel-button');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
 
       expect(mockOnCancel).toHaveBeenCalled();
     });
 
-    it('hauria de tornar enrere quan no hi ha onCancel prop', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de tornar enrere quan no hi ha onCancel prop', async () => {
+      const { getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       const cancelButton = getByTestId('cancel-button');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
 
       expect(mockGoBack).toHaveBeenCalled();
     });
 
-    it('hauria de navegar a RefugeDetails si no pot tornar enrere', () => {
+    it('hauria de navegar a RefugeDetails si no pot tornar enrere', async () => {
       mockCanGoBack.mockReturnValueOnce(false);
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       const cancelButton = getByTestId('cancel-button');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('RefugeDetails', { refugeId: 'refuge-1' });
+      expect(mockNavigate).toHaveBeenCalledWith('RefugeDetail', { refugeId: 'refuge-1' }, { pop: true });
     });
   });
 
@@ -192,12 +192,12 @@ describe('EditRefugeScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -212,12 +212,12 @@ describe('EditRefugeScreen', () => {
     });
 
     it('hauria de tenir callback onError definit', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <EditRefugeScreen refuge={mockRefuge} />
       );
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(

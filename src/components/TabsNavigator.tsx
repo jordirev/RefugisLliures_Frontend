@@ -17,7 +17,14 @@ import FavIcon from '../assets/icons/fav.svg';
 import ReformIcon from '../assets/icons/reform.svg';
 import UserIcon from '../assets/icons/user.svg';
 
-const Tab = createBottomTabNavigator();
+type TabParamList = {
+  Map: any;
+  Favorites: undefined;
+  Renovations: undefined;
+  Profile: undefined;
+};
+
+const Tab = createBottomTabNavigator<TabParamList, undefined>();
 
 interface TabsNavigatorProps {
   onLocationSelect: (location: Location) => void;
@@ -37,6 +44,7 @@ export function TabsNavigator({
 
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,

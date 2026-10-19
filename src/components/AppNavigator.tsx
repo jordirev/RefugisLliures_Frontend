@@ -34,7 +34,30 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 
-const Stack = createNativeStackNavigator();
+/** Paràmetres de les rutes de la pila principal (tipat laxe: cada pantalla valida els seus). */
+export type RootStackParamList = {
+  MainTabs: any;
+  Settings: undefined;
+  ChangePassword: undefined;
+  ChangeEmail: undefined;
+  EditProfile: undefined;
+  HelpSupport: undefined;
+  AboutTheApp: undefined;
+  CreateRenovation: undefined;
+  CreateRefuge: undefined;
+  EditRefuge: any;
+  EditRenovation: any;
+  Proposals: any;
+  ProposalDetail: any;
+  DoubtsScreen: any;
+  ExperiencesScreen: any;
+  ReportMedia: any;
+  MediaReports: undefined;
+  RefromDetail: any;
+  RefugeDetail: any;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList, undefined>();
 
 /**
  * Rutes de pila que s'han de veure per sobre dels overlays (detall de refugi, experiències...).
@@ -201,7 +224,8 @@ export function AppNavigator() {
 
   return (
     <View style={styles.container}>
-      <Stack.Navigator 
+      <Stack.Navigator
+        id={undefined}
         screenOptions={{ headerShown: false }}
         screenListeners={{
           state: (e: any) => {

@@ -135,8 +135,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Renderització amb dades d\'usuari', () => {
-    it('hauria de renderitzar el perfil amb dades del backend', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de renderitzar el perfil amb dades del backend', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -152,8 +152,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('Estadístiques')).toBeTruthy();
     });
 
-    it('hauria de mostrar les estadístiques correctament', () => {
-      const { getByText, getAllByText } = renderWithProviders(
+    it('hauria de mostrar les estadístiques correctament', async () => {
+      const { getByText, getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -172,8 +172,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getAllByText('0').length).toBeGreaterThanOrEqual(1); // fotos pujades
     });
 
-    it('hauria de mostrar la data de creació correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de mostrar la data de creació correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -188,8 +188,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText(/Membre des de/)).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'avatar amb les inicials', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de mostrar l\'avatar amb les inicials', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -207,8 +207,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Navegació a Settings', () => {
-    it('hauria de navegar a Settings quan es fa clic al botó', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de navegar a Settings quan es fa clic al botó', async () => {
+      const { getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -221,15 +221,15 @@ describe('ProfileScreen - Tests d\'integració', () => {
       );
 
       const settingsButton = getByTestId('settings-button');
-      fireEvent.press(settingsButton);
+      await fireEvent.press(settingsButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('Settings');
     });
   });
 
   describe('Casos amb dades de Firebase quan no hi ha backend', () => {
-    it('hauria de mostrar dades de Firebase si no hi ha backend user', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de mostrar dades de Firebase si no hi ha backend user', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -244,13 +244,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('Test User')).toBeTruthy();
     });
 
-    it('hauria de mostrar email com a nom si no hi ha displayName', () => {
+    it('hauria de mostrar email com a nom si no hi ha displayName', async () => {
       const firebaseUserWithoutName = {
         ...mockFirebaseUser,
         displayName: null,
       };
 
-      const { queryByText } = renderWithProviders(
+      const { queryByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -269,7 +269,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Estadístiques amb valors 0', () => {
-    it('hauria de mostrar 0 per estadístiques buides', () => {
+    it('hauria de mostrar 0 per estadístiques buides', async () => {
       const userWithoutStats = {
         ...mockBackendUser,
         visited_refuges: [],
@@ -278,7 +278,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
         num_uploaded_photos: 0,
       };
 
-      const { getAllByText } = renderWithProviders(
+      const { getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -295,14 +295,14 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(zeros.length).toBeGreaterThanOrEqual(3);
     });
 
-    it('hauria de utilitzar reformes.length si num_refugis_reformats no existeix', () => {
+    it('hauria de utilitzar reformes.length si num_refugis_reformats no existeix', async () => {
       const userWithReformes = {
         ...mockBackendUser,
         num_renovated_refuges: undefined,
         renovations: [1, 2, 3],
       };
 
-      const { getAllByText, getByTestId } = renderWithProviders(
+      const { getAllByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -321,13 +321,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Avatar amb diferents noms', () => {
-    it('hauria de generar inicials correctes per un nom complet', () => {
+    it('hauria de generar inicials correctes per un nom complet', async () => {
       const userWithFullName = {
         ...mockBackendUser,
         username: 'Joan Garcia Puig',
       };
 
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -343,13 +343,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('JP')).toBeTruthy();
     });
 
-    it('hauria de generar inicials per un nom d\'una paraula', () => {
+    it('hauria de generar inicials per un nom d\'una paraula', async () => {
       const userWithSingleName = {
         ...mockBackendUser,
         username: 'Joan',
       };
 
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -365,7 +365,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('JO')).toBeTruthy();
     });
 
-    it('hauria de gestionar noms buits', () => {
+    it('hauria de gestionar noms buits', async () => {
       const userWithoutName = {
         ...mockBackendUser,
         username: '',
@@ -377,7 +377,7 @@ describe('ProfileScreen - Tests d\'integració', () => {
         email: '',
       };
 
-      const { queryByText } = renderWithProviders(
+      const { queryByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -395,8 +395,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Data de creació', () => {
-    it('hauria de utilitzar created_at del backend si està disponible', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de utilitzar created_at del backend si està disponible', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -412,13 +412,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText(/gener/i)).toBeTruthy();
     });
 
-    it('hauria d\'utilitzar creationTime de Firebase si no hi ha created_at', () => {
+    it('hauria d\'utilitzar creationTime de Firebase si no hi ha created_at', async () => {
       const userWithoutCreatedAt = {
         ...mockBackendUser,
         created_at: undefined,
       };
 
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -433,13 +433,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText(/Membre des de/)).toBeTruthy();
     });
 
-    it('hauria de gestionar dates invàlides', () => {
+    it('hauria de gestionar dates invàlides', async () => {
       const userWithInvalidDate = {
         ...mockBackendUser,
         created_at: 'invalid-date',
       };
 
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -457,8 +457,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Estat de càrrega', () => {
-    it('no hauria de mostrar dades mentre està carregant', () => {
-      const { queryByText } = renderWithProviders(
+    it('no hauria de mostrar dades mentre està carregant', async () => {
+      const { queryByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -477,8 +477,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Layout i imatges', () => {
-    it('hauria de mostrar la imatge de fons del header', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar la imatge de fons del header', async () => {
+      const { getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -495,8 +495,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(gradient).toBeTruthy();
     });
 
-    it('hauria de tenir el gradient correcte al header', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de tenir el gradient correcte al header', async () => {
+      const { getByTestId } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -515,8 +515,8 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Safe Area', () => {
-    it('hauria de renderitzar-se amb SafeAreaProvider correctament', () => {
-      const { UNSAFE_root, getByText } = renderWithProviders(
+    it('hauria de renderitzar-se amb SafeAreaProvider correctament', async () => {
+      const { container, getByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -529,14 +529,14 @@ describe('ProfileScreen - Tests d\'integració', () => {
       );
 
       // Verificar que el component renderitza correctament amb SafeArea
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       expect(getByText('Test User')).toBeTruthy();
     });
   });
 
   describe('Refugis visitats', () => {
-    it('hauria de mostrar correctament el nombre de refugis visitats', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar correctament el nombre de refugis visitats', async () => {
+      const { getByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -553,13 +553,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('Refugis visitats')).toBeTruthy();
     });
 
-    it('hauria de mostrar 0 refugis visitats quan no n\'hi ha cap', () => {
+    it('hauria de mostrar 0 refugis visitats quan no n\'hi ha cap', async () => {
       const userWithoutVisited = {
         ...mockBackendUser,
         visited_refuges: [],
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -575,13 +575,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('Refugis visitats')).toBeTruthy();
     });
 
-    it('hauria de gestionar visited_refuges undefined correctament', () => {
+    it('hauria de gestionar visited_refuges undefined correctament', async () => {
       const userWithoutVisitedField = {
         ...mockBackendUser,
         visited_refuges: undefined as any,
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -597,13 +597,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getByText('0')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nombre correcte amb múltiples refugis visitats', () => {
+    it('hauria de mostrar el nombre correcte amb múltiples refugis visitats', async () => {
       const userWithManyVisited = {
         ...mockBackendUser,
         visited_refuges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       };
 
-      const { getAllByText } = renderWithProviders(
+      const { getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -621,13 +621,13 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(textElements.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('hauria de comptar visiteds amb IDs string correctament', () => {
+    it('hauria de comptar visiteds amb IDs string correctament', async () => {
       const userWithStringIds = {
         ...mockBackendUser,
         visited_refuges: ['1', '2', '3', '4', '5'] as any,
       };
 
-      const { getAllByText } = renderWithProviders(
+      const { getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -646,14 +646,14 @@ describe('ProfileScreen - Tests d\'integració', () => {
   });
 
   describe('Comparació refugis favorits vs visitats', () => {
-    it('hauria de mostrar diferent nombre de favorits i visitats', () => {
+    it('hauria de mostrar diferent nombre de favorits i visitats', async () => {
       const userWithDifferentCounts = {
         ...mockBackendUser,
         favourite_refuges: [1, 2], // 2 favorits
         visited_refuges: [1, 2, 3, 4, 5], // 5 visitats
       };
 
-      const { getAllByText } = renderWithProviders(
+      const { getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,
@@ -670,14 +670,14 @@ describe('ProfileScreen - Tests d\'integració', () => {
       expect(getAllByText('5').length).toBeGreaterThanOrEqual(1); // Visitats (i contribucions)
     });
 
-    it('hauria de gestionar el cas on tots els refugis visitats també són favorits', () => {
+    it('hauria de gestionar el cas on tots els refugis visitats també són favorits', async () => {
       const userWithOverlap = {
         ...mockBackendUser,
         favourite_refuges: [1, 2, 3, 4, 5],
         visited_refuges: [1, 2, 3],
       };
 
-      const { getAllByText } = renderWithProviders(
+      const { getAllByText } = await renderWithProviders(
         <ProfileScreen />,
         {
           withNavigation: true,

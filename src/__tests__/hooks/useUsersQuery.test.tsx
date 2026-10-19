@@ -94,7 +94,7 @@ describe('useUser', () => {
   it('should fetch user by UID', async () => {
     mockedService.getUserByUid.mockResolvedValue(mockUser);
 
-    const { result } = renderHook(() => useUser('user-123'), {
+    const { result } = await renderHook(() => useUser('user-123'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -107,7 +107,7 @@ describe('useUser', () => {
   });
 
   it('should not fetch when UID is undefined', async () => {
-    const { result } = renderHook(() => useUser(undefined), {
+    const { result } = await renderHook(() => useUser(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -118,7 +118,7 @@ describe('useUser', () => {
   it('should handle error', async () => {
     mockedService.getUserByUid.mockRejectedValue(new Error('User not found'));
 
-    const { result } = renderHook(() => useUser('invalid-user'), {
+    const { result } = await renderHook(() => useUser('invalid-user'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -143,7 +143,7 @@ describe('useFavouriteRefuges', () => {
   it('should fetch favourite refuges for user', async () => {
     mockedService.getFavouriteRefuges.mockResolvedValue(mockRefugesList);
 
-    const { result } = renderHook(() => useFavouriteRefuges('user-123'), {
+    const { result } = await renderHook(() => useFavouriteRefuges('user-123'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -156,7 +156,7 @@ describe('useFavouriteRefuges', () => {
   });
 
   it('should not fetch when UID is undefined', async () => {
-    const { result } = renderHook(() => useFavouriteRefuges(undefined), {
+    const { result } = await renderHook(() => useFavouriteRefuges(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -180,7 +180,7 @@ describe('useAddFavouriteRefuge', () => {
   it('should add refuge to favourites', async () => {
     mockedService.addFavouriteRefuge.mockResolvedValue(mockRefuge);
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -196,7 +196,7 @@ describe('useAddFavouriteRefuge', () => {
     queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
     mockedService.addFavouriteRefuge.mockResolvedValue(mockRefuge);
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -215,7 +215,7 @@ describe('useAddFavouriteRefuge', () => {
     // Pre-populate refuges cache
     queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], [mockRefuge]);
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -233,7 +233,7 @@ describe('useAddFavouriteRefuge', () => {
     // Pre-populate with same refuge
     queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], [mockRefuge]);
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -252,7 +252,7 @@ describe('useAddFavouriteRefuge', () => {
     
     mockedService.addFavouriteRefuge.mockRejectedValue(new Error('Failed'));
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -277,7 +277,7 @@ describe('useAddFavouriteRefuge', () => {
       favourite_refuges: ['refuge-1'],
     });
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -292,7 +292,7 @@ describe('useAddFavouriteRefuge', () => {
   it('should handle error when adding favourite', async () => {
     mockedService.addFavouriteRefuge.mockRejectedValue(new Error('Failed to add'));
 
-    const { result } = renderHook(() => useAddFavouriteRefuge(), {
+    const { result } = await renderHook(() => useAddFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -319,7 +319,7 @@ describe('useRemoveFavouriteRefuge', () => {
   it('should remove refuge from favourites', async () => {
     mockedService.removeFavouriteRefuge.mockResolvedValue(true);
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -336,7 +336,7 @@ describe('useRemoveFavouriteRefuge', () => {
     queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
     mockedService.removeFavouriteRefuge.mockResolvedValue(true);
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -358,7 +358,7 @@ describe('useRemoveFavouriteRefuge', () => {
       favourite_refuges: ['refuge-1', 'refuge-2'],
     });
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -378,7 +378,7 @@ describe('useRemoveFavouriteRefuge', () => {
     
     mockedService.removeFavouriteRefuge.mockRejectedValue(new Error('Failed'));
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -398,7 +398,7 @@ describe('useRemoveFavouriteRefuge', () => {
     
     queryClient.setQueryData(['users', 'user-123', 'favouriteRefuges'], mockRefugesList);
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -413,7 +413,7 @@ describe('useRemoveFavouriteRefuge', () => {
   it('should handle error when removing favourite', async () => {
     mockedService.removeFavouriteRefuge.mockRejectedValue(new Error('Failed to remove'));
 
-    const { result } = renderHook(() => useRemoveFavouriteRefuge(), {
+    const { result } = await renderHook(() => useRemoveFavouriteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -440,7 +440,7 @@ describe('useVisitedRefuges', () => {
   it('should fetch visited refuges for user', async () => {
     mockedService.getVisitedRefuges.mockResolvedValue(mockRefugesList);
 
-    const { result } = renderHook(() => useVisitedRefuges('user-123'), {
+    const { result } = await renderHook(() => useVisitedRefuges('user-123'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -453,7 +453,7 @@ describe('useVisitedRefuges', () => {
   });
 
   it('should not fetch when UID is undefined', async () => {
-    const { result } = renderHook(() => useVisitedRefuges(undefined), {
+    const { result } = await renderHook(() => useVisitedRefuges(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -477,7 +477,7 @@ describe('useAddVisitedRefuge', () => {
   it('should add refuge to visited', async () => {
     mockedService.addVisitedRefuge.mockResolvedValue(mockRefuge);
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -493,7 +493,7 @@ describe('useAddVisitedRefuge', () => {
     queryClient.setQueryData(['users', 'detail', 'user-123'], mockUser);
     mockedService.addVisitedRefuge.mockResolvedValue(mockRefuge);
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -512,7 +512,7 @@ describe('useAddVisitedRefuge', () => {
     // Pre-populate refuges cache
     queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], [mockRefuge]);
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -530,7 +530,7 @@ describe('useAddVisitedRefuge', () => {
     // Pre-populate with same refuge
     queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], [mockRefuge]);
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -549,7 +549,7 @@ describe('useAddVisitedRefuge', () => {
     
     mockedService.addVisitedRefuge.mockRejectedValue(new Error('Failed'));
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -575,7 +575,7 @@ describe('useAddVisitedRefuge', () => {
     };
     queryClient.setQueryData(['users', 'detail', 'user-123'], userWithVisited);
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -590,7 +590,7 @@ describe('useAddVisitedRefuge', () => {
   it('should handle error when adding visited', async () => {
     mockedService.addVisitedRefuge.mockRejectedValue(new Error('Failed to add'));
 
-    const { result } = renderHook(() => useAddVisitedRefuge(), {
+    const { result } = await renderHook(() => useAddVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -617,7 +617,7 @@ describe('useRemoveVisitedRefuge', () => {
   it('should remove refuge from visited', async () => {
     mockedService.removeVisitedRefuge.mockResolvedValue(true);
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -637,7 +637,7 @@ describe('useRemoveVisitedRefuge', () => {
     });
     mockedService.removeVisitedRefuge.mockResolvedValue(true);
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -659,7 +659,7 @@ describe('useRemoveVisitedRefuge', () => {
       visited_refuges: ['refuge-1', 'refuge-2'],
     });
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -679,7 +679,7 @@ describe('useRemoveVisitedRefuge', () => {
     
     mockedService.removeVisitedRefuge.mockRejectedValue(new Error('Failed'));
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -699,7 +699,7 @@ describe('useRemoveVisitedRefuge', () => {
     
     queryClient.setQueryData(['users', 'user-123', 'visitedRefuges'], mockRefugesList);
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -714,7 +714,7 @@ describe('useRemoveVisitedRefuge', () => {
   it('should handle error when removing visited', async () => {
     mockedService.removeVisitedRefuge.mockRejectedValue(new Error('Failed to remove'));
 
-    const { result } = renderHook(() => useRemoveVisitedRefuge(), {
+    const { result } = await renderHook(() => useRemoveVisitedRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -741,7 +741,7 @@ describe('useUpdateUserProfile', () => {
   it('should update user profile', async () => {
     mockedService.updateUser.mockResolvedValue({ ...mockUser, username: 'UpdatedUser' });
 
-    const { result } = renderHook(() => useUpdateUserProfile(), {
+    const { result } = await renderHook(() => useUpdateUserProfile(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -758,7 +758,7 @@ describe('useUpdateUserProfile', () => {
   it('should handle error when updating profile', async () => {
     mockedService.updateUser.mockRejectedValue(new Error('Update failed'));
 
-    const { result } = renderHook(() => useUpdateUserProfile(), {
+    const { result } = await renderHook(() => useUpdateUserProfile(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -788,7 +788,7 @@ describe('useUsers', () => {
       .mockResolvedValueOnce(mockUser)
       .mockResolvedValueOnce(mockUser2);
 
-    const { result } = renderHook(() => useUsers(['user-123', 'user-456']), {
+    const { result } = await renderHook(() => useUsers(['user-123', 'user-456']), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -801,7 +801,7 @@ describe('useUsers', () => {
   });
 
   it('should not fetch when UIDs is undefined', async () => {
-    const { result } = renderHook(() => useUsers(undefined), {
+    const { result } = await renderHook(() => useUsers(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -810,7 +810,7 @@ describe('useUsers', () => {
   });
 
   it('should not fetch when UIDs is empty array', async () => {
-    const { result } = renderHook(() => useUsers([]), {
+    const { result } = await renderHook(() => useUsers([]), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -822,7 +822,7 @@ describe('useUsers', () => {
       .mockResolvedValueOnce(mockUser)
       .mockRejectedValueOnce(new Error('Not found'));
 
-    const { result } = renderHook(() => useUsers(['user-123', 'invalid-user']), {
+    const { result } = await renderHook(() => useUsers(['user-123', 'invalid-user']), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -850,7 +850,7 @@ describe('useUserExists', () => {
   it('should return true when user exists', async () => {
     mockedService.getUserByUid.mockResolvedValue(mockUser);
 
-    const { result } = renderHook(() => useUserExists('user-123'), {
+    const { result } = await renderHook(() => useUserExists('user-123'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -864,7 +864,7 @@ describe('useUserExists', () => {
   it('should return false when user does not exist', async () => {
     mockedService.getUserByUid.mockRejectedValue(new Error('Not found'));
 
-    const { result } = renderHook(() => useUserExists('invalid-user'), {
+    const { result } = await renderHook(() => useUserExists('invalid-user'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -876,7 +876,7 @@ describe('useUserExists', () => {
   });
 
   it('should not fetch when UID is undefined', async () => {
-    const { result } = renderHook(() => useUserExists(undefined), {
+    const { result } = await renderHook(() => useUserExists(undefined), {
       wrapper: createWrapper(queryClient),
     });
 

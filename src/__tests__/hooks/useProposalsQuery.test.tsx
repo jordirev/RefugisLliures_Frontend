@@ -23,7 +23,7 @@ const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      gcTime: 0,
+      gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
     },
     mutations: {
       retry: false,
@@ -79,7 +79,7 @@ describe('useProposals', () => {
   it('should fetch all proposals', async () => {
     mockedService.listProposals.mockResolvedValue([mockProposal]);
 
-    const { result } = renderHook(() => useProposals(), {
+    const { result } = await renderHook(() => useProposals(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -94,7 +94,7 @@ describe('useProposals', () => {
   it('should fetch proposals with status filter', async () => {
     mockedService.listProposals.mockResolvedValue([mockProposal]);
 
-    const { result } = renderHook(() => useProposals('pending'), {
+    const { result } = await renderHook(() => useProposals('pending'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -108,7 +108,7 @@ describe('useProposals', () => {
   it('should fetch proposals with refugeId filter', async () => {
     mockedService.listProposals.mockResolvedValue([mockProposal]);
 
-    const { result } = renderHook(() => useProposals(undefined, 'refuge-1'), {
+    const { result } = await renderHook(() => useProposals(undefined, 'refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -122,7 +122,7 @@ describe('useProposals', () => {
   it('should handle error', async () => {
     mockedService.listProposals.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useProposals(), {
+    const { result } = await renderHook(() => useProposals(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -149,7 +149,7 @@ describe('useMyProposals', () => {
   it('should fetch user proposals', async () => {
     mockedService.listMyProposals.mockResolvedValue([mockProposal]);
 
-    const { result } = renderHook(() => useMyProposals(), {
+    const { result } = await renderHook(() => useMyProposals(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -164,7 +164,7 @@ describe('useMyProposals', () => {
   it('should fetch user proposals with status filter', async () => {
     mockedService.listMyProposals.mockResolvedValue([mockProposal]);
 
-    const { result } = renderHook(() => useMyProposals('approved'), {
+    const { result } = await renderHook(() => useMyProposals('approved'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -191,7 +191,7 @@ describe('useApproveProposal', () => {
   it('should approve a proposal', async () => {
     mockedService.approveProposal.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useApproveProposal(), {
+    const { result } = await renderHook(() => useApproveProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -205,7 +205,7 @@ describe('useApproveProposal', () => {
   it('should approve a proposal with proposalType and refugeId', async () => {
     mockedService.approveProposal.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useApproveProposal(), {
+    const { result } = await renderHook(() => useApproveProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -225,7 +225,7 @@ describe('useApproveProposal', () => {
   it('should handle error', async () => {
     mockedService.approveProposal.mockRejectedValue(new Error('Permission denied'));
 
-    const { result } = renderHook(() => useApproveProposal(), {
+    const { result } = await renderHook(() => useApproveProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -252,7 +252,7 @@ describe('useRejectProposal', () => {
   it('should reject a proposal without reason', async () => {
     mockedService.rejectProposal.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useRejectProposal(), {
+    const { result } = await renderHook(() => useRejectProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -266,7 +266,7 @@ describe('useRejectProposal', () => {
   it('should reject a proposal with reason', async () => {
     mockedService.rejectProposal.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useRejectProposal(), {
+    const { result } = await renderHook(() => useRejectProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -283,7 +283,7 @@ describe('useRejectProposal', () => {
   it('should handle error', async () => {
     mockedService.rejectProposal.mockRejectedValue(new Error('Permission denied'));
 
-    const { result } = renderHook(() => useRejectProposal(), {
+    const { result } = await renderHook(() => useRejectProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -310,7 +310,7 @@ describe('useCreateRefugeProposal', () => {
   it('should create a refuge proposal', async () => {
     mockedService.proposalCreateRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useCreateRefugeProposal(), {
+    const { result } = await renderHook(() => useCreateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -332,7 +332,7 @@ describe('useCreateRefugeProposal', () => {
   it('should create a refuge proposal with comment', async () => {
     mockedService.proposalCreateRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useCreateRefugeProposal(), {
+    const { result } = await renderHook(() => useCreateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -354,7 +354,7 @@ describe('useCreateRefugeProposal', () => {
   it('should handle error', async () => {
     mockedService.proposalCreateRefuge.mockRejectedValue(new Error('Validation error'));
 
-    const { result } = renderHook(() => useCreateRefugeProposal(), {
+    const { result } = await renderHook(() => useCreateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -383,7 +383,7 @@ describe('useUpdateRefugeProposal', () => {
   it('should update a refuge proposal', async () => {
     mockedService.proposalEditRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useUpdateRefugeProposal(), {
+    const { result } = await renderHook(() => useUpdateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -404,7 +404,7 @@ describe('useUpdateRefugeProposal', () => {
   it('should update a refuge proposal with comment', async () => {
     mockedService.proposalEditRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useUpdateRefugeProposal(), {
+    const { result } = await renderHook(() => useUpdateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -426,7 +426,7 @@ describe('useUpdateRefugeProposal', () => {
   it('should handle error', async () => {
     mockedService.proposalEditRefuge.mockRejectedValue(new Error('Refuge not found'));
 
-    const { result } = renderHook(() => useUpdateRefugeProposal(), {
+    const { result } = await renderHook(() => useUpdateRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -456,7 +456,7 @@ describe('useDeleteRefugeProposal', () => {
   it('should delete a refuge proposal', async () => {
     mockedService.proposalDeleteRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useDeleteRefugeProposal(), {
+    const { result } = await renderHook(() => useDeleteRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -470,7 +470,7 @@ describe('useDeleteRefugeProposal', () => {
   it('should delete a refuge proposal with comment', async () => {
     mockedService.proposalDeleteRefuge.mockResolvedValue(mockProposal);
 
-    const { result } = renderHook(() => useDeleteRefugeProposal(), {
+    const { result } = await renderHook(() => useDeleteRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -487,7 +487,7 @@ describe('useDeleteRefugeProposal', () => {
   it('should handle error', async () => {
     mockedService.proposalDeleteRefuge.mockRejectedValue(new Error('Refuge not found'));
 
-    const { result } = renderHook(() => useDeleteRefugeProposal(), {
+    const { result } = await renderHook(() => useDeleteRefugeProposal(), {
       wrapper: createWrapper(queryClient),
     });
 

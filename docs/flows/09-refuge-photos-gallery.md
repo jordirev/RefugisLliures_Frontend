@@ -51,7 +51,7 @@ sequenceDiagram
     end
     BE-->>S: {uploads:[{upload_id, put_url, headers}]}
     loop per fitxer
-        S->>R2: PUT put_url (headers retornats, SENSE Bearer, amb progrés)
+        S->>R2: PUT put_url (headers retornats, SENSE Bearer, amb progrés via `createUploadTask` de `expo-file-system/legacy`)
     end
     S->>BE: POST /api/media/upload-intents/confirm/ {upload_ids}
     BE-->>S: {uploaded: MediaItem[], failed: [{upload_id, reason}]}

@@ -13,7 +13,7 @@
  */
 
 import React from 'react';
-import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
+import { renderWithProviders, fireEvent, waitFor, act } from '../setup/testUtils';
 import { setupMSW } from '../setup/mswServer';
 import { ChangePasswordScreen } from '../../../screens/ChangePasswordScreen';
 
@@ -31,6 +31,7 @@ jest.mock('../../../contexts/AuthContext', () => ({
 
 // Mock de navigation
 const mockNavigate = jest.fn();
+const mockPopTo = jest.fn();
 const mockGoBack = jest.fn();
 const mockAddListener = jest.fn(() => jest.fn());
 jest.mock('@react-navigation/native', () => {
@@ -39,6 +40,7 @@ jest.mock('@react-navigation/native', () => {
     ...actualNav,
     useNavigation: () => ({
       navigate: mockNavigate,
+      popTo: mockPopTo,
       goBack: mockGoBack,
       addListener: mockAddListener,
     }),
@@ -74,8 +76,8 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar la pantalla correctament', () => {
-      const { getByText, getByPlaceholderText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+    it('hauria de renderitzar la pantalla correctament', async () => {
+      const { getByText, getByPlaceholderText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       expect(getByTestId('submit-button')).toBeTruthy();
       expect(getByTestId('current-password-input')).toBeTruthy();
@@ -83,15 +85,15 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
       expect(getByTestId('confirm-password-input')).toBeTruthy();
     });
 
-    it('hauria de tenir el botó desactivat inicialment', () => {
-      const { getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+    it('hauria de tenir el botó desactivat inicialment', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const button = getByTestId('submit-button');
       expect(button.props.accessibilityState.disabled).toBe(true);
     });
 
-    it('hauria de mostrar el botó back', () => {
-      const { getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+    it('hauria de mostrar el botó back', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const backButton = getByTestId('back-button');
       expect(backButton).toBeTruthy();
@@ -100,13 +102,13 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
 
   describe('Validació de contrasenya actual', () => {
     it('hauria de mostrar error si la contrasenya actual està buida', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       // Leave current password empty, but fill in the others to make form valid except current password
       const currentPasswordInput = getByTestId('current-password-input');
-      fireEvent.changeText(currentPasswordInput, '');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(currentPasswordInput, '');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
       // Button should be disabled because current password is empty
       const button = getByTestId('submit-button');
@@ -116,10 +118,10 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
 
   describe('Validació de nova contrasenya', () => {
     it('hauria de mostrar els requisits de la contrasenya', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'weak');
+      await fireEvent.changeText(newPasswordInput, 'weak');
 
       await waitFor(() => {
         expect(getByText('signup.errors.shortPassword')).toBeTruthy();
@@ -131,16 +133,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar requisit de caràcter especial', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'Test1234');
+      await fireEvent.changeText(newPasswordInput, 'Test1234');
 
       await waitFor(() => {
         expect(getByText('signup.errors.specialCharPassword')).toBeTruthy();
       });
 
-      fireEvent.changeText(newPasswordInput, 'Test1234!');
+      await fireEvent.changeText(newPasswordInput, 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.specialCharPassword')).toBeNull();
@@ -148,16 +150,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar requisit de minúscula', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'TEST1234!');
+      await fireEvent.changeText(newPasswordInput, 'TEST1234!');
 
       await waitFor(() => {
         expect(getByText('signup.errors.minusPassword')).toBeTruthy();
       });
 
-      fireEvent.changeText(newPasswordInput, 'Test1234!');
+      await fireEvent.changeText(newPasswordInput, 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.minusPassword')).toBeNull();
@@ -165,16 +167,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar requisit de majúscula', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'test1234!');
+      await fireEvent.changeText(newPasswordInput, 'test1234!');
 
       await waitFor(() => {
         expect(getByText('signup.errors.upperPassword')).toBeTruthy();
       });
 
-      fireEvent.changeText(newPasswordInput, 'Test1234!');
+      await fireEvent.changeText(newPasswordInput, 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.upperPassword')).toBeNull();
@@ -182,16 +184,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar requisit de número', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'TestTest!');
+      await fireEvent.changeText(newPasswordInput, 'TestTest!');
 
       await waitFor(() => {
         expect(getByText('signup.errors.numberPassword')).toBeTruthy();
       });
 
-      fireEvent.changeText(newPasswordInput, 'Test1234!');
+      await fireEvent.changeText(newPasswordInput, 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.numberPassword')).toBeNull();
@@ -199,16 +201,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar requisit de caràcter especial', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'Test1234');
+      await fireEvent.changeText(newPasswordInput, 'Test1234');
 
       await waitFor(() => {
         expect(getByText('signup.errors.specialCharPassword')).toBeTruthy();
       });
 
-      fireEvent.changeText(newPasswordInput, 'Test1234!');
+      await fireEvent.changeText(newPasswordInput, 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.specialCharPassword')).toBeNull();
@@ -216,10 +218,10 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria d\'acceptar una contrasenya forta', async () => {
-      const { getByPlaceholderText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const newPasswordInput = getByTestId('new-password-input');
-      fireEvent.changeText(newPasswordInput, 'StrongPass123!');
+      await fireEvent.changeText(newPasswordInput, 'StrongPass123!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.shortPassword')).toBeNull();
@@ -233,10 +235,10 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
 
   describe('Confirmació de contrasenya', () => {
     it('hauria de mostrar error si les contrasenyes no coincideixen', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('new-password-input'), 'StrongPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'Different123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'StrongPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'Different123!');
 
       await waitFor(() => {
         expect(getByText('signup.errors.passwordMismatch')).toBeTruthy();
@@ -244,10 +246,10 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('no hauria de mostrar error si les contrasenyes coincideixen', async () => {
-      const { getByPlaceholderText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('new-password-input'), 'StrongPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'StrongPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'StrongPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'StrongPass123!');
 
       await waitFor(() => {
         expect(queryByText('Les contrasenyes no coincideixen')).toBeNull();
@@ -255,18 +257,18 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de revalidar la confirmació quan canvia la nova contrasenya', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       // Escriure contrasenyes coincidents
-      fireEvent.changeText(getByTestId('new-password-input'), 'Pass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'Pass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'Pass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'Pass123!');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.passwordMismatch')).toBeNull();
       });
 
       // Canviar la nova contrasenya
-      fireEvent.changeText(getByTestId('new-password-input'), 'DifferentPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'DifferentPass123!');
 
       await waitFor(() => {
         expect(getByText('signup.errors.passwordMismatch')).toBeTruthy();
@@ -278,16 +280,16 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de canviar la contrasenya correctament', async () => {
       mockChangePassword.mockResolvedValue(undefined);
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const button = getByTestId('submit-button');
         expect(button.props.accessibilityState.disabled).toBe(false);
-        fireEvent.press(button);
+        await fireEvent.press(button);
       });
 
       await waitFor(() => {
@@ -303,14 +305,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de navegar a Settings després de l\'èxit', async () => {
       mockChangePassword.mockResolvedValue(undefined);
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -325,14 +327,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar error si la nova contrasenya és igual a l\'actual', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'SamePass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'SamePass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'SamePass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'SamePass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'SamePass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'SamePass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -348,14 +350,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de gestionar contrasenya actual incorrecta', async () => {
       mockChangePassword.mockRejectedValue({ code: 'auth/wrong-password' });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'WrongPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'WrongPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -367,14 +369,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de gestionar contrasenya dèbil', async () => {
       mockChangePassword.mockRejectedValue({ code: 'auth/weak-password' });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'WeakPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'WeakPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'WeakPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'WeakPass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -388,14 +390,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de gestionar necessitat de reautenticació', async () => {
       mockChangePassword.mockRejectedValue({ code: 'auth/requires-recent-login' });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -409,14 +411,14 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     it('hauria de gestionar errors genèrics', async () => {
       mockChangePassword.mockRejectedValue(new Error('Network error'));
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -430,13 +432,13 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
 
   describe('Visibilitat de contrasenyes', () => {
     it('hauria d\'alternar la visibilitat de la contrasenya actual', async () => {
-      const { getByPlaceholderText, getAllByTestId, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getAllByTestId, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const passwordInput = getByTestId('current-password-input');
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       const toggleButtons = getAllByTestId('toggle-current-password');
-      fireEvent.press(toggleButtons[0]);
+      await fireEvent.press(toggleButtons[0]);
 
       await waitFor(() => {
         expect(passwordInput.props.secureTextEntry).toBe(false);
@@ -444,13 +446,13 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria d\'alternar la visibilitat de la nova contrasenya', async () => {
-      const { getByPlaceholderText, getAllByTestId, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getAllByTestId, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const passwordInput = getByTestId('new-password-input');
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       const toggleButton = getByTestId('toggle-new-password');
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(passwordInput.props.secureTextEntry).toBe(false);
@@ -458,13 +460,13 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
     });
 
     it('hauria d\'alternar la visibilitat de la confirmació de contrasenya', async () => {
-      const { getByPlaceholderText, getAllByTestId, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getAllByTestId, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const passwordInput = getByTestId('confirm-password-input');
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       const toggleButton = getByTestId('toggle-confirm-password');
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(passwordInput.props.secureTextEntry).toBe(false);
@@ -473,57 +475,62 @@ describe('ChangePasswordScreen - Tests d\'integració', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de tornar a Settings amb el botó back', () => {
-      const { getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+    it('hauria de tornar a Settings amb el botó back', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
-    it('hauria de netejar els camps quan torna enrere', () => {
-      const { getByTestId, getByPlaceholderText } = renderWithProviders(<ChangePasswordScreen />);
+    it('hauria de netejar els camps quan torna enrere', async () => {
+      const { getByTestId, getByPlaceholderText } = await renderWithProviders(<ChangePasswordScreen />);
 
       // Omplir els camps
-      fireEvent.changeText(getByTestId('current-password-input'), 'old');
-      fireEvent.changeText(getByTestId('new-password-input'), 'new');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'new');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'old');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'new');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'new');
 
       // Tornar enrere
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+      expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 
   describe('Estat de càrrega', () => {
     it('hauria de deshabilitar el botó durant la càrrega', async () => {
-      mockChangePassword.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      // Promesa diferida controlada manualment: evita dependre de timers reals (racy sota càrrega de CPU)
+      let resolveChangePassword!: (v?: any) => void;
+      mockChangePassword.mockImplementation(() => new Promise(r => { resolveChangePassword = r; }));
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
-      fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('current-password-input'), 'OldPass123!');
+      await fireEvent.changeText(getByTestId('new-password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'NewPass123!');
 
       const button = getByTestId('submit-button');
+      // Sense await: el handler queda pendent fins que resolguem la promesa
       fireEvent.press(button);
 
       await waitFor(() => {
         expect(button.props.accessibilityState.disabled).toBe(true);
       });
+
+      await act(async () => { resolveChangePassword(); });
     });
   });
 
   describe('Casos límit', () => {
     it('hauria de gestionar espais en blanc en les contrasenyes', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(<ChangePasswordScreen />);
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(<ChangePasswordScreen />);
 
-      fireEvent.changeText(getByTestId('current-password-input'), '  OldPass123!  ');
-      fireEvent.changeText(getByTestId('new-password-input'), '  NewPass123!  ');
-      fireEvent.changeText(getByTestId('confirm-password-input'), '  NewPass123!  ');
+      await fireEvent.changeText(getByTestId('current-password-input'), '  OldPass123!  ');
+      await fireEvent.changeText(getByTestId('new-password-input'), '  NewPass123!  ');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), '  NewPass123!  ');
 
       const button = getByTestId('submit-button');
 

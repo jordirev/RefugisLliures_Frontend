@@ -1,18 +1,21 @@
 module.exports = {
-  preset: 'react-native',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  preset: '@react-native/jest-preset',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'node'],
   testMatch: [
     '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
     '**/*.(test|spec).(ts|tsx|js)'
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.js' }],
+    // mjs: msw 3 depèn de paquets només ESM (rettime) que Jest ha de transpilar
+    '^.+\\.(js|jsx|mjs|ts|tsx)$': '<rootDir>/jest.transform.js',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-maps|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@mswjs|@ptomasroos|until-async)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@msw|@mswjs|rettime|@open-draft|headers-polyfill|tough-cookie|cookie|@ptomasroos|until-async)/)',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
+  // Marge per a renders freds sota càrrega (CI, workers en paral·lel): evita timeouts intermitents
+  testTimeout: 15000,
   // Force exit to handle worker processes that don't exit cleanly
   forceExit: true,
   // Run tests in a single worker to reduce open handle issues

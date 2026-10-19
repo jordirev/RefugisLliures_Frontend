@@ -69,13 +69,13 @@ describe('OfflineMapManager Component', () => {
         downloadedTiles: 1000,
         totalTiles: 1000,
       },
-      totalSizeMB: 50,
+      sizeInMB: 50,
     });
   });
 
   describe('Renderització bàsica', () => {
     it('hauria de renderitzar correctament quan és visible', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -85,7 +85,7 @@ describe('OfflineMapManager Component', () => {
     });
 
     it('hauria de mostrar el botó de tancar', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -95,13 +95,13 @@ describe('OfflineMapManager Component', () => {
     });
 
     it('hauria de cridar onClose quan es prem el botó de tancar', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const closeButton = getByText('✕');
-        fireEvent.press(closeButton);
+        await fireEvent.press(closeButton);
       });
 
       expect(mockOnClose).toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe('OfflineMapManager Component', () => {
 
   describe('Estat del cache', () => {
     it('hauria de carregar l\'estat del cache quan es fa visible', async () => {
-      render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
+      await render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
         expect(MapCacheService.getCacheStatus).toHaveBeenCalled();
@@ -124,10 +124,10 @@ describe('OfflineMapManager Component', () => {
           downloadedTiles: 1000,
           totalTiles: 1000,
         },
-        totalSizeMB: 50,
+        sizeInMB: 50,
       });
 
-      render(
+      await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -140,9 +140,10 @@ describe('OfflineMapManager Component', () => {
     it('hauria de gestionar quan no hi ha cache', async () => {
       (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
         metadata: null,
+        sizeInMB: 0,
       });
 
-      render(
+      await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -158,10 +159,10 @@ describe('OfflineMapManager Component', () => {
           downloadedTiles: 500,
           totalTiles: 1000,
         },
-        totalSizeMB: 25,
+        sizeInMB: 25,
       });
 
-      render(
+      await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -173,7 +174,7 @@ describe('OfflineMapManager Component', () => {
 
   describe('Helpers i botons', () => {
     it('hauria de cridar getCacheStatus quan es renderitza', async () => {
-      render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
+      await render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
         expect(MapCacheService.getCacheStatus).toHaveBeenCalled();
@@ -188,7 +189,7 @@ describe('OfflineMapManager Component', () => {
         new Error('Error de xarxa')
       );
 
-      render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
+      await render(<OfflineMapManager visible={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
         expect(MapCacheService.getCacheStatus).toHaveBeenCalled();
@@ -200,7 +201,7 @@ describe('OfflineMapManager Component', () => {
 
   describe('Snapshot', () => {
     it('hauria de coincidir amb el snapshot quan és visible amb cache', async () => {
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -212,9 +213,10 @@ describe('OfflineMapManager Component', () => {
     it('hauria de coincidir amb el snapshot quan és visible sense cache', async () => {
       (MapCacheService.getCacheStatus as jest.Mock).mockResolvedValue({
         metadata: null,
+        sizeInMB: 0,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -231,7 +233,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 0,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -241,7 +243,7 @@ describe('OfflineMapManager Component', () => {
 
       // Buscar botó de descarregar amb regex per incloure l'emoji
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       // Verificar que showAlert ha estat cridat
       expect(mockAlertState.showAlertFn).toHaveBeenCalledWith(
@@ -274,7 +276,7 @@ describe('OfflineMapManager Component', () => {
         }
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -283,7 +285,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       // Simular que l'usuari prem "Descarregar"
       await act(async () => {
@@ -315,7 +317,7 @@ describe('OfflineMapManager Component', () => {
         }
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -324,7 +326,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       await act(async () => {
         const downloadConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Descarregar');
@@ -353,7 +355,7 @@ describe('OfflineMapManager Component', () => {
         new Error('Error de descàrrega')
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -362,7 +364,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       await act(async () => {
         const downloadConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Descarregar');
@@ -384,7 +386,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 0,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -393,7 +395,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       // Verificar que hi ha botó de cancel·lar
       const cancelButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Cancel·lar');
@@ -414,7 +416,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 50,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -423,7 +425,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const deleteButton = getByText(/Eliminar Mapes/);
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       expect(mockAlertState.showAlertFn).toHaveBeenCalledWith(
         'Eliminar Mapes',
@@ -448,7 +450,7 @@ describe('OfflineMapManager Component', () => {
 
       (MapCacheService.clearCache as jest.Mock).mockResolvedValue(undefined);
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -457,7 +459,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const deleteButton = getByText(/Eliminar Mapes/);
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       await act(async () => {
         const confirmDeleteButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Eliminar');
@@ -490,7 +492,7 @@ describe('OfflineMapManager Component', () => {
         new Error('Error d\'eliminació')
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -499,7 +501,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const deleteButton = getByText(/Eliminar Mapes/);
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       await act(async () => {
         const confirmDeleteButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Eliminar');
@@ -537,7 +539,7 @@ describe('OfflineMapManager Component', () => {
         }
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -546,7 +548,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       // Simular confirmació
       await act(async () => {
@@ -581,7 +583,7 @@ describe('OfflineMapManager Component', () => {
         }
       );
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -590,7 +592,7 @@ describe('OfflineMapManager Component', () => {
       });
 
       const downloadButton = getByText(/Descarregar Mapes dels Pirineus/);
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       await act(async () => {
         const downloadConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'Descarregar');
@@ -615,7 +617,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 0.5, // 512 KB
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -636,7 +638,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 50.5,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -656,7 +658,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 50,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -676,7 +678,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 25,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -691,7 +693,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 0,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 
@@ -712,7 +714,7 @@ describe('OfflineMapManager Component', () => {
         sizeInMB: 50,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <OfflineMapManager visible={true} onClose={mockOnClose} />
       );
 

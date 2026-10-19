@@ -15,6 +15,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { TouchableOpacity, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SearchBar } from '../../../components/SearchBar';
+import { findAllByType, findByType } from '../../testHelpers/findByType';
 
 // Mock Keyboard
 const mockKeyboardDismiss = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
@@ -50,21 +51,21 @@ describe('SearchBar Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el component', () => {
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+    it('hauria de renderitzar el component', async () => {
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       expect(getByPlaceholderText('Cerca refugis...')).toBeTruthy();
     });
 
-    it('hauria de mostrar el placeholder correcte', () => {
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+    it('hauria de mostrar el placeholder correcte', async () => {
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       const input = getByPlaceholderText('Cerca refugis...');
       expect(input.props.placeholder).toBe('Cerca refugis...');
     });
 
-    it('hauria de mostrar el valor de searchQuery', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de mostrar el valor de searchQuery', async () => {
+      const { getByDisplayValue } = await render(
         <SearchBar {...defaultProps} searchQuery="Refugi test" />
       );
       
@@ -73,107 +74,107 @@ describe('SearchBar Component', () => {
   });
 
   describe('Input de cerca', () => {
-    it('hauria de cridar onSearchChange quan es canvia el text', () => {
+    it('hauria de cridar onSearchChange quan es canvia el text', async () => {
       const onSearchChange = jest.fn();
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <SearchBar {...defaultProps} onSearchChange={onSearchChange} />
       );
       
       const input = getByPlaceholderText('Cerca refugis...');
-      fireEvent.changeText(input, 'Nou text');
+      await fireEvent.changeText(input, 'Nou text');
       
       expect(onSearchChange).toHaveBeenCalledWith('Nou text');
     });
 
-    it('hauria de cridar onSearchChange amb string buit', () => {
+    it('hauria de cridar onSearchChange amb string buit', async () => {
       const onSearchChange = jest.fn();
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <SearchBar {...defaultProps} onSearchChange={onSearchChange} />
       );
       
       const input = getByPlaceholderText('Cerca refugis...');
-      fireEvent.changeText(input, '');
+      await fireEvent.changeText(input, '');
       
       expect(onSearchChange).toHaveBeenCalledWith('');
     });
 
-    it('hauria de permetre múltiples canvis de text', () => {
+    it('hauria de permetre múltiples canvis de text', async () => {
       const onSearchChange = jest.fn();
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <SearchBar {...defaultProps} onSearchChange={onSearchChange} />
       );
       
       const input = getByPlaceholderText('Cerca refugis...');
       
-      fireEvent.changeText(input, 'R');
-      fireEvent.changeText(input, 'Re');
-      fireEvent.changeText(input, 'Ref');
+      await fireEvent.changeText(input, 'R');
+      await fireEvent.changeText(input, 'Re');
+      await fireEvent.changeText(input, 'Ref');
       
       expect(onSearchChange).toHaveBeenCalledTimes(3);
       expect(onSearchChange).toHaveBeenLastCalledWith('Ref');
     });
 
-    it('hauria de cridar Keyboard.dismiss quan es fa submit', () => {
+    it('hauria de cridar Keyboard.dismiss quan es fa submit', async () => {
       mockKeyboardDismiss.mockClear();
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       const input = getByPlaceholderText('Cerca refugis...');
-      fireEvent(input, 'submitEditing');
+      await fireEvent(input, 'submitEditing');
       
       expect(mockKeyboardDismiss).toHaveBeenCalled();
     });
   });
 
   describe('Gestió del teclat', () => {
-    it('hauria de cridar Keyboard.dismiss quan es prem el container', () => {
+    it('hauria de cridar Keyboard.dismiss quan es prem el container', async () => {
       mockKeyboardDismiss.mockClear();
-      const { UNSAFE_getAllByType } = render(<SearchBar {...defaultProps} />);
+      const { container } = await render(<SearchBar {...defaultProps} />);
       
-      const touchableWithoutFeedback = UNSAFE_getAllByType(TouchableWithoutFeedback);
+      const touchableWithoutFeedback = findAllByType(container, TouchableWithoutFeedback);
       if (touchableWithoutFeedback.length > 0) {
-        fireEvent.press(touchableWithoutFeedback[0]);
+        await fireEvent.press(touchableWithoutFeedback[0]);
         expect(mockKeyboardDismiss).toHaveBeenCalled();
       }
     });
 
-    it('hauria de cridar Keyboard.dismiss quan es prem el botó de filtres', () => {
+    it('hauria de cridar Keyboard.dismiss quan es prem el botó de filtres', async () => {
       mockKeyboardDismiss.mockClear();
       const onOpenFilters = jest.fn();
-      const { UNSAFE_getAllByType } = render(
+      const { container } = await render(
         <SearchBar {...defaultProps} onOpenFilters={onOpenFilters} />
       );
       
       // Get touchables and press filter button (first one in non-search context)
-      const touchables = UNSAFE_getAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
         expect(mockKeyboardDismiss).toHaveBeenCalled();
       }
     });
   });
 
   describe('Botó de filtres', () => {
-    it('hauria de mostrar el botó de filtres', () => {
-      const { getByTestId } = render(<SearchBar {...defaultProps} />);
+    it('hauria de mostrar el botó de filtres', async () => {
+      const { getByTestId } = await render(<SearchBar {...defaultProps} />);
       
       // El botó de filtres no té testID per defecte, però podem buscar-lo per altres mitjans
       // Com que no podem accedir directament, comprovem que es pot cridar onOpenFilters
       expect(defaultProps.onOpenFilters).toBeDefined();
     });
 
-    it('hauria de cridar onOpenFilters quan es prem', () => {
+    it('hauria de cridar onOpenFilters quan es prem', async () => {
       const onOpenFilters = jest.fn();
-      const { UNSAFE_getAllByType } = render(
+      const { container } = await render(
         <SearchBar {...defaultProps} searchQuery="" onOpenFilters={onOpenFilters} />
       );
       
       // Get all touchables - with empty search, only filter button should be present
-      const touchables = UNSAFE_getAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       // The first (and only) touchable should be the filter button when search is empty
       const filterButton = touchables.length > 0 ? touchables[0] : null;
       
       if (filterButton) {
-        fireEvent.press(filterButton);
+        await fireEvent.press(filterButton);
         expect(onOpenFilters).toHaveBeenCalled();
       } else {
         // If no touchable found, test passes but logs warning
@@ -184,33 +185,33 @@ describe('SearchBar Component', () => {
   });
 
   describe('Botó de clear', () => {
-    it('hauria de mostrar el botó de clear quan hi ha text', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el botó de clear quan hi ha text', async () => {
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="text" />
       );
       
       expect(getByText('✕')).toBeTruthy();
     });
 
-    it('NO hauria de mostrar el botó de clear quan searchQuery és buit', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar el botó de clear quan searchQuery és buit', async () => {
+      const { queryByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" />
       );
       
       expect(queryByText('✕')).toBeNull();
     });
 
-    it('NO hauria de mostrar el botó de clear quan searchQuery només té espais', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar el botó de clear quan searchQuery només té espais', async () => {
+      const { queryByText } = await render(
         <SearchBar {...defaultProps} searchQuery="   " />
       );
       
       expect(queryByText('✕')).toBeNull();
     });
 
-    it('hauria de cridar onSearchChange amb string buit quan es prem clear', () => {
+    it('hauria de cridar onSearchChange amb string buit quan es prem clear', async () => {
       const onSearchChange = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar 
           {...defaultProps} 
           searchQuery="text to clear" 
@@ -219,15 +220,15 @@ describe('SearchBar Component', () => {
       );
       
       const clearButton = getByText('✕');
-      fireEvent.press(clearButton);
+      await fireEvent.press(clearButton);
       
       expect(onSearchChange).toHaveBeenCalledWith('');
     });
 
-    it('hauria de cridar Keyboard.dismiss quan es prem clear', () => {
+    it('hauria de cridar Keyboard.dismiss quan es prem clear', async () => {
       mockKeyboardDismiss.mockClear();
       const onSearchChange = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar 
           {...defaultProps} 
           searchQuery="text" 
@@ -236,15 +237,15 @@ describe('SearchBar Component', () => {
       );
       
       const clearButton = getByText('✕');
-      fireEvent.press(clearButton);
+      await fireEvent.press(clearButton);
       
       expect(mockKeyboardDismiss).toHaveBeenCalled();
     });
   });
 
   describe('Suggeriments d\'autocomplete', () => {
-    it('NO hauria de mostrar suggeriments quan l\'array és buit', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar suggeriments quan l\'array és buit', async () => {
+      const { queryByText } = await render(
         <SearchBar {...defaultProps} suggestions={[]} />
       );
       
@@ -252,9 +253,9 @@ describe('SearchBar Component', () => {
       expect(queryByText('Refugi 1')).toBeNull();
     });
 
-    it('hauria de mostrar suggeriments quan n\'hi ha', () => {
+    it('hauria de mostrar suggeriments quan n\'hi ha', async () => {
       const suggestions = ['Refugi 1', 'Refugi 2', 'Refugi 3'];
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} suggestions={suggestions} />
       );
       
@@ -263,12 +264,12 @@ describe('SearchBar Component', () => {
       expect(getByText('Refugi 3')).toBeTruthy();
     });
 
-    it('hauria de mostrar tots els suggeriments dins un ScrollView', () => {
+    it('hauria de mostrar tots els suggeriments dins un ScrollView', async () => {
       const suggestions = [
         'Refugi 1', 'Refugi 2', 'Refugi 3', 'Refugi 4',
         'Refugi 5', 'Refugi 6', 'Refugi 7', 'Refugi 8',
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} suggestions={suggestions} />
       );
       
@@ -279,10 +280,10 @@ describe('SearchBar Component', () => {
       expect(getByText('Refugi 8')).toBeTruthy();
     });
 
-    it('hauria de cridar onSuggestionSelect quan es selecciona un suggeriment', () => {
+    it('hauria de cridar onSuggestionSelect quan es selecciona un suggeriment', async () => {
       const onSuggestionSelect = jest.fn();
       const suggestions = ['Refugi 1', 'Refugi 2'];
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar 
           {...defaultProps} 
           suggestions={suggestions}
@@ -291,81 +292,81 @@ describe('SearchBar Component', () => {
       );
       
       const suggestion = getByText('Refugi 1');
-      fireEvent.press(suggestion);
+      await fireEvent.press(suggestion);
       
       expect(onSuggestionSelect).toHaveBeenCalledWith('Refugi 1');
     });
 
-    it('NO hauria de cridar onSuggestionSelect si no està definit', () => {
+    it('NO hauria de cridar onSuggestionSelect si no està definit', async () => {
       const suggestions = ['Refugi 1'];
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} suggestions={suggestions} />
       );
       
       const suggestion = getByText('Refugi 1');
       
       // No hauria de llançar error
-      expect(() => fireEvent.press(suggestion)).not.toThrow();
+      await expect(fireEvent.press(suggestion)).resolves.not.toBeInstanceOf(Error);
     });
   });
 
   describe('Botó d\'afegir', () => {
-    it('hauria de mostrar el botó d\'afegir quan searchQuery és buit', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el botó d\'afegir quan searchQuery és buit', async () => {
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" />
       );
       
       expect(getByText('Afegir refugi')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó d\'afegir quan searchQuery només té espais', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el botó d\'afegir quan searchQuery només té espais', async () => {
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="   " />
       );
       
       expect(getByText('Afegir refugi')).toBeTruthy();
     });
 
-    it('NO hauria de mostrar el botó d\'afegir quan hi ha text en searchQuery', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar el botó d\'afegir quan hi ha text en searchQuery', async () => {
+      const { queryByText } = await render(
         <SearchBar {...defaultProps} searchQuery="text" />
       );
       
       expect(queryByText('Afegir refugi')).toBeNull();
     });
 
-    it('hauria de mostrar el signe + en el botó d\'afegir', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el signe + en el botó d\'afegir', async () => {
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" />
       );
       
       expect(getByText('+')).toBeTruthy();
     });
 
-    it('hauria de cridar onAddPress quan es prem el botó d\'afegir', () => {
+    it('hauria de cridar onAddPress quan es prem el botó d\'afegir', async () => {
       const onAddPress = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" onAddPress={onAddPress} />
       );
       
       const addButton = getByText('Afegir refugi');
-      fireEvent.press(addButton);
+      await fireEvent.press(addButton);
       
       expect(onAddPress).toHaveBeenCalledTimes(1);
     });
 
-    it('NO hauria de fallar si onAddPress no està definit', () => {
-      const { getByText } = render(
+    it('NO hauria de fallar si onAddPress no està definit', async () => {
+      const { getByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" />
       );
       
       const addButton = getByText('Afegir refugi');
       
-      expect(() => fireEvent.press(addButton)).not.toThrow();
+      await expect(fireEvent.press(addButton)).resolves.not.toBeInstanceOf(Error);
     });
 
-    it('hauria de ocultar el botó afegir quan showAddButton és false', () => {
-      const { queryByText } = render(
+    it('hauria de ocultar el botó afegir quan showAddButton és false', async () => {
+      const { queryByText } = await render(
         <SearchBar {...defaultProps} searchQuery="" showAddButton={false} />
       );
       
@@ -374,37 +375,37 @@ describe('SearchBar Component', () => {
   });
 
   describe('topInset', () => {
-    it('hauria d\'aplicar topInset al padding superior', () => {
-      const { UNSAFE_getByType } = render(
+    it('hauria d\'aplicar topInset al padding superior', async () => {
+      const { container } = await render(
         <SearchBar {...defaultProps} topInset={20} />
       );
       
-      const container = UNSAFE_getByType(View);
-      expect(container.props.style).toContainEqual(
+      const view = findAllByType(container, View)[0];
+      expect(view.props.style).toContainEqual(
         expect.objectContaining({
           paddingTop: 28, // 20 + 8 (default padding)
         })
       );
     });
 
-    it('hauria d\'usar topInset 0 per defecte', () => {
-      const { UNSAFE_getByType } = render(<SearchBar {...defaultProps} />);
+    it('hauria d\'usar topInset 0 per defecte', async () => {
+      const { container } = await render(<SearchBar {...defaultProps} />);
       
-      const container = UNSAFE_getByType(View);
-      expect(container.props.style).toContainEqual(
+      const view = findAllByType(container, View)[0];
+      expect(view.props.style).toContainEqual(
         expect.objectContaining({
           paddingTop: 8, // 0 + 8
         })
       );
     });
 
-    it('hauria de gestionar topInset negatiu', () => {
-      const { UNSAFE_getByType } = render(
+    it('hauria de gestionar topInset negatiu', async () => {
+      const { container } = await render(
         <SearchBar {...defaultProps} topInset={-5} />
       );
       
-      const container = UNSAFE_getByType(View);
-      expect(container.props.style).toContainEqual(
+      const view = findAllByType(container, View)[0];
+      expect(view.props.style).toContainEqual(
         expect.objectContaining({
           paddingTop: 3, // -5 + 8
         })
@@ -413,22 +414,22 @@ describe('SearchBar Component', () => {
   });
 
   describe('Propietats del TextInput', () => {
-    it('hauria de tenir autoCorrect desactivat', () => {
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+    it('hauria de tenir autoCorrect desactivat', async () => {
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       const input = getByPlaceholderText('Cerca refugis...');
       expect(input.props.autoCorrect).toBe(false);
     });
 
-    it('hauria de tenir autoCapitalize none', () => {
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+    it('hauria de tenir autoCapitalize none', async () => {
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       const input = getByPlaceholderText('Cerca refugis...');
       expect(input.props.autoCapitalize).toBe('none');
     });
 
-    it('hauria de tenir blurOnSubmit true', () => {
-      const { getByPlaceholderText } = render(<SearchBar {...defaultProps} />);
+    it('hauria de tenir blurOnSubmit true', async () => {
+      const { getByPlaceholderText } = await render(<SearchBar {...defaultProps} />);
       
       const input = getByPlaceholderText('Cerca refugis...');
       expect(input.props.blurOnSubmit).toBe(true);
@@ -436,31 +437,31 @@ describe('SearchBar Component', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar searchQuery molt llarg', () => {
+    it('hauria de gestionar searchQuery molt llarg', async () => {
       const longQuery = 'A'.repeat(1000);
-      const { getByDisplayValue } = render(
+      const { getByDisplayValue } = await render(
         <SearchBar {...defaultProps} searchQuery={longQuery} />
       );
       
       expect(getByDisplayValue(longQuery)).toBeTruthy();
     });
 
-    it('hauria de gestionar suggeriments amb noms molt llargs', () => {
+    it('hauria de gestionar suggeriments amb noms molt llargs', async () => {
       const longName = 'Refugi amb nom molt llarg '.repeat(10);
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} suggestions={[longName]} />
       );
       
       expect(getByText(longName)).toBeTruthy();
     });
 
-    it('hauria de gestionar suggeriments amb caràcters especials', () => {
+    it('hauria de gestionar suggeriments amb caràcters especials', async () => {
       const specialSuggestions = [
         'Refugi d\'Amitges',
         'Refugi & Muntanya',
         'Refugi <Test>',
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <SearchBar {...defaultProps} suggestions={specialSuggestions} />
       );
       
@@ -468,8 +469,8 @@ describe('SearchBar Component', () => {
       expect(getByText('Refugi & Muntanya')).toBeTruthy();
     });
 
-    it('hauria de gestionar searchQuery amb emojis', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de gestionar searchQuery amb emojis', async () => {
+      const { getByDisplayValue } = await render(
         <SearchBar {...defaultProps} searchQuery="🏔️ Refugi" />
       );
       
@@ -485,25 +486,25 @@ describe('SearchBar Component', () => {
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb searchQuery buit', () => {
-      const tree = render(<SearchBar {...defaultProps} />).toJSON();
+    it('hauria de coincidir amb el snapshot amb searchQuery buit', async () => {
+      const tree = (await render(<SearchBar {...defaultProps} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb searchQuery amb text', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot amb searchQuery amb text', async () => {
+      const tree = (await render(
         <SearchBar {...defaultProps} searchQuery="Refugi" />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb suggeriments', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot amb suggeriments', async () => {
+      const tree = (await render(
         <SearchBar 
           {...defaultProps} 
           suggestions={['Refugi 1', 'Refugi 2']} 
         />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

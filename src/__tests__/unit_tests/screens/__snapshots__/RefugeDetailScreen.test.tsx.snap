@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`RefugeDetailScreen Component Snapshot testing hauria de coincidir amb el snapshot amb favorit actiu 1`] = `
 <View

@@ -15,7 +15,8 @@
 
 import { Platform } from 'react-native';
 import * as ImageManipulator from 'expo-image-manipulator';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File } from 'expo-file-system';
+import { createUploadTask, FileSystemUploadType } from 'expo-file-system/legacy';
 import { apiPost } from './apiClient';
 import { ApiError, extractApiErrorCode, readJsonSafe } from './apiErrors';
 import { ImageMetadataDTO } from './dto/RefugiDTO';
@@ -205,8 +206,8 @@ function loadCompressor(): any | null {
 
 async function getFileSize(uri: string, fallback?: number | null): Promise<number> {
   try {
-    const info: any = await FileSystem.getInfoAsync(uri, { size: true } as any);
-    if (info && info.exists && typeof info.size === 'number') return info.size;
+    const localFile = new File(uri);
+    if (localFile.exists && typeof localFile.size === 'number') return localFile.size;
   } catch {
     // ignorem: fem servir el valor de reserva
   }
@@ -277,12 +278,13 @@ export class MediaUploadService {
   ): Promise<PreparedMediaFile> {
     const width = asset.width || 0;
     const height = asset.height || 0;
-    const actions: ImageManipulator.Action[] = [];
+    const context = ImageManipulator.ImageManipulator.manipulate(asset.uri);
     if (width > 0 && height > 0 && Math.max(width, height) > maxEdge) {
-      actions.push({ resize: width >= height ? { width: maxEdge } : { height: maxEdge } });
+      context.resize(width >= height ? { width: maxEdge } : { height: maxEdge });
     }
 
-    const result = await ImageManipulator.manipulateAsync(asset.uri, actions, {
+    const image = await context.renderAsync();
+    const result = await image.saveAsync({
       compress: IMAGE_WEBP_QUALITY,
       format: ImageManipulator.SaveFormat.WEBP,
     });
@@ -434,18 +436,20 @@ export class MediaUploadService {
     onProgress?: (sent: number, total: number) => void
   ): Promise<void> {
     const headers = { ...(intent.headers || {}) };
-    const fs: any = FileSystem;
 
-    if (Platform.OS !== 'web' && typeof fs.createUploadTask === 'function') {
-      const task = fs.createUploadTask(
+    if (Platform.OS !== 'web') {
+      // La pujada es manté a l'API legacy d'expo-file-system (no deprecada a SDK 55):
+      // l'API nova encara no té pujada amb progrés real i `expo/fetch` podria sobreescriure
+      // el Content-Type de la URL prefirmada (risc de 403 a R2).
+      const task = createUploadTask(
         intent.put_url,
         file.uri,
         {
           httpMethod: 'PUT',
-          uploadType: fs.FileSystemUploadType?.BINARY_CONTENT ?? 0,
+          uploadType: FileSystemUploadType.BINARY_CONTENT,
           headers,
         },
-        (data: { totalBytesSent: number; totalBytesExpectedToSend: number }) => {
+        (data) => {
           onProgress?.(data.totalBytesSent, data.totalBytesExpectedToSend || file.size);
         }
       );
@@ -457,7 +461,7 @@ export class MediaUploadService {
       return;
     }
 
-    // Web / entorns sense FileSystem natiu: fetch amb Blob
+    // Web: fetch amb Blob
     const blob = await (await fetch(file.uri)).blob();
     const response = await fetch(intent.put_url, { method: 'PUT', headers, body: blob });
     if (!response.ok) {

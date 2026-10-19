@@ -23,25 +23,29 @@ jest.mock('expo-image-picker', () => ({
   },
 }));
 
-// Mock d'expo-file-system/legacy
+// Mock d'expo-file-system (API d'objectes: File / Directory / Paths)
 const mockWriteAsStringAsync = jest.fn().mockResolvedValue(undefined);
-const mockGetContentUriAsync = jest.fn().mockResolvedValue('content://mock-uri');
-const mockRequestDirectoryPermissionsAsync = jest.fn().mockResolvedValue({ granted: true, directoryUri: 'file:///mock/dir' });
-const mockCreateFileAsync = jest.fn().mockResolvedValue('file:///mock/dir/test.gpx');
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: '/mock/documents/',
-  cacheDirectory: '/mock/cache/',
-  writeAsStringAsync: mockWriteAsStringAsync,
-  getContentUriAsync: mockGetContentUriAsync,
-  EncodingType: {
-    UTF8: 'utf8',
-  },
-  StorageAccessFramework: {
-    requestDirectoryPermissionsAsync: mockRequestDirectoryPermissionsAsync,
-    createFileAsync: mockCreateFileAsync,
-    writeAsStringAsync: mockWriteAsStringAsync,
-  },
-}));
+const mockGetContentUri = jest.fn().mockReturnValue('content://mock-uri');
+const mockCreateFile = jest.fn(() => ({ write: mockWriteAsStringAsync }));
+const mockSafDirectory = { createFile: mockCreateFile };
+const mockPickDirectoryAsync = jest.fn().mockResolvedValue(mockSafDirectory);
+jest.mock('expo-file-system', () => {
+  class File {
+    uri: string;
+    constructor(...parts: any[]) {
+      this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('');
+    }
+    create() {}
+    write(content: string) {
+      return mockWriteAsStringAsync(content);
+    }
+    get contentUri() {
+      return mockGetContentUri(this.uri);
+    }
+  }
+  const Directory = { pickDirectoryAsync: (...args: any[]) => mockPickDirectoryAsync(...args) };
+  return { File, Directory, Paths: { document: { uri: '/mock/documents/' } } };
+});
 
 // Mock d'expo-sharing
 jest.mock('expo-sharing', () => ({
@@ -354,6 +358,7 @@ const mockUseFavourite = useFavourite as jest.MockedFunction<typeof useFavourite
 
 // Import useVisited for mocking
 import useVisited from '../../../hooks/useVisited';
+import { findAllByType } from '../../testHelpers/findByType';
 const mockUseVisited = useVisited as jest.MockedFunction<typeof useVisited>;
 
 describe('RefugeDetailScreen Component', () => {
@@ -407,8 +412,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el nom del refugi', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el nom del refugi', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -420,8 +425,8 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('Refugi de Colomers')).toBeTruthy();
     });
 
-    it('hauria de renderitzar la descripció', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar la descripció', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -433,8 +438,8 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('Un refugi preciós situat als Pirineus')).toBeTruthy();
     });
 
-    it('hauria de renderitzar l\'altitud', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar l\'altitud', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -447,8 +452,8 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('2135m')).toBeTruthy();
     });
 
-    it('hauria de renderitzar el nombre de places', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el nombre de places', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -460,8 +465,8 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('50')).toBeTruthy();
     });
 
-    it('hauria de renderitzar les coordenades', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar les coordenades', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -477,14 +482,14 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Funcionalitat de favorits', () => {
-    it('hauria de mostrar la icona de favorit buit quan NO és favorit', () => {
+    it('hauria de mostrar la icona de favorit buit quan NO és favorit', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: false,
         toggleFavourite: mockToggleFavourite,
         isProcessing: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -493,17 +498,17 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar la icona de favorit ple quan és favorit', () => {
+    it('hauria de mostrar la icona de favorit ple quan és favorit', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: true,
         toggleFavourite: mockToggleFavourite,
         isProcessing: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -512,13 +517,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de cridar toggleFavourite i onToggleFavorite quan es fa click', async () => {
       mockToggleFavourite.mockResolvedValue(undefined);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -528,7 +533,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const favoriteButton = getByTestId('favorite-button');
-      fireEvent.press(favoriteButton);
+      await fireEvent.press(favoriteButton);
       
       await waitFor(() => {
         expect(mockToggleFavourite).toHaveBeenCalled();
@@ -539,7 +544,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de mostrar error si toggleFavourite falla', async () => {
       mockToggleFavourite.mockRejectedValue(new Error('Network error'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -549,7 +554,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const favoriteButton = getByTestId('favorite-button');
-      fireEvent.press(favoriteButton);
+      await fireEvent.press(favoriteButton);
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', 'Error afegint a favorits');
@@ -558,8 +563,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Botó de tornar enrere', () => {
-    it('hauria de cridar onBack quan es fa click al botó', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onBack quan es fa click al botó', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -569,15 +574,15 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
       
       expect(mockOnBack).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Descàrrega de fitxers', () => {
-    it('hauria de mostrar alerta de confirmació per descarregar GPX', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar alerta de confirmació per descarregar GPX', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -587,7 +592,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       expect(mockShowAlert).toHaveBeenCalledWith(
         'Descarregar GPX',
@@ -596,8 +601,8 @@ describe('RefugeDetailScreen Component', () => {
       );
     });
 
-    it('hauria de mostrar alerta de confirmació per descarregar KML', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar alerta de confirmació per descarregar KML', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -607,7 +612,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       expect(mockShowAlert).toHaveBeenCalledWith(
         'Descarregar KML',
@@ -617,7 +622,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de executar la descàrrega de GPX quan es prem Download', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -627,7 +632,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Verify alert was shown with download button
       expect(mockShowAlert).toHaveBeenCalled();
@@ -640,7 +645,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de executar la descàrrega de KML quan es prem Download', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -650,7 +655,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       // Verify alert was shown with download button
       expect(mockShowAlert).toHaveBeenCalled();
@@ -664,8 +669,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Enllaços externs', () => {
-    it('hauria de renderitzar el botó de Windy', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar el botó de Windy', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -678,13 +683,13 @@ describe('RefugeDetailScreen Component', () => {
       expect(windyButton).toBeTruthy();
       
       // Verificar que es pot prémer sense errors
-      fireEvent.press(windyButton);
+      await fireEvent.press(windyButton);
       // This triggers confirmAndOpen which sets modal visibility state
       expect(windyButton).toBeTruthy();
     });
 
-    it('hauria de renderitzar el botó de Wikiloc', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar el botó de Wikiloc', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -697,12 +702,12 @@ describe('RefugeDetailScreen Component', () => {
       expect(wikilocButton).toBeTruthy();
       
       // Verificar que es pot prémer sense errors
-      fireEvent.press(wikilocButton);
+      await fireEvent.press(wikilocButton);
       expect(wikilocButton).toBeTruthy();
     });
 
     it('hauria de obrir Windy quan es confirma', async () => {
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -711,14 +716,14 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      fireEvent.press(getByTestId('weather-button'));
+      await fireEvent.press(getByTestId('weather-button'));
       
       // The button press triggers confirmAndOpen
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de obrir Wikiloc quan es confirma', async () => {
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -727,14 +732,14 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      fireEvent.press(getByTestId('routes-button'));
+      await fireEvent.press(getByTestId('routes-button'));
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Descripció expandible', () => {
-    it('hauria de mostrar botó "Llegir més" si la descripció és llarga', () => {
+    it('hauria de mostrar botó "Llegir més" si la descripció és llarga', async () => {
       const longDescription = 'A'.repeat(300);
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, description: longDescription },
@@ -743,7 +748,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -758,7 +763,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar refugi sense descripció', () => {
+    it('hauria de gestionar refugi sense descripció', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, description: undefined },
         isLoading: false,
@@ -766,7 +771,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { queryByText } = render(
+      const { queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -778,7 +783,7 @@ describe('RefugeDetailScreen Component', () => {
       expect(queryByText('Un refugi preciós situat als Pirineus')).toBeNull();
     });
 
-    it('hauria de gestionar refugi sense altitud', () => {
+    it('hauria de gestionar refugi sense altitud', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, altitude: undefined },
         isLoading: false,
@@ -786,7 +791,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { queryByText } = render(
+      const { queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -798,7 +803,7 @@ describe('RefugeDetailScreen Component', () => {
       expect(queryByText(/m$/)).toBeNull();
     });
 
-    it('hauria de gestionar refugi sense imatge', () => {
+    it('hauria de gestionar refugi sense imatge', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, imageUrl: undefined },
         isLoading: false,
@@ -806,7 +811,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -816,10 +821,10 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Hauria de mostrar una imatge per defecte
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi amb altitud 0', () => {
+    it('hauria de gestionar refugi amb altitud 0', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, altitude: 0 },
         isLoading: false,
@@ -827,7 +832,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -840,7 +845,7 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('N/A')).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi sense id', () => {
+    it('hauria de gestionar refugi sense id', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, id: undefined },
         isLoading: false,
@@ -848,7 +853,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId=""
           onBack={mockOnBack}
@@ -858,10 +863,10 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       expect(mockUseFavourite).toHaveBeenCalledWith('');
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar noms amb caràcters especials per descàrregues', () => {
+    it('hauria de gestionar noms amb caràcters especials per descàrregues', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, name: 'Refugi d\'Amitges / Test' },
         isLoading: false,
@@ -869,7 +874,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -879,7 +884,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Hauria de sanititzar el nom per al fitxer
       expect(mockShowAlert).toHaveBeenCalled();
@@ -887,8 +892,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Safe area insets', () => {
-    it('hauria de aplicar safe area insets correctament', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de aplicar safe area insets correctament', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -897,13 +902,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb totes les dades', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot amb totes les dades', async () => {
+      const tree = (await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -911,12 +916,12 @@ describe('RefugeDetailScreen Component', () => {
           onNavigate={mockOnNavigate}
           onEdit={mockOnEdit}
         />
-      ).toJSON();
+      )).toJSON();
       
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot sense dades opcionals', () => {
+    it('hauria de coincidir amb el snapshot sense dades opcionals', async () => {
       const minimalRefuge: Location = {
         id: "1",
         name: 'Refugi Mínim',
@@ -930,40 +935,40 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
       
-      const tree = render(
+      const tree = (await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
         />
-      ).toJSON();
+      )).toJSON();
       
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb favorit actiu', () => {
+    it('hauria de coincidir amb el snapshot amb favorit actiu', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: true,
         toggleFavourite: mockToggleFavourite,
         isProcessing: false,
       });
 
-      const tree = render(
+      const tree = (await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
           onToggleFavorite={mockOnToggleFavorite}
           onNavigate={mockOnNavigate}
         />
-      ).toJSON();
+      )).toJSON();
       
       expect(tree).toMatchSnapshot();
     });
   });
 
   describe('Navegació i funcionalitat', () => {
-    it('hauria de gestionar el botó de navegació', () => {
+    it('hauria de gestionar el botó de navegació', async () => {
       // Assegurar que tenim dades vàlides del refugi
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge },
@@ -972,7 +977,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -983,7 +988,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const navigateButton = getByTestId('navigate-button');
-        fireEvent.press(navigateButton);
+        await fireEvent.press(navigateButton);
         expect(mockOnNavigate).toHaveBeenCalled();
       } catch {
         // Si el botó no existeix, verificar que el component es renderitza correctament
@@ -999,7 +1004,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1009,7 +1014,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const weatherButton = getByTestId('weather-button');
-      fireEvent.press(weatherButton);
+      await fireEvent.press(weatherButton);
       
       // Hauria de mostrar un diàleg de confirmació
       // El component utilitza confirmAndOpen que mostra un modal
@@ -1024,7 +1029,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1034,14 +1039,14 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const routesButton = getByTestId('routes-button');
-      fireEvent.press(routesButton);
+      await fireEvent.press(routesButton);
       
       expect(routesButton).toBeTruthy();
     });
   });
 
   describe('Estat de càrrega', () => {
-    it('hauria de mostrar ActivityIndicator mentre carrega', () => {
+    it('hauria de mostrar ActivityIndicator mentre carrega', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: true,
@@ -1049,7 +1054,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1059,11 +1064,11 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const ActivityIndicator = require('react-native').ActivityIndicator;
-      const indicators = UNSAFE_root.findAllByType(ActivityIndicator);
+      const indicators = findAllByType(container, ActivityIndicator);
       expect(indicators.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('hauria de mostrar missatge d\'error quan no hi ha refugeId', () => {
+    it('hauria de mostrar missatge d\'error quan no hi ha refugeId', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: false,
@@ -1071,7 +1076,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId=""
           onBack={mockOnBack}
@@ -1085,8 +1090,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Funcionalitat d\'edició', () => {
-    it('hauria de cridar onEdit quan es prem el botó d\'editar', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onEdit quan es prem el botó d\'editar', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1098,7 +1103,7 @@ describe('RefugeDetailScreen Component', () => {
 
       try {
         const editButton = getByTestId('edit-button');
-        fireEvent.press(editButton);
+        await fireEvent.press(editButton);
         expect(mockOnEdit).toHaveBeenCalledWith(baseRefuge);
       } catch {
         // Si no existeix el botó edit, verificar que onEdit està definit
@@ -1106,8 +1111,8 @@ describe('RefugeDetailScreen Component', () => {
       }
     });
 
-    it('hauria de mostrar alerta si onEdit no és una funció', () => {
-      const { getByTestId, toJSON } = render(
+    it('hauria de mostrar alerta si onEdit no és una funció', async () => {
+      const { getByTestId, toJSON } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1122,14 +1127,14 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Funcionalitat de visitat', () => {
-    it('hauria de mostrar botó de visitado quan no està visitat', () => {
+    it('hauria de mostrar botó de visitado quan no està visitat', async () => {
       mockUseVisited.mockReturnValue({
         isVisited: false,
         toggleVisited: mockToggleVisited,
         isProcessing: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1138,17 +1143,17 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar botó de visitado quan està visitat', () => {
+    it('hauria de mostrar botó de visitado quan està visitat', async () => {
       mockUseVisited.mockReturnValue({
         isVisited: true,
         toggleVisited: mockToggleVisited,
         isProcessing: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1157,12 +1162,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Amenities i info_comp', () => {
-    it('hauria de renderitzar amenities quan info_comp està present', () => {
+    it('hauria de renderitzar amenities quan info_comp està present', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -1177,7 +1182,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1186,10 +1191,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de no renderitzar amenities quan info_comp és null', () => {
+    it('hauria de no renderitzar amenities quan info_comp és null', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -1200,7 +1205,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1209,7 +1214,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1217,7 +1222,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de processar correctament la descàrrega GPX quan es confirma', async () => {
       mockWriteAsStringAsync.mockResolvedValue(undefined);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1227,7 +1232,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Verificar que s'ha cridat showAlert amb el botó de descàrrega
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -1243,7 +1248,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de processar correctament la descàrrega KML quan es confirma', async () => {
       mockWriteAsStringAsync.mockResolvedValue(undefined);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1253,7 +1258,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
         expect.any(String),
@@ -1268,7 +1273,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de executar el callback de descàrrega GPX', async () => {
       require('react-native').Platform.OS = 'ios';
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1278,7 +1283,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Verify callback exists and can be executed without error
       expect(lastAlertButtons.length).toBe(2);
@@ -1299,7 +1304,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de executar el callback de descàrrega KML', async () => {
       require('react-native').Platform.OS = 'ios';
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1309,7 +1314,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
 
       // Verify callback exists and can be executed without error
       expect(lastAlertButtons.length).toBe(2);
@@ -1329,8 +1334,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Galeria i experiències', () => {
-    it('hauria de renderitzar botó de galeria', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar botó de galeria', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1348,8 +1353,8 @@ describe('RefugeDetailScreen Component', () => {
       }
     });
 
-    it('hauria de renderitzar botó de dubtes', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar botó de dubtes', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1369,7 +1374,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Badge components', () => {
-    it('hauria de renderitzar BadgeType quan hi ha tipus', () => {
+    it('hauria de renderitzar BadgeType quan hi ha tipus', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, type: 'refuge' },
         isLoading: false,
@@ -1377,7 +1382,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1386,10 +1391,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar BadgeCondition quan hi ha condició', () => {
+    it('hauria de renderitzar BadgeCondition quan hi ha condició', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, condition: 'good' },
         isLoading: false,
@@ -1397,7 +1402,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1406,13 +1411,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('QuickActionsMenu', () => {
-    it('hauria de tenir QuickActionsMenu renderitzat', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de tenir QuickActionsMenu renderitzat', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1422,11 +1427,11 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       // El component hauria d'estar renderitzat
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de obrir el menu quan es prem el botó de menu', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de obrir el menu quan es prem el botó de menu', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1436,13 +1441,13 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const menuButton = getByTestId('menu-button');
-      fireEvent.press(menuButton);
-      expect(UNSAFE_root).toBeTruthy();
+      await fireEvent.press(menuButton);
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Galeria d\'imatges', () => {
-    it('hauria de renderitzar imatges quan hi ha images_metadata', () => {
+    it('hauria de renderitzar imatges quan hi ha images_metadata', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -1456,7 +1461,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1465,10 +1470,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar scroll horitzontal d\'imatges', () => {
+    it('hauria de gestionar scroll horitzontal d\'imatges', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -1483,7 +1488,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1492,13 +1497,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Experiències', () => {
-    it('hauria de mostrar experiències quan les dades estan disponibles', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar experiències quan les dades estan disponibles', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1507,11 +1512,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar loading quan es carreguen experiències', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar loading quan es carreguen experiències', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1520,12 +1525,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Descripció expandible avançada', () => {
-    it('hauria de expandir i contraure la descripció llarga', () => {
+    it('hauria de expandir i contraure la descripció llarga', async () => {
       const longDescription = 'Lorem ipsum dolor sit amet, '.repeat(50);
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, description: longDescription },
@@ -1534,7 +1539,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText, UNSAFE_root } = render(
+      const { getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1544,13 +1549,13 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       // Verificar que es renderitza
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
 
       // Intentar trobar el botó de llegir més
       try {
         const readMoreButton = getByText(/readMore|showLess|Llegir/i);
-        fireEvent.press(readMoreButton);
-        expect(UNSAFE_root).toBeTruthy();
+        await fireEvent.press(readMoreButton);
+        expect(container).toBeTruthy();
       } catch {
         // Si no existeix el botó, la descripció és prou curta
         expect(true).toBeTruthy();
@@ -1559,7 +1564,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Enllaços del refugi', () => {
-    it('hauria de renderitzar enllaços quan hi ha links', () => {
+    it('hauria de renderitzar enllaços quan hi ha links', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -1570,7 +1575,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1595,7 +1600,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1605,7 +1610,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const link = getByText('https://example.com');
-      fireEvent.press(link);
+      await fireEvent.press(link);
       
       await waitFor(() => {
         expect(Linking.openURL).toHaveBeenCalledWith('https://example.com');
@@ -1623,7 +1628,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1633,7 +1638,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const link = getByText('example.com/path');
-      fireEvent.press(link);
+      await fireEvent.press(link);
       
       await waitFor(() => {
         expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/path');
@@ -1653,7 +1658,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1663,7 +1668,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const link = getByText('https://invalid-url.test');
-      fireEvent.press(link);
+      await fireEvent.press(link);
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -1687,7 +1692,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1697,7 +1702,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const link = getByText('https://unknown-scheme.test');
-      fireEvent.press(link);
+      await fireEvent.press(link);
       
       // Should still attempt to open even when canOpenURL returns false
       await waitFor(() => {
@@ -1707,8 +1712,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Occupation Modal', () => {
-    it('hauria de obrir el modal d\'ocupació quan es prem el botó', () => {
-      const { getByText, UNSAFE_root } = render(
+    it('hauria de obrir el modal d\'ocupació quan es prem el botó', async () => {
+      const { getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1720,16 +1725,16 @@ describe('RefugeDetailScreen Component', () => {
       // Buscar el botó d'ocupació
       try {
         const occupationButton = getByText(/seeOccupation|occupation/i);
-        fireEvent.press(occupationButton);
-        expect(UNSAFE_root).toBeTruthy();
+        await fireEvent.press(occupationButton);
+        expect(container).toBeTruthy();
       } catch {
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       }
     });
   });
 
   describe('Departament i regió', () => {
-    it('hauria de mostrar departament i regió quan existeixen', () => {
+    it('hauria de mostrar departament i regió quan existeixen', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -1741,7 +1746,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1755,10 +1760,10 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Callback props opcionals', () => {
-    it('hauria de gestionar onDelete quan es proporciona', () => {
+    it('hauria de gestionar onDelete quan es proporciona', async () => {
       const mockOnDelete = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1768,13 +1773,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar onViewMap quan es proporciona', () => {
+    it('hauria de gestionar onViewMap quan es proporciona', async () => {
       const mockOnViewMap = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1784,13 +1789,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar onNavigateToDoubts quan es proporciona', () => {
+    it('hauria de gestionar onNavigateToDoubts quan es proporciona', async () => {
       const mockOnNavigateToDoubts = jest.fn();
       
-      const { UNSAFE_root, getByText } = render(
+      const { container, getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1802,17 +1807,17 @@ describe('RefugeDetailScreen Component', () => {
 
       try {
         const doubtsButton = getByText(/doubts/i);
-        fireEvent.press(doubtsButton);
+        await fireEvent.press(doubtsButton);
         expect(mockOnNavigateToDoubts).toHaveBeenCalledWith('1', 'Refugi de Colomers');
       } catch {
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       }
     });
 
-    it('hauria de gestionar onNavigateToExperiences quan es proporciona', () => {
+    it('hauria de gestionar onNavigateToExperiences quan es proporciona', async () => {
       const mockOnNavigateToExperiences = jest.fn();
       
-      const { UNSAFE_root, getByText } = render(
+      const { container, getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1824,21 +1829,21 @@ describe('RefugeDetailScreen Component', () => {
 
       // Trobem algun botó d'experiències
       try {
-        const expButtons = UNSAFE_root.findAllByType('TouchableOpacity');
-        expButtons.forEach((btn: any) => {
+        const expButtons = findAllByType(container, 'TouchableOpacity');
+        for (const btn of expButtons as any[]) {
           if (btn.props?.testID?.includes('experience')) {
-            fireEvent.press(btn);
+            await fireEvent.press(btn);
           }
-        });
+        }
       } catch {
         // Pot ser que no hi hagi el botó
       }
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Places null o undefined', () => {
-    it('hauria de mostrar N/A quan places és null', () => {
+    it('hauria de mostrar N/A quan places és null', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, places: null },
         isLoading: false,
@@ -1846,7 +1851,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1861,7 +1866,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Condicions especials', () => {
-    it('hauria de no renderitzar BadgeCondition quan condition és null', () => {
+    it('hauria de no renderitzar BadgeCondition quan condition és null', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, condition: null },
         isLoading: false,
@@ -1869,7 +1874,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1878,10 +1883,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de no renderitzar BadgeType quan type és undefined', () => {
+    it('hauria de no renderitzar BadgeType quan type és undefined', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, type: undefined },
         isLoading: false,
@@ -1889,7 +1894,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1898,19 +1903,19 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('isProcessing per favorits', () => {
-    it('hauria de renderitzar correctament quan isProcessing és true', () => {
+    it('hauria de renderitzar correctament quan isProcessing és true', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: false,
         toggleFavourite: mockToggleFavourite,
         isProcessing: true,
       });
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1922,12 +1927,12 @@ describe('RefugeDetailScreen Component', () => {
       const favoriteButton = getByTestId('favorite-button');
       // El botó existeix
       expect(favoriteButton).toBeTruthy();
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Surname fallback', () => {
-    it('hauria de usar surname quan name no existeix', () => {
+    it('hauria de usar surname quan name no existeix', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, name: undefined, surname: 'Refugi Alternatiu' },
         isLoading: false,
@@ -1935,7 +1940,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1944,7 +1949,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1975,8 +1980,8 @@ describe('RefugeDetailScreen Component', () => {
       mockExperiencesLoading = false;
     });
 
-    it('hauria de gestionar handleExperiencePhotoPress', () => {
-      const { getByTestId } = render(
+    it('hauria de gestionar handleExperiencePhotoPress', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -1990,7 +1995,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de cridar handleExperienceEdit quan es prem botó editar', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2001,7 +2006,7 @@ describe('RefugeDetailScreen Component', () => {
 
       // Press the edit button for first experience
       const editButton = getByTestId('edit-experience-exp1');
-      fireEvent.press(editButton);
+      await fireEvent.press(editButton);
 
       // Verify update mutation was called
       await waitFor(() => {
@@ -2019,7 +2024,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de cridar handleExperienceDelete quan es prem botó eliminar', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2030,7 +2035,7 @@ describe('RefugeDetailScreen Component', () => {
 
       // Press the delete button for first experience
       const deleteButton = getByTestId('delete-experience-exp1');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       // Verify showAlert was called for confirmation
       await waitFor(() => {
@@ -2043,7 +2048,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de confirmar eliminació i cridar mutació', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2054,7 +2059,7 @@ describe('RefugeDetailScreen Component', () => {
 
       // Press the delete button
       const deleteButton = getByTestId('delete-experience-exp1');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       // Wait for alert and execute delete button (index 1 = destructive/delete)
       await waitFor(() => {
@@ -2077,7 +2082,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de cancel·lar eliminació quan es prem cancel·lar', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2088,7 +2093,7 @@ describe('RefugeDetailScreen Component', () => {
 
       // Press the delete button
       const deleteButton = getByTestId('delete-experience-exp1');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       // Wait for alert
       await waitFor(() => {
@@ -2105,10 +2110,10 @@ describe('RefugeDetailScreen Component', () => {
       expect(mockDeleteExperienceMutate).not.toHaveBeenCalled();
     });
 
-    it('hauria de mostrar loading quan carregant experiències', () => {
+    it('hauria de mostrar loading quan carregant experiències', async () => {
       mockExperiencesLoading = true;
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2119,11 +2124,11 @@ describe('RefugeDetailScreen Component', () => {
 
       // Check ActivityIndicator is shown
       const ActivityIndicator = require('react-native').ActivityIndicator;
-      const indicators = UNSAFE_root.findAllByType(ActivityIndicator);
+      const indicators = findAllByType(container, ActivityIndicator);
       expect(indicators.length).toBeGreaterThan(0);
     });
 
-    it('hauria de limitar a 3 experiències recents', () => {
+    it('hauria de limitar a 3 experiències recents', async () => {
       mockExperiencesData = [
         { id: 'exp1', comment: 'Exp 1', creator_uid: 'user1', created_at: '2024-01-01', photos: [] },
         { id: 'exp2', comment: 'Exp 2', creator_uid: 'user2', created_at: '2024-01-02', photos: [] },
@@ -2132,7 +2137,7 @@ describe('RefugeDetailScreen Component', () => {
         { id: 'exp5', comment: 'Exp 5', creator_uid: 'user5', created_at: '2024-01-05', photos: [] },
       ];
 
-      const { queryByTestId } = render(
+      const { queryByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2153,7 +2158,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Galeria modal i scroll', () => {
-    it('hauria de gestionar handleImageScroll', () => {
+    it('hauria de gestionar handleImageScroll', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2167,7 +2172,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2178,7 +2183,7 @@ describe('RefugeDetailScreen Component', () => {
 
       // Trobar el ScrollView horitzontal i simular scroll
       const ScrollView = require('react-native').ScrollView;
-      const scrollViews = UNSAFE_root.findAllByType(ScrollView);
+      const scrollViews = findAllByType(container, ScrollView);
       
       scrollViews.forEach((sv: any) => {
         if (sv.props.horizontal && sv.props.onScroll) {
@@ -2190,10 +2195,10 @@ describe('RefugeDetailScreen Component', () => {
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar handleImagePress', () => {
+    it('hauria de gestionar handleImagePress', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2206,7 +2211,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2217,12 +2222,12 @@ describe('RefugeDetailScreen Component', () => {
 
       // Buscar i prémer la imatge
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       // Alguna touchable seria la imatge
       expect(touchables.length).toBeGreaterThan(0);
     });
 
-    it('hauria de gestionar handleViewAllPhotos', () => {
+    it('hauria de gestionar handleViewAllPhotos', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2235,7 +2240,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2244,12 +2249,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Vídeos a la galeria', () => {
-    it('hauria de detectar vídeos per extensió mp4', () => {
+    it('hauria de detectar vídeos per extensió mp4', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2262,7 +2267,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2271,10 +2276,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de detectar vídeos per extensió mov', () => {
+    it('hauria de detectar vídeos per extensió mov', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2287,7 +2292,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2296,7 +2301,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2323,7 +2328,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de delegar la pujada a useMediaUpload amb target=refuge', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2332,7 +2337,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      fireEvent.press(getByText('Afegir foto'));
+      await fireEvent.press(getByText('Afegir foto'));
 
       await waitFor(() => {
         expect(mockPickAndUpload).toHaveBeenCalledWith({ target: 'refuge', refugeId: '1', uid: 'test-uid' });
@@ -2343,7 +2348,7 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de mostrar el progrés i no tornar a pujar mentre hi ha una pujada en curs', async () => {
       mockUploadState = { isUploading: true, progress: 0.42 };
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2359,8 +2364,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Confirmation modal', () => {
-    it('hauria de mostrar confirmation modal per Windy', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de mostrar confirmation modal per Windy', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2370,14 +2375,14 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const windyButton = getByTestId('weather-button');
-      fireEvent.press(windyButton);
+      await fireEvent.press(windyButton);
 
       // El modal de confirmació s'hauria de mostrar
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar confirmation modal per Wikiloc', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de mostrar confirmation modal per Wikiloc', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2387,13 +2392,13 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const wikilocButton = getByTestId('routes-button');
-      fireEvent.press(wikilocButton);
+      await fireEvent.press(wikilocButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de cancel·lar confirmation modal', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de cancel·lar confirmation modal', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2403,9 +2408,9 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const windyButton = getByTestId('weather-button');
-      fireEvent.press(windyButton);
+      await fireEvent.press(windyButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2413,7 +2418,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar error en openURL', async () => {
       jest.spyOn(Linking, 'openURL').mockRejectedValueOnce(new Error('Cannot open URL'));
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2422,7 +2427,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar URLs sense protocol', async () => {
@@ -2436,7 +2441,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2445,11 +2450,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar URLs de Windy directament', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2458,13 +2463,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de intentar obrir URL encara que canOpenURL retorni false', async () => {
       jest.spyOn(Linking, 'canOpenURL').mockResolvedValueOnce(false);
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2473,7 +2478,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2491,9 +2496,9 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de guardar fitxer en Android amb SAF', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: true, directoryUri: 'file:///mock/dir' });
+      mockPickDirectoryAsync.mockResolvedValueOnce(mockSafDirectory);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2503,7 +2508,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Verify alert was shown for download confirmation
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -2528,9 +2533,9 @@ describe('RefugeDetailScreen Component', () => {
 
     it('hauria de gestionar permisos denegats en Android SAF', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: false });
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('Permission denied'));
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2540,9 +2545,9 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       expect(mockShowAlert).toHaveBeenCalled();
     });
 
@@ -2552,7 +2557,7 @@ describe('RefugeDetailScreen Component', () => {
       Sharing.isAvailableAsync.mockResolvedValue(true);
       Sharing.shareAsync.mockResolvedValue(undefined);
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2562,18 +2567,18 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Verify alert was shown
       expect(mockShowAlert).toHaveBeenCalled();
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar fallback quan SAF falla', async () => {
       require('react-native').Platform.OS = 'android';
-      mockRequestDirectoryPermissionsAsync.mockRejectedValueOnce(new Error('SAF error'));
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('SAF error'));
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2583,16 +2588,16 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Should render without error
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar error general de saveFile', async () => {
       require('react-native').Platform.OS = 'android';
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2602,9 +2607,9 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar web download', async () => {
@@ -2635,7 +2640,7 @@ describe('RefugeDetailScreen Component', () => {
         revokeObjectURL: mockRevokeObjectURL,
       } as any;
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2645,7 +2650,7 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
 
       // Execute the download button callback
       await executeAlertButtonByIndex(1);
@@ -2660,8 +2665,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('PanResponder per menu', () => {
-    it('hauria de gestionar edge drag per obrir menu', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar edge drag per obrir menu', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2670,7 +2675,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2684,7 +2689,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText, UNSAFE_root } = render(
+      const { getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2696,20 +2701,20 @@ describe('RefugeDetailScreen Component', () => {
       try {
         // Primer clic per expandir
         const readMoreBtn = getByText('common.readMore');
-        fireEvent.press(readMoreBtn);
+        await fireEvent.press(readMoreBtn);
         
         // Segon clic per contraure
         const showLessBtn = getByText('common.showLess');
-        fireEvent.press(showLessBtn);
+        await fireEvent.press(showLessBtn);
       } catch {
         // Les claus de traducció poden ser diferents
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       }
     });
   });
 
   describe('Format de coordenades', () => {
-    it('hauria de formatar coordenades amb 4 i 5 decimals', () => {
+    it('hauria de formatar coordenades amb 4 i 5 decimals', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -2720,7 +2725,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2736,7 +2741,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Amenities amb totes les opcions', () => {
-    it('hauria de renderitzar totes les amenities disponibles', () => {
+    it('hauria de renderitzar totes les amenities disponibles', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2760,7 +2765,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2769,10 +2774,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de no renderitzar amenities amb tots els valors false', () => {
+    it('hauria de no renderitzar amenities amb tots els valors false', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2786,7 +2791,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2795,13 +2800,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Gestió de handleEdit sense onEdit', () => {
-    it('hauria de mostrar alerta quan onEdit no és funció', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de mostrar alerta quan onEdit no és funció', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2811,12 +2816,12 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       // El component hauria de gestionar la situació
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('GalleryScreen overlay', () => {
-    it('hauria de mostrar GalleryScreen quan galleryScreenVisible és true', () => {
+    it('hauria de mostrar GalleryScreen quan galleryScreenVisible és true', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2829,7 +2834,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2838,12 +2843,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('handlePhotoDeleted', () => {
-    it('hauria de cridar refetchRefuge quan es borra foto', () => {
+    it('hauria de cridar refetchRefuge quan es borra foto', async () => {
       const mockRefetch = jest.fn();
       mockUseRefuge.mockReturnValue({
         data: baseRefuge,
@@ -2852,7 +2857,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: mockRefetch,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2861,15 +2866,15 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('QuickActionsMenu amb viewMap', () => {
-    it('hauria de gestionar viewMap des del QuickActionsMenu amb onViewMap', () => {
+    it('hauria de gestionar viewMap des del QuickActionsMenu amb onViewMap', async () => {
       const mockOnViewMap = jest.fn();
 
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2881,13 +2886,13 @@ describe('RefugeDetailScreen Component', () => {
 
       // Obrir menu
       const menuButton = getByTestId('menu-button');
-      fireEvent.press(menuButton);
+      await fireEvent.press(menuButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar viewMap des del QuickActionsMenu sense onViewMap', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de gestionar viewMap des del QuickActionsMenu sense onViewMap', async () => {
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2897,15 +2902,15 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const menuButton = getByTestId('menu-button');
-      fireEvent.press(menuButton);
+      await fireEvent.press(menuButton);
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Navegació interna a Doubts i Experiences', () => {
-    it('hauria de navegar a DoubtsScreen sense callback', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de navegar a DoubtsScreen sense callback', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2914,11 +2919,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de navegar a ExperiencesScreen sense callback', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de navegar a ExperiencesScreen sense callback', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2927,12 +2932,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Ordenació d\'imatges', () => {
-    it('hauria de ordenar imatges per uploaded_at descendent', () => {
+    it('hauria de ordenar imatges per uploaded_at descendent', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -2947,7 +2952,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2956,13 +2961,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('recentExperiences', () => {
-    it('hauria de mostrar màxim 3 experiències recents', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar màxim 3 experiències recents', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2971,13 +2976,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Snapshots adicionals', () => {
-    it('hauria de coincidir amb snapshot amb menu obert', () => {
-      const { getByTestId, toJSON } = render(
+    it('hauria de coincidir amb snapshot amb menu obert', async () => {
+      const { getByTestId, toJSON } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -2987,13 +2992,13 @@ describe('RefugeDetailScreen Component', () => {
       );
 
       const menuButton = getByTestId('menu-button');
-      fireEvent.press(menuButton);
+      await fireEvent.press(menuButton);
 
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb snapshot amb tots els callbacks', () => {
-      const tree = render(
+    it('hauria de coincidir amb snapshot amb tots els callbacks', async () => {
+      const tree = (await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3005,16 +3010,16 @@ describe('RefugeDetailScreen Component', () => {
           onNavigateToDoubts={jest.fn()}
           onNavigateToExperiences={jest.fn()}
         />
-      ).toJSON();
+      )).toJSON();
 
       expect(tree).toMatchSnapshot();
     });
   });
 
   describe('Cobertura adicional - handlers i callbacks', () => {
-    it('hauria de cridar onViewMap quan es prem el botó de mapa', () => {
+    it('hauria de cridar onViewMap quan es prem el botó de mapa', async () => {
       const mockOnViewMap = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3026,7 +3031,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const mapButton = getByTestId('view-map-button');
-        fireEvent.press(mapButton);
+        await fireEvent.press(mapButton);
         expect(mockOnViewMap).toHaveBeenCalled();
       } catch {
         // Si no hi ha el botó, simplement passem el test
@@ -3034,9 +3039,9 @@ describe('RefugeDetailScreen Component', () => {
       }
     });
 
-    it('hauria de cridar onNavigateToDoubts quan es prem el botó de dubtes', () => {
+    it('hauria de cridar onNavigateToDoubts quan es prem el botó de dubtes', async () => {
       const mockOnNavigateToDoubts = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3048,16 +3053,16 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const doubtsButton = getByTestId('doubts-button');
-        fireEvent.press(doubtsButton);
+        await fireEvent.press(doubtsButton);
         expect(mockOnNavigateToDoubts).toHaveBeenCalledWith('1', 'Refugi de Colomers');
       } catch {
         expect(true).toBe(true);
       }
     });
 
-    it('hauria de cridar onNavigateToExperiences quan es prem el botó d\'experiències', () => {
+    it('hauria de cridar onNavigateToExperiences quan es prem el botó d\'experiències', async () => {
       const mockOnNavigateToExperiences = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3069,16 +3074,16 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const experiencesButton = getByTestId('experiences-button');
-        fireEvent.press(experiencesButton);
+        await fireEvent.press(experiencesButton);
         expect(mockOnNavigateToExperiences).toHaveBeenCalledWith('1', 'Refugi de Colomers');
       } catch {
         expect(true).toBe(true);
       }
     });
 
-    it('hauria de gestionar onDelete quan es prem eliminar', () => {
+    it('hauria de gestionar onDelete quan es prem eliminar', async () => {
       const mockOnDelete = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3091,11 +3096,11 @@ describe('RefugeDetailScreen Component', () => {
       try {
         // Primer obre el menú
         const menuButton = getByTestId('menu-button');
-        fireEvent.press(menuButton);
+        await fireEvent.press(menuButton);
         
         // Després prem eliminar
         const deleteButton = getByTestId('delete-button');
-        fireEvent.press(deleteButton);
+        await fireEvent.press(deleteButton);
         expect(mockOnDelete).toHaveBeenCalled();
       } catch {
         expect(true).toBe(true);
@@ -3103,7 +3108,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar el toggle de visitat', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3114,7 +3119,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const visitedButton = getByTestId('visited-button');
-        fireEvent.press(visitedButton);
+        await fireEvent.press(visitedButton);
         await waitFor(() => {
           expect(mockToggleVisited).toHaveBeenCalled();
         });
@@ -3125,7 +3130,7 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Cobertura adicional - estat de càrrega i error', () => {
-    it('hauria de mostrar missatge de càrrega quan isLoading és true', () => {
+    it('hauria de mostrar missatge de càrrega quan isLoading és true', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: true,
@@ -3133,7 +3138,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { queryByTestId, UNSAFE_root } = render(
+      const { queryByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3142,10 +3147,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar error quan hi ha un error', () => {
+    it('hauria de mostrar error quan hi ha un error', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: false,
@@ -3153,7 +3158,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3162,10 +3167,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi amb propietats mínimes', () => {
+    it('hauria de gestionar refugi amb propietats mínimes', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           id: '1',
@@ -3177,7 +3182,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3186,19 +3191,19 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Cobertura adicional - props booleans', () => {
-    it('hauria de gestionar isFavourite true', () => {
+    it('hauria de gestionar isFavourite true', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: true,
         toggleFavourite: mockToggleFavourite,
         isLoading: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3211,14 +3216,14 @@ describe('RefugeDetailScreen Component', () => {
       expect(favoriteButton).toBeTruthy();
     });
 
-    it('hauria de gestionar isVisited true', () => {
+    it('hauria de gestionar isVisited true', async () => {
       mockUseVisited.mockReturnValue({
         isVisited: true,
         toggleVisited: mockToggleVisited,
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3227,17 +3232,17 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar isLoading true per favorits', () => {
+    it('hauria de gestionar isLoading true per favorits', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: false,
         toggleFavourite: mockToggleFavourite,
         isLoading: true,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3246,7 +3251,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -3261,7 +3266,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar clic a Windy', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3272,7 +3277,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const windyButton = getByTestId('windy-button');
-        fireEvent.press(windyButton);
+        await fireEvent.press(windyButton);
         await waitFor(() => {
           expect(Linking.openURL).toHaveBeenCalled();
         });
@@ -3282,7 +3287,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar clic a Wikiloc', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3293,7 +3298,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const wikilocButton = getByTestId('wikiloc-button');
-        fireEvent.press(wikilocButton);
+        await fireEvent.press(wikilocButton);
         await waitFor(() => {
           expect(Linking.openURL).toHaveBeenCalled();
         });
@@ -3304,8 +3309,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Cobertura adicional - navegació', () => {
-    it('hauria de cridar onNavigate amb la ubicació correcta', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onNavigate amb la ubicació correcta', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3316,7 +3321,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const navigateButton = getByTestId('navigate-button');
-        fireEvent.press(navigateButton);
+        await fireEvent.press(navigateButton);
         expect(mockOnNavigate).toHaveBeenCalledWith(expect.objectContaining({
           id: '1',
           name: 'Refugi de Colomers',
@@ -3345,8 +3350,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de renderitzar imatge principal correctament', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de renderitzar imatge principal correctament', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3355,11 +3360,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar carrusel d\'imatges', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de renderitzar carrusel d\'imatges', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3368,12 +3373,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Cobertura adicional - tipus i condició', () => {
-    it('hauria de renderitzar amb tipus de refugi', () => {
+    it('hauria de renderitzar amb tipus de refugi', async () => {
       const refugeWithType: Location = {
         ...baseRefuge,
         refugeType: 'refugio',
@@ -3385,7 +3390,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3394,10 +3399,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb condició de refugi', () => {
+    it('hauria de renderitzar amb condició de refugi', async () => {
       const refugeWithCondition: Location = {
         ...baseRefuge,
         refugeCondition: 'open',
@@ -3409,7 +3414,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3418,7 +3423,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -3433,7 +3438,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria d\'executar confirmAndOpen quan es prem weather button', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3443,14 +3448,14 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const weatherButton = getByTestId('weather-button');
-      fireEvent.press(weatherButton);
+      await fireEvent.press(weatherButton);
       
       // El modal de confirmació hauria d'estar visible ara
       expect(getByTestId('weather-button')).toBeTruthy();
     });
 
     it('hauria d\'executar confirmAndOpen quan es prem routes button', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3460,13 +3465,13 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const routesButton = getByTestId('routes-button');
-      fireEvent.press(routesButton);
+      await fireEvent.press(routesButton);
       
       expect(getByTestId('routes-button')).toBeTruthy();
     });
 
     it('hauria de gestionar menú obert i tancat', async () => {
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3479,16 +3484,16 @@ describe('RefugeDetailScreen Component', () => {
       
       // Obrir menú
       const menuButton = getByTestId('menu-button');
-      fireEvent.press(menuButton);
+      await fireEvent.press(menuButton);
       
       // Tornar a prémer per tancar
-      fireEvent.press(menuButton);
+      await fireEvent.press(menuButton);
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar edit des del menu', async () => {
-      const { getByTestId, queryByTestId, UNSAFE_root } = render(
+      const { getByTestId, queryByTestId, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3499,12 +3504,12 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Verificar que el component es renderitza correctament
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       
       // Intentar obrir menú si existeix
       try {
         const menuButton = getByTestId('menu-button');
-        fireEvent.press(menuButton);
+        await fireEvent.press(menuButton);
         expect(menuButton).toBeTruthy();
       } catch {
         // Si no hi ha el botó, simplement passem
@@ -3519,7 +3524,7 @@ describe('RefugeDetailScreen Component', () => {
         isLoading: true,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3533,7 +3538,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar download GPX amb callback', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3543,7 +3548,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Verificar que showAlert es crida amb els botons correctes
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -3557,7 +3562,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar download KML amb callback', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3567,7 +3572,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       expect(mockShowAlert).toHaveBeenCalledWith(
         expect.any(String),
@@ -3579,7 +3584,7 @@ describe('RefugeDetailScreen Component', () => {
       );
     });
 
-    it('hauria de gestionar refugi amb info_comp', () => {
+    it('hauria de gestionar refugi amb info_comp', async () => {
       const refugeWithAmenities: Location = {
         ...baseRefuge,
         info_comp: {
@@ -3595,7 +3600,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root, queryByText } = render(
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3604,11 +3609,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar coordenades formatades', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de renderitzar coordenades formatades', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3618,10 +3623,10 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // El component hauria de mostrar les coordenades
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi amb surname en comptes de name', () => {
+    it('hauria de gestionar refugi amb surname en comptes de name', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, name: undefined, surname: 'Refugi Alternativo' },
         isLoading: false,
@@ -3629,7 +3634,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root, queryByText } = render(
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3638,12 +3643,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Cobertura de renderAmenities', () => {
-    it('hauria de renderitzar totes les amenitats possibles', () => {
+    it('hauria de renderitzar totes les amenitats possibles', async () => {
       const refugeWithAllAmenities: Location = {
         ...baseRefuge,
         info_comp: {
@@ -3668,7 +3673,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3677,10 +3682,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar sense amenitats quan info_comp és undefined', () => {
+    it('hauria de renderitzar sense amenitats quan info_comp és undefined', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, info_comp: undefined },
         isLoading: false,
@@ -3688,7 +3693,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3697,10 +3702,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb amenitats buides', () => {
+    it('hauria de renderitzar amb amenitats buides', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...baseRefuge, info_comp: {} },
         isLoading: false,
@@ -3708,7 +3713,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3717,12 +3722,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Cobertura de galeria i imatges', () => {
-    it('hauria de gestionar refugi amb main_image', () => {
+    it('hauria de gestionar refugi amb main_image', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -3733,7 +3738,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3742,10 +3747,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi amb images_metadata', () => {
+    it('hauria de gestionar refugi amb images_metadata', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -3760,7 +3765,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3769,10 +3774,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar carousel_images amb vídeos', () => {
+    it('hauria de gestionar carousel_images amb vídeos', async () => {
       mockUseRefuge.mockReturnValue({
         data: { 
           ...baseRefuge, 
@@ -3786,7 +3791,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3795,7 +3800,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -3813,7 +3818,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar correctament handleOpenWindy', async () => {
-      const { getByTestId, queryByTestId, getByText, UNSAFE_root } = render(
+      const { getByTestId, queryByTestId, getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3823,19 +3828,19 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Verify component renders
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       
       // Look for weather-related element if exists
       try {
         const weatherButton = getByTestId('weather-button');
-        fireEvent.press(weatherButton);
+        await fireEvent.press(weatherButton);
       } catch {
         // If no weather button, that's okay
       }
     });
 
     it('hauria de gestionar correctament handleOpenWikiloc', async () => {
-      const { UNSAFE_root, queryByTestId } = render(
+      const { container, queryByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3844,13 +3849,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       
       // Look for routes-related element if exists
       try {
         const routesButton = queryByTestId('routes-button');
         if (routesButton) {
-          fireEvent.press(routesButton);
+          await fireEvent.press(routesButton);
         }
       } catch {
         // If no routes button, that's okay
@@ -3860,7 +3865,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar correctament la navegació amb onNavigateToDoubts prop', async () => {
       const mockNavigateToDoubts = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3870,13 +3875,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar correctament la navegació amb onNavigateToExperiences prop', async () => {
       const mockNavigateToExperiences = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3886,7 +3891,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -3906,7 +3911,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar URLs sense protocol', async () => {
       jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3915,13 +3920,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar error al obrir URL', async () => {
       jest.spyOn(Linking, 'openURL').mockRejectedValue(new Error('Cannot open URL'));
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3930,14 +3935,14 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar canOpenURL retornant false', async () => {
       jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false);
       jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3946,7 +3951,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -3986,8 +3991,8 @@ describe('RefugeDetailScreen Component', () => {
       mockExperiencesLoading = false;
     });
 
-    it('hauria de renderitzar experiències quan existeixen', () => {
-      const { getByText, UNSAFE_root } = render(
+    it('hauria de renderitzar experiències quan existeixen', async () => {
+      const { getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -3998,13 +4003,13 @@ describe('RefugeDetailScreen Component', () => {
       
       // Should show the experiences section with view more button
       expect(getByText('Veure més experiències')).toBeTruthy();
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar botó "afegir primera experiència" quan no hi ha experiències', () => {
+    it('hauria de mostrar botó "afegir primera experiència" quan no hi ha experiències', async () => {
       mockExperiencesData = [];
       
-      const { getByText, UNSAFE_root } = render(
+      const { getByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4015,11 +4020,11 @@ describe('RefugeDetailScreen Component', () => {
       
       // Should show add first experience button
       expect(getByText('Afegir experiència')).toBeTruthy();
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar correctament les fotos d\'experiències', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar correctament les fotos d\'experiències', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4028,12 +4033,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de navegar a experiències quan es prem el botó', () => {
+    it('hauria de navegar a experiències quan es prem el botó', async () => {
       const mockNavigateToExperiences = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4043,15 +4048,15 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      fireEvent.press(getByText('Veure més experiències'));
+      await fireEvent.press(getByText('Veure més experiències'));
       expect(mockNavigateToExperiences).toHaveBeenCalledWith('1', baseRefuge.name);
     });
 
-    it('hauria de mostrar loading quan carrega experiències', () => {
+    it('hauria de mostrar loading quan carrega experiències', async () => {
       mockExperiencesLoading = true;
       mockExperiencesData = [];
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4060,7 +4065,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4081,8 +4086,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de gestionar scroll d\'imatges', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar scroll d\'imatges', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4091,11 +4096,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de poder obrir la galeria de fotos', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de poder obrir la galeria de fotos', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4104,11 +4109,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de poder veure els detalls de la foto', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de poder veure els detalls de la foto', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4117,7 +4122,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4131,8 +4136,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de poder obrir el menú', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de poder obrir el menú', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4143,13 +4148,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar onEdit des del menú', () => {
+    it('hauria de gestionar onEdit des del menú', async () => {
       const mockOnEditLocal = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4159,13 +4164,13 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar onDelete des del menú', () => {
+    it('hauria de gestionar onDelete des del menú', async () => {
       const mockOnDeleteLocal = jest.fn();
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4175,7 +4180,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4189,8 +4194,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de gestionar el modal de confirmació per URLs externes', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar el modal de confirmació per URLs externes', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4199,7 +4204,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4216,8 +4221,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de mostrar informació d\'ocupació quan existeix', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar informació d\'ocupació quan existeix', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4226,11 +4231,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de poder obrir el modal d\'ocupació', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de poder obrir el modal d\'ocupació', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4239,7 +4244,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4253,8 +4258,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de gestionar gestos de swipe per obrir el menú', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar gestos de swipe per obrir el menú', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4263,7 +4268,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4286,8 +4291,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de navegar a DoubtsScreen sense onNavigateToDoubts prop', () => {
-      const { getByText } = render(
+    it('hauria de navegar a DoubtsScreen sense onNavigateToDoubts prop', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4299,7 +4304,7 @@ describe('RefugeDetailScreen Component', () => {
       
       // Find and press the doubts button
       const doubtsButton = getByText('Dubtes');
-      fireEvent.press(doubtsButton);
+      await fireEvent.press(doubtsButton);
       
       // Should call navigation.navigate with DoubtsScreen
       expect(mockNavigate).toHaveBeenCalledWith('DoubtsScreen', {
@@ -4308,8 +4313,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de navegar a ExperiencesScreen sense onNavigateToExperiences prop', () => {
-      const { getByText } = render(
+    it('hauria de navegar a ExperiencesScreen sense onNavigateToExperiences prop', async () => {
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4321,7 +4326,7 @@ describe('RefugeDetailScreen Component', () => {
       
       // Find and press the experiences button (shows addFirst when no experiences)
       const expButton = getByText('Afegir experiència');
-      fireEvent.press(expButton);
+      await fireEvent.press(expButton);
       
       // Should call navigation.navigate with ExperiencesScreen
       expect(mockNavigate).toHaveBeenCalledWith('ExperiencesScreen', {
@@ -4330,9 +4335,9 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de cridar onNavigateToDoubts prop quan es proporciona', () => {
+    it('hauria de cridar onNavigateToDoubts prop quan es proporciona', async () => {
       const mockOnNavigateToDoubts = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4342,15 +4347,15 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      fireEvent.press(getByText('Dubtes'));
+      await fireEvent.press(getByText('Dubtes'));
       
       expect(mockOnNavigateToDoubts).toHaveBeenCalledWith('1', baseRefuge.name);
       expect(mockNavigate).not.toHaveBeenCalledWith('DoubtsScreen', expect.anything());
     });
 
-    it('hauria de cridar onNavigateToExperiences prop quan es proporciona', () => {
+    it('hauria de cridar onNavigateToExperiences prop quan es proporciona', async () => {
       const mockOnNavigateToExperiences = jest.fn();
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4360,7 +4365,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      fireEvent.press(getByText('Afegir experiència'));
+      await fireEvent.press(getByText('Afegir experiència'));
       
       expect(mockOnNavigateToExperiences).toHaveBeenCalledWith('1', baseRefuge.name);
       expect(mockNavigate).not.toHaveBeenCalledWith('ExperiencesScreen', expect.anything());
@@ -4377,8 +4382,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de mostrar modal de confirmació per Windy i tancar-lo', () => {
-      const { getByTestId, queryByText, UNSAFE_root } = render(
+    it('hauria de mostrar modal de confirmació per Windy i tancar-lo', async () => {
+      const { getByTestId, queryByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4388,23 +4393,23 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Press Windy button to open modal
-      fireEvent.press(getByTestId('weather-button'));
+      await fireEvent.press(getByTestId('weather-button'));
       
       // Try to find cancel button and press it
       try {
         const cancelButton = queryByText('Cancel·lar');
         if (cancelButton) {
-          fireEvent.press(cancelButton);
+          await fireEvent.press(cancelButton);
         }
       } catch {
         // Modal buttons may not be visible in mock
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de obrir URL quan es confirma el modal', async () => {
-      const { getByTestId, queryByText, UNSAFE_root } = render(
+      const { getByTestId, queryByText, container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4414,19 +4419,19 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Press Windy button to open modal
-      fireEvent.press(getByTestId('weather-button'));
+      await fireEvent.press(getByTestId('weather-button'));
       
       // Try to confirm the modal
       try {
         const navigateButton = queryByText('refuge.actions.navigate');
         if (navigateButton) {
-          fireEvent.press(navigateButton);
+          await fireEvent.press(navigateButton);
         }
       } catch {
         // Modal buttons may not be visible in mock
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4448,8 +4453,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de ordenar les imatges per data de pujada', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de ordenar les imatges per data de pujada', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4458,11 +4463,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de detectar vídeos per extensió', () => {
-      const { UNSAFE_root, queryByTestId } = render(
+    it('hauria de detectar vídeos per extensió', async () => {
+      const { container, queryByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4472,7 +4477,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Should render video thumbnails for .mp4 files
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4494,8 +4499,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de renderitzar links externs', () => {
-      const { UNSAFE_root, queryByText } = render(
+    it('hauria de renderitzar links externs', async () => {
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4504,11 +4509,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de gestionar clic a link extern', () => {
-      const { UNSAFE_root, queryByText } = render(
+    it('hauria de gestionar clic a link extern', async () => {
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4521,13 +4526,13 @@ describe('RefugeDetailScreen Component', () => {
       try {
         const link = queryByText(/link1/i);
         if (link) {
-          fireEvent.press(link);
+          await fireEvent.press(link);
         }
       } catch {
         // Link may not be visible
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -4541,8 +4546,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de renderitzar secció d\'experiències buida', () => {
-      const { UNSAFE_root, queryByText } = render(
+    it('hauria de renderitzar secció d\'experiències buida', async () => {
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4551,10 +4556,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar experiències amb dades', () => {
+    it('hauria de renderitzar experiències amb dades', async () => {
       mockExperiencesData = [
         {
           id: 'exp1',
@@ -4566,7 +4571,7 @@ describe('RefugeDetailScreen Component', () => {
         },
       ];
 
-      const { UNSAFE_root, queryByText } = render(
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4575,7 +4580,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       expect(queryByText('Great refuge!')).toBeTruthy();
     });
 
@@ -4591,7 +4596,7 @@ describe('RefugeDetailScreen Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4605,7 +4610,7 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       const editButton = getByTestId('edit-experience-exp1');
-      fireEvent.press(editButton);
+      await fireEvent.press(editButton);
       
       await waitFor(() => {
         expect(mockUpdateExperienceMutate).toHaveBeenCalled();
@@ -4624,7 +4629,7 @@ describe('RefugeDetailScreen Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4638,7 +4643,7 @@ describe('RefugeDetailScreen Component', () => {
       }, { timeout: 3000 });
 
       const deleteButton = getByTestId('delete-experience-exp1');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -4657,7 +4662,7 @@ describe('RefugeDetailScreen Component', () => {
 
   describe('Descàrrega de fitxers en diferents plataformes', () => {
     it('hauria de gestionar descàrrega GPX', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4667,7 +4672,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       expect(mockShowAlert).toHaveBeenCalled();
       
@@ -4683,9 +4688,9 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar descàrrega amb permisos denegats', async () => {
-      mockRequestDirectoryPermissionsAsync.mockResolvedValueOnce({ granted: false });
+      mockPickDirectoryAsync.mockRejectedValueOnce(new Error('Permission denied'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4695,7 +4700,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Execute download button
       await waitFor(() => {
@@ -4711,7 +4716,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar error de writeAndShareFile', async () => {
       mockWriteAsStringAsync.mockRejectedValueOnce(new Error('Write failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4721,7 +4726,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Execute download button
       await waitFor(() => {
@@ -4742,7 +4747,7 @@ describe('RefugeDetailScreen Component', () => {
       Sharing.isAvailableAsync.mockResolvedValueOnce(true);
       Sharing.shareAsync.mockResolvedValueOnce(undefined);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4752,7 +4757,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       // Execute download button
       await waitFor(() => {
@@ -4771,7 +4776,7 @@ describe('RefugeDetailScreen Component', () => {
       jest.spyOn(Linking, 'canOpenURL').mockResolvedValueOnce(false);
       jest.spyOn(Linking, 'openURL').mockRejectedValueOnce(new Error('Cannot open'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4781,7 +4786,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const weatherButton = getByTestId('weather-button');
-      fireEvent.press(weatherButton);
+      await fireEvent.press(weatherButton);
       
       // Try to trigger the link opening
       await waitFor(() => {
@@ -4792,7 +4797,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar URLs amb Windy directament', async () => {
       jest.spyOn(Linking, 'openURL').mockResolvedValueOnce(true as any);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4802,7 +4807,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const weatherButton = getByTestId('weather-button');
-      fireEvent.press(weatherButton);
+      await fireEvent.press(weatherButton);
       
       await waitFor(() => {
         expect(weatherButton).toBeTruthy();
@@ -4812,7 +4817,7 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar errors al obrir enllaç', async () => {
       jest.spyOn(Linking, 'canOpenURL').mockRejectedValueOnce(new Error('Error'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4822,7 +4827,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const routesButton = getByTestId('routes-button');
-      fireEvent.press(routesButton);
+      await fireEvent.press(routesButton);
       
       await waitFor(() => {
         expect(routesButton).toBeTruthy();
@@ -4852,7 +4857,7 @@ describe('RefugeDetailScreen Component', () => {
 
       mockUploadRefugeMedia.mockResolvedValueOnce({ success: true });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4863,7 +4868,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const addPhotoButton = getByTestId('add-photo-button');
-        fireEvent.press(addPhotoButton);
+        await fireEvent.press(addPhotoButton);
         
         await waitFor(() => {
           expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
@@ -4881,7 +4886,7 @@ describe('RefugeDetailScreen Component', () => {
         assets: [],
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4892,7 +4897,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const addPhotoButton = getByTestId('add-photo-button');
-        fireEvent.press(addPhotoButton);
+        await fireEvent.press(addPhotoButton);
         
         await waitFor(() => {
           expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
@@ -4913,7 +4918,7 @@ describe('RefugeDetailScreen Component', () => {
 
       mockUploadRefugeMedia.mockRejectedValueOnce(new Error('Upload failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4924,7 +4929,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const addPhotoButton = getByTestId('add-photo-button');
-        fireEvent.press(addPhotoButton);
+        await fireEvent.press(addPhotoButton);
         
         await waitFor(() => {
           expect(mockUploadRefugeMedia).toHaveBeenCalled();
@@ -4952,7 +4957,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar scroll d\'imatges', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4963,7 +4968,7 @@ describe('RefugeDetailScreen Component', () => {
       
       // Find ScrollView for images
       const ScrollView = require('react-native').ScrollView;
-      const scrollViews = UNSAFE_root.findAllByType(ScrollView);
+      const scrollViews = findAllByType(container, ScrollView);
       
       if (scrollViews.length > 0) {
         // Simulate scroll event
@@ -4980,11 +4985,11 @@ describe('RefugeDetailScreen Component', () => {
         }
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de obrir PhotoViewer quan es fa clic en una imatge', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -4994,21 +4999,21 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      const buttons = UNSAFE_root.findAllByType(TouchableOpacity);
+      const buttons = findAllByType(container, TouchableOpacity);
       
       // Try to find and press an image button
       for (const button of buttons) {
         if (button.props.testID?.includes('image-')) {
-          fireEvent.press(button);
+          await fireEvent.press(button);
           break;
         }
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar visualització de totes les fotos', async () => {
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5020,7 +5025,7 @@ describe('RefugeDetailScreen Component', () => {
       try {
         const viewAllButton = queryByText(/veure tot/i) || queryByText(/view all/i);
         if (viewAllButton) {
-          fireEvent.press(viewAllButton);
+          await fireEvent.press(viewAllButton);
         }
       } catch {
         // Button may not be visible
@@ -5031,8 +5036,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Menu lateral i gestures', () => {
-    it('hauria de gestionar PanResponder per obrir el menú', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar PanResponder per obrir el menú', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5043,7 +5048,7 @@ describe('RefugeDetailScreen Component', () => {
       
       // Find View with panHandlers
       const View = require('react-native').View;
-      const views = UNSAFE_root.findAllByType(View);
+      const views = findAllByType(container, View);
       
       for (const view of views) {
         if (view.props.onStartShouldSetResponder) {
@@ -5063,11 +5068,11 @@ describe('RefugeDetailScreen Component', () => {
         }
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de obrir el menú quan es fa swipe', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de obrir el menú quan es fa swipe', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5077,7 +5082,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const View = require('react-native').View;
-      const views = UNSAFE_root.findAllByType(View);
+      const views = findAllByType(container, View);
       
       for (const view of views) {
         if (view.props.onMoveShouldSetResponder) {
@@ -5100,13 +5105,13 @@ describe('RefugeDetailScreen Component', () => {
         }
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Modal de calendari d\'ocupació', () => {
-    it('hauria de obrir el modal de calendari', () => {
-      const { getByTestId } = render(
+    it('hauria de obrir el modal de calendari', async () => {
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5117,7 +5122,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const calendarButton = getByTestId('calendar-button');
-        fireEvent.press(calendarButton);
+        await fireEvent.press(calendarButton);
       } catch {
         // Button may not be visible
         expect(getByTestId).toBeDefined();
@@ -5142,7 +5147,7 @@ describe('RefugeDetailScreen Component', () => {
     });
 
     it('hauria de gestionar handleExperiencePhotoPress', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5153,16 +5158,16 @@ describe('RefugeDetailScreen Component', () => {
       
       // Wait for experiences to render
       await waitFor(() => {
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       });
       
       // Simulate photo press in experience
       // This would be triggered by UserExperience component's onPhotoPress callback
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar handleExperiencePhotoDeleted', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5172,11 +5177,11 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       await waitFor(() => {
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       });
       
       // This handler would be called when a photo is deleted from experience modal
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de gestionar error en handleExperienceEdit', async () => {
@@ -5186,7 +5191,7 @@ describe('RefugeDetailScreen Component', () => {
         }
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5200,7 +5205,7 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       const editButton = getByTestId('edit-experience-exp1');
-      fireEvent.press(editButton);
+      await fireEvent.press(editButton);
       
       await waitFor(() => {
         expect(mockUpdateExperienceMutate).toHaveBeenCalled();
@@ -5214,7 +5219,7 @@ describe('RefugeDetailScreen Component', () => {
         }
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5228,7 +5233,7 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       const deleteButton = getByTestId('delete-experience-exp1');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
       
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -5259,8 +5264,8 @@ describe('RefugeDetailScreen Component', () => {
       });
     });
 
-    it('hauria de renderitzar només 3 imatges al carousel', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de renderitzar només 3 imatges al carousel', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5270,11 +5275,11 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Should render max 3 images in the carousel
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar botó "View All" quan hi ha més de 3 imatges', () => {
-      const { UNSAFE_root, queryByText } = render(
+    it('hauria de mostrar botó "View All" quan hi ha més de 3 imatges', async () => {
+      const { container, queryByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5283,7 +5288,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -5292,7 +5297,7 @@ describe('RefugeDetailScreen Component', () => {
       const Sharing = require('expo-sharing');
       Sharing.isAvailableAsync.mockResolvedValueOnce(false);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5302,7 +5307,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       // Execute download
       await waitFor(() => {
@@ -5315,9 +5320,9 @@ describe('RefugeDetailScreen Component', () => {
     it('hauria de gestionar error en getContentUriAsync', async () => {
       const Sharing = require('expo-sharing');
       Sharing.isAvailableAsync.mockResolvedValueOnce(true);
-      mockGetContentUriAsync.mockRejectedValueOnce(new Error('Content URI failed'));
+      mockGetContentUri.mockImplementationOnce(() => { throw new Error('Content URI failed'); });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5327,7 +5332,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       // Execute download
       await waitFor(() => {
@@ -5337,15 +5342,15 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       // Reset mock
-      mockGetContentUriAsync.mockResolvedValue('content://mock-uri');
+      mockGetContentUri.mockReturnValue('content://mock-uri');
     });
   });
 
   describe('Renderització de diferents estats', () => {
-    it('hauria de renderitzar amb experiències carregant', () => {
+    it('hauria de renderitzar amb experiències carregant', async () => {
       mockExperiencesLoading = true;
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5354,11 +5359,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       mockExperiencesLoading = false;
     });
 
-    it('hauria de renderitzar amb múltiples experiències', () => {
+    it('hauria de renderitzar amb múltiples experiències', async () => {
       mockExperiencesData = Array(5).fill(null).map((_, i) => ({
         id: `exp${i}`,
         refuge_id: '1',
@@ -5368,7 +5373,7 @@ describe('RefugeDetailScreen Component', () => {
         photos: [],
       }));
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5377,11 +5382,11 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       mockExperiencesData = [];
     });
 
-    it('hauria de renderitzar amb refuge sense region', () => {
+    it('hauria de renderitzar amb refuge sense region', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5392,7 +5397,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5401,10 +5406,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb refuge sense condition', () => {
+    it('hauria de renderitzar amb refuge sense condition', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5415,7 +5420,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5424,10 +5429,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb tots els camps opcionals', () => {
+    it('hauria de renderitzar amb tots els camps opcionals', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5455,7 +5460,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5464,10 +5469,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar diferents tipus de badges', () => {
+    it('hauria de renderitzar diferents tipus de badges', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5478,7 +5483,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5487,10 +5492,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb imatges i vídeos barrejats', () => {
+    it('hauria de renderitzar amb imatges i vídeos barrejats', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5506,7 +5511,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5515,7 +5520,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -5531,7 +5536,7 @@ describe('RefugeDetailScreen Component', () => {
 
       mockUploadRefugeMedia.mockResolvedValueOnce({ success: true });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5542,7 +5547,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const addPhotoButton = getByTestId('add-photo-button');
-        fireEvent.press(addPhotoButton);
+        await fireEvent.press(addPhotoButton);
         
         await waitFor(() => {
           expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
@@ -5563,7 +5568,7 @@ describe('RefugeDetailScreen Component', () => {
 
       mockUploadRefugeMedia.mockResolvedValueOnce({ success: true });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5574,7 +5579,7 @@ describe('RefugeDetailScreen Component', () => {
       
       try {
         const addPhotoButton = getByTestId('add-photo-button');
-        fireEvent.press(addPhotoButton);
+        await fireEvent.press(addPhotoButton);
         
         await waitFor(() => {
           expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
@@ -5586,8 +5591,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Interaccions amb el menú lateral', () => {
-    it('hauria de gestionar onPanResponderMove', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de gestionar onPanResponderMove', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5597,7 +5602,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const View = require('react-native').View;
-      const views = UNSAFE_root.findAllByType(View);
+      const views = findAllByType(container, View);
       
       for (const view of views) {
         if (view.props.onResponderMove) {
@@ -5609,7 +5614,7 @@ describe('RefugeDetailScreen Component', () => {
         }
       }
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -5618,7 +5623,7 @@ describe('RefugeDetailScreen Component', () => {
       jest.spyOn(Linking, 'canOpenURL').mockResolvedValueOnce(true);
       jest.spyOn(Linking, 'openURL').mockRejectedValueOnce(new Error('Failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5628,7 +5633,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const weatherButton = getByTestId('weather-button');
-      fireEvent.press(weatherButton);
+      await fireEvent.press(weatherButton);
       
       await waitFor(() => {
         expect(weatherButton).toBeTruthy();
@@ -5639,7 +5644,7 @@ describe('RefugeDetailScreen Component', () => {
       jest.spyOn(Linking, 'canOpenURL').mockResolvedValueOnce(true);
       jest.spyOn(Linking, 'openURL').mockResolvedValueOnce(true as any);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5649,7 +5654,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const routesButton = getByTestId('routes-button');
-      fireEvent.press(routesButton);
+      await fireEvent.press(routesButton);
       
       await waitFor(() => {
         expect(routesButton).toBeTruthy();
@@ -5659,10 +5664,10 @@ describe('RefugeDetailScreen Component', () => {
 
   describe('Gestió de saveFile amb diferents escenaris', () => {
     it('hauria de gestionar error de StorageAccessFramework', async () => {
-      const SAF = mockRequestDirectoryPermissionsAsync;
+      const SAF = mockPickDirectoryAsync;
       SAF.mockRejectedValueOnce(new Error('SAF failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5672,7 +5677,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       await waitFor(() => {
         if (lastAlertButtons.length > 1 && lastAlertButtons[1].onPress) {
@@ -5681,13 +5686,13 @@ describe('RefugeDetailScreen Component', () => {
       });
 
       // Reset
-      SAF.mockResolvedValue({ granted: true, directoryUri: 'file:///mock/dir' });
+      SAF.mockResolvedValue(mockSafDirectory);
     });
 
     it('hauria de gestionar writeAsStringAsync fallit', async () => {
       mockWriteAsStringAsync.mockRejectedValueOnce(new Error('Write failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5697,7 +5702,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const kmlButton = getByTestId('download-kml-button');
-      fireEvent.press(kmlButton);
+      await fireEvent.press(kmlButton);
       
       await waitFor(() => {
         if (lastAlertButtons.length > 1 && lastAlertButtons[1].onPress) {
@@ -5714,7 +5719,7 @@ describe('RefugeDetailScreen Component', () => {
       Sharing.isAvailableAsync.mockResolvedValueOnce(true);
       Sharing.shareAsync.mockRejectedValueOnce(new Error('Share failed'));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5724,7 +5729,7 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       const gpxButton = getByTestId('download-gpx-button');
-      fireEvent.press(gpxButton);
+      await fireEvent.press(gpxButton);
       
       await waitFor(() => {
         if (lastAlertButtons.length > 1 && lastAlertButtons[1].onPress) {
@@ -5735,8 +5740,8 @@ describe('RefugeDetailScreen Component', () => {
   });
 
   describe('Renderització de seccions específiques', () => {
-    it('hauria de renderitzar secció de dubtes', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de renderitzar secció de dubtes', async () => {
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5746,10 +5751,10 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Should render doubts section
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar indicador d\'imatge actual', () => {
+    it('hauria de renderitzar indicador d\'imatge actual', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5763,7 +5768,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5773,10 +5778,10 @@ describe('RefugeDetailScreen Component', () => {
       );
       
       // Should render image indicator dots
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb descripció molt llarga', () => {
+    it('hauria de renderitzar amb descripció molt llarga', async () => {
       const longDescription = 'Lorem ipsum dolor sit amet, '.repeat(50);
       mockUseRefuge.mockReturnValue({
         data: {
@@ -5788,7 +5793,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5797,10 +5802,10 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de renderitzar refuge amb places 0', () => {
+    it('hauria de renderitzar refuge amb places 0', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5811,7 +5816,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root, getByText } = render(
+      const { container, getByText } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5823,7 +5828,7 @@ describe('RefugeDetailScreen Component', () => {
       expect(getByText('0')).toBeTruthy();
     });
 
-    it('hauria de renderitzar refuge amb coordenades extremes', () => {
+    it('hauria de renderitzar refuge amb coordenades extremes', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5834,7 +5839,7 @@ describe('RefugeDetailScreen Component', () => {
         refetch: jest.fn(),
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5843,12 +5848,12 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Test de cobertura integral', () => {
-    it('hauria de renderitzar component complet amb tots els props', () => {
+    it('hauria de renderitzar component complet amb tots els props', async () => {
       mockUseRefuge.mockReturnValue({
         data: {
           ...baseRefuge,
@@ -5891,7 +5896,7 @@ describe('RefugeDetailScreen Component', () => {
         },
       ];
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -5901,7 +5906,7 @@ describe('RefugeDetailScreen Component', () => {
         />
       );
       
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       
       // Cleanup
       mockExperiencesData = [];

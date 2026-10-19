@@ -60,8 +60,8 @@ describe('FilterPanel - Tests d\'integració', () => {
   });
 
   describe('Renderització i obertura/tancament', () => {
-    it('no hauria de renderitzar quan isOpen és false', () => {
-      const { queryByText } = renderWithProviders(
+    it('no hauria de renderitzar quan isOpen és false', async () => {
+      const { queryByText } = await renderWithProviders(
         <FilterPanel
           isOpen={false}
           onClose={mockOnClose}
@@ -74,8 +74,8 @@ describe('FilterPanel - Tests d\'integració', () => {
       expect(queryByText('Filtres')).toBeNull();
     });
 
-    it('hauria de renderitzar quan isOpen és true', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de renderitzar quan isOpen és true', async () => {
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -90,8 +90,8 @@ describe('FilterPanel - Tests d\'integració', () => {
       // Altitud and Places text includes dynamic values, so just check the filter panel is rendered
     });
 
-    it('hauria de tancar el panel amb els botons disponibles', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de tancar el panel amb els botons disponibles', async () => {
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -102,7 +102,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Test that we can close by pressing the apply button
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -110,7 +110,7 @@ describe('FilterPanel - Tests d\'integració', () => {
 
   describe('Filtres de tipus de refugi', () => {
     it('hauria de permetre seleccionar un tipus de refugi', async () => {
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -122,11 +122,11 @@ describe('FilterPanel - Tests d\'integració', () => {
 
       // Seleccionar un tipus
       const typeButton = getByText('No guardat');
-      fireEvent.press(typeButton);
+      await fireEvent.press(typeButton);
 
       // Aplicar filtres
       const applyButton = getByText('Aplicar filtres');
-      fireEvent.press(applyButton);
+      await fireEvent.press(applyButton);
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -138,7 +138,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     });
 
     it('hauria de permetre seleccionar múltiples tipus', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -149,12 +149,12 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Seleccionar múltiples tipus
-      fireEvent.press(getByText('No guardat'));
-      fireEvent.press(getByText('Refugi lliure'));
-      fireEvent.press(getByText('Guardat a l\'estiu'));
+      await fireEvent.press(getByText('No guardat'));
+      await fireEvent.press(getByText('Refugi lliure'));
+      await fireEvent.press(getByText('Guardat a l\'estiu'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -171,7 +171,7 @@ describe('FilterPanel - Tests d\'integració', () => {
         types: ["non gardé", "cabane ouverte mais ocupee par le berger l ete"],
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -182,10 +182,10 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Deseleccionar un tipus
-      fireEvent.press(getByText('No guardat'));
+      await fireEvent.press(getByText('No guardat'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -199,7 +199,7 @@ describe('FilterPanel - Tests d\'integració', () => {
 
   describe('Filtres de condició', () => {
     it('hauria de permetre seleccionar una condició', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -210,10 +210,10 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Seleccionar una condició
-      fireEvent.press(getByText('Bé'));
+      await fireEvent.press(getByText('Bé'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -225,7 +225,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     });
 
     it('hauria de permetre seleccionar múltiples condicions', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -236,11 +236,11 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Seleccionar múltiples condicions
-      fireEvent.press(getByText('Pobre'));
-      fireEvent.press(getByText('Normal'));
+      await fireEvent.press(getByText('Pobre'));
+      await fireEvent.press(getByText('Normal'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -257,7 +257,7 @@ describe('FilterPanel - Tests d\'integració', () => {
         condition: [2, 1],
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -268,10 +268,10 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Deseleccionar una condició
-      fireEvent.press(getByText('Bé'));
+      await fireEvent.press(getByText('Bé'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -292,7 +292,7 @@ describe('FilterPanel - Tests d\'integració', () => {
         condition: ['bé'],
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -303,7 +303,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Netejar filtres
-      fireEvent.press(getByText('Netejar filtres'));
+      await fireEvent.press(getByText('Netejar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith({
@@ -318,7 +318,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     });
 
     it('no hauria de cridar onFiltersChange si els filtres ja estan buits', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -329,7 +329,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Netejar filtres quan ja estan buits
-      fireEvent.press(getByText('Netejar filtres'));
+      await fireEvent.press(getByText('Netejar filtres'));
 
       await waitFor(() => {
         // Should not call onFiltersChange when filters are already cleared
@@ -342,7 +342,7 @@ describe('FilterPanel - Tests d\'integració', () => {
 
   describe('Aplicar filtres', () => {
     it('hauria d\'aplicar els filtres i tancar el panel', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -353,11 +353,11 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Seleccionar algunes opcions
-      fireEvent.press(getByText('No guardat'));
-      fireEvent.press(getByText('Bé'));
+      await fireEvent.press(getByText('No guardat'));
+      await fireEvent.press(getByText('Bé'));
 
       // Aplicar filtres
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         expect(mockOnFiltersChange).toHaveBeenCalledWith(
@@ -371,7 +371,7 @@ describe('FilterPanel - Tests d\'integració', () => {
     });
 
     it('hauria de cridar onFiltersChange amb els filtres actuals en aplicar', async () => {
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -382,7 +382,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Aplicar sense fer canvis - encara crida onFiltersChange amb els filtres actuals
-      fireEvent.press(getByText('Aplicar filtres'));
+      await fireEvent.press(getByText('Aplicar filtres'));
 
       await waitFor(() => {
         // The apply button always calls onFiltersChange, even if no changes
@@ -393,8 +393,8 @@ describe('FilterPanel - Tests d\'integració', () => {
   });
 
   describe('Paràmetres opcionals', () => {
-    it('hauria d\'utilitzar maxAltitude personalitzat', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria d\'utilitzar maxAltitude personalitzat', async () => {
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -409,8 +409,8 @@ describe('FilterPanel - Tests d\'integració', () => {
       expect(getByText('Filtres')).toBeTruthy();
     });
 
-    it('hauria d\'utilitzar maxPlaces personalitzat', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria d\'utilitzar maxPlaces personalitzat', async () => {
+      const { getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}
@@ -427,7 +427,7 @@ describe('FilterPanel - Tests d\'integració', () => {
   });
 
   describe('Reinici dels filtres locals en obrir el panel', () => {
-    it('hauria de reiniciar els filtres locals quan s\'obre el panel', () => {
+    it('hauria de reiniciar els filtres locals quan s\'obre el panel', async () => {
       const initialFilters: Filters = {
         types: [1],
         altitude: [500, 2000],
@@ -435,7 +435,7 @@ describe('FilterPanel - Tests d\'integració', () => {
         condition: ['normal'],
       };
 
-      const { rerender, getByText } = renderWithProviders(
+      const { rerender, getByText } = await renderWithProviders(
         <FilterPanel
           isOpen={false}
           onClose={mockOnClose}
@@ -446,7 +446,7 @@ describe('FilterPanel - Tests d\'integració', () => {
       );
 
       // Obrir el panel
-      rerender(
+      await rerender(
         <FilterPanel
           isOpen={true}
           onClose={mockOnClose}

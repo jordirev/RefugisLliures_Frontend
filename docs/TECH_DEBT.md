@@ -53,6 +53,7 @@
 | B11 | `Linking.openURL` sense `catch` | `RenovationDetailScreen.tsx:112`, `RenovationCard.tsx:46` |
 | ~~B12~~ | ~~Opcions de picker incoherents~~ **Resolt**: picker únic a `useMediaUpload` | `ExperiencesScreen.tsx:148,157`, `UserExperience.tsx:154`, `RefugeDetailScreen.tsx:559` |
 | B13 | Tests duplicats en dues carpetes | `src/__tests__/services` vs `src/__tests__/unit_tests/services` (també `hooks`, `mappers`) |
+| B15 | La pujada nativa encara usa `expo-file-system/legacy` `createUploadTask`; migrar quan l'API nova tingui pujada amb progrés | `src/services/MediaUploadService.ts` (`putFile`) |
 
 ## Nou deute detectat (feature `images`)
 | # | Problema | Evidència | Severitat |
@@ -61,7 +62,10 @@
 | I2 | Overlays d'`AppNavigator` amagats amb `display:none` per mostrar `ReportMedia`/`MediaReports` (solució provisional fins a unificar overlays i pila) | `src/components/AppNavigator.tsx` (`ROUTES_ABOVE_OVERLAYS`) | Baix |
 | I3 | Esborrat d'avatar encara sense hook (crida `UsersService.deleteAvatar` directament) | `src/components/AvatarPopup.tsx` | Baix |
 | I4 | Sense mòdul natiu de compressió (Expo Go/web) els vídeos es pugen sense recomprimir | `src/services/MediaUploadService.ts` (`compressVideo`) | Baix |
+| I6 | `@ptomasroos/react-native-multi-slider` no es manté i requereix `prop-types` implícitament (per això es conserva `prop-types`); considerar substituir-lo | `package.json` | Baix |
+| ~~I7~~ | ~~`react-test-renderer` obsolet~~ **Resolt**: tests migrats a `@testing-library/react-native` 14 amb `test-renderer` (render/fireEvent/act asíncrons) | `package.json`, tests | FET |
 | I5 | En mode offline no hi ha `backendUser`: l'AgeGate no s'aplica fins que hi ha connexió | `src/components/AppNavigator.tsx` | Baix |
+| I8 | TypeScript 6 activa `strict` per defecte: `tsconfig.json` el fixa a `false` per mantenir el comportament anterior. Activar-lo implica arreglar ~50 errors de nul·labilitat a `src/` i ~70 als tests | `tsconfig.json` | Baix |
 
 ## Codi mort / sense ús
 `src/utils/mockData.ts` (no importat; no encaixa amb `Location`) · `useCreateRefuge/useUpdateRefuge/useDeleteRefuge` (`useRefugesQuery.ts:76-130`) · `useRefugeMedia` (`useRefugeMediaQuery.ts`; `useUploadRefugeMedia` eliminat, `useDeleteRefugeMedia` ja s'usa) · `useUserVisits` (`useRefugeVisitsQuery.ts:32`) · `MapCacheService.getTileUrl/hasTile/getTileLocalPath` · `AppNavigator.handleToggleFavorite` (no-op) · prop `onNavigate` · `Share` a `QuickActionsMenu.tsx:11` · imports `@env` a `src/services/firebase.ts:26-34` · paràmetres `authToken?` de `UsersService` i estat `authToken` del context · `const stack` a `App.js:36` · dependència `expo-auth-session` (`expo-image-manipulator` ja s'usa per comprimir) · `export *` de mòduls amb `default` a `src/hooks/index.ts:7-8`.

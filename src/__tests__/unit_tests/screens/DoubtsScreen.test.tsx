@@ -27,6 +27,7 @@ import {
 } from '../../../hooks/useDoubtsQuery';
 import { useUser } from '../../../hooks/useUsersQuery';
 import { useAuth } from '../../../contexts/AuthContext';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Capturar keyboard listeners
 let keyboardListeners: { event: string; callback: (e?: any) => void }[] = [];
@@ -170,13 +171,13 @@ describe('DoubtsScreen', () => {
     });
   });
 
-  it('hauria de mostrar estat de càrrega', () => {
+  it('hauria de mostrar estat de càrrega', async () => {
     (useDoubts as jest.Mock).mockReturnValue({
       data: [],
       isLoading: true,
     });
 
-    const { UNSAFE_getByType } = render(
+    const { container } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -190,7 +191,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -205,7 +206,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText, getAllByTestId } = render(
+    const { getByText, getAllByTestId } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -221,7 +222,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -237,7 +238,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { toJSON } = render(
+    const { toJSON } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" onClose={mockOnClose} />
     );
     
@@ -257,7 +258,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -276,7 +277,7 @@ describe('DoubtsScreen', () => {
       isLoading: false,
     });
 
-    const { getAllByTestId, getByText } = render(
+    const { getAllByTestId, getByText } = await render(
       <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
     );
     
@@ -301,17 +302,17 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, getByTestId } = render(
+      const { getByPlaceholderText, getByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('doubts.doubtPlaceholder');
-      fireEvent.changeText(input, 'Nou dubte de prova');
+      await fireEvent.changeText(input, 'Nou dubte de prova');
 
       // Trobar el botó d'enviar i prémer-lo
       try {
         const sendButton = getByTestId('send-button');
-        fireEvent.press(sendButton);
+        await fireEvent.press(sendButton);
         expect(mockMutate).toHaveBeenCalled();
       } catch {
         // Si no troba el testID, simplement verifiquem que el hook s'ha cridat
@@ -332,7 +333,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -352,14 +353,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const replyButtons = getAllByTestId('reply-btn');
         if (replyButtons.length > 0) {
-          fireEvent.press(replyButtons[0]);
+          await fireEvent.press(replyButtons[0]);
         }
       });
 
@@ -378,14 +379,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const deleteButtons = getAllByTestId('delete-btn');
         if (deleteButtons.length > 0) {
-          fireEvent.press(deleteButtons[0]);
+          await fireEvent.press(deleteButtons[0]);
         }
       });
 
@@ -403,15 +404,15 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const deleteButtons = getAllByTestId('delete-btn');
         // El segon botó d'eliminar és per a la resposta
         if (deleteButtons.length > 1) {
-          fireEvent.press(deleteButtons[1]);
+          await fireEvent.press(deleteButtons[1]);
         }
       });
 
@@ -426,15 +427,15 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Buscar el primer TouchableOpacity (botó enrere)
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
 
       expect(mockGoBack).toHaveBeenCalled();
@@ -442,7 +443,7 @@ describe('DoubtsScreen', () => {
   });
 
   describe('Estat de càrrega i validació', () => {
-    it('hauria de mostrar indicador de càrrega quan isPending és true', () => {
+    it('hauria de mostrar indicador de càrrega quan isPending és true', async () => {
       (useCreateDoubt as jest.Mock).mockReturnValue({
         mutate: jest.fn(),
         isPending: true,
@@ -452,7 +453,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -470,14 +471,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText } = render(
+      const { getByPlaceholderText } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('doubts.doubtPlaceholder');
       // Escriure un missatge molt llarg (més de 500 caràcters)
       const longMessage = 'a'.repeat(600);
-      fireEvent.changeText(input, longMessage);
+      await fireEvent.changeText(input, longMessage);
 
       // El formulari hauria de tenir validació
       expect(useCreateDoubt).toHaveBeenCalled();
@@ -498,14 +499,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const replyButtons = getAllByTestId('reply-btn');
         if (replyButtons.length > 0) {
-          fireEvent.press(replyButtons[0]);
+          await fireEvent.press(replyButtons[0]);
         }
       });
 
@@ -526,15 +527,15 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, UNSAFE_root } = render(
+      const { getAllByTestId, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const replyButtons = getAllByTestId('reply-btn');
         // El segon botó de reply és per a la resposta
         if (replyButtons.length > 1) {
-          fireEvent.press(replyButtons[1]);
+          await fireEvent.press(replyButtons[1]);
         }
       });
 
@@ -555,7 +556,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -576,14 +577,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const deleteButtons = getAllByTestId('delete-btn');
         if (deleteButtons.length > 0) {
-          fireEvent.press(deleteButtons[0]);
+          await fireEvent.press(deleteButtons[0]);
         }
       });
 
@@ -603,7 +604,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -622,14 +623,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const deleteButtons = getAllByTestId('delete-btn');
         if (deleteButtons.length > 1) {
-          fireEvent.press(deleteButtons[1]);
+          await fireEvent.press(deleteButtons[1]);
         }
       });
 
@@ -648,7 +649,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
@@ -663,21 +664,21 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, queryByText, UNSAFE_root } = render(
+      const { getAllByTestId, queryByText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Primer, activar el mode resposta
-      await waitFor(() => {
+      await waitFor(async () => {
         const replyButtons = getAllByTestId('reply-btn');
         if (replyButtons.length > 0) {
-          fireEvent.press(replyButtons[0]);
+          await fireEvent.press(replyButtons[0]);
         }
       });
 
       // Buscar el botó cancel·lar (×)
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       // Normalment hi ha un botó per cancel·lar la resposta
       if (touchables.length > 2) {
         // Provar de prémer algun botó que pugui ser el de cancel·lar
@@ -702,14 +703,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" onClose={mockOnClose} />
       );
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
 
       expect(mockOnClose).toHaveBeenCalled();
@@ -728,17 +729,17 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('doubts.doubtPlaceholder');
-      fireEvent.changeText(input, '   '); // Només espais
+      await fireEvent.changeText(input, '   '); // Només espais
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       // No s'hauria d'haver cridat mutate perquè el missatge és buit
@@ -760,17 +761,17 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('doubts.doubtPlaceholder');
-      fireEvent.changeText(input, 'Nou dubte');
+      await fireEvent.changeText(input, 'Nou dubte');
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       expect(mockMutate).toHaveBeenCalled();
@@ -789,17 +790,17 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('doubts.doubtPlaceholder');
-      fireEvent.changeText(input, 'Nou dubte');
+      await fireEvent.changeText(input, 'Nou dubte');
 
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       expect(mockMutate).toHaveBeenCalled();
@@ -813,7 +814,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      render(<DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />);
+      await render(<DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />);
 
       // Trigger keyboard show
       triggerKeyboardEvent(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', {
@@ -830,7 +831,7 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      render(<DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />);
+      await render(<DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />);
 
       // Trigger keyboard hide
       triggerKeyboardEvent(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide');
@@ -864,26 +865,26 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, getByPlaceholderText, UNSAFE_root } = render(
+      const { getAllByTestId, getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Click reply on the answer (second reply button)
       const replyButtons = getAllByTestId('reply-btn');
       if (replyButtons.length > 1) {
-        fireEvent.press(replyButtons[1]); // Reply to answer
+        await fireEvent.press(replyButtons[1]); // Reply to answer
       }
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const input = getByPlaceholderText(/doubts/i);
-        fireEvent.changeText(input, 'Reply to answer');
+        await fireEvent.changeText(input, 'Reply to answer');
       });
 
       // Find and click send button
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -914,26 +915,26 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, getByPlaceholderText, UNSAFE_root } = render(
+      const { getAllByTestId, getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Click reply on the answer
       const replyButtons = getAllByTestId('reply-btn');
       if (replyButtons.length > 1) {
-        fireEvent.press(replyButtons[1]);
+        await fireEvent.press(replyButtons[1]);
       }
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const input = getByPlaceholderText(/doubts/i);
-        fireEvent.changeText(input, 'Reply to answer');
+        await fireEvent.changeText(input, 'Reply to answer');
       });
 
       // Find and click send button
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -961,26 +962,26 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, getByPlaceholderText, UNSAFE_root } = render(
+      const { getAllByTestId, getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Click reply on doubt
       const replyButtons = getAllByTestId('reply-btn');
       if (replyButtons.length > 0) {
-        fireEvent.press(replyButtons[0]);
+        await fireEvent.press(replyButtons[0]);
       }
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const input = getByPlaceholderText(/doubts/i);
-        fireEvent.changeText(input, 'Answer to doubt');
+        await fireEvent.changeText(input, 'Answer to doubt');
       });
 
       // Find and click send button
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -1006,26 +1007,26 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, getByPlaceholderText, UNSAFE_root } = render(
+      const { getAllByTestId, getByPlaceholderText, container } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Click reply on doubt
       const replyButtons = getAllByTestId('reply-btn');
       if (replyButtons.length > 0) {
-        fireEvent.press(replyButtons[0]);
+        await fireEvent.press(replyButtons[0]);
       }
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const input = getByPlaceholderText(/doubts/i);
-        fireEvent.changeText(input, 'Answer to doubt');
+        await fireEvent.changeText(input, 'Answer to doubt');
       });
 
       // Find and click send button
       const { TouchableOpacity } = require('react-native');
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       if (touchables.length > 1) {
-        fireEvent.press(touchables[touchables.length - 1]);
+        await fireEvent.press(touchables[touchables.length - 1]);
       }
 
       await waitFor(() => {
@@ -1046,13 +1047,13 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const deleteButtons = getAllByTestId('delete-btn');
       if (deleteButtons.length > 0) {
-        fireEvent.press(deleteButtons[0]);
+        await fireEvent.press(deleteButtons[0]);
       }
 
       await waitFor(() => {
@@ -1082,13 +1083,13 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const deleteButtons = getAllByTestId('delete-btn');
       if (deleteButtons.length > 0) {
-        fireEvent.press(deleteButtons[0]);
+        await fireEvent.press(deleteButtons[0]);
       }
 
       await waitFor(() => {
@@ -1126,13 +1127,13 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const deleteButtons = getAllByTestId('delete-btn');
       if (deleteButtons.length > 0) {
-        fireEvent.press(deleteButtons[0]);
+        await fireEvent.press(deleteButtons[0]);
       }
 
       await waitFor(() => {
@@ -1175,14 +1176,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // Find delete button for the answer (second delete button)
       const deleteButtons = getAllByTestId('delete-btn');
       if (deleteButtons.length > 1) {
-        fireEvent.press(deleteButtons[1]);
+        await fireEvent.press(deleteButtons[1]);
       }
 
       await waitFor(() => {
@@ -1221,13 +1222,13 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const deleteButtons = getAllByTestId('delete-btn');
       if (deleteButtons.length > 1) {
-        fireEvent.press(deleteButtons[1]);
+        await fireEvent.press(deleteButtons[1]);
       }
 
       await waitFor(() => {
@@ -1253,14 +1254,14 @@ describe('DoubtsScreen', () => {
         isLoading: false,
       });
 
-      const { getAllByTestId, queryByTestId } = render(
+      const { getAllByTestId, queryByTestId } = await render(
         <DoubtsScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       // First click reply
       const replyButtons = getAllByTestId('reply-btn');
       if (replyButtons.length > 0) {
-        fireEvent.press(replyButtons[0]);
+        await fireEvent.press(replyButtons[0]);
       }
 
       // Now find and click cancel (usually a close/X button)

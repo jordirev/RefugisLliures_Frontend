@@ -13,6 +13,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { GalleryScreen } from '../../../screens/GalleryScreen';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -83,54 +84,54 @@ describe('GalleryScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { getByText } = render(<GalleryScreen {...defaultProps} />);
+    it('hauria de renderitzar correctament', async () => {
+      const { getByText } = await render(<GalleryScreen {...defaultProps} />);
       expect(getByText('refuge.gallery.title')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nom del refugi', () => {
-      const { getByText } = render(<GalleryScreen {...defaultProps} />);
+    it('hauria de mostrar el nom del refugi', async () => {
+      const { getByText } = await render(<GalleryScreen {...defaultProps} />);
       expect(getByText('Test Refuge')).toBeTruthy();
     });
 
-    it('hauria de renderitzar les fotos', () => {
-      const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
+    it('hauria de renderitzar les fotos', async () => {
+      const { container } = await render(<GalleryScreen {...defaultProps} />);
       // Miniatures amb expo-image (mock host 'ExpoImage')
-      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      const images = container.queryAll((n: any) => n.type === 'ExpoImage');
       expect(images.length).toBe(mockPhotos.length);
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = render(<GalleryScreen {...defaultProps} />);
+    it('snapshot test', async () => {
+      const { toJSON } = await render(<GalleryScreen {...defaultProps} />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Empty state', () => {
-    it('hauria de mostrar empty state quan no hi ha fotos', () => {
-      const { getByText } = render(
+    it('hauria de mostrar empty state quan no hi ha fotos', async () => {
+      const { getByText } = await render(
         <GalleryScreen {...defaultProps} photos={[]} />
       );
       expect(getByText('refuge.gallery.noPhotos')).toBeTruthy();
     });
 
-    it('hauria de mostrar botó per afegir fotos en empty state', () => {
-      const { getByText } = render(
+    it('hauria de mostrar botó per afegir fotos en empty state', async () => {
+      const { getByText } = await render(
         <GalleryScreen {...defaultProps} photos={[]} />
       );
       expect(getByText('refuge.gallery.addPhotosButton')).toBeTruthy();
     });
 
-    it('hauria de cridar onAddPhotos quan es prem el botó', () => {
-      const { getByText } = render(
+    it('hauria de cridar onAddPhotos quan es prem el botó', async () => {
+      const { getByText } = await render(
         <GalleryScreen {...defaultProps} photos={[]} />
       );
-      fireEvent.press(getByText('refuge.gallery.addPhotosButton'));
+      await fireEvent.press(getByText('refuge.gallery.addPhotosButton'));
       expect(defaultProps.onAddPhotos).toHaveBeenCalled();
     });
 
-    it('no hauria de mostrar botó si onAddPhotos no està definit', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar botó si onAddPhotos no està definit', async () => {
+      const { queryByText } = await render(
         <GalleryScreen {...defaultProps} photos={[]} onAddPhotos={undefined} />
       );
       expect(queryByText('refuge.gallery.addPhotosButton')).toBeNull();
@@ -138,44 +139,44 @@ describe('GalleryScreen', () => {
   });
 
   describe('Photo viewer modal', () => {
-    it('hauria d\'obrir modal quan es prem una foto', () => {
-      const { UNSAFE_root, getByTestId } = render(<GalleryScreen {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria d\'obrir modal quan es prem una foto', async () => {
+      const { container, getByTestId } = await render(<GalleryScreen {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Buscar un touchable que no sigui el back button
       const photoTouchables = touchables.filter((t, i) => i > 0);
       if (photoTouchables.length > 0) {
-        fireEvent.press(photoTouchables[0]);
+        await fireEvent.press(photoTouchables[0]);
       }
       
       expect(getByTestId('photo-viewer-modal')).toBeTruthy();
     });
 
-    it('hauria de passar l\'índex correcte al modal', () => {
-      const { UNSAFE_root, getByTestId } = render(<GalleryScreen {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria de passar l\'índex correcte al modal', async () => {
+      const { container, getByTestId } = await render(<GalleryScreen {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Prémer la segona foto (índex 1)
       const photoTouchables = touchables.filter((t, i) => i > 0);
       if (photoTouchables.length > 1) {
-        fireEvent.press(photoTouchables[1]);
+        await fireEvent.press(photoTouchables[1]);
       }
       
       expect(getByTestId('photo-index')).toBeTruthy();
     });
 
     it('hauria de tancar modal quan es prem close', async () => {
-      const { UNSAFE_root, getByTestId, queryByTestId } = render(<GalleryScreen {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const { container, getByTestId, queryByTestId } = await render(<GalleryScreen {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Obrir modal
       const photoTouchables = touchables.filter((t, i) => i > 0);
       if (photoTouchables.length > 0) {
-        fireEvent.press(photoTouchables[0]);
+        await fireEvent.press(photoTouchables[0]);
       }
       
       // Tancar modal
-      fireEvent.press(getByTestId('close-modal'));
+      await fireEvent.press(getByTestId('close-modal'));
       
       await waitFor(() => {
         expect(queryByTestId('photo-viewer-modal')).toBeNull();
@@ -183,17 +184,17 @@ describe('GalleryScreen', () => {
     });
 
     it('hauria de cridar onPhotoDeleted quan s\'elimina una foto', async () => {
-      const { UNSAFE_root, getByTestId, queryByTestId } = render(<GalleryScreen {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const { container, getByTestId, queryByTestId } = await render(<GalleryScreen {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Obrir modal
       const photoTouchables = touchables.filter((t, i) => i > 0);
       if (photoTouchables.length > 0) {
-        fireEvent.press(photoTouchables[0]);
+        await fireEvent.press(photoTouchables[0]);
       }
       
       // Eliminar foto
-      fireEvent.press(getByTestId('delete-photo'));
+      await fireEvent.press(getByTestId('delete-photo'));
       
       expect(defaultProps.onPhotoDeleted).toHaveBeenCalled();
       
@@ -204,55 +205,55 @@ describe('GalleryScreen', () => {
   });
 
   describe('Videos', () => {
-    it('hauria de renderitzar thumbnails per a videos', () => {
-      const { getAllByTestId } = render(
+    it('hauria de renderitzar thumbnails per a videos', async () => {
+      const { getAllByTestId } = await render(
         <GalleryScreen {...defaultProps} photos={mockVideos} />
       );
       expect(getAllByTestId('video-thumbnail').length).toBe(mockVideos.length);
     });
 
-    it('hauria de mostrar overlay de play per a videos', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar overlay de play per a videos', async () => {
+      const { container } = await render(
         <GalleryScreen {...defaultProps} photos={mockVideos} />
       );
       // El component mostra un overlay amb ▶ per a videos
-      const texts = UNSAFE_root.findAllByType(require('react-native').Text);
+      const texts = findAllByType(container, require('react-native').Text);
       const playIcons = texts.filter((t: any) => t.props.children === '▶');
       expect(playIcons.length).toBe(mockVideos.length);
     });
   });
 
   describe('Navegació', () => {
-    it('hauria de cridar onBack quan es prem el botó back', () => {
-      const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria de cridar onBack quan es prem el botó back', async () => {
+      const { container } = await render(<GalleryScreen {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // El primer touchable és el botó back
-      fireEvent.press(touchables[0]);
+      await fireEvent.press(touchables[0]);
       
       expect(defaultProps.onBack).toHaveBeenCalled();
     });
   });
 
   describe('Grid layout', () => {
-    it('hauria de tenir ScrollView', () => {
-      const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
-      const scrollViews = UNSAFE_root.findAllByType(require('react-native').ScrollView);
+    it('hauria de tenir ScrollView', async () => {
+      const { container } = await render(<GalleryScreen {...defaultProps} />);
+      const scrollViews = findAllByType(container, require('react-native').ScrollView);
       expect(scrollViews.length).toBeGreaterThan(0);
     });
 
-    it('hauria de renderitzar fotos en grid', () => {
-      const { UNSAFE_root } = render(<GalleryScreen {...defaultProps} />);
+    it('hauria de renderitzar fotos en grid', async () => {
+      const { container } = await render(<GalleryScreen {...defaultProps} />);
       // Miniatures amb expo-image (mock host 'ExpoImage')
-      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      const images = container.queryAll((n: any) => n.type === 'ExpoImage');
       expect(images.length).toBe(mockPhotos.length);
     });
   });
 
   describe('Mixed content', () => {
-    it('hauria de renderitzar fotos i videos junts', () => {
+    it('hauria de renderitzar fotos i videos junts', async () => {
       const mixedContent = [...mockPhotos, ...mockVideos];
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <GalleryScreen {...defaultProps} photos={mixedContent} />
       );
       
@@ -262,15 +263,15 @@ describe('GalleryScreen', () => {
   });
 
   describe('Props validation', () => {
-    it('hauria de funcionar sense onPhotoDeleted', () => {
-      const { toJSON } = render(
+    it('hauria de funcionar sense onPhotoDeleted', async () => {
+      const { toJSON } = await render(
         <GalleryScreen {...defaultProps} onPhotoDeleted={undefined} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de funcionar sense onAddPhotos', () => {
-      const { toJSON } = render(
+    it('hauria de funcionar sense onAddPhotos', async () => {
+      const { toJSON } = await render(
         <GalleryScreen {...defaultProps} onAddPhotos={undefined} />
       );
       expect(toJSON()).toBeTruthy();

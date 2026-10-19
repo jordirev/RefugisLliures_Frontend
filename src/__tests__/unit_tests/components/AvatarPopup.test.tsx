@@ -49,6 +49,7 @@ jest.mock('react-native-image-crop-picker', () => ({
 
 // Importar ImagePicker per fer assertions
 import * as ImagePicker from 'expo-image-picker';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock UsersService
 jest.mock('../../../services/UsersService', () => ({
@@ -140,14 +141,14 @@ describe('AvatarPopup Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar quan és visible', () => {
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+    it('hauria de renderitzar quan és visible', async () => {
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
 
       expect(getByText('profile.avatar.changePhoto')).toBeTruthy();
     });
 
-    it('no hauria de renderitzar quan no és visible', () => {
-      const { queryByText } = render(
+    it('no hauria de renderitzar quan no és visible', async () => {
+      const { queryByText } = await render(
         <AvatarPopup {...defaultProps} visible={false} />
       );
 
@@ -155,13 +156,13 @@ describe('AvatarPopup Component', () => {
       // Nota: React Native Modal pot renderitzar però no mostrar
     });
 
-    it('snapshot test - sense avatar', () => {
-      const { toJSON } = render(<AvatarPopup {...defaultProps} />);
+    it('snapshot test - sense avatar', async () => {
+      const { toJSON } = await render(<AvatarPopup {...defaultProps} />);
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('snapshot test - amb avatar', () => {
-      const { toJSON } = render(
+    it('snapshot test - amb avatar', async () => {
+      const { toJSON } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -173,8 +174,8 @@ describe('AvatarPopup Component', () => {
   });
 
   describe('Visualització d\'avatar', () => {
-    it('hauria de mostrar la imatge quan hi ha avatarUrl', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar la imatge quan hi ha avatarUrl', async () => {
+      const { container } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -182,12 +183,12 @@ describe('AvatarPopup Component', () => {
         />
       );
 
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar inicials quan no hi ha avatar', () => {
-      const { getByText } = render(
+    it('hauria de mostrar inicials quan no hi ha avatar', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           username="TestUser"
@@ -197,14 +198,14 @@ describe('AvatarPopup Component', () => {
       expect(getByText('TE')).toBeTruthy();
     });
 
-    it('hauria de mostrar ? quan no hi ha username', () => {
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+    it('hauria de mostrar ? quan no hi ha username', async () => {
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
 
       expect(getByText('?')).toBeTruthy();
     });
 
-    it('hauria de generar inicials correctes per un sol nom', () => {
-      const { getByText } = render(
+    it('hauria de generar inicials correctes per un sol nom', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           username="Joan"
@@ -214,8 +215,8 @@ describe('AvatarPopup Component', () => {
       expect(getByText('JO')).toBeTruthy();
     });
 
-    it('hauria de generar inicials correctes per nom compost', () => {
-      const { getByText } = render(
+    it('hauria de generar inicials correctes per nom compost', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           username="Joan Pere García"
@@ -227,19 +228,19 @@ describe('AvatarPopup Component', () => {
   });
 
   describe('Canvi de foto', () => {
-    it('hauria de mostrar botó per canviar foto', () => {
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+    it('hauria de mostrar botó per canviar foto', async () => {
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
 
       expect(getByText('profile.avatar.changePhoto')).toBeTruthy();
     });
 
     it('hauria de poder prémer el botó de canviar foto', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />
       );
 
       const changeButton = getByText('profile.avatar.changePhoto');
-      fireEvent.press(changeButton);
+      await fireEvent.press(changeButton);
 
       // En mòbil (Android/iOS), s'utilitza ImageCropPicker
       await waitFor(() => {
@@ -250,10 +251,10 @@ describe('AvatarPopup Component', () => {
 
   describe('Pujada d\'avatar (upload-intents, target=avatar)', () => {
     it('build nativa: declaració de drets, crop-picker i pickAndUpload amb l\'asset retallat', async () => {
-      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
 
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
 
       expect(mockEnsureRights).toHaveBeenCalled();
@@ -273,9 +274,9 @@ describe('AvatarPopup Component', () => {
 
     it('no obre el crop-picker si no s\'accepta la declaració de drets', async () => {
       mockEnsureRights.mockResolvedValueOnce(false);
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
       expect(mockImageCropPicker.openPicker).not.toHaveBeenCalled();
       expect(mockPickAndUpload).not.toHaveBeenCalled();
@@ -283,9 +284,9 @@ describe('AvatarPopup Component', () => {
 
     it('web: usa expo-image-picker dins del hook (sense assets)', async () => {
       require('react-native').Platform.OS = 'web';
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
       expect(mockImageCropPicker.openPicker).not.toHaveBeenCalled();
       expect(mockPickAndUpload).toHaveBeenCalledWith(
@@ -297,9 +298,9 @@ describe('AvatarPopup Component', () => {
 
     it('èxit: notifica onAvatarUpdated i tanca amb OK', async () => {
       mockPickAndUpload.mockResolvedValueOnce({ uploaded: [{ key: 'users-avatars/user-123/u.webp' }], failed: [] });
-      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
       expect(mockOnAvatarUpdated).toHaveBeenCalled();
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -315,9 +316,9 @@ describe('AvatarPopup Component', () => {
 
     it('fallada del confirm: mostra el motiu', async () => {
       mockPickAndUpload.mockResolvedValueOnce({ uploaded: [], failed: [{ upload_id: 'u1', reason: 'moderation_blocked' }] });
-      const { getByText } = render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} onAvatarUpdated={mockOnAvatarUpdated} />);
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
       expect(mockOnAvatarUpdated).not.toHaveBeenCalled();
       expect(mockShowAlert).toHaveBeenCalledWith(
@@ -331,25 +332,25 @@ describe('AvatarPopup Component', () => {
       const err: any = new Error('cancelled');
       err.code = 'E_PICKER_CANCELLED';
       mockImageCropPicker.openPicker.mockRejectedValueOnce(err);
-      const { getByText } = render(<AvatarPopup {...defaultProps} />);
+      const { getByText } = await render(<AvatarPopup {...defaultProps} />);
       await act(async () => {
-        fireEvent.press(getByText('profile.avatar.changePhoto'));
+        await fireEvent.press(getByText('profile.avatar.changePhoto'));
       });
       expect(mockPickAndUpload).not.toHaveBeenCalled();
       expect(mockShowAlert).not.toHaveBeenCalled();
     });
 
-    it('mostra indicador de càrrega mentre puja', () => {
+    it('mostra indicador de càrrega mentre puja', async () => {
       mockIsUploading = true;
-      const { UNSAFE_root } = render(<AvatarPopup {...defaultProps} />);
-      const indicators = UNSAFE_root.findAllByType(require('react-native').ActivityIndicator);
+      const { container } = await render(<AvatarPopup {...defaultProps} />);
+      const indicators = findAllByType(container, require('react-native').ActivityIndicator);
       expect(indicators.length).toBeGreaterThan(0);
     });
   });
 
   describe('Eliminació de foto', () => {
-    it('hauria de mostrar botó d\'eliminar quan hi ha avatar', () => {
-      const { getByText } = render(
+    it('hauria de mostrar botó d\'eliminar quan hi ha avatar', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -359,8 +360,8 @@ describe('AvatarPopup Component', () => {
       expect(getByText('profile.avatar.deletePhoto')).toBeTruthy();
     });
 
-    it('hauria de mostrar confirmació quan es prem eliminar', () => {
-      const { getByText } = render(
+    it('hauria de mostrar confirmació quan es prem eliminar', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -368,7 +369,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       // Hauria d'aparèixer el diàleg de confirmació (CustomAlert)
     });
@@ -376,7 +377,7 @@ describe('AvatarPopup Component', () => {
 
   describe('Eliminació d\'avatar', () => {
     it('hauria de mostrar confirmació quan es prem eliminar', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -385,7 +386,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
         'profile.avatar.deleteConfirmTitle',
@@ -398,7 +399,7 @@ describe('AvatarPopup Component', () => {
     });
 
     it('hauria d\'eliminar avatar quan es confirma', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -407,7 +408,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       // Simular que l'usuari prem "Eliminar"
       const deleteConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.delete');
@@ -432,7 +433,7 @@ describe('AvatarPopup Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       (UsersService.deleteAvatar as jest.Mock).mockRejectedValueOnce(new Error('Delete error'));
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -441,7 +442,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const deleteConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.delete');
       
@@ -462,8 +463,8 @@ describe('AvatarPopup Component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('hauria de cancel·lar eliminació quan es prem cancel·lar', () => {
-      const { getByText } = render(
+    it('hauria de cancel·lar eliminació quan es prem cancel·lar', async () => {
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -471,7 +472,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const cancelButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.cancel');
       expect(cancelButton).toBeDefined();
@@ -480,22 +481,22 @@ describe('AvatarPopup Component', () => {
   });
 
   describe('Tancament del modal', () => {
-    it('hauria de cridar onClose quan es prem el botó de tancar', () => {
-      const { UNSAFE_root } = render(<AvatarPopup {...defaultProps} />);
+    it('hauria de cridar onClose quan es prem el botó de tancar', async () => {
+      const { container } = await render(<AvatarPopup {...defaultProps} />);
 
       // Buscar el botó de tancar (TouchableOpacity amb CrossIcon)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // El primer touchable hauria de ser el botó de tancar
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
     });
   });
 
   describe('Callbacks d\'alerta', () => {
     it('hauria de cridar onClose després d\'eliminar amb èxit', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -504,7 +505,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const deleteConfirmButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.delete');
 
@@ -537,7 +538,7 @@ describe('AvatarPopup Component', () => {
     });
 
     it('hauria de cridar hideAlert al cancel·lar confirmació d\'eliminar', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <AvatarPopup
           {...defaultProps}
           avatarUrl="https://example.com/avatar.jpg"
@@ -545,7 +546,7 @@ describe('AvatarPopup Component', () => {
       );
 
       const deleteButton = getByText('profile.avatar.deletePhoto');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const cancelButton = mockAlertState.lastButtons.find((b: any) => b.text === 'common.cancel');
       expect(cancelButton).toBeDefined();

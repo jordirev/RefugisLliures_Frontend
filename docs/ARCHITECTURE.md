@@ -5,9 +5,9 @@
 ## 1. Stack
 | Peça | Detall | Font |
 |---|---|---|
-| Framework | Expo SDK ~54, React Native 0.81.5, React 19.1, New Architecture | `package.json`, `app.config.js:36` |
-| Llenguatge | TypeScript a `src/` (`App.js`, `index.js` en JS) | — |
-| Navegació | React Navigation 6 (native-stack + bottom-tabs) | `src/components/AppNavigator.tsx`, `src/components/TabsNavigator.tsx` |
+| Framework | Expo SDK ~58 (expo ~58.0.14), React Native 0.88.0, React 19.3, Strict TypeScript API de RN (tipus `*Instance` per als refs), Hermes v1 per defecte, New Architecture i edge-to-edge obligatoris | `package.json`, `app.config.js:36` |
+| Llenguatge | TypeScript 6 a `src/` (`App.js`, `index.js` en JS); `tsconfig.json` fixa `strict: false` i `types: ["jest","node"]` | `tsconfig.json` |
+| Navegació | React Navigation 7 (native-stack + bottom-tabs) | `src/components/AppNavigator.tsx`, `src/components/TabsNavigator.tsx` |
 | Estat del servidor | TanStack React Query 5 | `src/config/queryClient.ts` |
 | Estat de sessió | React Context (`AuthContext`) | `src/contexts/AuthContext.tsx` |
 | Auth | Firebase JS SDK 12 + Google Sign-In natiu | `src/services/firebase.ts`, `src/services/AuthService.ts` |
@@ -15,7 +15,7 @@
 | Mitjans | `expo-image` (cache per clau + blurhash), `expo-image-manipulator` (WebP 2048 px), `react-native-compressor` (vídeo, natiu), pujada amb URL PUT prefirmada | `src/services/MediaUploadService.ts`, `src/hooks/useMediaUpload.ts`, [flows/09](flows/09-refuge-photos-gallery.md) |
 | Mapa | Leaflet dins `react-native-webview` | [integrations/maps-leaflet-tiles.md](integrations/maps-leaflet-tiles.md) |
 | i18n | i18next + react-i18next, ca/es/en/fr, fallback `ca` | `src/i18n/index.ts`, [architecture/i18n.md](architecture/i18n.md) |
-| Tests | Jest (preset react-native), Testing Library, MSW, emulador Firebase Auth | `jest.config.js`, `jest.config.e2e.js` |
+| Tests | Jest 30 (preset `@react-native/jest-preset`, fixat a la versió exacta de react-native), Testing Library 14 (`@testing-library/react-native` + `test-renderer`), MSW, emulador Firebase Auth | `jest.config.js`, `jest.config.e2e.js` |
 | Build | EAS (Android), GitHub Actions, SonarCloud, Codecov | [integrations/eas-ci-tooling.md](integrations/eas-ci-tooling.md) |
 
 ## 2. Estructura
@@ -61,7 +61,8 @@ Patrons aplicats (capes, Repository, DTO, Mapper, Facade, Decorator, Optimistic 
 - `ReportMedia` i `MediaReports` són a `ROUTES_ABOVE_OVERLAYS`: mentre són al cim de la pila (llegit amb `screenListeners.state`) els overlays s'amaguen sense desmuntar-se i el botó enrere d'Android torna a la pila.
 - **Overlays per estat** a `AppNavigator` (L44-55, 262-348): bottom sheet, detall de refugi, edició, dubtes, experiències, popup d'eliminació. Diverses pantalles existeixen **alhora** com a overlay i com a ruta.
 - **Tabs** (`src/components/TabsNavigator.tsx`): Map, Favorites, Renovations, Profile.
-- Sense `ParamList` tipada: navegació amb `any` **[FET]**.
+- Navigators tipats: `RootStackParamList` exportat des d'`AppNavigator.tsx` i `TabParamList` local a `TabsNavigator.tsx`; cada `Navigator` necessita `id={undefined}` (desajust de tipus entre `@react-navigation/native` 7.5.1 i `core` 7.24) **[FET]**.
+- Semàntica v7: `navigate` a una ruta existent ja no torna enrere; el codi usa `popTo(...)` / `navigate(..., { pop: true })` per mantenir el comportament de v6 (vegeu GOTCHAS) **[FET]**.
 
 ## 5. Estat
 | Tipus | On | Notes |
@@ -99,7 +100,8 @@ Claus de query: registre `queryKeys` (`src/config/queryClient.ts:39-67`) per a r
 | Claus de cache divergents | `PhotoViewerModal.tsx:109` (`['user', uid]`) |
 
 ## 9. Tests
-- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`). `jest.setup.js` mocka globalment `react-native-compressor`, `expo-image`, `expo-image-manipulator`, `expo-image-picker` i `expo-file-system/legacy` (incl. `createUploadTask`).
+- Unitaris: `src/__tests__/unit_tests/{components,screens,hooks,services,mappers,i18n,utils,endpoints}` (molts amb snapshots a `__snapshots__/`). `jest.setup.js` mocka `BackHandler` amb `jest.spyOn` sobre l'API pública de `react-native` (sense mocks de `react-native/Libraries/*`) i mocka globalment `react-native-compressor`, `expo-image`, `expo-image-manipulator`, `expo-image-picker`, `expo-file-system` (`File`/`Directory`/`Paths`) i `expo-file-system/legacy` (només `createUploadTask`).
+- Testing Library 14: `render`, `renderHook`, `fireEvent.*`, `rerender` i `act` són asíncrons (`await render(...)`, `await fireEvent.press(...)`). Només hi ha elements host (`container`/`root`; sense `UNSAFE_*`); per cercar per component s'usa `src/__tests__/testHelpers/findByType.ts`. Els snapshots usen `toJSON()` del nou renderer.
 - Integració: `src/__tests__/integration/{components,screens,services}` amb MSW (inclou el flux intent→PUT→confirm, `services/MediaUpload.integration.test.tsx`) (`setup/mswServer.ts`, `mswHandlers.ts`) i mocks de Firebase (`setup/firebaseMocks.ts`).
 - E2E: `src/__tests__/E2E/auth.e2e.test.ts` contra l'emulador d'Auth (`firebase.json`).
 - Duplicats: `src/__tests__/services`, `src/__tests__/hooks`, `src/__tests__/services/mappers` repeteixen tests de `unit_tests/` **[FET]**.

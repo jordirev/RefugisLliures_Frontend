@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system/legacy';
+import { Directory, File, Paths } from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logApi } from './fetchWithLog';
 
@@ -36,7 +36,7 @@ interface BasicRefugeInfo {
 }
 
 export class MapCacheService {
-  private static readonly CACHE_DIR = `${FileSystem.documentDirectory!}map_cache/`;
+  private static readonly CACHE_DIR = `${Paths.document.uri}map_cache/`;
   private static readonly METADATA_KEY = 'map_cache_metadata';
   private static readonly REFUGES_KEY = 'map_cache_refuges';
   private static readonly TILE_SERVER = 'https://a.tile.opentopomap.org';
@@ -55,9 +55,9 @@ export class MapCacheService {
    */
   static async initializeCache(): Promise<void> {
     try {
-      const dirInfo = await FileSystem.getInfoAsync(this.CACHE_DIR);
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(this.CACHE_DIR, { intermediates: true });
+      const dir = new Directory(this.CACHE_DIR);
+      if (!dir.exists) {
+        await dir.create({ intermediates: true });
       }
     } catch (error) {
       logApi('ERROR', `Error initializing cache directory: ${error}`);
@@ -106,17 +106,16 @@ export class MapCacheService {
       const tilePath = `${this.CACHE_DIR}${tile.z}_${tile.x}_${tile.y}.png`;
       
       // Comprovar si ja existeix
-      const fileInfo = await FileSystem.getInfoAsync(tilePath);
-      if (fileInfo.exists) {
+      const tileFile = new File(tilePath);
+      if (tileFile.exists) {
         return true;
       }
 
       // Descarregar el tile
-      const downloadResult = await FileSystem.downloadAsync(tileUrl, tilePath);
+      await File.downloadFileAsync(tileUrl, tileFile);
       
       // Verificar si la descàrrega ha estat exitosa
-      const downloadedInfo = await FileSystem.getInfoAsync(tilePath);
-      return downloadedInfo.exists && downloadedInfo.size! > 0;
+      return tileFile.exists && tileFile.size > 0;
     } catch (error) {
       logApi('ERROR', `Error downloading tile ${tile.z}/${tile.x}/${tile.y}: ${error}`);
       return false;
@@ -211,8 +210,7 @@ export class MapCacheService {
    */
   static async hasTile(tile: TileCoord): Promise<boolean> {
     const tilePath = `${this.CACHE_DIR}${tile.z}_${tile.x}_${tile.y}.png`;
-    const fileInfo = await FileSystem.getInfoAsync(tilePath);
-    return fileInfo.exists;
+    return new File(tilePath).exists;
   }
 
   /**
@@ -262,9 +260,9 @@ export class MapCacheService {
    */
   static async clearCache(): Promise<void> {
     try {
-      const dirInfo = await FileSystem.getInfoAsync(this.CACHE_DIR);
-      if (dirInfo.exists) {
-        await FileSystem.deleteAsync(this.CACHE_DIR);
+      const dir = new Directory(this.CACHE_DIR);
+      if (dir.exists) {
+        await dir.delete();
       }
       await AsyncStorage.removeItem(this.METADATA_KEY);
       await AsyncStorage.removeItem(this.REFUGES_KEY);
@@ -284,17 +282,16 @@ export class MapCacheService {
   }> {
     try {
       const metadata = await this.getMetadata();
-      const dirInfo = await FileSystem.getInfoAsync(this.CACHE_DIR);
+      const dir = new Directory(this.CACHE_DIR);
+      const dirExists = dir.exists;
       let sizeInMB = 0;
 
-      if (dirInfo.exists) {
+      if (dirExists) {
         // Calcular mida del directori sumant tots els fitxers
         try {
-          const files = await FileSystem.readDirectoryAsync(this.CACHE_DIR);
-          for (const file of files) {
-            const fileInfo = await FileSystem.getInfoAsync(`${this.CACHE_DIR}${file}`);
-            if (fileInfo.exists && fileInfo.size) {
-              sizeInMB += fileInfo.size;
+          for (const entry of dir.list()) {
+            if (entry instanceof File && entry.exists && entry.size) {
+              sizeInMB += entry.size;
             }
           }
           sizeInMB = sizeInMB / (1024 * 1024);
@@ -304,7 +301,7 @@ export class MapCacheService {
       }
 
       return {
-        isInitialized: dirInfo.exists,
+        isInitialized: dirExists,
         metadata,
         sizeInMB
       };

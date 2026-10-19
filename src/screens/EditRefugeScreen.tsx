@@ -67,7 +67,7 @@ export function EditRefugeScreen({ refuge: refugeProp, onCancel: onCancelProp }:
     } else if (navigation && navigation.canGoBack()) {
       navigation.goBack();
     } else if (navigation) {
-      navigation.navigate('RefugeDetails', { refugeId: refuge.id });
+      navigation.navigate('RefugeDetail', { refugeId: refuge.id }, { pop: true });
     }
   };
 

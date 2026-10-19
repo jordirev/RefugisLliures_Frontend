@@ -10,6 +10,7 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
+import type { ScrollViewInstance } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
@@ -113,7 +114,7 @@ export function PhotoViewerModal({
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();

@@ -6,10 +6,12 @@
  * implementen el contracte d'API compartit amb el backend.
  */
 
-// El PUT natiu (FileSystem.createUploadTask) es redirigeix a fetch perquè MSW l'intercepti
+// El fitxer local (File) fa 2048 bytes i el PUT natiu (createUploadTask legacy) es redirigeix a fetch perquè MSW l'intercepti
+jest.mock('expo-file-system', () => ({
+  File: jest.fn().mockImplementation((uri: string) => ({ uri, exists: true, size: 2048 })),
+}));
 jest.mock('expo-file-system/legacy', () => ({
   FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
-  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, size: 2048 })),
   createUploadTask: jest.fn((url: string, fileUri: string, options: any, callback?: any) => ({
     uploadAsync: async () => {
       const response = await fetch(url, {
@@ -204,7 +206,7 @@ describe('Integració: pujada de mitjans (intent → PUT → confirm)', () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
-    const { result } = renderHook(() => useMediaUpload({ showAlert }), { wrapper });
+    const { result } = await renderHook(() => useMediaUpload({ showAlert }), { wrapper });
 
     MediaUploadService.confirmRightsForSession();
     let uploadResult: any;

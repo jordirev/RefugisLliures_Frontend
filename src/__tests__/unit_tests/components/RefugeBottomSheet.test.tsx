@@ -90,8 +90,8 @@ describe('RefugeBottomSheet Component', () => {
   });
 
   describe('Visibilitat', () => {
-    it('NO hauria de renderitzar-se quan isVisible és false', () => {
-      const { queryByTestId } = render(
+    it('NO hauria de renderitzar-se quan isVisible és false', async () => {
+      const { queryByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={false}
@@ -105,8 +105,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(queryByTestId('bottom-sheet')).toBeNull();
     });
 
-    it('hauria de renderitzar-se quan isVisible és true', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar-se quan isVisible és true', async () => {
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -120,14 +120,14 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByTestId('bottom-sheet')).toBeTruthy();
     });
 
-    it('NO hauria de renderitzar-se quan isLoading és true', () => {
+    it('NO hauria de renderitzar-se quan isLoading és true', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
       });
 
-      const { queryByTestId } = render(
+      const { queryByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -141,14 +141,14 @@ describe('RefugeBottomSheet Component', () => {
       expect(queryByTestId('bottom-sheet')).toBeNull();
     });
 
-    it('NO hauria de renderitzar-se quan no hi ha dades del refugi', () => {
+    it('NO hauria de renderitzar-se quan no hi ha dades del refugi', async () => {
       mockUseRefuge.mockReturnValue({
         data: null,
         isLoading: false,
         error: null,
       });
 
-      const { queryByTestId } = render(
+      const { queryByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -164,8 +164,8 @@ describe('RefugeBottomSheet Component', () => {
   });
 
   describe('Renderització d\'informació', () => {
-    it('hauria de mostrar el nom del refugi', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nom del refugi', async () => {
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -179,8 +179,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByText('Refugi Test')).toBeTruthy();
     });
 
-    it('hauria de mostrar la regió', () => {
-      const { getByText } = render(
+    it('hauria de mostrar la regió', async () => {
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -194,8 +194,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByText('Pirineus')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'altitud', () => {
-      const { getByText } = render(
+    it('hauria de mostrar l\'altitud', async () => {
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -209,8 +209,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByText('2500 m')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nombre de places', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre de places', async () => {
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -224,8 +224,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByText('20')).toBeTruthy();
     });
 
-    it('hauria de mostrar la imatge del refugi', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar la imatge del refugi', async () => {
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -241,8 +241,8 @@ describe('RefugeBottomSheet Component', () => {
   });
 
   describe('Gestió de clicks', () => {
-    it('hauria de cridar onClose quan es fa click al backdrop', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onClose quan es fa click al backdrop', async () => {
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -253,12 +253,12 @@ describe('RefugeBottomSheet Component', () => {
         />
       );
       
-      fireEvent.press(getByTestId('backdrop'));
+      await fireEvent.press(getByTestId('backdrop'));
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onViewDetails quan es fa click al botó de detalls', () => {
-      const { getByText } = render(
+    it('hauria de cridar onViewDetails quan es fa click al botó de detalls', async () => {
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -269,14 +269,14 @@ describe('RefugeBottomSheet Component', () => {
         />
       );
       
-      fireEvent.press(getByText('Veure detalls'));
+      await fireEvent.press(getByText('Veure detalls'));
       expect(mockOnViewDetails).toHaveBeenCalledWith(mockRefugeData);
     });
   });
 
   describe('Funcionalitat de favorits', () => {
     it('hauria de cridar toggleFavourite quan es fa click al botó de favorit', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -287,7 +287,7 @@ describe('RefugeBottomSheet Component', () => {
         />
       );
       
-      fireEvent.press(getByTestId('favorite-button'));
+      await fireEvent.press(getByTestId('favorite-button'));
       
       await waitFor(() => {
         expect(mockToggleFavourite).toHaveBeenCalled();
@@ -297,7 +297,7 @@ describe('RefugeBottomSheet Component', () => {
     it('hauria de cridar onToggleFavorite després de toggleFavourite', async () => {
       mockToggleFavourite.mockResolvedValue(undefined);
       
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -308,21 +308,21 @@ describe('RefugeBottomSheet Component', () => {
         />
       );
       
-      fireEvent.press(getByTestId('favorite-button'));
+      await fireEvent.press(getByTestId('favorite-button'));
       
       await waitFor(() => {
         expect(mockOnToggleFavorite).toHaveBeenCalledWith('1');
       });
     });
 
-    it('hauria de tenir accessibilityState.selected=true quan és favorit', () => {
+    it('hauria de tenir accessibilityState.selected=true quan és favorit', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: true,
         toggleFavourite: mockToggleFavourite,
         isProcessing: false,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -337,8 +337,8 @@ describe('RefugeBottomSheet Component', () => {
       expect(favoriteButton.props.accessibilityState.selected).toBe(true);
     });
 
-    it('hauria de cridar useFavourite amb el refugeId correcte', () => {
-      render(
+    it('hauria de cridar useFavourite amb el refugeId correcte', async () => {
+      await render(
         <RefugeBottomSheet
           refugeId="123"
           isVisible={true}
@@ -354,14 +354,14 @@ describe('RefugeBottomSheet Component', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar refugi sense imatges', () => {
+    it('hauria de gestionar refugi sense imatges', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...mockRefugeData, images_metadata: [] },
         isLoading: false,
         error: null,
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -376,14 +376,14 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByTestId('refuge-image')).toBeTruthy();
     });
 
-    it('hauria de gestionar noms llargs correctament', () => {
+    it('hauria de gestionar noms llargs correctament', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...mockRefugeData, name: 'Refugi amb un nom molt molt molt llarg per provar' },
         isLoading: false,
         error: null,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -397,14 +397,14 @@ describe('RefugeBottomSheet Component', () => {
       expect(getByText('Refugi amb un nom molt molt molt llarg per provar')).toBeTruthy();
     });
 
-    it('hauria de gestionar altituds de 0 metres', () => {
+    it('hauria de gestionar altituds de 0 metres', async () => {
       mockUseRefuge.mockReturnValue({
         data: { ...mockRefugeData, altitude: 0 },
         isLoading: false,
         error: null,
       });
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -420,8 +420,8 @@ describe('RefugeBottomSheet Component', () => {
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot quan isVisible és false', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot quan isVisible és false', async () => {
+      const tree = (await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={false}
@@ -430,12 +430,12 @@ describe('RefugeBottomSheet Component', () => {
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot quan isVisible és true', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot quan isVisible és true', async () => {
+      const tree = (await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -444,18 +444,18 @@ describe('RefugeBottomSheet Component', () => {
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb favorit actiu', () => {
+    it('hauria de coincidir amb el snapshot amb favorit actiu', async () => {
       mockUseFavourite.mockReturnValue({
         isFavourite: true,
         toggleFavourite: mockToggleFavourite,
         isProcessing: false,
       });
 
-      const tree = render(
+      const tree = (await render(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -464,7 +464,7 @@ describe('RefugeBottomSheet Component', () => {
           onNavigate={mockOnNavigate}
           onViewDetails={mockOnViewDetails}
         />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

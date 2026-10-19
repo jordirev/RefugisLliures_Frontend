@@ -17,7 +17,7 @@ const createTestQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      gcTime: 0,
+      gcTime: Infinity, // evita que la cache es buidi sense observadors (flaky sota càrrega)
     },
     mutations: {
       retry: false,
@@ -74,7 +74,7 @@ describe('useRefugeMedia', () => {
   it('should fetch refuge media when refugeId is provided', async () => {
     mockedService.getRefugeMedia.mockResolvedValue(mockMediaList);
 
-    const { result } = renderHook(() => useRefugeMedia('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeMedia('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -87,7 +87,7 @@ describe('useRefugeMedia', () => {
   });
 
   it('should not fetch when refugeId is undefined', async () => {
-    const { result } = renderHook(() => useRefugeMedia(undefined), {
+    const { result } = await renderHook(() => useRefugeMedia(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -99,7 +99,7 @@ describe('useRefugeMedia', () => {
   it('should handle error', async () => {
     mockedService.getRefugeMedia.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useRefugeMedia('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeMedia('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -113,7 +113,7 @@ describe('useRefugeMedia', () => {
   it('should return empty array when no media found', async () => {
     mockedService.getRefugeMedia.mockResolvedValue([]);
 
-    const { result } = renderHook(() => useRefugeMedia('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeMedia('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -140,7 +140,7 @@ describe('useDeleteRefugeMedia', () => {
   it('should delete media', async () => {
     mockedService.deleteRefugeMedia.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRefugeMedia(), {
+    const { result } = await renderHook(() => useDeleteRefugeMedia(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -159,7 +159,7 @@ describe('useDeleteRefugeMedia', () => {
   it('should delete media with experienceId', async () => {
     mockedService.deleteRefugeMedia.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRefugeMedia(), {
+    const { result } = await renderHook(() => useDeleteRefugeMedia(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -181,7 +181,7 @@ describe('useDeleteRefugeMedia', () => {
     
     mockedService.deleteRefugeMedia.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRefugeMedia(), {
+    const { result } = await renderHook(() => useDeleteRefugeMedia(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -199,7 +199,7 @@ describe('useDeleteRefugeMedia', () => {
   it('should handle error', async () => {
     mockedService.deleteRefugeMedia.mockRejectedValue(new Error('Delete failed'));
 
-    const { result } = renderHook(() => useDeleteRefugeMedia(), {
+    const { result } = await renderHook(() => useDeleteRefugeMedia(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -216,7 +216,7 @@ describe('useDeleteRefugeMedia', () => {
   it('should handle deletion when cache is empty', async () => {
     mockedService.deleteRefugeMedia.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRefugeMedia(), {
+    const { result } = await renderHook(() => useDeleteRefugeMedia(), {
       wrapper: createWrapper(queryClient),
     });
 
