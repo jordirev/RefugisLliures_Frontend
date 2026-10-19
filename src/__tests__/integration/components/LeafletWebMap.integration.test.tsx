@@ -495,10 +495,10 @@ describe('LeafletWebMap - Tests d\'integració', () => {
         },
       });
 
-      // Check that injectJavaScript was called with user location centering code
+      // Comprova que s'injecta el marcador de la ubicació de l'usuari (sense moure el mapa)
       await waitFor(() => {
         expect(mockInjectJavaScript).toHaveBeenCalledWith(
-          expect.stringContaining('map.panTo([ul.latitude, ul.longitude])')
+          expect.stringContaining('window.userMarker = L.marker([ul.latitude, ul.longitude]')
         );
       });
     });
