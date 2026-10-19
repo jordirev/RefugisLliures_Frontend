@@ -402,6 +402,18 @@ describe('AuthService - Tests Unitaris', () => {
       expect(mockGoogleSignin.signOut).toHaveBeenCalled();
     });
 
+    it("configura Google abans de signOut (sessió restaurada a l'arrencada)", async () => {
+      (firebase.signOut as jest.Mock).mockResolvedValue(undefined);
+      mockGoogleSignin.configure.mockClear();
+
+      await AuthService.logout();
+
+      expect(mockGoogleSignin.configure).toHaveBeenCalled();
+      expect(mockGoogleSignin.configure.mock.invocationCallOrder[0]).toBeLessThan(
+        mockGoogleSignin.signOut.mock.invocationCallOrder[0]
+      );
+    });
+
     it('no ha de fallar si GoogleSignin.signOut falla', async () => {
       mockGoogleSignin.signOut.mockRejectedValueOnce(new Error('x'));
       (firebase.signOut as jest.Mock).mockResolvedValue(undefined);

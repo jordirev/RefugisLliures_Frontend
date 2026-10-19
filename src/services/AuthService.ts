@@ -226,15 +226,25 @@ export class AuthService {
   /**
    * Mostra el selector de comptes de Google i retorna l'ID token (sense autenticar amb Firebase)
    */
-  private static async getGoogleIdToken(): Promise<string> {
-    // Configurar Google Sign In
+  private static configureGoogle(): void {
     GoogleSignin.configure({
       webClientId: FIREBASE_WEB_CLIENT_ID,
       offlineAccess: false,
     });
+  }
+
+  private static async getGoogleIdToken(): Promise<string> {
+    AuthService.configureGoogle();
 
     // Verificar disponibilitat de Google Play Services (només Android)
     await GoogleSignin.hasPlayServices();
+
+    // Esborrar el compte recordat perquè sempre aparegui el selector de comptes
+    try {
+      await GoogleSignin.signOut();
+    } catch (e) {
+      console.warn("No s'ha pogut netejar el compte de Google anterior:", e);
+    }
 
     const userInfo = await GoogleSignin.signIn();
     const { idToken } = userInfo.data || {};
@@ -294,6 +304,8 @@ export class AuthService {
   static async logout(): Promise<void> {
     try {
       if (GoogleSignin) {
+        // signOut necessita el client configurat (amb la sessió restaurada a l'arrencada no ho està)
+        AuthService.configureGoogle();
         // Perquè el selector no recordi el compte; no ha de bloquejar el logout
         try {
           await GoogleSignin.signOut();

@@ -52,7 +52,7 @@ Checklist:
 - No cal verificar l'email: Google ja el dona per verificat.
 - Usuari nou al backend amb `username` = `displayName` de Google, o la part abans de `@` del correu, o `'Usuari'`; `language: 'ca'` fix (es pot canviar a Settings). Si la creació al backend falla, només es registra al log (vegeu [TECH_DEBT M10](../TECH_DEBT.md)).
 - La foto de Google és a `firebaseUser.photoURL`, però l'app no la fa servir com a avatar.
-- El logout fa `GoogleSignin.signOut()`.
+- El logout fa `GoogleSignin.signOut()` (configurant abans el client: després d'una arrencada amb sessió restaurada no ho està i el signOut fallava en silenci). `getGoogleIdToken` també el crida abans de `signIn()` perquè sempre aparegui el selector de comptes.
 
 ## 7. Solució de problemes
 | Error | Causa | Solució |
