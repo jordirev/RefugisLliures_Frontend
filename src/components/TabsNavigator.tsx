@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { createBottomTabNavigator, BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -27,6 +27,26 @@ type TabParamList = {
 /** Alçada de la barra (sense l'àrea segura inferior) */
 const TAB_BAR_HEIGHT = 64;
 
+/**
+ * Botó de la tab bar sense el padding intern per defecte de React Navigation:
+ * així el fons (sombrejat) del botó seleccionat omple tot l'ítem, sense vores blanques.
+ */
+function TabButton({ children, style, onPress, onLongPress, testID, ...rest }: BottomTabBarButtonProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      testID={testID}
+      role={rest.role}
+      aria-label={rest['aria-label']}
+      aria-selected={rest['aria-selected']}
+      style={[style, styles.tabButton]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
 const Tab = createBottomTabNavigator<TabParamList, undefined>();
 
 interface TabsNavigatorProps {
@@ -52,6 +72,9 @@ export function TabsNavigator({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarLabelPosition: 'below-icon',
+        tabBarVariant: 'uikit',
+        tabBarButton: (props) => <TabButton {...props} />,
+        tabBarActiveBackgroundColor: '#f3f4f6',
         // Botons amb la mateixa alçada que la barra: el sombrejat l'omple sencera
         tabBarItemStyle: {
           height: '100%',
@@ -78,7 +101,7 @@ export function TabsNavigator({
         name="Map"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }]}>
               <MapIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -129,7 +152,7 @@ export function TabsNavigator({
         name="Favorites"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }]}>
               <FavIcon width={20} height={20} />
               <Text
                 style={styles.tabLabel}
@@ -156,7 +179,7 @@ export function TabsNavigator({
         name="Renovations"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }]}>
               <ReformIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -180,7 +203,7 @@ export function TabsNavigator({
         name="Profile"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }]}>
               <UserIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -204,15 +227,18 @@ export function TabsNavigator({
 }
 
 const styles = StyleSheet.create({
+  tabButton: {
+    padding: 0,
+    borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   tabIconContainer: {
     backgroundColor: 'transparent',
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  tabIconActive: {
-    backgroundColor: '#f3f4f6',
   },
   tabLabel: {
     fontSize: 10,
