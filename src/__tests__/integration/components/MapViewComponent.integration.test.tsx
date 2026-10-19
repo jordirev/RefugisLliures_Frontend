@@ -308,6 +308,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       const mockGetCurrentPosition = ExpoLocation.getCurrentPositionAsync as jest.Mock;
       mockGetCurrentPosition.mockRejectedValue(new Error('Location error'));
+      (ExpoLocation.getLastKnownPositionAsync as jest.Mock).mockResolvedValue(null);
 
       const mockShowAlert = jest.fn();
 
