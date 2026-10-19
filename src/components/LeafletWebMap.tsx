@@ -137,8 +137,8 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             if (ul && ul.latitude && ul.longitude) {
               // Add a round blue marker with white border and shadow
               window.userMarker = L.marker([ul.latitude, ul.longitude], { icon: userLocationIcon }).addTo(map);
-              // Center map to the user location
-              map.setView([ul.latitude, ul.longitude], 15);
+              // Centra el mapa a la ubicació sense canviar el zoom
+              map.panTo([ul.latitude, ul.longitude]);
             }
           } catch(err) {
             // swallow errors coming from injected code
