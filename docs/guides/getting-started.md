@@ -56,7 +56,7 @@ npm run test:e2e:ui        # arrenca l'emulador d'Auth amb UI
 | `Missing App configuration value: "projectId"` o `auth/invalid-api-key` | `.env` absent o incomplet: [firebase-setup.md §6](firebase-setup.md#6-solució-de-problemes). |
 | El login amb Google diu que no està disponible | Estàs a Expo Go: cal la build nativa ([google-signin-setup.md](google-signin-setup.md)). |
 | `Cannot find module '@env'` a l'editor | Ja hi ha `src/types/env.d.ts`; reinicia el servidor de TypeScript de VS Code. |
-| Windows: `ninja: error: ... Filename longer than 260 characters` en compilar | Activa els camins llargs de Windows i compila amb CMake 3.31.6 (ninja 1.12): vegeu [GOTCHAS #40](../GOTCHAS.md). |
+| Windows: `ninja: error: ... Filename longer than 260 characters` o `ninja: error: mkdir(CMakeFiles/...): No such file or directory` en compilar | Activa els camins llargs de Windows i força CMake 3.31.6 (ninja 1.12) amb l'init script global de Gradle: vegeu [GOTCHAS #40](../GOTCHAS.md). |
 
 ## 7. Recursos
 [Expo](https://docs.expo.dev/) · [React Native](https://reactnative.dev/) · [React Navigation](https://reactnavigation.org/) · [TanStack Query](https://tanstack.com/query/latest)
