@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tests d'integració per a LoginScreen
  * 
  * Cobertura:
@@ -102,8 +102,8 @@ describe('LoginScreen - Tests d\'integració', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar el formulari de login', () => {
-      const { getByText, getByPlaceholderText, getByTestId } = renderWithProviders(
+    it('hauria de renderitzar el formulari de login', async () => {
+      const { getByText, getByPlaceholderText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
@@ -113,8 +113,8 @@ describe('LoginScreen - Tests d\'integració', () => {
       expect(getByTestId('email-input')).toBeTruthy();
     });
 
-    it('no hauria de mostrar el camp de contrasenya inicialment', () => {
-      const { queryByPlaceholderText } = renderWithProviders(
+    it('no hauria de mostrar el camp de contrasenya inicialment', async () => {
+      const { queryByPlaceholderText } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
@@ -123,8 +123,8 @@ describe('LoginScreen - Tests d\'integració', () => {
       expect(queryByPlaceholderText('Contrasenya')).toBeNull();
     });
 
-    it('hauria de mostrar el botó de Google login', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de Google login', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
@@ -135,7 +135,7 @@ describe('LoginScreen - Tests d\'integració', () => {
 
   describe('Validació d\'email', () => {
     it('hauria de mostrar error si l\'email està buit', async () => {
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
@@ -146,16 +146,16 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar error si el format de l\'email no és vàlid', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'invalid-email');
+      await fireEvent.changeText(emailInput, 'invalid-email');
 
       const continueButton = getByTestId('continue-button');
-      fireEvent.press(continueButton);
+      await fireEvent.press(continueButton);
 
       await waitFor(() => {
         expect(getByText('login.errors.invalidEmail')).toBeTruthy();
@@ -163,7 +163,7 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de netejar l\'error quan l\'usuari comença a editar', async () => {
-      const { getByText, queryByText, getByTestId } = renderWithProviders(
+      const { getByText, queryByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
@@ -172,15 +172,15 @@ describe('LoginScreen - Tests d\'integració', () => {
       const continueButton = getByTestId('continue-button');
       
       // Type invalid email format and press continue to trigger validation
-      fireEvent.changeText(emailInput, 'invalid-email');
-      fireEvent.press(continueButton);
+      await fireEvent.changeText(emailInput, 'invalid-email');
+      await fireEvent.press(continueButton);
 
       await waitFor(() => {
         expect(getByText('login.errors.invalidEmail')).toBeTruthy();
       });
 
       // Type valid email - error should clear
-      fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.changeText(emailInput, 'test@example.com');
 
       await waitFor(() => {
         expect(queryByText('login.errors.invalidEmail')).toBeNull();
@@ -188,16 +188,16 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar el camp de contrasenya amb un email vàlid', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.changeText(emailInput, 'test@example.com');
 
       const continueButton = getByTestId('continue-button');
-      fireEvent.press(continueButton);
+      await fireEvent.press(continueButton);
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -208,16 +208,16 @@ describe('LoginScreen - Tests d\'integració', () => {
   describe('Validació de contrasenya', () => {
     beforeEach(async () => {
       // Setup: introduir un email vàlid primer
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.changeText(emailInput, 'test@example.com');
 
       const continueButton = getByTestId('continue-button');
-      fireEvent.press(continueButton);
+      await fireEvent.press(continueButton);
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -225,15 +225,15 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar error si la contrasenya està buida', async () => {
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       // Preparar l'email
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         const passwordInput = getByTestId('password-input');
@@ -244,7 +244,7 @@ describe('LoginScreen - Tests d\'integració', () => {
       mockLogin.mockRejectedValue({ code: 'auth/missing-password' });
       
       const loginButton = getByTestId('login-button');
-      fireEvent.press(loginButton);
+      await fireEvent.press(loginButton);
 
       await waitFor(() => {
         expect(getByText('login.errors.emptyPassword')).toBeTruthy();
@@ -252,19 +252,19 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de netejar l\'error quan l\'usuari comença a editar', async () => {
-      const { getByPlaceholderText, getByText, queryByText, rerender, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, queryByText, rerender, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       // Introduir email
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
-        fireEvent.changeText(passwordInput, 'password123');
+        await fireEvent.changeText(passwordInput, 'password123');
       });
     });
   });
@@ -273,15 +273,15 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de fer login correctament amb credencials vàlides', async () => {
       mockLogin.mockResolvedValue(undefined);
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       // Introduir email
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -289,11 +289,11 @@ describe('LoginScreen - Tests d\'integració', () => {
 
       // Introduir contrasenya
       const passwordInput = getByTestId('password-input');
-      fireEvent.changeText(passwordInput, 'password123');
+      await fireEvent.changeText(passwordInput, 'password123');
 
       // Fer login
       const loginButton = getByTestId('login-button');
-      fireEvent.press(loginButton);
+      await fireEvent.press(loginButton);
 
       await waitFor(() => {
         expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
@@ -303,22 +303,22 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de mostrar error amb credencials invàlides', async () => {
       mockLogin.mockRejectedValue({ code: 'auth/invalid-credential' });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
-        fireEvent.changeText(passwordInput, 'wrongpassword');
+        await fireEvent.changeText(passwordInput, 'wrongpassword');
       });
 
       const loginButton = getByTestId('login-button');
-      fireEvent.press(loginButton);
+      await fireEvent.press(loginButton);
 
       await waitFor(() => {
         expect(getByText('login.errors.invalidCredentials')).toBeTruthy();
@@ -333,22 +333,22 @@ describe('LoginScreen - Tests d\'integració', () => {
         emailVerified: false,
       });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
-        fireEvent.changeText(passwordInput, 'password123');
+        await fireEvent.changeText(passwordInput, 'password123');
       });
 
       const loginButton = getByTestId('login-button');
-      fireEvent.press(loginButton);
+      await fireEvent.press(loginButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -364,13 +364,13 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de fer login amb Google correctament', async () => {
       mockLoginWithGoogle.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const googleButton = getByTestId('google-login-button');
-      fireEvent.press(googleButton);
+      await fireEvent.press(googleButton);
 
       await waitFor(() => {
         expect(mockLoginWithGoogle).toHaveBeenCalled();
@@ -380,13 +380,13 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de gestionar cancel·lació del login amb Google', async () => {
       mockLoginWithGoogle.mockRejectedValue({ message: 'LOGIN_CANCELLED' });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const googleButton = getByTestId('google-login-button');
-      fireEvent.press(googleButton);
+      await fireEvent.press(googleButton);
 
       await waitFor(() => {
         expect(mockLoginWithGoogle).toHaveBeenCalled();
@@ -398,13 +398,13 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de gestionar errors del login amb Google', async () => {
       mockLoginWithGoogle.mockRejectedValue(new Error('Google login error'));
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const googleButton = getByTestId('google-login-button');
-      fireEvent.press(googleButton);
+      await fireEvent.press(googleButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -417,13 +417,13 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de mostrar missatge si Google Sign In no està disponible', async () => {
       (AuthService.isGoogleSignInAvailable as jest.Mock).mockReturnValue(false);
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const googleButton = getByTestId('google-login-button');
-      fireEvent.press(googleButton);
+      await fireEvent.press(googleButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -436,15 +436,15 @@ describe('LoginScreen - Tests d\'integració', () => {
 
   describe('Visibilitat de contrasenya', () => {
     it('hauria de alternar la visibilitat de la contrasenya', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       // Introduir email per mostrar el camp de contrasenya
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -458,32 +458,32 @@ describe('LoginScreen - Tests d\'integració', () => {
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       // Fer clic per mostrar
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
       expect(passwordInput.props.secureTextEntry).toBe(false);
 
       // Fer clic per ocultar
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
       expect(passwordInput.props.secureTextEntry).toBe(true);
     });
   });
 
   describe('Recuperació de contrasenya', () => {
     it('hauria de mostrar diàleg per recuperar contrasenya', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
       });
 
       const forgotPasswordLink = getByTestId('forgot-password-button');
-      fireEvent.press(forgotPasswordLink);
+      await fireEvent.press(forgotPasswordLink);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -495,21 +495,21 @@ describe('LoginScreen - Tests d\'integració', () => {
     });
 
     it('hauria de demanar confirmació abans d\'enviar email de recuperació', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
       });
 
       const forgotPasswordLink = getByTestId('forgot-password-button');
-      fireEvent.press(forgotPasswordLink);
+      await fireEvent.press(forgotPasswordLink);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -522,14 +522,14 @@ describe('LoginScreen - Tests d\'integració', () => {
   });
 
   describe('Navegació a SignUp', () => {
-    it('hauria de navegar a SignUp quan es fa clic al link', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de navegar a SignUp quan es fa clic al link', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const signUpLink = getByTestId('signup-link');
-      fireEvent.press(signUpLink);
+      await fireEvent.press(signUpLink);
 
       expect(mockOnNavigateToSignUp).toHaveBeenCalled();
     });
@@ -537,25 +537,25 @@ describe('LoginScreen - Tests d\'integració', () => {
 
   describe('Casos límit', () => {
     it('hauria de gestionar email amb espais', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
       // Component trims email automatically
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
       });
 
       const passwordInput = getByTestId('password-input');
-      fireEvent.changeText(passwordInput, 'password123');
+      await fireEvent.changeText(passwordInput, 'password123');
 
       mockLogin.mockResolvedValue(undefined);
-      fireEvent.press(getByTestId('login-button'));
+      await fireEvent.press(getByTestId('login-button'));
 
       await waitFor(() => {
         // Hauria de fer trim de l'email
@@ -566,21 +566,21 @@ describe('LoginScreen - Tests d\'integració', () => {
     it('hauria de deshabilitar els inputs durant la càrrega', async () => {
       mockLogin.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <LoginScreen onNavigateToSignUp={mockOnNavigateToSignUp} />,
         { withNavigation: false }
       );
 
       const emailInput = getByTestId('email-input');
-      fireEvent.changeText(emailInput, 'test@example.com');
-      fireEvent.press(getByTestId('continue-button'));
+      await fireEvent.changeText(emailInput, 'test@example.com');
+      await fireEvent.press(getByTestId('continue-button'));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
-        fireEvent.changeText(passwordInput, 'password123');
+        await fireEvent.changeText(passwordInput, 'password123');
       });
 
-      fireEvent.press(getByTestId('login-button'));
+      await fireEvent.press(getByTestId('login-button'));
 
       // Durant la càrrega, els inputs haurien d'estar deshabilitats
       // Això es verificaria amb el props.editable dels inputs

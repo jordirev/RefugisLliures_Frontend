@@ -9,6 +9,7 @@ Documentació detallada a [`docs/`](docs/README.md). Llegenda: **[FET]** / **[IN
 - Firebase Auth (JS SDK) + Google Sign-In natiu; backend REST a Render (URL fixa a cada servei).
 - Mapa: Leaflet dins `react-native-webview` (tiles OpenTopoMap/OSM, Leaflet via CDN unpkg).
 - i18n: i18next, idiomes `ca` (fallback), `es`, `en`, `fr`.
+- Tests: Jest 30 (`@react-native/jest-preset`), React Native Testing Library 14 sobre `test-renderer` (APIs asíncrones: sempre `await render/fireEvent`), MSW 3 i emulador d'Auth (firebase-tools 15).
 
 ## Comandes
 ```bash

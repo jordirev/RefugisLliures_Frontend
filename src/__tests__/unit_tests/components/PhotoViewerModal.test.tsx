@@ -17,6 +17,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { PhotoViewerModal, VideoThumbnail, getPhotoMenuPermissions } from '../../../components/PhotoViewerModal';
 import { ImageMetadata } from '../../../models';
 import { RefugeMediaService } from '../../../services/RefugeMediaService';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-video
 jest.mock('expo-video', () => ({
@@ -171,67 +172,67 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar quan és visible', () => {
-      const { toJSON } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de renderitzar quan és visible', async () => {
+      const { toJSON } = await render(<PhotoViewerModal {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('no hauria de mostrar res si no hi ha fotos', () => {
-      const { toJSON } = render(
+    it('no hauria de mostrar res si no hi ha fotos', async () => {
+      const { toJSON } = await render(
         <PhotoViewerModal {...defaultProps} photos={[]} />
       );
       expect(toJSON()).toBeNull();
     });
 
-    it('no hauria de mostrar res si photos és buit en index inicial', () => {
-      const { toJSON } = render(
+    it('no hauria de mostrar res si photos és buit en index inicial', async () => {
+      const { toJSON } = await render(
         <PhotoViewerModal {...defaultProps} photos={[]} initialIndex={0} />
       );
       expect(toJSON()).toBeNull();
     });
 
-    it('snapshot test - modal amb fotos', () => {
-      const { toJSON } = render(<PhotoViewerModal {...defaultProps} />);
+    it('snapshot test - modal amb fotos', async () => {
+      const { toJSON } = await render(<PhotoViewerModal {...defaultProps} />);
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('snapshot test - modal no visible', () => {
-      const { toJSON } = render(<PhotoViewerModal {...defaultProps} visible={false} />);
+    it('snapshot test - modal no visible', async () => {
+      const { toJSON } = await render(<PhotoViewerModal {...defaultProps} visible={false} />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Visualització d\'imatges', () => {
-    it('hauria de mostrar la primera imatge per defecte', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de mostrar la primera imatge per defecte', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
       
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar la imatge corresponent a initialIndex', () => {
-      const { toJSON } = render(
+    it('hauria de mostrar la imatge corresponent a initialIndex', async () => {
+      const { toJSON } = await render(
         <PhotoViewerModal {...defaultProps} initialIndex={1} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar totes les imatges en scroll (expo-image amb cacheKey)', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de mostrar totes les imatges en scroll (expo-image amb cacheKey)', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
 
       // Les imatges es renderitzen amb expo-image (mock host 'ExpoImage'); la 3a és vídeo
-      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      const images = container.queryAll((n: any) => n.type === 'ExpoImage');
       expect(images.length).toBe(2);
       // Al visor es fa servir la URL completa i la clau R2 com a cacheKey
       expect(images[0].props.source).toEqual({ uri: 'https://example.com/photo1.jpg', cacheKey: 'photo-1' });
     });
 
-    it('hauria de fer servir el blurhash com a placeholder si existeix', () => {
+    it('hauria de fer servir el blurhash com a placeholder si existeix', async () => {
       const photos: ImageMetadata[] = [
         { ...mockPhotos[0], blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj', thumb_url: 'https://example.com/photo1_thumb.webp' },
       ];
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} photos={photos} />);
-      const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+      const { container } = await render(<PhotoViewerModal {...defaultProps} photos={photos} />);
+      const images = container.queryAll((n: any) => n.type === 'ExpoImage');
       expect(images[0].props.placeholder).toEqual({ blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj' });
       // Al visor (variant full) NO es fa servir la miniatura
       expect(images[0].props.source.uri).toBe('https://example.com/photo1.jpg');
@@ -239,15 +240,15 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Visualització de vídeos', () => {
-    it('hauria de detectar vídeos per extensió .mp4', () => {
-      const { getByTestId } = render(
+    it('hauria de detectar vídeos per extensió .mp4', async () => {
+      const { getByTestId } = await render(
         <PhotoViewerModal {...defaultProps} initialIndex={2} />
       );
       
       expect(getByTestId('video-view')).toBeTruthy();
     });
 
-    it('hauria de mostrar VideoPlayer per URLs de vídeo .mov', () => {
+    it('hauria de mostrar VideoPlayer per URLs de vídeo .mov', async () => {
       const videoPhotos: ImageMetadata[] = [
         {
           key: 'video-1',
@@ -257,7 +258,7 @@ describe('PhotoViewerModal Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal
           {...defaultProps}
           photos={videoPhotos}
@@ -268,7 +269,7 @@ describe('PhotoViewerModal Component', () => {
       expect(getByTestId('video-view')).toBeTruthy();
     });
 
-    it('hauria de detectar vídeos per extensió .avi', () => {
+    it('hauria de detectar vídeos per extensió .avi', async () => {
       const videoPhotos: ImageMetadata[] = [
         {
           key: 'video-1',
@@ -278,7 +279,7 @@ describe('PhotoViewerModal Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal
           {...defaultProps}
           photos={videoPhotos}
@@ -289,7 +290,7 @@ describe('PhotoViewerModal Component', () => {
       expect(getByTestId('video-view')).toBeTruthy();
     });
 
-    it('hauria de detectar vídeos per extensió .webm', () => {
+    it('hauria de detectar vídeos per extensió .webm', async () => {
       const videoPhotos: ImageMetadata[] = [
         {
           key: 'video-1',
@@ -299,7 +300,7 @@ describe('PhotoViewerModal Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal
           {...defaultProps}
           photos={videoPhotos}
@@ -310,7 +311,7 @@ describe('PhotoViewerModal Component', () => {
       expect(getByTestId('video-view')).toBeTruthy();
     });
 
-    it('hauria de detectar vídeos per extensió .m4v', () => {
+    it('hauria de detectar vídeos per extensió .m4v', async () => {
       const videoPhotos: ImageMetadata[] = [
         {
           key: 'video-1',
@@ -320,7 +321,7 @@ describe('PhotoViewerModal Component', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal
           {...defaultProps}
           photos={videoPhotos}
@@ -333,21 +334,21 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Navegació entre fotos', () => {
-    it('hauria de permetre fer scroll entre fotos', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de permetre fer scroll entre fotos', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
       
-      const scrollViews = UNSAFE_root.findAllByType(require('react-native').ScrollView);
+      const scrollViews = findAllByType(container, require('react-native').ScrollView);
       expect(scrollViews.length).toBeGreaterThan(0);
     });
 
-    it('hauria de actualitzar currentIndex quan es fa scroll', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de actualitzar currentIndex quan es fa scroll', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
       
-      const scrollViews = UNSAFE_root.findAllByType(require('react-native').ScrollView);
+      const scrollViews = findAllByType(container, require('react-native').ScrollView);
       
       if (scrollViews.length > 0) {
         // Simular scroll
-        fireEvent.scroll(scrollViews[0], {
+        await fireEvent.scroll(scrollViews[0], {
           nativeEvent: {
             contentOffset: { x: 375, y: 0 }, // Suposant SCREEN_WIDTH = 375
           },
@@ -355,14 +356,14 @@ describe('PhotoViewerModal Component', () => {
       }
     });
 
-    it('hauria de gestionar scroll fora de rang', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de gestionar scroll fora de rang', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
       
-      const scrollViews = UNSAFE_root.findAllByType(require('react-native').ScrollView);
+      const scrollViews = findAllByType(container, require('react-native').ScrollView);
       
       if (scrollViews.length > 0) {
         // Scroll a un index negatiu
-        fireEvent.scroll(scrollViews[0], {
+        await fireEvent.scroll(scrollViews[0], {
           nativeEvent: {
             contentOffset: { x: -100, y: 0 },
           },
@@ -372,13 +373,13 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Tancament del modal', () => {
-    it('hauria de cridar onClose quan es prem el botó', () => {
-      const { UNSAFE_root } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de cridar onClose quan es prem el botó', async () => {
+      const { container } = await render(<PhotoViewerModal {...defaultProps} />);
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // El primer touchable hauria de ser el botó de tancar
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
         expect(mockOnClose).toHaveBeenCalled();
       }
     });
@@ -395,20 +396,20 @@ describe('PhotoViewerModal Component', () => {
     ];
 
     it("mostra Denunciar i amaga Eliminar si l'usuari NO és l'autor", async () => {
-      const { getByTestId, queryByTestId } = render(<PhotoViewerModal {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(<PhotoViewerModal {...defaultProps} />);
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       expect(getByTestId('photo-menu-report')).toBeTruthy();
       expect(queryByTestId('photo-menu-delete')).toBeNull();
     });
 
     it("amaga Denunciar i mostra Eliminar si l'usuari és l'autor", async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       expect(queryByTestId('photo-menu-report')).toBeNull();
       expect(getByTestId('photo-menu-delete')).toBeTruthy();
@@ -416,22 +417,22 @@ describe('PhotoViewerModal Component', () => {
 
     it("mostra Eliminar i Denunciar a un admin que no és l'autor", async () => {
       mockIsAdmin = true;
-      const { getByTestId } = render(<PhotoViewerModal {...defaultProps} />);
+      const { getByTestId } = await render(<PhotoViewerModal {...defaultProps} />);
       await waitFor(() => expect(require('../../../utils/authUtils').isUserAdmin).toHaveBeenCalled());
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       expect(getByTestId('photo-menu-report')).toBeTruthy();
       await waitFor(() => expect(getByTestId('photo-menu-delete')).toBeTruthy());
     });
 
     it('Denunciar tanca el visor i navega a ReportMedia amb refugeId i mediaKey', async () => {
-      const { getByTestId } = render(<PhotoViewerModal {...defaultProps} initialIndex={0} />);
+      const { getByTestId } = await render(<PhotoViewerModal {...defaultProps} initialIndex={0} />);
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-report'));
+        await fireEvent.press(getByTestId('photo-menu-report'));
       });
       expect(mockOnClose).toHaveBeenCalled();
       expect(mockNavigate).toHaveBeenCalledWith('ReportMedia', { refugeId: 'refuge-1', mediaKey: 'photo-1' });
@@ -439,14 +440,14 @@ describe('PhotoViewerModal Component', () => {
 
     it("l'autor pot eliminar la foto (confirmació, servei i onPhotoDeleted)", async () => {
       (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockResolvedValueOnce(undefined);
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-delete'));
+        await fireEvent.press(getByTestId('photo-menu-delete'));
       });
       expect(mockShowAlert).toHaveBeenCalledWith(
         'media.viewer.deleteTitle',
@@ -469,14 +470,14 @@ describe('PhotoViewerModal Component', () => {
 
     it("mostra una alerta d'error si l'eliminació falla", async () => {
       (RefugeMediaService.deleteRefugeMedia as jest.Mock).mockRejectedValueOnce(new Error('boom'));
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <PhotoViewerModal {...defaultProps} photos={ownPhotos} onPhotoDeleted={mockOnPhotoDeleted} />
       );
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-delete'));
+        await fireEvent.press(getByTestId('photo-menu-delete'));
       });
       const deleteButton = mockAlertState.lastButtons.find((b: any) => b.style === 'destructive');
       await act(async () => {
@@ -489,11 +490,11 @@ describe('PhotoViewerModal Component', () => {
     });
 
     it("el creador de l'experiència pot eliminar fotos de la seva experiència", async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <PhotoViewerModal {...defaultProps} experienceCreatorUid="current-user-uid" hideMetadata />
       );
       await act(async () => {
-        fireEvent.press(getByTestId('photo-menu-button'));
+        await fireEvent.press(getByTestId('photo-menu-button'));
       });
       expect(getByTestId('photo-menu-delete')).toBeTruthy();
       expect(queryByTestId('photo-menu-report')).toBeNull();
@@ -535,72 +536,72 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Metadades', () => {
-    it('hauria de mostrar metadades quan hideMetadata és false', () => {
-      const { toJSON } = render(
+    it('hauria de mostrar metadades quan hideMetadata és false', async () => {
+      const { toJSON } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('no hauria de mostrar metadades quan hideMetadata és true', () => {
-      const { toJSON } = render(
+    it('no hauria de mostrar metadades quan hideMetadata és true', async () => {
+      const { toJSON } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={true} />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar loading mentre carrega el creador', () => {
+    it('hauria de mostrar loading mentre carrega el creador', async () => {
       mockIsLoading = true;
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
-      const activityIndicators = UNSAFE_root.findAllByType(require('react-native').ActivityIndicator);
+      const activityIndicators = findAllByType(container, require('react-native').ActivityIndicator);
       expect(activityIndicators.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar nom d\'usuari del creador', () => {
+    it('hauria de mostrar nom d\'usuari del creador', async () => {
       mockCreatorData = { uid: 'user-1', username: 'TestUser' };
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
       expect(getByText('TestUser')).toBeTruthy();
     });
 
-    it('hauria de mostrar "Anònim" si no hi ha username', () => {
+    it('hauria de mostrar "Anònim" si no hi ha username', async () => {
       mockCreatorData = { uid: 'user-1', username: null };
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
       expect(getByText('media.viewer.anonymous')).toBeTruthy();
     });
 
-    it('hauria de mostrar avatar del creador', () => {
+    it('hauria de mostrar avatar del creador', async () => {
       mockCreatorData = { 
         uid: 'user-1', 
         username: 'TestUser',
         avatar_metadata: { url: 'https://example.com/avatar.jpg' }
       };
       
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar placeholder d\'avatar si no hi ha avatar', () => {
+    it('hauria de mostrar placeholder d\'avatar si no hi ha avatar', async () => {
       mockCreatorData = { uid: 'user-1', username: 'TestUser', avatar_metadata: null };
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
@@ -608,10 +609,10 @@ describe('PhotoViewerModal Component', () => {
       expect(getByText('T')).toBeTruthy();
     });
 
-    it('hauria de mostrar "?" si no hi ha username per al placeholder', () => {
+    it('hauria de mostrar "?" si no hi ha username per al placeholder', async () => {
       mockCreatorData = { uid: 'user-1', username: null, avatar_metadata: null };
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <PhotoViewerModal {...defaultProps} hideMetadata={false} />
       );
 
@@ -620,8 +621,8 @@ describe('PhotoViewerModal Component', () => {
   });
 
   describe('Format de data', () => {
-    it('hauria de formatar la data correctament', () => {
-      const { toJSON } = render(<PhotoViewerModal {...defaultProps} />);
+    it('hauria de formatar la data correctament', async () => {
+      const { toJSON } = await render(<PhotoViewerModal {...defaultProps} />);
       // El format hauria de ser "15 gen 2025" o similar
       expect(toJSON()).toBeTruthy();
     });
@@ -629,11 +630,11 @@ describe('PhotoViewerModal Component', () => {
 
   describe('UseEffect per visible', () => {
     it('hauria de resetejar currentIndex quan visible canvia', async () => {
-      const { rerender, toJSON } = render(
+      const { rerender, toJSON } = await render(
         <PhotoViewerModal {...defaultProps} visible={false} initialIndex={2} />
       );
 
-      rerender(
+      await rerender(
         <PhotoViewerModal {...defaultProps} visible={true} initialIndex={0} />
       );
 
@@ -643,8 +644,8 @@ describe('PhotoViewerModal Component', () => {
 });
 
 describe('VideoThumbnail Component', () => {
-  it('hauria de renderitzar correctament', () => {
-    const { getByTestId } = render(
+  it('hauria de renderitzar correctament', async () => {
+    const { getByTestId } = await render(
       <VideoThumbnail
         uri="https://example.com/video.mp4"
         style={{ width: 100, height: 100 }}
@@ -654,9 +655,9 @@ describe('VideoThumbnail Component', () => {
     expect(getByTestId('video-view')).toBeTruthy();
   });
 
-  it('hauria de cridar onPress quan es proporciona', () => {
+  it('hauria de cridar onPress quan es proporciona', async () => {
     const mockOnPress = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <VideoThumbnail
         uri="https://example.com/video.mp4"
         style={{ width: 100, height: 100 }}
@@ -666,12 +667,12 @@ describe('VideoThumbnail Component', () => {
 
     const touchable = getByTestId('video-view').parent;
     if (touchable) {
-      fireEvent.press(touchable);
+      await fireEvent.press(touchable);
     }
   });
 
-  it('hauria de estar desactivat si no hi ha onPress', () => {
-    const { getByTestId } = render(
+  it('hauria de estar desactivat si no hi ha onPress', async () => {
+    const { getByTestId } = await render(
       <VideoThumbnail
         uri="https://example.com/video.mp4"
         style={{ width: 100, height: 100 }}
@@ -681,8 +682,8 @@ describe('VideoThumbnail Component', () => {
     expect(getByTestId('video-view')).toBeTruthy();
   });
 
-  it('snapshot test', () => {
-    const { toJSON } = render(
+  it('snapshot test', async () => {
+    const { toJSON } = await render(
       <VideoThumbnail
         uri="https://example.com/video.mp4"
         style={{ width: 100, height: 100 }}

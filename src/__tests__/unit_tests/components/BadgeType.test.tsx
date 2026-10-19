@@ -31,40 +31,40 @@ jest.mock('../../../hooks/useTranslation', () => ({
 
 describe('BadgeType Component', () => {
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar "No vigilat" quan no es proporciona tipus', () => {
-      const { getByText } = render(<BadgeType />);
+    it('hauria de renderitzar "No vigilat" quan no es proporciona tipus', async () => {
+      const { getByText } = await render(<BadgeType />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria de renderitzar "No vigilat" quan tipus és undefined', () => {
-      const { getByText } = render(<BadgeType type={undefined} />);
+    it('hauria de renderitzar "No vigilat" quan tipus és undefined', async () => {
+      const { getByText } = await render(<BadgeType type={undefined} />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria de renderitzar "No vigilat" amb tipus desconegut', () => {
-      const { getByText } = render(<BadgeType type="unknown_type" />);
+    it('hauria de renderitzar "No vigilat" amb tipus desconegut', async () => {
+      const { getByText } = await render(<BadgeType type="unknown_type" />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria de renderitzar "No vigilat" amb tipus "non gardé"', () => {
-      const { getByText } = render(<BadgeType type="non gardé" />);
+    it('hauria de renderitzar "No vigilat" amb tipus "non gardé"', async () => {
+      const { getByText } = await render(<BadgeType type="non gardé" />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
   });
 
   describe('Tipus - noGuarded (per defecte)', () => {
-    it('hauria de renderitzar "No vigilat"', () => {
-      const { getByText } = render(<BadgeType />);
+    it('hauria de renderitzar "No vigilat"', async () => {
+      const { getByText } = await render(<BadgeType />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors verds pastel', () => {
-      const { getByTestId } = render(<BadgeType />);
+    it('hauria d\'aplicar colors verds pastel', async () => {
+      const { getByTestId } = await render(<BadgeType />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -79,14 +79,14 @@ describe('BadgeType Component', () => {
   describe('Tipus - occupiedInSummer', () => {
     const typeValue = "cabane ouverte mais ocupee par le berger l ete";
     
-    it('hauria de renderitzar "Ocupat a l\'estiu"', () => {
-      const { getByText } = render(<BadgeType type={typeValue} />);
+    it('hauria de renderitzar "Ocupat a l\'estiu"', async () => {
+      const { getByText } = await render(<BadgeType type={typeValue} />);
       
       expect(getByText('Ocupat a l\'estiu')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors blaus pastel', () => {
-      const { getByTestId } = render(<BadgeType type={typeValue} />);
+    it('hauria d\'aplicar colors blaus pastel', async () => {
+      const { getByTestId } = await render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -101,14 +101,14 @@ describe('BadgeType Component', () => {
   describe('Tipus - closed', () => {
     const typeValue = "fermée";
     
-    it('hauria de renderitzar "Tancat"', () => {
-      const { getByText } = render(<BadgeType type={typeValue} />);
+    it('hauria de renderitzar "Tancat"', async () => {
+      const { getByText } = await render(<BadgeType type={typeValue} />);
       
       expect(getByText('Tancat')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors vermells pastel', () => {
-      const { getByTestId } = render(<BadgeType type={typeValue} />);
+    it('hauria d\'aplicar colors vermells pastel', async () => {
+      const { getByTestId } = await render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -123,14 +123,14 @@ describe('BadgeType Component', () => {
   describe('Tipus - shelter', () => {
     const typeValue = "orri";
     
-    it('hauria de renderitzar "Abric"', () => {
-      const { getByText } = render(<BadgeType type={typeValue} />);
+    it('hauria de renderitzar "Abric"', async () => {
+      const { getByText } = await render(<BadgeType type={typeValue} />);
       
       expect(getByText('Abric')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors grisos', () => {
-      const { getByTestId } = render(<BadgeType type={typeValue} />);
+    it('hauria d\'aplicar colors grisos', async () => {
+      const { getByTestId } = await render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -145,14 +145,14 @@ describe('BadgeType Component', () => {
   describe('Tipus - emergency', () => {
     const typeValue = "emergence";
     
-    it('hauria de renderitzar "Emergència"', () => {
-      const { getByText } = render(<BadgeType type={typeValue} />);
+    it('hauria de renderitzar "Emergència"', async () => {
+      const { getByText } = await render(<BadgeType type={typeValue} />);
       
       expect(getByText('Emergència')).toBeTruthy();
     });
 
-    it('hauria d\'aplicar colors grocs pastel', () => {
-      const { getByTestId } = render(<BadgeType type={typeValue} />);
+    it('hauria d\'aplicar colors grocs pastel', async () => {
+      const { getByTestId } = await render(<BadgeType type={typeValue} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -165,8 +165,8 @@ describe('BadgeType Component', () => {
   });
 
   describe('Mode neutral', () => {
-    it('hauria d\'aplicar colors neutres quan neutral=true', () => {
-      const { getByTestId } = render(<BadgeType neutral={true} />);
+    it('hauria d\'aplicar colors neutres quan neutral=true', async () => {
+      const { getByTestId } = await render(<BadgeType neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -177,8 +177,8 @@ describe('BadgeType Component', () => {
       );
     });
 
-    it('hauria de tenir opacity 0.7 en mode neutral', () => {
-      const { getByTestId } = render(<BadgeType neutral={true} />);
+    it('hauria de tenir opacity 0.7 en mode neutral', async () => {
+      const { getByTestId } = await render(<BadgeType neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -188,8 +188,8 @@ describe('BadgeType Component', () => {
       );
     });
 
-    it('hauria d\'ignorar colors de tipus en mode neutral', () => {
-      const { getByTestId } = render(<BadgeType type="fermée" neutral={true} />);
+    it('hauria d\'ignorar colors de tipus en mode neutral', async () => {
+      const { getByTestId } = await render(<BadgeType type="fermée" neutral={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -201,8 +201,8 @@ describe('BadgeType Component', () => {
   });
 
   describe('Mode muted', () => {
-    it('hauria d\'aplicar textColor gris quan muted=true', () => {
-      const { getByText } = render(<BadgeType muted={true} />);
+    it('hauria d\'aplicar textColor gris quan muted=true', async () => {
+      const { getByText } = await render(<BadgeType muted={true} />);
       
       const textElement = getByText('No vigilat');
       expect(textElement.props.style).toContainEqual(
@@ -212,8 +212,8 @@ describe('BadgeType Component', () => {
       );
     });
 
-    it('hauria de mantenir colors de fons originals en mode muted', () => {
-      const { getByTestId } = render(<BadgeType muted={true} />);
+    it('hauria de mantenir colors de fons originals en mode muted', async () => {
+      const { getByTestId } = await render(<BadgeType muted={true} />);
       
       const badge = getByTestId('badge-container');
       expect(badge?.props.style).toContainEqual(
@@ -224,8 +224,8 @@ describe('BadgeType Component', () => {
       );
     });
 
-    it('hauria d\'aplicar muted a tipus "closed"', () => {
-      const { getByText, getByTestId } = render(<BadgeType type="fermée" muted={true} />);
+    it('hauria d\'aplicar muted a tipus "closed"', async () => {
+      const { getByText, getByTestId } = await render(<BadgeType type="fermée" muted={true} />);
       
       const badge = getByTestId('badge-container');
       const textElement = getByText('Tancat');
@@ -244,8 +244,8 @@ describe('BadgeType Component', () => {
   });
 
   describe('Combinació de modes', () => {
-    it('neutral hauria de tenir prioritat sobre muted', () => {
-      const { getByTestId } = render(
+    it('neutral hauria de tenir prioritat sobre muted', async () => {
+      const { getByTestId } = await render(
         <BadgeType neutral={true} muted={true} />
       );
       
@@ -260,9 +260,9 @@ describe('BadgeType Component', () => {
   });
 
   describe('Estils personalitzats', () => {
-    it('hauria d\'aplicar estils personalitzats amb la prop style', () => {
+    it('hauria d\'aplicar estils personalitzats amb la prop style', async () => {
       const customStyle = { marginTop: 10 };
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <BadgeType style={customStyle} />
       );
       
@@ -272,9 +272,9 @@ describe('BadgeType Component', () => {
       );
     });
 
-    it('hauria de combinar estils personalitzats amb estils per defecte', () => {
+    it('hauria de combinar estils personalitzats amb estils per defecte', async () => {
       const customStyle = { padding: 5 };
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <BadgeType type="fermée" style={customStyle} />
       );
       
@@ -303,8 +303,8 @@ describe('BadgeType Component', () => {
     ];
 
     testCases.forEach(({ type, expectedText, expectedBg }) => {
-      it(`hauria de renderitzar correctament el tipus "${type || 'undefined'}"`, () => {
-        const { getByText, getByTestId } = render(<BadgeType type={type} />);
+      it(`hauria de renderitzar correctament el tipus "${type || 'undefined'}"`, async () => {
+        const { getByText, getByTestId } = await render(<BadgeType type={type} />);
         
         expect(getByText(expectedText)).toBeTruthy();
         
@@ -319,44 +319,44 @@ describe('BadgeType Component', () => {
   });
 
   describe('Traducció dels tipus', () => {
-    it('hauria d\'usar la funció t per traduir', () => {
-      const { getByText } = render(<BadgeType />);
+    it('hauria d\'usar la funció t per traduir', async () => {
+      const { getByText } = await render(<BadgeType />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot per defecte', () => {
-      const tree = render(<BadgeType />).toJSON();
+    it('hauria de coincidir amb el snapshot per defecte', async () => {
+      const tree = (await render(<BadgeType />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot en mode neutral', () => {
-      const tree = render(<BadgeType neutral={true} />).toJSON();
+    it('hauria de coincidir amb el snapshot en mode neutral', async () => {
+      const tree = (await render(<BadgeType neutral={true} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot en mode muted', () => {
-      const tree = render(<BadgeType muted={true} />).toJSON();
+    it('hauria de coincidir amb el snapshot en mode muted', async () => {
+      const tree = (await render(<BadgeType muted={true} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot per tipus closed', () => {
-      const tree = render(<BadgeType type="fermée" />).toJSON();
+    it('hauria de coincidir amb el snapshot per tipus closed', async () => {
+      const tree = (await render(<BadgeType type="fermée" />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar tipus buit com noGuarded', () => {
-      const { getByText } = render(<BadgeType type="" />);
+    it('hauria de gestionar tipus buit com noGuarded', async () => {
+      const { getByText } = await render(<BadgeType type="" />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });
 
-    it('hauria de gestionar tipus amb espais', () => {
-      const { getByText } = render(<BadgeType type="  " />);
+    it('hauria de gestionar tipus amb espais', async () => {
+      const { getByText } = await render(<BadgeType type="  " />);
       
       expect(getByText('No vigilat')).toBeTruthy();
     });

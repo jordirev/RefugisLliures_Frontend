@@ -63,7 +63,7 @@
 | I3 | Esborrat d'avatar encara sense hook (crida `UsersService.deleteAvatar` directament) | `src/components/AvatarPopup.tsx` | Baix |
 | I4 | Sense mòdul natiu de compressió (Expo Go/web) els vídeos es pugen sense recomprimir | `src/services/MediaUploadService.ts` (`compressVideo`) | Baix |
 | I6 | `@ptomasroos/react-native-multi-slider` no es manté i requereix `prop-types` implícitament (per això es conserva `prop-types`); considerar substituir-lo | `package.json` | Baix |
-| I7 | `react-test-renderer` està obsolet a React; `@testing-library/react-native` 14 el deixa: migració pendent | `package.json`, tests | Mitjà |
+| ~~I7~~ | ~~`react-test-renderer` obsolet~~ **Resolt**: tests migrats a `@testing-library/react-native` 14 amb `test-renderer` (render/fireEvent/act asíncrons) | `package.json`, tests | FET |
 | I5 | En mode offline no hi ha `backendUser`: l'AgeGate no s'aplica fins que hi ha connexió | `src/components/AppNavigator.tsx` | Baix |
 | I8 | TypeScript 6 activa `strict` per defecte: `tsconfig.json` el fixa a `false` per mantenir el comportament anterior. Activar-lo implica arreglar ~50 errors de nul·labilitat a `src/` i ~70 als tests | `tsconfig.json` | Baix |
 

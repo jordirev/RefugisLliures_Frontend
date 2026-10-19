@@ -166,7 +166,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
   describe('Càrrega inicial de refugis', () => {
     it('hauria de carregar i mostrar els refugis del backend', async () => {
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -185,7 +185,7 @@ describe('MapScreen - Tests d\'integració', () => {
       const { RefugisService } = require('../../../services/RefugisService');
       jest.spyOn(RefugisService, 'getRefugis').mockRejectedValueOnce(new Error('Network error'));
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -198,7 +198,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
   describe('Cerca de refugis', () => {
     it('hauria de filtrar refugis per nom', async () => {
-      const { getByTestId, getByText, queryByText } = renderWithProviders(
+      const { getByTestId, getByText, queryByText } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -210,7 +210,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
       // Escriure en el camp de cerca
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Colomers');
+      await fireEvent.changeText(searchInput, 'Colomers');
 
       await waitFor(() => {
         // Hauria de filtrar localment i mostrar només 1 refugi
@@ -219,7 +219,7 @@ describe('MapScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar suggestions d\'autocomplete', async () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -231,7 +231,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
       // Escriure en el camp de cerca (més de 2 caràcters)
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Ref');
+      await fireEvent.changeText(searchInput, 'Ref');
 
       await waitFor(() => {
         // Hauria de mostrar suggestions
@@ -240,7 +240,7 @@ describe('MapScreen - Tests d\'integració', () => {
     });
 
     it('no hauria de mostrar suggestions amb menys de 2 caràcters', async () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -250,7 +250,7 @@ describe('MapScreen - Tests d\'integració', () => {
       });
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'R');
+      await fireEvent.changeText(searchInput, 'R');
 
       await waitFor(() => {
         expect(queryByTestId('suggestion-Refugi de Colomers')).toBeNull();
@@ -258,7 +258,7 @@ describe('MapScreen - Tests d\'integració', () => {
     });
 
     it('hauria de seleccionar una suggestion i actualitzar la cerca', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -268,11 +268,11 @@ describe('MapScreen - Tests d\'integració', () => {
       });
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Col');
+      await fireEvent.changeText(searchInput, 'Col');
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const suggestion = getByTestId('suggestion-Refugi de Colomers');
-        fireEvent.press(suggestion);
+        await fireEvent.press(suggestion);
       });
 
       // Verificar que s'ha actualitzat el searchQuery
@@ -282,7 +282,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
   describe('Filtres', () => {
     it('hauria d\'obrir el panel de filtres', async () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -299,7 +299,7 @@ describe('MapScreen - Tests d\'integració', () => {
     });
 
     it('hauria de recarregar refugis quan canvien els filtres', async () => {
-      const { getByTestId, getByText, rerender } = renderWithProviders(
+      const { getByTestId, getByText, rerender } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -327,7 +327,7 @@ describe('MapScreen - Tests d\'integració', () => {
         type: 1,
       };
 
-      const { getByTestId, getByText } = renderWithProviders(
+      const { getByTestId, getAllByText } = await renderWithProviders(
         <MapScreen
           onLocationSelect={mockOnLocationSelect}
           selectedLocation={mockLocation}
@@ -337,12 +337,13 @@ describe('MapScreen - Tests d\'integració', () => {
 
       await waitFor(() => {
         expect(getByTestId('selected-location')).toBeTruthy();
-        expect(getByText('Refugi de Colomers')).toBeTruthy();
+        // El nom apareix més d'un cop un cop l'async render ha buidat les actualitzacions
+        expect(getAllByText('Refugi de Colomers').length).toBeGreaterThan(0);
       });
     });
 
     it('hauria de cridar onLocationSelect quan es selecciona una ubicació', async () => {
-      const { getByTestId, getByText } = renderWithProviders(
+      const { getByTestId, getByText } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -353,7 +354,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
       // Fer clic en una ubicació
       const locationMarker = getByTestId('location-marker-1');
-      fireEvent.press(locationMarker);
+      await fireEvent.press(locationMarker);
 
       // Wait for the async callback to complete
       await waitFor(() => {
@@ -369,7 +370,7 @@ describe('MapScreen - Tests d\'integració', () => {
 
   describe('Interacció entre SearchBar i filtres', () => {
     it('hauria de filtrar localment amb searchQuery i aplicar filtres del backend', async () => {
-      const { getByTestId, getByText } = renderWithProviders(
+      const { getByTestId, getByText } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -380,14 +381,14 @@ describe('MapScreen - Tests d\'integració', () => {
 
       // Aplicar cerca local
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Ventosa');
+      await fireEvent.changeText(searchInput, 'Ventosa');
 
       await waitFor(() => {
         expect(getByText(/Map with 1 locations/)).toBeTruthy();
       });
 
       // Netejar cerca
-      fireEvent.changeText(searchInput, '');
+      await fireEvent.changeText(searchInput, '');
 
       await waitFor(() => {
         expect(getByText(/Map with 3 locations/)).toBeTruthy();
@@ -400,7 +401,7 @@ describe('MapScreen - Tests d\'integració', () => {
       const { RefugisService } = require('../../../services/RefugisService');
       jest.spyOn(RefugisService, 'getRefugis').mockResolvedValueOnce([]);
 
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -424,7 +425,7 @@ describe('MapScreen - Tests d\'integració', () => {
         },
       ]);
 
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapScreen onLocationSelect={mockOnLocationSelect} />,
         { withNavigation: false }
       );
@@ -434,7 +435,7 @@ describe('MapScreen - Tests d\'integració', () => {
       });
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'ref');
+      await fireEvent.changeText(searchInput, 'ref');
 
       await waitFor(() => {
         // No hauria de mostrar suggestions per ubicacions sense nom

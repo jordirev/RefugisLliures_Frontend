@@ -22,27 +22,27 @@ const base = {
   creator_uid: 'u1',
 };
 
-const findExpoImages = (root: any) => root.findAll((n: any) => n.type === 'ExpoImage');
+const findExpoImages = (root: any) => root.queryAll((n: any) => n.type === 'ExpoImage');
 
 describe('MediaImage', () => {
-  it('miniatura: usa thumb_url i una cacheKey estable derivada de la clau', () => {
-    const { UNSAFE_root } = render(
+  it('miniatura: usa thumb_url i una cacheKey estable derivada de la clau', async () => {
+    const { container } = await render(
       <MediaImage media={{ ...base, thumb_url: 'https://r2/thumb.webp?sig=2', blurhash: 'LKO2' }} variant="thumb" />
     );
-    const img = findExpoImages(UNSAFE_root)[0];
+    const img = findExpoImages(container)[0];
     expect(img.props.source).toEqual({ uri: 'https://r2/thumb.webp?sig=2', cacheKey: `${base.key}#thumb` });
     expect(img.props.placeholder).toEqual({ blurhash: 'LKO2' });
     expect(img.props.cachePolicy).toBe('disk');
   });
 
-  it('visor: usa la URL completa amb cacheKey = clau', () => {
-    const { UNSAFE_root } = render(<MediaImage media={{ ...base, thumb_url: 'https://r2/thumb.webp' }} variant="full" />);
-    expect(findExpoImages(UNSAFE_root)[0].props.source).toEqual({ uri: base.url, cacheKey: base.key });
+  it('visor: usa la URL completa amb cacheKey = clau', async () => {
+    const { container } = await render(<MediaImage media={{ ...base, thumb_url: 'https://r2/thumb.webp' }} variant="full" />);
+    expect(findExpoImages(container)[0].props.source).toEqual({ uri: base.url, cacheKey: base.key });
   });
 
-  it('fallback per a items antics sense miniatura ni blurhash', () => {
-    const { UNSAFE_root } = render(<MediaImage media={base} variant="thumb" />);
-    const img = findExpoImages(UNSAFE_root)[0];
+  it('fallback per a items antics sense miniatura ni blurhash', async () => {
+    const { container } = await render(<MediaImage media={base} variant="thumb" />);
+    const img = findExpoImages(container)[0];
     expect(img.props.source).toEqual({ uri: base.url, cacheKey: base.key });
     expect(img.props.placeholder).toBeUndefined();
   });
@@ -58,16 +58,16 @@ describe('isVideoMedia', () => {
 });
 
 describe('MediaThumbnail', () => {
-  it('vídeo nou: mostra el pòster (thumb_url) sense carregar el vídeo', () => {
-    const { UNSAFE_root, queryByTestId } = render(
+  it('vídeo nou: mostra el pòster (thumb_url) sense carregar el vídeo', async () => {
+    const { container, queryByTestId } = await render(
       <MediaThumbnail media={{ ...base, media_type: 'video', thumb_url: 'https://r2/poster.webp' }} />
     );
-    expect(findExpoImages(UNSAFE_root)[0].props.source.uri).toBe('https://r2/poster.webp');
+    expect(findExpoImages(container)[0].props.source.uri).toBe('https://r2/poster.webp');
     expect(queryByTestId('video-view')).toBeNull();
   });
 
-  it('vídeo antic sense pòster: fallback al primer fotograma (expo-video)', () => {
-    const { getByTestId } = render(<MediaThumbnail media={{ ...base, url: 'https://r2/old.mp4' }} />);
+  it('vídeo antic sense pòster: fallback al primer fotograma (expo-video)', async () => {
+    const { getByTestId } = await render(<MediaThumbnail media={{ ...base, url: 'https://r2/old.mp4' }} />);
     expect(getByTestId('video-view')).toBeTruthy();
   });
 });

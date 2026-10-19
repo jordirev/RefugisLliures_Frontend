@@ -102,7 +102,7 @@ describe('useDoubts', () => {
   it('should fetch doubts for a refuge', async () => {
     mockedService.getDoubtsByRefuge.mockResolvedValue([mockDoubtDTO]);
 
-    const { result } = renderHook(() => useDoubts('refuge-1'), {
+    const { result } = await renderHook(() => useDoubts('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -115,7 +115,7 @@ describe('useDoubts', () => {
   });
 
   it('should not fetch when refugeId is undefined', async () => {
-    const { result } = renderHook(() => useDoubts(undefined), {
+    const { result } = await renderHook(() => useDoubts(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -126,7 +126,7 @@ describe('useDoubts', () => {
   it('should handle error', async () => {
     mockedService.getDoubtsByRefuge.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useDoubts('refuge-1'), {
+    const { result } = await renderHook(() => useDoubts('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -151,7 +151,7 @@ describe('useCreateDoubt', () => {
   it('should create a new doubt', async () => {
     mockedService.createDoubt.mockResolvedValue(mockDoubtDTO);
 
-    const { result } = renderHook(() => useCreateDoubt(), {
+    const { result } = await renderHook(() => useCreateDoubt(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -171,7 +171,7 @@ describe('useCreateDoubt', () => {
   it('should handle error when creating doubt', async () => {
     mockedService.createDoubt.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateDoubt(), {
+    const { result } = await renderHook(() => useCreateDoubt(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -201,7 +201,7 @@ describe('useDeleteDoubt', () => {
   it('should delete a doubt', async () => {
     mockedService.deleteDoubt.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteDoubt(), {
+    const { result } = await renderHook(() => useDeleteDoubt(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -218,7 +218,7 @@ describe('useDeleteDoubt', () => {
   it('should handle error when deleting doubt', async () => {
     mockedService.deleteDoubt.mockRejectedValue(new Error('Failed to delete'));
 
-    const { result } = renderHook(() => useDeleteDoubt(), {
+    const { result } = await renderHook(() => useDeleteDoubt(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -248,7 +248,7 @@ describe('useCreateAnswer', () => {
   it('should create an answer', async () => {
     mockedService.createAnswer.mockResolvedValue(mockAnswerDTO);
 
-    const { result } = renderHook(() => useCreateAnswer(), {
+    const { result } = await renderHook(() => useCreateAnswer(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -266,7 +266,7 @@ describe('useCreateAnswer', () => {
   it('should handle error when creating answer', async () => {
     mockedService.createAnswer.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateAnswer(), {
+    const { result } = await renderHook(() => useCreateAnswer(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -298,7 +298,7 @@ describe('useCreateAnswerReply', () => {
     const replyDTO = { ...mockAnswerDTO, id: 'answer-2', parent_answer_id: 'answer-1' };
     mockedService.createAnswerReply.mockResolvedValue(replyDTO);
 
-    const { result } = renderHook(() => useCreateAnswerReply(), {
+    const { result } = await renderHook(() => useCreateAnswerReply(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -321,7 +321,7 @@ describe('useCreateAnswerReply', () => {
   it('should handle error when creating reply', async () => {
     mockedService.createAnswerReply.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateAnswerReply(), {
+    const { result } = await renderHook(() => useCreateAnswerReply(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -353,7 +353,7 @@ describe('useDeleteAnswer', () => {
   it('should delete an answer', async () => {
     mockedService.deleteAnswer.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteAnswer(), {
+    const { result } = await renderHook(() => useDeleteAnswer(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -371,7 +371,7 @@ describe('useDeleteAnswer', () => {
   it('should handle error when deleting answer', async () => {
     mockedService.deleteAnswer.mockRejectedValue(new Error('Failed to delete'));
 
-    const { result } = renderHook(() => useDeleteAnswer(), {
+    const { result } = await renderHook(() => useDeleteAnswer(), {
       wrapper: createWrapper(queryClient),
     });
 

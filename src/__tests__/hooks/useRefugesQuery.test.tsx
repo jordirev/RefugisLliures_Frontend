@@ -82,7 +82,7 @@ describe('useRefuges', () => {
   it('should fetch all refuges', async () => {
     mockedService.getRefugis.mockResolvedValue(mockRefugesList);
 
-    const { result } = renderHook(() => useRefuges(), {
+    const { result } = await renderHook(() => useRefuges(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -98,7 +98,7 @@ describe('useRefuges', () => {
     mockedService.getRefugis.mockResolvedValue([mockRefuge]);
 
     const filters = { region: 'Catalunya' };
-    const { result } = renderHook(() => useRefuges(filters), {
+    const { result } = await renderHook(() => useRefuges(filters), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -112,7 +112,7 @@ describe('useRefuges', () => {
   it('should handle error', async () => {
     mockedService.getRefugis.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useRefuges(), {
+    const { result } = await renderHook(() => useRefuges(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -139,7 +139,7 @@ describe('useRefuge', () => {
   it('should fetch a single refuge by ID', async () => {
     mockedService.getRefugiById.mockResolvedValue(mockRefuge);
 
-    const { result } = renderHook(() => useRefuge('refuge-1'), {
+    const { result } = await renderHook(() => useRefuge('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -152,7 +152,7 @@ describe('useRefuge', () => {
   });
 
   it('should not fetch when ID is undefined', async () => {
-    const { result } = renderHook(() => useRefuge(undefined), {
+    const { result } = await renderHook(() => useRefuge(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -164,7 +164,7 @@ describe('useRefuge', () => {
   it('should handle error', async () => {
     mockedService.getRefugiById.mockRejectedValue(new Error('Not found'));
 
-    const { result } = renderHook(() => useRefuge('invalid-id'), {
+    const { result } = await renderHook(() => useRefuge('invalid-id'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -191,7 +191,7 @@ describe('useRefugesBatch', () => {
       .mockResolvedValueOnce(mockRefugesList[0])
       .mockResolvedValueOnce(mockRefugesList[1]);
 
-    const { result } = renderHook(() => useRefugesBatch(['refuge-1', 'refuge-2']), {
+    const { result } = await renderHook(() => useRefugesBatch(['refuge-1', 'refuge-2']), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -205,7 +205,7 @@ describe('useRefugesBatch', () => {
   });
 
   it('should not fetch when IDs is undefined', async () => {
-    const { result } = renderHook(() => useRefugesBatch(undefined), {
+    const { result } = await renderHook(() => useRefugesBatch(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -214,7 +214,7 @@ describe('useRefugesBatch', () => {
   });
 
   it('should not fetch when IDs is empty array', async () => {
-    const { result } = renderHook(() => useRefugesBatch([]), {
+    const { result } = await renderHook(() => useRefugesBatch([]), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -226,7 +226,7 @@ describe('useRefugesBatch', () => {
       .mockResolvedValueOnce(mockRefugesList[0])
       .mockRejectedValueOnce(new Error('Not found'));
 
-    const { result } = renderHook(() => useRefugesBatch(['refuge-1', 'invalid']), {
+    const { result } = await renderHook(() => useRefugesBatch(['refuge-1', 'invalid']), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -253,7 +253,7 @@ describe('useCreateRefuge', () => {
   });
 
   it('should throw error directing to use RefugeProposalsService', async () => {
-    const { result } = renderHook(() => useCreateRefuge(), {
+    const { result } = await renderHook(() => useCreateRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -278,7 +278,7 @@ describe('useUpdateRefuge', () => {
   });
 
   it('should throw error directing to use RefugeProposalsService', async () => {
-    const { result } = renderHook(() => useUpdateRefuge(), {
+    const { result } = await renderHook(() => useUpdateRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -306,7 +306,7 @@ describe('useDeleteRefuge', () => {
   });
 
   it('should throw error directing to use RefugeProposalsService', async () => {
-    const { result } = renderHook(() => useDeleteRefuge(), {
+    const { result } = await renderHook(() => useDeleteRefuge(), {
       wrapper: createWrapper(queryClient),
     });
 

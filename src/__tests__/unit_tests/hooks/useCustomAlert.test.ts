@@ -14,8 +14,8 @@ import { useCustomAlert } from '../../../hooks/useCustomAlert';
 
 describe('useCustomAlert Hook', () => {
   describe('Estat inicial', () => {
-    it('hauria de tenir l\'estat inicial correcte', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de tenir l\'estat inicial correcte', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       expect(result.current.alertVisible).toBe(false);
       expect(result.current.alertConfig).toBeNull();
@@ -23,13 +23,13 @@ describe('useCustomAlert Hook', () => {
       expect(typeof result.current.hideAlert).toBe('function');
     });
 
-    it('hauria de retornar funcions estables entre renders', () => {
-      const { result, rerender } = renderHook(() => useCustomAlert());
+    it('hauria de retornar funcions estables entre renders', async () => {
+      const { result, rerender } = await renderHook(() => useCustomAlert());
 
       const initialShowAlert = result.current.showAlert;
       const initialHideAlert = result.current.hideAlert;
 
-      rerender({});
+      await rerender({});
 
       expect(result.current.showAlert).toBe(initialShowAlert);
       expect(result.current.hideAlert).toBe(initialHideAlert);
@@ -37,10 +37,10 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('showAlert - Funcionalitat bàsica', () => {
-    it('hauria de mostrar una alerta amb títol i missatge', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mostrar una alerta amb títol i missatge', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol de prova', 'Missatge de prova');
       });
 
@@ -50,10 +50,10 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.message).toBe('Missatge de prova');
     });
 
-    it('hauria de mostrar una alerta només amb missatge (sense títol)', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mostrar una alerta només amb missatge (sense títol)', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert(undefined, 'Missatge sense títol');
       });
 
@@ -62,10 +62,10 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.message).toBe('Missatge sense títol');
     });
 
-    it('hauria de mostrar una alerta amb botó OK per defecte quan no es proporcionen botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mostrar una alerta amb botó OK per defecte quan no es proporcionen botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge');
       });
 
@@ -75,15 +75,15 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.buttons![0].style).toBe('default');
     });
 
-    it('hauria de mostrar una alerta amb botons personalitzats', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mostrar una alerta amb botons personalitzats', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [
         { text: 'Cancel·lar', style: 'cancel' as const },
         { text: 'Acceptar', style: 'default' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Confirmar', 'Estàs segur?', buttons);
       });
 
@@ -92,8 +92,8 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.buttons![1].text).toBe('Acceptar');
     });
 
-    it('hauria de gestionar múltiples botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar múltiples botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [
         { text: 'Opció 1', style: 'default' as const },
@@ -101,7 +101,7 @@ describe('useCustomAlert Hook', () => {
         { text: 'Cancel·lar', style: 'cancel' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Trieu una opció', 'Seleccioneu una de les següents:', buttons);
       });
 
@@ -110,23 +110,23 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('showAlert - Botons amb callbacks', () => {
-    it('hauria de mantenir els callbacks dels botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mantenir els callbacks dels botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const onPressMock = jest.fn();
       const buttons = [
         { text: 'Acceptar', onPress: onPressMock, style: 'default' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
       expect(result.current.alertConfig?.buttons![0].onPress).toBe(onPressMock);
     });
 
-    it('hauria de mantenir múltiples callbacks diferents', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mantenir múltiples callbacks diferents', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const onPress1 = jest.fn();
       const onPress2 = jest.fn();
@@ -135,7 +135,7 @@ describe('useCustomAlert Hook', () => {
         { text: 'Botó 2', onPress: onPress2, style: 'default' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
@@ -143,14 +143,14 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.buttons![1].onPress).toBe(onPress2);
     });
 
-    it('hauria de permetre botons sense callback', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de permetre botons sense callback', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [
         { text: 'OK', style: 'default' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
@@ -159,44 +159,44 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('showAlert - Estils de botons', () => {
-    it('hauria de suportar estil "default"', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de suportar estil "default"', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [{ text: 'OK', style: 'default' as const }];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
       expect(result.current.alertConfig?.buttons![0].style).toBe('default');
     });
 
-    it('hauria de suportar estil "cancel"', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de suportar estil "cancel"', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [{ text: 'Cancel·lar', style: 'cancel' as const }];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
       expect(result.current.alertConfig?.buttons![0].style).toBe('cancel');
     });
 
-    it('hauria de suportar estil "destructive"', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de suportar estil "destructive"', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [{ text: 'Eliminar', style: 'destructive' as const }];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
       expect(result.current.alertConfig?.buttons![0].style).toBe('destructive');
     });
 
-    it('hauria de combinar diferents estils de botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de combinar diferents estils de botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const buttons = [
         { text: 'Eliminar', style: 'destructive' as const },
@@ -204,7 +204,7 @@ describe('useCustomAlert Hook', () => {
         { text: 'Cancel·lar', style: 'cancel' as const },
       ];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
@@ -215,16 +215,16 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('hideAlert', () => {
-    it('hauria d\'amagar l\'alerta quan es crida hideAlert', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria d\'amagar l\'alerta quan es crida hideAlert', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge');
       });
 
       expect(result.current.alertVisible).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
 
@@ -232,12 +232,12 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig).toBeNull();
     });
 
-    it('hauria de poder amagar sense haver mostrat cap alerta prèviament', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de poder amagar sense haver mostrat cap alerta prèviament', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       expect(result.current.alertVisible).toBe(false);
 
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
 
@@ -245,18 +245,18 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig).toBeNull();
     });
 
-    it('hauria de permetre mostrar una nova alerta després d\'amagar', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de permetre mostrar una nova alerta després d\'amagar', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Primera alerta', 'Primer missatge');
       });
 
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Segona alerta', 'Segon missatge');
       });
 
@@ -267,16 +267,16 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('Múltiples alertes consecutives', () => {
-    it('hauria de sobreescriure l\'alerta anterior quan se\'n mostra una de nova', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de sobreescriure l\'alerta anterior quan se\'n mostra una de nova', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Primera', 'Missatge 1');
       });
 
       expect(result.current.alertConfig?.title).toBe('Primera');
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Segona', 'Missatge 2');
       });
 
@@ -284,16 +284,16 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.message).toBe('Missatge 2');
     });
 
-    it('hauria de mantenir la visibilitat quan es mostra una nova alerta', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de mantenir la visibilitat quan es mostra una nova alerta', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Primera', 'Missatge 1');
       });
 
       expect(result.current.alertVisible).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Segona', 'Missatge 2');
       });
 
@@ -302,12 +302,12 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('Casos límit i especials', () => {
-    it('hauria de gestionar títols molt llargs', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar títols molt llargs', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const longTitle = 'A'.repeat(1000);
 
-      act(() => {
+      await act(() => {
         result.current.showAlert(longTitle, 'Missatge');
       });
 
@@ -315,12 +315,12 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.title).toHaveLength(1000);
     });
 
-    it('hauria de gestionar missatges molt llargs', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar missatges molt llargs', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const longMessage = 'B'.repeat(5000);
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', longMessage);
       });
 
@@ -328,54 +328,54 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.message).toHaveLength(5000);
     });
 
-    it('hauria de gestionar títols buits', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar títols buits', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('', 'Missatge');
       });
 
       expect(result.current.alertConfig?.title).toBe('');
     });
 
-    it('hauria de gestionar missatges buits', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar missatges buits', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', '');
       });
 
       expect(result.current.alertConfig?.message).toBe('');
     });
 
-    it('hauria de gestionar caràcters especials en títols', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar caràcters especials en títols', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const specialTitle = '<>&"\'àèìòù';
 
-      act(() => {
+      await act(() => {
         result.current.showAlert(specialTitle, 'Missatge');
       });
 
       expect(result.current.alertConfig?.title).toBe(specialTitle);
     });
 
-    it('hauria de gestionar caràcters especials en missatges', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar caràcters especials en missatges', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const specialMessage = 'Línea 1\nLínea 2\tTab\r\n';
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', specialMessage);
       });
 
       expect(result.current.alertConfig?.message).toBe(specialMessage);
     });
 
-    it('hauria de gestionar emojis en títols i missatges', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar emojis en títols i missatges', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('🏔️ Refugis', '✅ Guardat correctament! 🎉');
       });
 
@@ -383,10 +383,10 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.message).toBe('✅ Guardat correctament! 🎉');
     });
 
-    it('hauria de gestionar arrays buits de botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar arrays buits de botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', []);
       });
 
@@ -396,28 +396,28 @@ describe('useCustomAlert Hook', () => {
       expect(result.current.alertConfig?.buttons).toEqual([]);
     });
 
-    it('hauria de gestionar un gran nombre de botons', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar un gran nombre de botons', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const manyButtons = Array.from({ length: 10 }, (_, i) => ({
         text: `Opció ${i + 1}`,
         style: 'default' as const,
       }));
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', manyButtons);
       });
 
       expect(result.current.alertConfig?.buttons).toHaveLength(10);
     });
 
-    it('hauria de gestionar botons amb textos molt llargs', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar botons amb textos molt llargs', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const longButtonText = 'A'.repeat(100);
       const buttons = [{ text: longButtonText, style: 'default' as const }];
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge', buttons);
       });
 
@@ -426,28 +426,28 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('Estabilitat de funcions', () => {
-    it('showAlert hauria de ser estable entre crides', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('showAlert hauria de ser estable entre crides', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const initialShowAlert = result.current.showAlert;
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Test', 'Missatge');
       });
 
       expect(result.current.showAlert).toBe(initialShowAlert);
     });
 
-    it('hideAlert hauria de ser estable entre crides', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hideAlert hauria de ser estable entre crides', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       const initialHideAlert = result.current.hideAlert;
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Test', 'Missatge');
       });
 
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
 
@@ -456,43 +456,43 @@ describe('useCustomAlert Hook', () => {
   });
 
   describe('Combinació d\'operacions', () => {
-    it('hauria de gestionar múltiples operacions show/hide', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar múltiples operacions show/hide', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
       // Mostrar 1
-      act(() => {
+      await act(() => {
         result.current.showAlert('Alerta 1', 'Missatge 1');
       });
       expect(result.current.alertVisible).toBe(true);
 
       // Amagar
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
       expect(result.current.alertVisible).toBe(false);
 
       // Mostrar 2
-      act(() => {
+      await act(() => {
         result.current.showAlert('Alerta 2', 'Missatge 2');
       });
       expect(result.current.alertVisible).toBe(true);
       expect(result.current.alertConfig?.title).toBe('Alerta 2');
 
       // Amagar
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
       });
       expect(result.current.alertVisible).toBe(false);
     });
 
-    it('hauria de gestionar múltiples hideAlert consecutius', () => {
-      const { result } = renderHook(() => useCustomAlert());
+    it('hauria de gestionar múltiples hideAlert consecutius', async () => {
+      const { result } = await renderHook(() => useCustomAlert());
 
-      act(() => {
+      await act(() => {
         result.current.showAlert('Títol', 'Missatge');
       });
 
-      act(() => {
+      await act(() => {
         result.current.hideAlert();
         result.current.hideAlert();
         result.current.hideAlert();

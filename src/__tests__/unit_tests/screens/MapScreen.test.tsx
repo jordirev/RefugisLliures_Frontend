@@ -16,6 +16,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { MapScreen } from '../../../screens/MapScreen';
 import { Location, Filters } from '../../../models';
 import { BackHandler, Platform } from 'react-native';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -260,36 +261,36 @@ describe('MapScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar correctament', async () => {
+      const { toJSON } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar el MapViewComponent', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar el MapViewComponent', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
       expect(getByTestId('map-view-component')).toBeTruthy();
     });
 
-    it('hauria de renderitzar la SearchBar', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar la SearchBar', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
       expect(getByTestId('search-bar')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nombre correcte de locations', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar el nombre correcte de locations', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
       expect(getByTestId('locations-count')).toHaveTextContent('Map with 3 locations');
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = render(
+    it('snapshot test', async () => {
+      const { toJSON } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
       expect(toJSON()).toMatchSnapshot();
@@ -298,12 +299,12 @@ describe('MapScreen', () => {
 
   describe('Cerca de refugis', () => {
     it('hauria de filtrar refugis quan s\'escriu a la cerca', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Colomers');
+      await fireEvent.changeText(searchInput, 'Colomers');
 
       await waitFor(() => {
         expect(getByTestId('locations-count')).toHaveTextContent('Map with 1 locations');
@@ -311,12 +312,12 @@ describe('MapScreen', () => {
     });
 
     it('no hauria de filtrar amb menys de 2 caràcters', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'C');
+      await fireEvent.changeText(searchInput, 'C');
 
       await waitFor(() => {
         expect(getByTestId('locations-count')).toHaveTextContent('Map with 3 locations');
@@ -324,12 +325,12 @@ describe('MapScreen', () => {
     });
 
     it('hauria de mostrar suggestions quan hi ha text de cerca', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Ref');
+      await fireEvent.changeText(searchInput, 'Ref');
 
       await waitFor(() => {
         expect(queryByTestId('suggestions-list')).toBeTruthy();
@@ -337,16 +338,16 @@ describe('MapScreen', () => {
     });
 
     it('hauria de seleccionar una location quan es prem una suggestion', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Colomers');
+      await fireEvent.changeText(searchInput, 'Colomers');
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const suggestion = getByTestId('suggestion-Refugi-de-Colomers');
-        fireEvent.press(suggestion);
+        await fireEvent.press(suggestion);
       });
 
       expect(mockOnLocationSelect).toHaveBeenCalledWith(mockLocations[0]);
@@ -355,7 +356,7 @@ describe('MapScreen', () => {
 
   describe('Filtres', () => {
     it('hauria d\'obrir el panel de filtres', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
@@ -364,7 +365,7 @@ describe('MapScreen', () => {
 
       // Obrir filtres
       const openFiltersButton = getByTestId('open-filters-button');
-      fireEvent.press(openFiltersButton);
+      await fireEvent.press(openFiltersButton);
 
       await waitFor(() => {
         expect(getByTestId('filter-panel')).toBeTruthy();
@@ -372,13 +373,13 @@ describe('MapScreen', () => {
     });
 
     it('hauria de tancar el panel de filtres', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       // Obrir filtres
       const openFiltersButton = getByTestId('open-filters-button');
-      fireEvent.press(openFiltersButton);
+      await fireEvent.press(openFiltersButton);
 
       await waitFor(() => {
         expect(getByTestId('filter-panel')).toBeTruthy();
@@ -386,7 +387,7 @@ describe('MapScreen', () => {
 
       // Tancar filtres
       const closeFiltersButton = getByTestId('close-filters');
-      fireEvent.press(closeFiltersButton);
+      await fireEvent.press(closeFiltersButton);
 
       await waitFor(() => {
         expect(queryByTestId('filter-panel')).toBeNull();
@@ -394,19 +395,19 @@ describe('MapScreen', () => {
     });
 
     it('hauria d\'aplicar filtres i tancar el panel', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       // Obrir filtres
-      fireEvent.press(getByTestId('open-filters-button'));
+      await fireEvent.press(getByTestId('open-filters-button'));
 
       await waitFor(() => {
         expect(getByTestId('filter-panel')).toBeTruthy();
       });
 
       // Aplicar filtres
-      fireEvent.press(getByTestId('apply-filters'));
+      await fireEvent.press(getByTestId('apply-filters'));
 
       await waitFor(() => {
         expect(queryByTestId('filter-panel')).toBeNull();
@@ -414,22 +415,22 @@ describe('MapScreen', () => {
     });
 
     it('hauria d\'esborrar la cerca quan s\'apliquen filtres', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       // Primer escriure una cerca
       const searchInput = getByTestId('search-input');
-      fireEvent.changeText(searchInput, 'Test');
+      await fireEvent.changeText(searchInput, 'Test');
 
       // Obrir i aplicar filtres
-      fireEvent.press(getByTestId('open-filters-button'));
+      await fireEvent.press(getByTestId('open-filters-button'));
 
       await waitFor(() => {
         expect(getByTestId('filter-panel')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('apply-filters'));
+      await fireEvent.press(getByTestId('apply-filters'));
 
       // La cerca s'hauria d'haver esborrat
       await waitFor(() => {
@@ -439,19 +440,19 @@ describe('MapScreen', () => {
   });
 
   describe('Selecció de locations', () => {
-    it('hauria de cridar onLocationSelect quan es prem un marcador', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onLocationSelect quan es prem un marcador', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const marker = getByTestId('location-marker-1');
-      fireEvent.press(marker);
+      await fireEvent.press(marker);
 
       expect(mockOnLocationSelect).toHaveBeenCalledWith(mockLocations[0]);
     });
 
-    it('hauria de mostrar la location seleccionada', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar la location seleccionada', async () => {
+      const { getByTestId } = await render(
         <MapScreen 
           onLocationSelect={mockOnLocationSelect} 
           selectedLocation={mockLocations[0]}
@@ -463,13 +464,13 @@ describe('MapScreen', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de navegar a CreateRefuge quan es prem afegir', () => {
-      const { getByTestId } = render(
+    it('hauria de navegar a CreateRefuge quan es prem afegir', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       const addButton = getByTestId('add-refuge-button');
-      fireEvent.press(addButton);
+      await fireEvent.press(addButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('CreateRefuge');
     });
@@ -484,7 +485,7 @@ describe('MapScreen', () => {
     });
 
     it('hauria de carregar refugis offline quan està en mode offline', async () => {
-      render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
+      await render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
 
       await waitFor(() => {
         expect(mockGetOfflineRefuges).toHaveBeenCalled();
@@ -498,7 +499,7 @@ describe('MapScreen', () => {
     });
 
     it('hauria de cridar showAlert quan hi ha error de càrrega', async () => {
-      render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
+      await render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', 'Error carregant refugis');
@@ -515,7 +516,7 @@ describe('MapScreen', () => {
       // Simulem que hi ha filterParams actius
       // Nota: Això és complicat de testejar directament perquè filterParams
       // es calcula internament. Verifiquem que el hook es crida.
-      render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
+      await render(<MapScreen onLocationSelect={mockOnLocationSelect} />);
 
       // Amb 0 locations i filtres aplicats, hauria de mostrar alert
       await waitFor(() => {
@@ -527,19 +528,19 @@ describe('MapScreen', () => {
 
   describe('Overlay quan filtres estan oberts', () => {
     it('hauria de mostrar overlay quan el panel de filtres està obert', async () => {
-      const { getByTestId, UNSAFE_root } = render(
+      const { getByTestId, container } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 
       // Obrir filtres
-      fireEvent.press(getByTestId('open-filters-button'));
+      await fireEvent.press(getByTestId('open-filters-button'));
 
       await waitFor(() => {
         expect(getByTestId('filter-panel')).toBeTruthy();
       });
 
       // L'overlay hauria d'existir (view amb pointerEvents="none")
-      const views = UNSAFE_root.findAllByType(require('react-native').View);
+      const views = findAllByType(container, require('react-native').View);
       const overlayView = views.find(v => v.props.pointerEvents === 'none');
       expect(overlayView).toBeTruthy();
     });
@@ -555,8 +556,8 @@ describe('MapScreen', () => {
       };
     });
 
-    it('hauria de renderitzar CustomAlert quan alertConfig existeix', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar CustomAlert quan alertConfig existeix', async () => {
+      const { getByTestId } = await render(
         <MapScreen onLocationSelect={mockOnLocationSelect} />
       );
 

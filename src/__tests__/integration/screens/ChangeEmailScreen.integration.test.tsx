@@ -64,7 +64,7 @@ jest.mock('../../../assets/icons/visible.svg', () => 'VisibleIcon');
 jest.mock('../../../assets/icons/visibleOff2.svg', () => 'VisibleOffIcon');
 
 import React from 'react';
-import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
+import { renderWithProviders, fireEvent, waitFor, act } from '../setup/testUtils';
 import { setupMSW } from '../setup/mswServer';
 import { ChangeEmailScreen } from '../../../screens/ChangeEmailScreen';
 
@@ -77,29 +77,29 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
   });
 
   describe('Renderitzaci\u00f3 inicial', () => {
-    it('hauria de renderitzar la pantalla correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de renderitzar la pantalla correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       expect(getByText('changeEmail.title')).toBeTruthy();
       expect(getByTestId('new-email-input')).toBeTruthy();
       expect(getByTestId('password-input')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'email actual', () => {
-      const { getByDisplayValue, getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de mostrar l\'email actual', async () => {
+      const { getByDisplayValue, getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       expect(getByDisplayValue('current@example.com')).toBeTruthy();
     });
 
-    it('hauria de tenir el bot\u00f3 de canvi desactivat inicialment', () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de tenir el bot\u00f3 de canvi desactivat inicialment', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const button = getByTestId('submit-button');
       expect(button.props.accessibilityState.disabled).toBe(true);
     });
 
-    it('hauria de mostrar el bot\u00f3 back', () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de mostrar el bot\u00f3 back', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const backButton = getByTestId('back-button');
       expect(backButton).toBeTruthy();
@@ -108,10 +108,10 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
 
   describe('Validació del nou email', () => {
     it('hauria de mostrar error amb un email invàlid', async () => {
-      const { getByTestId, getByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, getByText } = await renderWithProviders(<ChangeEmailScreen />);
 
       const newEmailInput = getByTestId('new-email-input');
-      fireEvent.changeText(newEmailInput, 'invalid-email');
+      await fireEvent.changeText(newEmailInput, 'invalid-email');
 
       await waitFor(() => {
         expect(getByText('signup.errors.invalidEmail')).toBeTruthy();
@@ -119,10 +119,10 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     });
 
     it('hauria de mostrar error si el nou email és igual a l\'actual', async () => {
-      const { getByTestId, getByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, getByText } = await renderWithProviders(<ChangeEmailScreen />);
 
       const newEmailInput = getByTestId('new-email-input');
-      fireEvent.changeText(newEmailInput, 'current@example.com');
+      await fireEvent.changeText(newEmailInput, 'current@example.com');
 
       await waitFor(() => {
         expect(getByText('changeEmail.errors.sameEmail')).toBeTruthy();
@@ -130,10 +130,10 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     });
 
     it('no hauria de mostrar error amb un email vàlid i diferent', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<ChangeEmailScreen />);
 
       const newEmailInput = getByTestId('new-email-input');
-      fireEvent.changeText(newEmailInput, 'new@example.com');
+      await fireEvent.changeText(newEmailInput, 'new@example.com');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.invalidEmail')).toBeNull();
@@ -144,10 +144,10 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
 
   describe('Validació de contrasenya', () => {
     it('hauria d\'acceptar una contrasenya vàlida', async () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const passwordInput = getByTestId('password-input');
-      fireEvent.changeText(passwordInput, 'ValidPassword123!');
+      await fireEvent.changeText(passwordInput, 'ValidPassword123!');
 
       await waitFor(() => {
         expect(passwordInput.props.value).toBe('ValidPassword123!');
@@ -159,18 +159,18 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de canviar l\'email correctament', async () => {
       mockChangeEmail.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const newEmailInput = getByTestId('new-email-input');
       const passwordInput = getByTestId('password-input');
 
-      fireEvent.changeText(newEmailInput, 'new@example.com');
-      fireEvent.changeText(passwordInput, 'ValidPassword123!');
+      await fireEvent.changeText(newEmailInput, 'new@example.com');
+      await fireEvent.changeText(passwordInput, 'ValidPassword123!');
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const button = getByTestId('submit-button');
         expect(button.props.accessibilityState.disabled).toBe(false);
-        fireEvent.press(button);
+        await fireEvent.press(button);
       });
 
       await waitFor(() => {
@@ -186,13 +186,13 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de navegar a Settings despr\u00e9s de l\'\u00e8xit', async () => {
       mockChangeEmail.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -213,16 +213,16 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de gestionar contrasenya incorrecta', async () => {
       mockChangeEmail.mockRejectedValue({ code: 'auth/wrong-password' });
 
-      const { getByTestId, getByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, getByText } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'WrongPassword');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'WrongPassword');
 
       await waitFor(() => {
         expect(getByTestId('submit-button').props.accessibilityState.disabled).toBe(false);
       });
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(getByText('changeEmail.errors.wrongPassword')).toBeTruthy();
@@ -232,16 +232,16 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de gestionar email ja en \u00fas', async () => {
       mockChangeEmail.mockRejectedValue({ code: 'auth/email-already-in-use' });
 
-      const { getByTestId, getByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, getByText } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'existing@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'existing@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
       await waitFor(() => {
         expect(getByTestId('submit-button').props.accessibilityState.disabled).toBe(false);
       });
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(getByText('auth.errors.emailInUse')).toBeTruthy();
@@ -251,13 +251,13 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de gestionar necessitat de reautenticació', async () => {
       mockChangeEmail.mockRejectedValue({ code: 'auth/requires-recent-login' });
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -271,13 +271,13 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     it('hauria de gestionar errors genèrics', async () => {
       mockChangeEmail.mockRejectedValue(new Error('Network error'));
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
-      await waitFor(() => {
-        fireEvent.press(getByTestId('submit-button'));
+      await waitFor(async () => {
+        await fireEvent.press(getByTestId('submit-button'));
       });
 
       await waitFor(() => {
@@ -291,19 +291,19 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
 
   describe('Visibilitat de contrasenya', () => {
     it('hauria d\'alternar la visibilitat de la contrasenya', async () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const passwordInput = getByTestId('password-input');
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       const toggleButton = getByTestId('toggle-password-visibility');
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(passwordInput.props.secureTextEntry).toBe(false);
       });
 
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(passwordInput.props.secureTextEntry).toBe(true);
@@ -312,25 +312,25 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de tornar a Settings amb el botó back', () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de tornar a Settings amb el botó back', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
-    it('hauria de netejar els camps quan torna enrere', () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+    it('hauria de netejar els camps quan torna enrere', async () => {
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       // Omplir els camps
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'password');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'password');
 
       // Tornar enrere
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       // Els camps haurien d'estar nets després de tornar
       expect(mockPopTo).toHaveBeenCalledWith('Settings');
@@ -339,28 +339,34 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
 
   describe('Estat de càrrega', () => {
     it('hauria de deshabilitar el botó durant la càrrega', async () => {
-      mockChangeEmail.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      // Promesa diferida controlada manualment: evita dependre de timers reals (racy sota càrrega de CPU)
+      let resolveChangeEmail!: (v?: any) => void;
+      mockChangeEmail.mockImplementation(() => new Promise(r => { resolveChangeEmail = r; }));
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
       const button = getByTestId('submit-button');
+      // Sense await: el handler queda pendent fins que resolguem la promesa
       fireEvent.press(button);
 
       await waitFor(() => {
         expect(button.props.accessibilityState.disabled).toBe(true);
       });
+
+      await act(async () => { resolveChangeEmail(); });
     });
 
     it('hauria de deshabilitar els inputs durant la càrrega', async () => {
-      mockChangeEmail.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      let resolveChangeEmail!: (v?: any) => void;
+      mockChangeEmail.mockImplementation(() => new Promise(r => { resolveChangeEmail = r; }));
 
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
       fireEvent.press(getByTestId('submit-button'));
 
@@ -371,15 +377,17 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
         expect(newEmailInput.props.editable).toBe(false);
         expect(passwordInput.props.editable).toBe(false);
       });
+
+      await act(async () => { resolveChangeEmail(); });
     });
   });
 
   describe('Casos l\u00edmit', () => {
     it('hauria de gestionar email amb maj\u00fascules', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<ChangeEmailScreen />);
 
       const newEmailInput = getByTestId('new-email-input');
-      fireEvent.changeText(newEmailInput, 'NEW@EXAMPLE.COM');
+      await fireEvent.changeText(newEmailInput, 'NEW@EXAMPLE.COM');
 
       await waitFor(() => {
         expect(queryByText('signup.errors.invalidEmail')).toBeNull();
@@ -387,15 +395,15 @@ describe('ChangeEmailScreen - Tests d\'integraci\u00f3', () => {
     });
 
     it('hauria de validar l\'estat del formulari en temps real', async () => {
-      const { getByTestId } = renderWithProviders(<ChangeEmailScreen />);
+      const { getByTestId } = await renderWithProviders(<ChangeEmailScreen />);
 
       const button = getByTestId('submit-button');
       expect(button.props.accessibilityState.disabled).toBe(true);
 
-      fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
+      await fireEvent.changeText(getByTestId('new-email-input'), 'new@example.com');
       expect(button.props.accessibilityState.disabled).toBe(true);
 
-      fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
+      await fireEvent.changeText(getByTestId('password-input'), 'ValidPassword123!');
 
       await waitFor(() => {
         expect(button.props.accessibilityState.disabled).toBe(false);

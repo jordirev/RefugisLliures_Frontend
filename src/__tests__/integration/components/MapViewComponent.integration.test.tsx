@@ -112,8 +112,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el mapa amb les ubicacions', () => {
-      const { getByTestId, getByText } = renderWithProviders(
+    it('hauria de renderitzar el mapa amb les ubicacions', async () => {
+      const { getByTestId, getByText } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -125,8 +125,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
       expect(getByText('Leaflet Map')).toBeTruthy();
     });
 
-    it('hauria de renderitzar els botons de control', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de renderitzar els botons de control', async () => {
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -140,10 +140,10 @@ describe('MapViewComponent - Tests d\'integració', () => {
       expect(getByTestId('layers-button')).toBeTruthy();
     });
 
-    it('hauria de mostrar la ubicació seleccionada', () => {
+    it('hauria de mostrar la ubicació seleccionada', async () => {
       const selectedLocation = mockLocations[0];
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -158,7 +158,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
   describe('Botó de descàrrega (Offline Map Manager)', () => {
     it('hauria d\'obrir el gestor de mapes offline en fer clic', async () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -171,7 +171,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       // Clicar el botó de descàrrega
       const downloadButton = getByTestId('download-button');
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       await waitFor(() => {
         expect(queryByTestId('offline-map-manager')).toBeTruthy();
@@ -179,7 +179,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
     });
 
     it('hauria de tancar el gestor de mapes offline', async () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -189,7 +189,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       // Obrir el gestor
       const downloadButton = getByTestId('download-button');
-      fireEvent.press(downloadButton);
+      await fireEvent.press(downloadButton);
 
       await waitFor(() => {
         expect(getByTestId('offline-map-manager')).toBeTruthy();
@@ -197,7 +197,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       // Tancar el gestor
       const closeButton = getByTestId('close-offline-manager');
-      fireEvent.press(closeButton);
+      await fireEvent.press(closeButton);
 
       await waitFor(() => {
         expect(queryByTestId('offline-map-manager')).toBeNull();
@@ -232,7 +232,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         hideAlert: jest.fn(),
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -242,7 +242,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       // Clicar el botó de centrar ubicació
       const targetButton = getByTestId('target-button');
-      fireEvent.press(targetButton);
+      await fireEvent.press(targetButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith(
@@ -277,7 +277,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         hideAlert: jest.fn(),
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -286,7 +286,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       );
 
       const targetButton = getByTestId('target-button');
-      fireEvent.press(targetButton);
+      await fireEvent.press(targetButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -324,7 +324,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         hideAlert: jest.fn(),
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -333,7 +333,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       );
 
       const targetButton = getByTestId('target-button');
-      fireEvent.press(targetButton);
+      await fireEvent.press(targetButton);
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -376,7 +376,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
         hideAlert: jest.fn(),
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -387,7 +387,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       const targetButton = getByTestId('target-button');
 
       // Primera vegada: mostrar ubicació
-      fireEvent.press(targetButton);
+      await fireEvent.press(targetButton);
 
       // Esperar que es completi el flux de permisos i ubicació
       await waitFor(() => {
@@ -402,7 +402,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
 
       // Segona vegada: amagar ubicació
       // Com que la ubicació ja està mostrada, no hauria de demanar permisos de nou
-      fireEvent.press(targetButton);
+      await fireEvent.press(targetButton);
 
       // Esperar un moment
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -413,8 +413,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
   });
 
   describe('Memoització del component', () => {
-    it('no hauria de re-renderitzar si les props no canvien', () => {
-      const { rerender } = renderWithProviders(
+    it('no hauria de re-renderitzar si les props no canvien', async () => {
+      const { rerender } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -423,7 +423,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       );
 
       // Re-renderitzar amb les mateixes props
-      rerender(
+      await rerender(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -437,8 +437,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar una llista buida d\'ubicacions', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de gestionar una llista buida d\'ubicacions', async () => {
+      const { getByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={[]}
           onLocationSelect={mockOnLocationSelect}
@@ -449,8 +449,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
       expect(getByTestId('leaflet-web-map')).toBeTruthy();
     });
 
-    it('hauria de gestionar undefined selectedLocation', () => {
-      const { getByTestId, queryByTestId } = renderWithProviders(
+    it('hauria de gestionar undefined selectedLocation', async () => {
+      const { getByTestId, queryByTestId } = await renderWithProviders(
         <MapViewComponent
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}

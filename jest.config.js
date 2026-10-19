@@ -1,15 +1,16 @@
 module.exports = {
   preset: '@react-native/jest-preset',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'node'],
   testMatch: [
     '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
     '**/*.(test|spec).(ts|tsx|js)'
   ],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.js' }],
+    // mjs: msw 3 depèn de paquets només ESM (rettime) que Jest ha de transpilar
+    '^.+\\.(js|jsx|mjs|ts|tsx)$': '<rootDir>/jest.transform.js',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@mswjs|@ptomasroos|until-async)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-linear-gradient|expo-modules-core|expo-constants|react-native-svg|react-native-webview|@react-native-async-storage|@react-native-google-signin|@react-native-community|@react-native-clipboard|msw|@msw|@mswjs|rettime|@open-draft|headers-polyfill|tough-cookie|cookie|@ptomasroos|until-async)/)',
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',

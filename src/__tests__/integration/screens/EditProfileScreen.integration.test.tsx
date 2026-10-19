@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tests d'integració per a EditProfileScreen
  * 
  * Cobertura:
@@ -92,29 +92,29 @@ describe('EditProfileScreen - Tests d\'integró', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar la pantalla correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de renderitzar la pantalla correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       expect(getByText('editProfile.title')).toBeTruthy();
       expect(getByTestId('username-input')).toBeTruthy();
     });
 
-    it('hauria de carregar l\'username actual', () => {
-      const { getByDisplayValue, getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de carregar l\'username actual', async () => {
+      const { getByDisplayValue, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       expect(getByDisplayValue('CurrentUser')).toBeTruthy();
     });
 
-    it('hauria de tenir el botó desactivat amb l\'username inicial', () => {
-      const { getByText, getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de tenir el botó desactivat amb l\'username inicial', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const button = getByTestId('submit-button');
       // Botó desactivat perquè no hi ha canvis
       expect(button.props.accessibilityState.disabled).toBe(false);
     });
 
-    it('hauria de mostrar el botó back', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de mostrar el botó back', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const backButton = getByTestId('back-button');
       expect(backButton).toBeTruthy();
@@ -123,10 +123,10 @@ describe('EditProfileScreen - Tests d\'integró', () => {
 
   describe('Validació d\'username', () => {
     it('no hauria de mostrar error si l\'username està buit (fins al submit)', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, '');
+      await fireEvent.changeText(usernameInput, '');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.emptyUsername')).toBeNull();
@@ -134,10 +134,10 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     });
 
     it('no hauria de mostrar common.error amb un username vàlid', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, 'ValidUsername');
+      await fireEvent.changeText(usernameInput, 'ValidUsername');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.invalidUsername')).toBeNull();
@@ -145,10 +145,10 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     });
 
     it('hauria d\'acceptar username amb 2 caràcters (mínim)', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, 'ab');
+      await fireEvent.changeText(usernameInput, 'ab');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.invalidUsername')).toBeNull();
@@ -156,10 +156,10 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     });
 
     it('hauria d\'acceptar username amb 20 caràcters (màxim)', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, 'a'.repeat(20));
+      await fireEvent.changeText(usernameInput, 'a'.repeat(20));
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.invalidUsername')).toBeNull();
@@ -171,7 +171,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     it('hauria d\'actualitzar l\'username correctament', async () => {
       mockUpdateUsername.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       // Simulate changing to a valid new username
@@ -186,7 +186,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
         expect(button.props.accessibilityState.disabled).toBe(false);
       });
 
-      fireEvent.press(button);
+      await fireEvent.press(button);
 
       await waitFor(() => {
         expect(mockUpdateUsername).toHaveBeenCalledWith(newUsername);
@@ -196,7 +196,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     it('no hauria de mostrar alert d\'èxit (component no té success alert)', async () => {
       mockUpdateUsername.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       const newUsername = 'NewUsername';
@@ -207,7 +207,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
         expect(button.props.accessibilityState.disabled).toBe(false);
       });
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockUpdateUsername).toHaveBeenCalledWith(newUsername);
@@ -218,7 +218,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     it('hauria d\'actualitzar l\'estat després de l\'update', async () => {
       mockUpdateUsername.mockResolvedValue(undefined);
 
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       const newUsername = 'NewUsername';
@@ -230,7 +230,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
       });
 
       const button = getByTestId('submit-button');
-      fireEvent.press(button);
+      await fireEvent.press(button);
 
       await waitFor(() => {
         expect(mockUpdateUsername).toHaveBeenCalledWith(newUsername);
@@ -238,8 +238,8 @@ describe('EditProfileScreen - Tests d\'integró', () => {
       });
     });
 
-    it('no hauria de permetre enviar sense canvis', () => {
-      const { getByText, getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('no hauria de permetre enviar sense canvis', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const button = getByTestId('submit-button');
       // Button is enabled if username is valid, even without changes
@@ -248,13 +248,13 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     });
 
     it('hauria d\'activar el botó quan hi ha canvis vàlids', async () => {
-      const { getByTestId, getByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, getByText } = await renderWithProviders(<EditProfileScreen />);
 
       const button = getByTestId('submit-button');
       // Button starts enabled with valid initial username
       expect(button.props.accessibilityState.disabled).toBe(false);
 
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      await fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
 
       await waitFor(() => {
         expect(button.props.accessibilityState.disabled).toBe(false);
@@ -263,8 +263,8 @@ describe('EditProfileScreen - Tests d\'integró', () => {
   });
 
   describe('Gestió d\'errors de validació', () => {
-    it('hauria de renderitzar el camp username', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de renderitzar el camp username', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       expect(usernameInput).toBeTruthy();
@@ -272,39 +272,39 @@ describe('EditProfileScreen - Tests d\'integró', () => {
   });
 
   describe('Navegació', () => {
-    it('hauria de tornar a Settings amb el botó back', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de tornar a Settings amb el botó back', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
 
-    it('hauria de netejar els camps quan torna enrere', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de netejar els camps quan torna enrere', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       // Modificar el camp
-      fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
+      await fireEvent.changeText(getByTestId('username-input'), 'NewUsername');
 
       // Tornar enrere
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       expect(mockPopTo).toHaveBeenCalledWith('Settings');
     });
   });
 
   describe('Estat de càrrega', () => {
-    it('hauria de tenir l\'input editable per defecte', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de tenir l\'input editable per defecte', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       expect(usernameInput.props.editable).toBe(true);
     });
 
-    it('hauria de mostrar el botó de submit', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de mostrar el botó de submit', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const button = getByTestId('submit-button');
       expect(button).toBeTruthy();
@@ -313,10 +313,10 @@ describe('EditProfileScreen - Tests d\'integró', () => {
 
   describe('Casos límit', () => {
     it('hauria de gestionar espais en blanc', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, '  ValidUser  ');
+      await fireEvent.changeText(usernameInput, '  ValidUser  ');
 
       await waitFor(() => {
         // Hauria d'acceptar després de fer trim
@@ -325,25 +325,25 @@ describe('EditProfileScreen - Tests d\'integró', () => {
     });
 
     it('no hauria de mostrar error amb només espais (fins al submit)', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, '     ');
+      await fireEvent.changeText(usernameInput, '     ');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.emptyUsername')).toBeNull();
       });
     });
 
-    it('hauria de capitalitzar automàticament l\'username', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de capitalitzar automàticament l\'username', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       expect(usernameInput.props.autoCapitalize).toBe('sentences');
     });
 
-    it('hauria de desactivar l\'autocorrecció', () => {
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de desactivar l\'autocorrecció', async () => {
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       expect(usernameInput.props.autoCorrect).toBe(false);
@@ -351,13 +351,13 @@ describe('EditProfileScreen - Tests d\'integró', () => {
   });
 
   describe('Fonts de dades d\'usuari', () => {
-    it('hauria de carregar des del backendUser si està disponible', () => {
-      const { getByDisplayValue, getByTestId } = renderWithProviders(<EditProfileScreen />);
+    it('hauria de carregar des del backendUser si està disponible', async () => {
+      const { getByDisplayValue, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       expect(getByDisplayValue('CurrentUser')).toBeTruthy();
     });
 
-    it('hauria de carregar des de Firebase si backendUser no té username', () => {
+    it('hauria de carregar des de Firebase si backendUser no té username', async () => {
       // Override del mock per aquest test
       jest.spyOn(require('../../../contexts/AuthContext'), 'useAuth').mockReturnValue({
         updateUsername: mockUpdateUsername,
@@ -367,12 +367,12 @@ describe('EditProfileScreen - Tests d\'integró', () => {
         backendUser: {},
       });
 
-      const { getByDisplayValue, getByTestId } = renderWithProviders(<EditProfileScreen />);
+      const { getByDisplayValue, getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       expect(getByDisplayValue('FirebaseUser')).toBeTruthy();
     });
 
-    it('hauria de gestionar usuari sense nom', () => {
+    it('hauria de gestionar usuari sense nom', async () => {
       // Override del mock per aquest test
       jest.spyOn(require('../../../contexts/AuthContext'), 'useAuth').mockReturnValue({
         updateUsername: mockUpdateUsername,
@@ -380,7 +380,7 @@ describe('EditProfileScreen - Tests d\'integró', () => {
         backendUser: null,
       });
 
-      const { getByTestId } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
       expect(usernameInput.props.value).toBe('');
@@ -389,19 +389,19 @@ describe('EditProfileScreen - Tests d\'integró', () => {
 
   describe('Validació en temps real', () => {
     it('hauria de validar mentre l\'usuari escriu', async () => {
-      const { getByTestId, queryByText } = renderWithProviders(<EditProfileScreen />);
+      const { getByTestId, queryByText } = await renderWithProviders(<EditProfileScreen />);
 
       const usernameInput = getByTestId('username-input');
 
       // Escriure només 1 caràcter
-      fireEvent.changeText(usernameInput, 'a');
+      await fireEvent.changeText(usernameInput, 'a');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.invalidUsername')).toBeTruthy();
       }, { timeout: 2000 });
 
       // Afegir un segon caràcter
-      fireEvent.changeText(usernameInput, 'ab');
+      await fireEvent.changeText(usernameInput, 'ab');
 
       await waitFor(() => {
         expect(queryByText('editProfile.errors.invalidUsername')).toBeNull();

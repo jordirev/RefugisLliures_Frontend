@@ -15,6 +15,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { CustomAlert } from '../../../components/CustomAlert';
 import { Modal } from 'react-native';
+import { findByType } from '../../testHelpers/findByType';
 
 describe('CustomAlert Component', () => {
   const defaultProps = {
@@ -30,15 +31,15 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Visibilitat del modal', () => {
-    it('hauria de mostrar el modal quan visible=true', () => {
-      const { getByText } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de mostrar el modal quan visible=true', async () => {
+      const { getByText } = await render(<CustomAlert {...defaultProps} />);
       
       expect(getByText('Títol Test')).toBeTruthy();
       expect(getByText('Missatge de prova')).toBeTruthy();
     });
 
-    it('NO hauria de mostrar contingut quan visible=false', () => {
-      const { queryByText } = render(
+    it('NO hauria de mostrar contingut quan visible=false', async () => {
+      const { queryByText } = await render(
         <CustomAlert {...defaultProps} visible={false} />
       );
       
@@ -46,32 +47,32 @@ describe('CustomAlert Component', () => {
       expect(queryByText('Títol Test')).toBeNull();
     });
 
-    it('hauria de passar visible prop al Modal', () => {
-      const { UNSAFE_getByType } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de passar visible prop al Modal', async () => {
+      const { container } = await render(<CustomAlert {...defaultProps} />);
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       expect(modal.props.visible).toBe(true);
     });
   });
 
   describe('Títol del modal', () => {
-    it('hauria de mostrar el títol proporcionat', () => {
-      const { getByText } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de mostrar el títol proporcionat', async () => {
+      const { getByText } = await render(<CustomAlert {...defaultProps} />);
       
       expect(getByText('Títol Test')).toBeTruthy();
     });
 
-    it('hauria de mostrar títols llargs', () => {
+    it('hauria de mostrar títols llargs', async () => {
       const longTitle = 'Aquest és un títol molt llarg per veure com es comporta el component';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} title={longTitle} />
       );
       
       expect(getByText(longTitle)).toBeTruthy();
     });
 
-    it('hauria de mostrar títol buit', () => {
-      const { queryByText } = render(
+    it('hauria de mostrar títol buit', async () => {
+      const { queryByText } = await render(
         <CustomAlert {...defaultProps} title="" />
       );
       
@@ -79,18 +80,18 @@ describe('CustomAlert Component', () => {
       expect(queryByText('')).toBeNull();
     });
 
-    it('hauria de mostrar títols amb caràcters especials', () => {
+    it('hauria de mostrar títols amb caràcters especials', async () => {
       const title = 'Títol amb "cometes" i \'apòstrofs\'';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} title={title} />
       );
       
       expect(getByText(title)).toBeTruthy();
     });
 
-    it('hauria de mostrar títols amb emojis', () => {
+    it('hauria de mostrar títols amb emojis', async () => {
       const title = '⚠️ Avís Important 🚨';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} title={title} />
       );
       
@@ -99,41 +100,41 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Missatge del modal', () => {
-    it('hauria de mostrar el missatge proporcionat', () => {
-      const { getByText } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de mostrar el missatge proporcionat', async () => {
+      const { getByText } = await render(<CustomAlert {...defaultProps} />);
       
       expect(getByText('Missatge de prova')).toBeTruthy();
     });
 
-    it('hauria de mostrar missatges llargs', () => {
+    it('hauria de mostrar missatges llargs', async () => {
       const longMessage = 'Aquest és un missatge molt llarg amb múltiples línies de text per verificar que el component gestiona correctament missatges extensos amb molts caràcters.';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} message={longMessage} />
       );
       
       expect(getByText(longMessage)).toBeTruthy();
     });
 
-    it('hauria de mostrar missatge buit', () => {
-      const { getByText } = render(
+    it('hauria de mostrar missatge buit', async () => {
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} message="" />
       );
       
       expect(getByText('')).toBeTruthy();
     });
 
-    it('hauria de mostrar missatges amb salts de línia', () => {
+    it('hauria de mostrar missatges amb salts de línia', async () => {
       const message = 'Línia 1\nLínia 2\nLínia 3';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} message={message} />
       );
       
       expect(getByText(message)).toBeTruthy();
     });
 
-    it('hauria de mostrar missatges amb emojis', () => {
+    it('hauria de mostrar missatges amb emojis', async () => {
       const message = '✅ Operació realitzada correctament 🎉';
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} message={message} />
       );
       
@@ -142,18 +143,18 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Botons del modal', () => {
-    it('hauria de mostrar un botó', () => {
-      const { getByText } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de mostrar un botó', async () => {
+      const { getByText } = await render(<CustomAlert {...defaultProps} />);
       
       expect(getByText('OK')).toBeTruthy();
     });
 
-    it('hauria de mostrar múltiples botons', () => {
+    it('hauria de mostrar múltiples botons', async () => {
       const buttons = [
         { text: 'Cancel·lar', onPress: jest.fn() },
         { text: 'Acceptar', onPress: jest.fn() },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -161,13 +162,13 @@ describe('CustomAlert Component', () => {
       expect(getByText('Acceptar')).toBeTruthy();
     });
 
-    it('hauria de mostrar tres botons', () => {
+    it('hauria de mostrar tres botons', async () => {
       const buttons = [
         { text: 'Opció 1', onPress: jest.fn() },
         { text: 'Opció 2', onPress: jest.fn() },
         { text: 'Opció 3', onPress: jest.fn() },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -176,52 +177,52 @@ describe('CustomAlert Component', () => {
       expect(getByText('Opció 3')).toBeTruthy();
     });
 
-    it('hauria de cridar onPress quan es prem un botó', () => {
+    it('hauria de cridar onPress quan es prem un botó', async () => {
       const onPress = jest.fn();
       const buttons = [{ text: 'Test', onPress }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
-      fireEvent.press(getByText('Test'));
+      await fireEvent.press(getByText('Test'));
       
       expect(onPress).toHaveBeenCalledTimes(1);
     });
 
-    it('hauria de cridar els callbacks correctes per cada botó', () => {
+    it('hauria de cridar els callbacks correctes per cada botó', async () => {
       const onPress1 = jest.fn();
       const onPress2 = jest.fn();
       const buttons = [
         { text: 'Botó 1', onPress: onPress1 },
         { text: 'Botó 2', onPress: onPress2 },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
-      fireEvent.press(getByText('Botó 1'));
-      fireEvent.press(getByText('Botó 2'));
+      await fireEvent.press(getByText('Botó 1'));
+      await fireEvent.press(getByText('Botó 2'));
       
       expect(onPress1).toHaveBeenCalledTimes(1);
       expect(onPress2).toHaveBeenCalledTimes(1);
     });
 
-    it('NO hauria de petar si onPress és undefined', () => {
+    it('NO hauria de petar si onPress és undefined', async () => {
       const buttons = [{ text: 'Test' }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
-      expect(() => {
-        fireEvent.press(getByText('Test'));
+      expect(async () => {
+        await fireEvent.press(getByText('Test'));
       }).not.toThrow();
     });
   });
 
   describe('Estils dels botons', () => {
-    it('hauria de aplicar estil default per defecte', () => {
+    it('hauria de aplicar estil default per defecte', async () => {
       const buttons = [{ text: 'Default', onPress: jest.fn() }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -229,9 +230,9 @@ describe('CustomAlert Component', () => {
       expect(button).toBeTruthy();
     });
 
-    it('hauria de aplicar estil cancel', () => {
+    it('hauria de aplicar estil cancel', async () => {
       const buttons = [{ text: 'Cancel·lar', onPress: jest.fn(), style: 'cancel' }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -239,9 +240,9 @@ describe('CustomAlert Component', () => {
       expect(button).toBeTruthy();
     });
 
-    it('hauria de aplicar estil destructive', () => {
+    it('hauria de aplicar estil destructive', async () => {
       const buttons = [{ text: 'Eliminar', onPress: jest.fn(), style: 'destructive' }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -249,13 +250,13 @@ describe('CustomAlert Component', () => {
       expect(button).toBeTruthy();
     });
 
-    it('hauria de gestionar múltiples estils de botons', () => {
+    it('hauria de gestionar múltiples estils de botons', async () => {
       const buttons = [
         { text: 'Cancel·lar', onPress: jest.fn(), style: 'cancel' },
         { text: 'Eliminar', onPress: jest.fn(), style: 'destructive' },
         { text: 'OK', onPress: jest.fn(), style: 'default' },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -266,13 +267,13 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Callback onDismiss', () => {
-    it('hauria de cridar onDismiss quan es tanca el modal', () => {
+    it('hauria de cridar onDismiss quan es tanca el modal', async () => {
       const onDismiss = jest.fn();
-      const { UNSAFE_getByType } = render(
+      const { container } = await render(
         <CustomAlert {...defaultProps} onDismiss={onDismiss} />
       );
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       
       if (modal.props.onRequestClose) {
         modal.props.onRequestClose();
@@ -281,12 +282,12 @@ describe('CustomAlert Component', () => {
       expect(onDismiss).toHaveBeenCalled();
     });
 
-    it('NO hauria de petar si onDismiss és undefined', () => {
-      const { UNSAFE_getByType } = render(
+    it('NO hauria de petar si onDismiss és undefined', async () => {
+      const { container } = await render(
         <CustomAlert {...defaultProps} onDismiss={undefined} />
       );
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       
       expect(() => {
         if (modal.props.onDismiss) {
@@ -297,44 +298,44 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Propietats del Modal', () => {
-    it('hauria de tenir transparent=true', () => {
-      const { UNSAFE_getByType } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de tenir transparent=true', async () => {
+      const { container } = await render(<CustomAlert {...defaultProps} />);
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       expect(modal.props.transparent).toBe(true);
     });
 
-    it('hauria de tenir animationType="fade"', () => {
-      const { UNSAFE_getByType } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de tenir animationType="fade"', async () => {
+      const { container } = await render(<CustomAlert {...defaultProps} />);
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       expect(modal.props.animationType).toBe('fade');
     });
 
-    it('hauria de tenir onRequestClose definit', () => {
-      const { UNSAFE_getByType } = render(<CustomAlert {...defaultProps} />);
+    it('hauria de tenir onRequestClose definit', async () => {
+      const { container } = await render(<CustomAlert {...defaultProps} />);
       
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       expect(modal.props.onRequestClose).toBeDefined();
     });
   });
 
   describe('Overlay del modal', () => {
-    it('hauria de cridar onDismiss quan es prem l\'overlay', () => {
+    it('hauria de cridar onDismiss quan es prem l\'overlay', async () => {
       const onDismiss = jest.fn();
-      const { UNSAFE_getByType } = render(
+      const { container } = await render(
         <CustomAlert {...defaultProps} onDismiss={onDismiss} />
       );
       
       // Test that onRequestClose is set up correctly
-      const modal = UNSAFE_getByType(Modal);
+      const modal = findByType(container, Modal);
       expect(modal.props.onRequestClose).toBe(onDismiss);
     });
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar array de botons buit', () => {
-      const { queryByText } = render(
+    it('hauria de gestionar array de botons buit', async () => {
+      const { queryByText } = await render(
         <CustomAlert {...defaultProps} buttons={[]} />
       );
       
@@ -343,8 +344,8 @@ describe('CustomAlert Component', () => {
       expect(queryByText('Missatge de prova')).toBeTruthy();
     });
 
-    it('hauria de gestionar títol i missatge buits', () => {
-      const { getByText } = render(
+    it('hauria de gestionar títol i missatge buits', async () => {
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} title="" message="" />
       );
       
@@ -352,12 +353,12 @@ describe('CustomAlert Component', () => {
       expect(getByText('OK')).toBeTruthy();
     });
 
-    it('hauria de gestionar molts botons', () => {
+    it('hauria de gestionar molts botons', async () => {
       const buttons = Array.from({ length: 5 }, (_, i) => ({
         text: `Opció ${i + 1}`,
         onPress: jest.fn(),
       }));
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -366,26 +367,26 @@ describe('CustomAlert Component', () => {
       });
     });
 
-    it('hauria de gestionar text de botó molt llarg', () => {
+    it('hauria de gestionar text de botó molt llarg', async () => {
       const buttons = [
         {
           text: 'Aquest és un text de botó extremadament llarg que probablement no hauria de ser utilitzat en producció',
           onPress: jest.fn(),
         },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
       expect(getByText(buttons[0].text)).toBeTruthy();
     });
 
-    it('hauria de gestionar botons amb caràcters especials', () => {
+    it('hauria de gestionar botons amb caràcters especials', async () => {
       const buttons = [
         { text: '✓ Sí', onPress: jest.fn() },
         { text: '✗ No', onPress: jest.fn() },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
@@ -395,35 +396,35 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Múltiples clicks', () => {
-    it('hauria de permetre múltiples clicks en el mateix botó', () => {
+    it('hauria de permetre múltiples clicks en el mateix botó', async () => {
       const onPress = jest.fn();
       const buttons = [{ text: 'Test', onPress }];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
       const button = getByText('Test');
-      fireEvent.press(button);
-      fireEvent.press(button);
-      fireEvent.press(button);
+      await fireEvent.press(button);
+      await fireEvent.press(button);
+      await fireEvent.press(button);
       
       expect(onPress).toHaveBeenCalledTimes(3);
     });
 
-    it('hauria de permetre clicks alternats entre botons', () => {
+    it('hauria de permetre clicks alternats entre botons', async () => {
       const onPress1 = jest.fn();
       const onPress2 = jest.fn();
       const buttons = [
         { text: 'Botó 1', onPress: onPress1 },
         { text: 'Botó 2', onPress: onPress2 },
       ];
-      const { getByText } = render(
+      const { getByText } = await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
       );
       
-      fireEvent.press(getByText('Botó 1'));
-      fireEvent.press(getByText('Botó 2'));
-      fireEvent.press(getByText('Botó 1'));
+      await fireEvent.press(getByText('Botó 1'));
+      await fireEvent.press(getByText('Botó 2'));
+      await fireEvent.press(getByText('Botó 1'));
       
       expect(onPress1).toHaveBeenCalledTimes(2);
       expect(onPress2).toHaveBeenCalledTimes(1);
@@ -431,36 +432,36 @@ describe('CustomAlert Component', () => {
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb un botó', () => {
-      const tree = render(<CustomAlert {...defaultProps} />).toJSON();
+    it('hauria de coincidir amb el snapshot amb un botó', async () => {
+      const tree = (await render(<CustomAlert {...defaultProps} />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb múltiples botons', () => {
+    it('hauria de coincidir amb el snapshot amb múltiples botons', async () => {
       const buttons = [
         { text: 'Cancel·lar', onPress: jest.fn(), style: 'cancel' },
         { text: 'Acceptar', onPress: jest.fn() },
       ];
-      const tree = render(
+      const tree = (await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot quan no és visible', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot quan no és visible', async () => {
+      const tree = (await render(
         <CustomAlert {...defaultProps} visible={false} />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb botó destructive', () => {
+    it('hauria de coincidir amb el snapshot amb botó destructive', async () => {
       const buttons = [
         { text: 'Eliminar', onPress: jest.fn(), style: 'destructive' },
       ];
-      const tree = render(
+      const tree = (await render(
         <CustomAlert {...defaultProps} buttons={buttons} />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

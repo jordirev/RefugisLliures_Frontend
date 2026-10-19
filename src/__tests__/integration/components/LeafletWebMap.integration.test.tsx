@@ -115,8 +115,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar el component WebView', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de renderitzar el component WebView', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -127,8 +127,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(getByTestId('webview')).toBeTruthy();
     });
 
-    it('hauria de generar HTML amb Leaflet', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de generar HTML amb Leaflet', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -145,7 +145,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria d\'inicialitzar MapCacheService', async () => {
-      renderWithProviders(
+      await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -159,8 +159,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
     });
 
-    it('hauria de centrar el mapa als Pirineus per defecte', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de centrar el mapa als Pirineus per defecte', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -174,8 +174,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('setView([42.6, 0.7], 8)');
     });
 
-    it('hauria de permetre especificar centre i zoom personalitzats', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de permetre especificar centre i zoom personalitzats', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -193,8 +193,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Markers de refugis', () => {
-    it('hauria de generar markers per a tots els refugis', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de generar markers per a tots els refugis', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -211,8 +211,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('0.9503');
     });
 
-    it('hauria de crear icones personalitzades per als markers', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de crear icones personalitzades per als markers', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -228,8 +228,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('#FF6900'); // Color taronja dels markers
     });
 
-    it('hauria de diferenciar el marker seleccionat', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de diferenciar el marker seleccionat', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -244,8 +244,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('var selectedLocationId = 1;');
     });
 
-    it('hauria de gestionar array de refugis buit', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de gestionar array de refugis buit', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={[]}
           onLocationSelect={mockOnLocationSelect}
@@ -260,7 +260,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
 
   describe('Selecció de refugis', () => {
     it('hauria de cridar onLocationSelect quan es fa clic en un marker', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -287,7 +287,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     it('hauria de gestionar missatges amb objecte location', async () => {
       const mockOnMessage = jest.fn();
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnMessage}
@@ -312,10 +312,10 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
     });
 
-    it('hauria de gestionar errors en parsejar missatges', () => {
+    it('hauria de gestionar errors en parsejar missatges', async () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -339,7 +339,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
 
   describe('Actualització dinàmica de markers', () => {
     it('hauria d\'actualitzar markers quan canvien les locations', async () => {
-      const { getByTestId, rerender } = renderWithProviders(
+      const { getByTestId, rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -363,7 +363,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       // Canviar locations
       const newLocations = [mockLocations[0]];
 
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={newLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -376,7 +376,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria d\'actualitzar el marker seleccionat', async () => {
-      const { getByTestId, rerender } = renderWithProviders(
+      const { getByTestId, rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -394,7 +394,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
 
       // Canviar selecció
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -410,7 +410,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('no hauria d\'actualitzar si locations no han canviat', async () => {
-      const { getByTestId, rerender } = renderWithProviders(
+      const { getByTestId, rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -438,7 +438,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       ).length;
 
       // Re-render amb les mateixes locations
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -458,8 +458,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Ubicació de l\'usuari', () => {
-    it('hauria de mostrar marker de l\'usuari', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar marker de l\'usuari', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -477,7 +477,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria de centrar el mapa a l\'ubicaci\u00f3 de l\'usuari', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -504,7 +504,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria d\'actualitzar el marker quan canvia userLocation', async () => {
-      const { getByTestId, rerender } = renderWithProviders(
+      const { getByTestId, rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -522,7 +522,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
 
       // Afegir userLocation
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -538,7 +538,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria d\'eliminar el marker anterior quan canvia userLocation', async () => {
-      const { getByTestId, rerender } = renderWithProviders(
+      const { getByTestId, rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -556,7 +556,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
 
       // Canviar userLocation
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -571,8 +571,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       });
     });
 
-    it('no hauria de mostrar marker sense userLocation', () => {
-      const { getByTestId } = renderWithProviders(
+    it('no hauria de mostrar marker sense userLocation', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -596,7 +596,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
         metadata: { isComplete: true },
       });
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -616,7 +616,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
     });
 
     it('hauria d\'usar tiles online sense cache', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -638,8 +638,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Configuració del mapa', () => {
-    it('hauria de deshabilitar els controls de zoom', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de deshabilitar els controls de zoom', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -653,8 +653,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('zoomControl.remove()');
     });
 
-    it('hauria de configurar maxZoom a 17', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de configurar maxZoom a 17', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -668,8 +668,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('maxZoom: 17');
     });
 
-    it('no hauria de mostrar marker sense userLocation', () => {
-      const { getByTestId } = renderWithProviders(
+    it('no hauria de mostrar marker sense userLocation', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -684,8 +684,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(html).toContain('var userLocation = undefined');
     });
 
-    it('hauria de deshabilitar popups', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de deshabilitar popups', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -702,8 +702,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Propietats del WebView', () => {
-    it('hauria d\'habilitar JavaScript', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria d\'habilitar JavaScript', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -715,8 +715,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(webview.props.javaScriptEnabled).toBe(true);
     });
 
-    it('hauria d\'habilitar domStorage', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria d\'habilitar domStorage', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -728,8 +728,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(webview.props.domStorageEnabled).toBe(true);
     });
 
-    it('hauria de deshabilitar scroll', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de deshabilitar scroll', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -741,8 +741,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(webview.props.scrollEnabled).toBe(false);
     });
 
-    it('hauria de mostrar estat de càrrega', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar estat de càrrega', async () => {
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -756,8 +756,8 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Memorització del component', () => {
-    it('no hauria de re-renderitzar amb les mateixes props', () => {
-      const { rerender } = renderWithProviders(
+    it('no hauria de re-renderitzar amb les mateixes props', async () => {
+      const { rerender } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -768,7 +768,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       const renderCount = mockInjectJavaScript.mock.calls.length;
 
       // Re-render amb les mateixes props
-      rerender(
+      await rerender(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -781,7 +781,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar coordenades extremes', () => {
+    it('hauria de gestionar coordenades extremes', async () => {
       const extremeLocations: Location[] = [
         {
           id: 1,
@@ -794,7 +794,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
         },
       ];
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={extremeLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -806,7 +806,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       expect(webview).toBeTruthy();
     });
 
-    it('hauria de gestionar molts refugis', () => {
+    it('hauria de gestionar molts refugis', async () => {
       const manyLocations = Array.from({ length: 100 }, (_, i) => ({
         id: i,
         name: `Refugi ${i}`,
@@ -817,7 +817,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
         places: 10,
       }));
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={manyLocations}
           onLocationSelect={mockOnLocationSelect}
@@ -834,7 +834,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
         new Error('Cache error')
       );
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <LeafletWebMap
           locations={mockLocations}
           onLocationSelect={mockOnLocationSelect}

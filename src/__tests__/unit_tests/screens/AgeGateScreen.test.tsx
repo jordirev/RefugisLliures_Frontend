@@ -22,10 +22,10 @@ jest.mock('../../../hooks/useCustomAlert', () => ({
   }),
 }));
 
-const fillDate = (getByTestId: any, d: string, m: string, y: string) => {
-  fireEvent.changeText(getByTestId('agegate-day'), d);
-  fireEvent.changeText(getByTestId('agegate-month'), m);
-  fireEvent.changeText(getByTestId('agegate-year'), y);
+const fillDate = async (getByTestId: any, d: string, m: string, y: string) => {
+  await fireEvent.changeText(getByTestId('agegate-day'), d);
+  await fireEvent.changeText(getByTestId('agegate-month'), m);
+  await fireEvent.changeText(getByTestId('agegate-year'), y);
 };
 
 describe('AgeGateScreen', () => {
@@ -34,25 +34,25 @@ describe('AgeGateScreen', () => {
     mockLogout.mockResolvedValue(undefined);
   });
 
-  it('mostra el títol i el formulari de data de naixement', () => {
-    const { getByText, getByTestId } = render(<AgeGateScreen />);
+  it('mostra el títol i el formulari de data de naixement', async () => {
+    const { getByText, getByTestId } = await render(<AgeGateScreen />);
     expect(getByText('age.gateTitle')).toBeTruthy();
     expect(getByTestId('agegate-day')).toBeTruthy();
     expect(getByTestId('agegate-month')).toBeTruthy();
     expect(getByTestId('agegate-year')).toBeTruthy();
   });
 
-  it('només accepta dígits als camps', () => {
-    const { getByTestId } = render(<AgeGateScreen />);
-    fireEvent.changeText(getByTestId('agegate-day'), '1a');
+  it('només accepta dígits als camps', async () => {
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fireEvent.changeText(getByTestId('agegate-day'), '1a');
     expect(getByTestId('agegate-day').props.value).toBe('1');
   });
 
   it('data invàlida → error i no crida el backend', async () => {
-    const { getByTestId } = render(<AgeGateScreen />);
-    fillDate(getByTestId, '30', '02', '1990');
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fillDate(getByTestId, '30', '02', '1990');
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-submit'));
+      await fireEvent.press(getByTestId('agegate-submit'));
     });
     expect(getByTestId('agegate-error')).toBeTruthy();
     expect(mockConfirmAge).not.toHaveBeenCalled();
@@ -60,20 +60,20 @@ describe('AgeGateScreen', () => {
 
   it('adult → PATCH age-confirmation amb la data ISO', async () => {
     mockConfirmAge.mockResolvedValue(undefined);
-    const { getByTestId } = render(<AgeGateScreen />);
-    fillDate(getByTestId, '7', '3', '1985');
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fillDate(getByTestId, '7', '3', '1985');
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-submit'));
+      await fireEvent.press(getByTestId('agegate-submit'));
     });
     expect(mockConfirmAge).toHaveBeenCalledWith('1985-03-07');
     expect(mockShowAlert).not.toHaveBeenCalled();
   });
 
   it('menor de 16 (validació local) → missatge i logout, sense cridar el backend', async () => {
-    const { getByTestId } = render(<AgeGateScreen />);
-    fillDate(getByTestId, '01', '01', String(new Date().getFullYear() - 12));
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fillDate(getByTestId, '01', '01', String(new Date().getFullYear() - 12));
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-submit'));
+      await fireEvent.press(getByTestId('agegate-submit'));
     });
     expect(mockConfirmAge).not.toHaveBeenCalled();
     expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage', expect.any(Array));
@@ -86,10 +86,10 @@ describe('AgeGateScreen', () => {
 
   it('403 underage del backend → missatge i logout', async () => {
     mockConfirmAge.mockRejectedValue({ code: 'underage' });
-    const { getByTestId } = render(<AgeGateScreen />);
-    fillDate(getByTestId, '01', '01', '2000');
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fillDate(getByTestId, '01', '01', '2000');
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-submit'));
+      await fireEvent.press(getByTestId('agegate-submit'));
     });
     await waitFor(() =>
       expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage', expect.any(Array))
@@ -102,18 +102,18 @@ describe('AgeGateScreen', () => {
 
   it('altres errors → alerta genèrica', async () => {
     mockConfirmAge.mockRejectedValue(new Error('network'));
-    const { getByTestId } = render(<AgeGateScreen />);
-    fillDate(getByTestId, '01', '01', '2000');
+    const { getByTestId } = await render(<AgeGateScreen />);
+    await fillDate(getByTestId, '01', '01', '2000');
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-submit'));
+      await fireEvent.press(getByTestId('agegate-submit'));
     });
     expect(mockShowAlert).toHaveBeenCalledWith('common.error', 'age.confirmError');
   });
 
   it('permet tancar la sessió sense confirmar', async () => {
-    const { getByTestId } = render(<AgeGateScreen />);
+    const { getByTestId } = await render(<AgeGateScreen />);
     await act(async () => {
-      fireEvent.press(getByTestId('agegate-logout'));
+      await fireEvent.press(getByTestId('agegate-logout'));
     });
     expect(mockLogout).toHaveBeenCalled();
   });

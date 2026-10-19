@@ -168,24 +168,24 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el títol "Favorits"', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el títol "Favorits"', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       expect(getByText('Favorits', { exact: false })).toBeTruthy();
     });
 
-    it('hauria de mostrar el comptador de favorits', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el comptador de favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       expect(getByText('(3)')).toBeTruthy();
     });
 
-    it('hauria de renderitzar tots els refugis favorits', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar tots els refugis favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -201,8 +201,8 @@ describe('FavoritesScreen Component', () => {
       mockFavouriteRefugesData = [];
     });
 
-    it('hauria de mostrar missatge quan no hi ha favorits', () => {
-      const { getByText } = render(
+    it('hauria de mostrar missatge quan no hi ha favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -210,16 +210,16 @@ describe('FavoritesScreen Component', () => {
       expect(getByText('Afegeix refugis als teus favorits per veure\'ls aquí')).toBeTruthy();
     });
 
-    it('hauria de mostrar comptador (0) quan no hi ha favorits', () => {
-      const { getByText } = render(
+    it('hauria de mostrar comptador (0) quan no hi ha favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       expect(getByText('(0)')).toBeTruthy();
     });
 
-    it('hauria de mostrar icona de favorit en estat buit', () => {
-      const { getByText } = render(
+    it('hauria de mostrar icona de favorit en estat buit', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -229,21 +229,21 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Navegació a detalls', () => {
-    it('hauria de cridar onViewDetail quan es fa click a una card', () => {
-      const { getByText } = render(
+    it('hauria de cridar onViewDetail quan es fa click a una card', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       // Verificar que el refugi es renderitza i fer click
       const refugeCard = getByText('Refugi de Colomers');
-      fireEvent.press(refugeCard);
+      await fireEvent.press(refugeCard);
       
       // El component crida onViewDetail amb les dades del refugi
       expect(mockOnViewDetail).toHaveBeenCalled();
     });
 
-    it('hauria de passar les dades del refugi amb isFavorite a onViewDetail', () => {
-      const { getByText } = render(
+    it('hauria de passar les dades del refugi amb isFavorite a onViewDetail', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -251,11 +251,11 @@ describe('FavoritesScreen Component', () => {
       expect(getByText('Refugi de Colomers')).toBeTruthy();
     });
 
-    it('hauria de gestionar refugi sense id', () => {
+    it('hauria de gestionar refugi sense id', async () => {
       const refugesWithoutId = [{ ...mockFavouriteRefuges[0], id: undefined }];
       mockFavouriteRefugesData = refugesWithoutId;
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -266,12 +266,12 @@ describe('FavoritesScreen Component', () => {
 
   describe('Navegació al mapa', () => {
     it('hauria de cridar onViewMap i navigate quan es fa click al botó del mapa', async () => {
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const mapButtons = getAllByTestId('map-button');
-      fireEvent.press(mapButtons[0]);
+      await fireEvent.press(mapButtons[0]);
       
       await waitFor(() => {
         expect(mockOnViewMap).toHaveBeenCalled();
@@ -280,12 +280,12 @@ describe('FavoritesScreen Component', () => {
     });
 
     it('hauria de passar les dades del refugi a navigate', async () => {
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const mapButtons = getAllByTestId('map-button');
-      fireEvent.press(mapButtons[0]);
+      await fireEvent.press(mapButtons[0]);
       
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('Map', { selectedRefuge: expect.objectContaining({ name: 'Refugi de Colomers' }) });
@@ -293,14 +293,14 @@ describe('FavoritesScreen Component', () => {
     });
 
     it('hauria de gestionar múltiples clicks al mapa sense duplicar navegacions', async () => {
-      const { getAllByTestId } = render(
+      const { getAllByTestId } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const mapButtons = getAllByTestId('map-button');
       
       // Click al primer refugi
-      fireEvent.press(mapButtons[0]);
+      await fireEvent.press(mapButtons[0]);
       
       await waitFor(() => {
         expect(mockOnViewMap).toHaveBeenCalledTimes(1);
@@ -308,7 +308,7 @@ describe('FavoritesScreen Component', () => {
       });
       
       // Click al segon refugi
-      fireEvent.press(mapButtons[1]);
+      await fireEvent.press(mapButtons[1]);
       
       await waitFor(() => {
         expect(mockOnViewMap).toHaveBeenCalledTimes(2);
@@ -318,8 +318,8 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Actualització de la llista', () => {
-    it('hauria d\'actualitzar la llista quan canvien els favorits', () => {
-      const { getByText } = render(
+    it('hauria d\'actualitzar la llista quan canvien els favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -327,11 +327,11 @@ describe('FavoritesScreen Component', () => {
       expect(getByText('(3)')).toBeTruthy();
     });
 
-    it('hauria de passar de llista buida a mostrar favorits quan s\'actualitza', () => {
+    it('hauria de passar de llista buida a mostrar favorits quan s\'actualitza', async () => {
       // Start with empty
       mockFavouriteRefugesData = [];
       
-      const { getByText } = render(
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -341,8 +341,8 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Propietat isFavorite', () => {
-    it('hauria d\'afegir isFavorite:true a tots els refugis', () => {
-      const { getByText } = render(
+    it('hauria d\'afegir isFavorite:true a tots els refugis', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -351,8 +351,8 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Header fix', () => {
-    it('hauria de mostrar un header fix a la part superior', () => {
-      const { getByText } = render(
+    it('hauria de mostrar un header fix a la part superior', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -362,7 +362,7 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar un refugi amb tots els camps opcionals', () => {
+    it('hauria de gestionar un refugi amb tots els camps opcionals', async () => {
       const minimalRefuge: Location = {
         id: "99",
         name: 'Refugi Mínim',
@@ -371,14 +371,14 @@ describe('FavoritesScreen Component', () => {
       
       mockFavouriteRefugesData = [minimalRefuge];
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       expect(getByText('Refugi Mínim')).toBeTruthy();
     });
 
-    it('hauria de gestionar noms llargs', () => {
+    it('hauria de gestionar noms llargs', async () => {
       const longNameRefuge: Location = {
         id: "99",
         name: 'Refugi amb un nom extremadament llarg que podria causar problemes de layout',
@@ -389,14 +389,14 @@ describe('FavoritesScreen Component', () => {
       
       mockFavouriteRefugesData = [longNameRefuge];
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       expect(getByText('Refugi amb un nom extremadament llarg que podria causar problemes de layout')).toBeTruthy();
     });
 
-    it('hauria de gestionar llistes molt llargues de favorits', () => {
+    it('hauria de gestionar llistes molt llargues de favorits', async () => {
       const manyFavorites = Array.from({ length: 50 }, (_, i) => ({
         id: i,
         name: `Refugi ${i}`,
@@ -407,7 +407,7 @@ describe('FavoritesScreen Component', () => {
       
       mockFavouriteRefugesData = manyFavorites;
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -417,14 +417,14 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Integració amb AuthContext', () => {
-    it('hauria d\'utilitzar favouriteRefuges del context', () => {
-      render(<FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />);
+    it('hauria d\'utilitzar favouriteRefuges del context', async () => {
+      await render(<FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />);
       
       expect(mockUseAuth).toHaveBeenCalled();
     });
 
-    it('hauria de mostrar el nombre correcte de favorits', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre correcte de favorits', async () => {
+      const { getByText } = await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
@@ -433,20 +433,20 @@ describe('FavoritesScreen Component', () => {
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb favorits', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot amb favorits', async () => {
+      const tree = (await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
-      ).toJSON();
+      )).toJSON();
       
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot sense favorits', () => {
+    it('hauria de coincidir amb el snapshot sense favorits', async () => {
       mockFavouriteRefugesData = [];
 
-      const tree = render(
+      const tree = (await render(
         <FavoritesScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
-      ).toJSON();
+      )).toJSON();
       
       expect(tree).toMatchSnapshot();
     });

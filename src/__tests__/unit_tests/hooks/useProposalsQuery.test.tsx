@@ -115,7 +115,7 @@ describe('useProposalsQuery', () => {
     it('hauria de carregar les proposals correctament', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useProposals(), {
+      const { result } = await renderHook(() => useProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -132,7 +132,7 @@ describe('useProposalsQuery', () => {
     it('hauria de carregar proposals amb filtre de status', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([mockProposals[0]]);
 
-      const { result } = renderHook(() => useProposals('pending'), {
+      const { result } = await renderHook(() => useProposals('pending'), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -146,7 +146,7 @@ describe('useProposalsQuery', () => {
     it('hauria de carregar proposals amb filtre de refugeId', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([mockProposals[1]]);
 
-      const { result } = renderHook(() => useProposals(undefined, 'refuge-1'), {
+      const { result } = await renderHook(() => useProposals(undefined, 'refuge-1'), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -161,7 +161,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error de xarxa');
       (RefugeProposalsService.listProposals as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useProposals(), {
+      const { result } = await renderHook(() => useProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -175,7 +175,7 @@ describe('useProposalsQuery', () => {
     it('hauria de carregar les meves proposals correctament', async () => {
       (RefugeProposalsService.listMyProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useMyProposals(), {
+      const { result } = await renderHook(() => useMyProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -190,7 +190,7 @@ describe('useProposalsQuery', () => {
     it('hauria de carregar les meves proposals amb filtre de status', async () => {
       (RefugeProposalsService.listMyProposals as jest.Mock).mockResolvedValue([mockProposals[0]]);
 
-      const { result } = renderHook(() => useMyProposals('pending'), {
+      const { result } = await renderHook(() => useMyProposals('pending'), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -205,7 +205,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error de xarxa');
       (RefugeProposalsService.listMyProposals as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useMyProposals(), {
+      const { result } = await renderHook(() => useMyProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -219,7 +219,7 @@ describe('useProposalsQuery', () => {
     it('hauria de refrescar proposals en mode admin', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useRefreshProposals(), {
+      const { result } = await renderHook(() => useRefreshProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -235,7 +235,7 @@ describe('useProposalsQuery', () => {
     it('hauria de refrescar proposals en mode my', async () => {
       (RefugeProposalsService.listMyProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useRefreshProposals(), {
+      const { result } = await renderHook(() => useRefreshProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -251,7 +251,7 @@ describe('useProposalsQuery', () => {
     it('hauria de refrescar sense filtre de status', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useRefreshProposals(), {
+      const { result } = await renderHook(() => useRefreshProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -265,7 +265,7 @@ describe('useProposalsQuery', () => {
     it('hauria de actualitzar la cache després del refresh', async () => {
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue(mockProposals);
 
-      const { result } = renderHook(() => useRefreshProposals(), {
+      const { result } = await renderHook(() => useRefreshProposals(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -294,7 +294,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -309,7 +309,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -327,7 +327,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -346,7 +346,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -365,7 +365,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error al aprovar');
       (RefugeProposalsService.approveProposal as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -380,12 +380,12 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
       // La mutació és asíncrona, però l'actualització optimista és immediata
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -402,11 +402,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -427,7 +427,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -442,7 +442,7 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -460,7 +460,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error al rebutjar');
       (RefugeProposalsService.rejectProposal as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -475,11 +475,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1', reason: 'Test reason' });
       });
 
@@ -494,11 +494,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listMyProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           proposalId: 'proposal-1', 
           reason: 'Motiu del rebuig' 
@@ -544,7 +544,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta de refugi correctament', async () => {
       (RefugeProposalsService.proposalCreateRefuge as jest.Mock).mockResolvedValue(mockNewProposal);
 
-      const { result } = renderHook(() => useCreateRefugeProposal(), {
+      const { result } = await renderHook(() => useCreateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -558,7 +558,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta amb comentari', async () => {
       (RefugeProposalsService.proposalCreateRefuge as jest.Mock).mockResolvedValue(mockNewProposal);
 
-      const { result } = renderHook(() => useCreateRefugeProposal(), {
+      const { result } = await renderHook(() => useCreateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -576,7 +576,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error al crear');
       (RefugeProposalsService.proposalCreateRefuge as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useCreateRefugeProposal(), {
+      const { result } = await renderHook(() => useCreateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -592,11 +592,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.proposalCreateRefuge as jest.Mock).mockResolvedValue(mockNewProposal);
 
-      const { result } = renderHook(() => useCreateRefugeProposal(), {
+      const { result } = await renderHook(() => useCreateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ payload: mockLocation });
       });
 
@@ -614,11 +614,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.proposalCreateRefuge as jest.Mock).mockResolvedValue(mockNewProposal);
 
-      const { result } = renderHook(() => useCreateRefugeProposal(), {
+      const { result } = await renderHook(() => useCreateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ payload: mockLocation });
       });
 
@@ -651,7 +651,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta d\'actualització correctament', async () => {
       (RefugeProposalsService.proposalEditRefuge as jest.Mock).mockResolvedValue(mockUpdateProposal);
 
-      const { result } = renderHook(() => useUpdateRefugeProposal(), {
+      const { result } = await renderHook(() => useUpdateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -668,7 +668,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta d\'actualització amb comentari', async () => {
       (RefugeProposalsService.proposalEditRefuge as jest.Mock).mockResolvedValue(mockUpdateProposal);
 
-      const { result } = renderHook(() => useUpdateRefugeProposal(), {
+      const { result } = await renderHook(() => useUpdateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -687,7 +687,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error al actualitzar');
       (RefugeProposalsService.proposalEditRefuge as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useUpdateRefugeProposal(), {
+      const { result } = await renderHook(() => useUpdateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -706,11 +706,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.proposalEditRefuge as jest.Mock).mockResolvedValue(mockUpdateProposal);
 
-      const { result } = renderHook(() => useUpdateRefugeProposal(), {
+      const { result } = await renderHook(() => useUpdateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           refugeId: 'refuge-1', 
           payload: mockPartialLocation 
@@ -741,7 +741,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta d\'eliminació correctament', async () => {
       (RefugeProposalsService.proposalDeleteRefuge as jest.Mock).mockResolvedValue(mockDeleteProposal);
 
-      const { result } = renderHook(() => useDeleteRefugeProposal(), {
+      const { result } = await renderHook(() => useDeleteRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -755,7 +755,7 @@ describe('useProposalsQuery', () => {
     it('hauria de crear una proposta d\'eliminació amb comentari', async () => {
       (RefugeProposalsService.proposalDeleteRefuge as jest.Mock).mockResolvedValue(mockDeleteProposal);
 
-      const { result } = renderHook(() => useDeleteRefugeProposal(), {
+      const { result } = await renderHook(() => useDeleteRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -773,7 +773,7 @@ describe('useProposalsQuery', () => {
       const error = new Error('Error al eliminar');
       (RefugeProposalsService.proposalDeleteRefuge as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useDeleteRefugeProposal(), {
+      const { result } = await renderHook(() => useDeleteRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -789,11 +789,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.proposalDeleteRefuge as jest.Mock).mockResolvedValue(mockDeleteProposal);
 
-      const { result } = renderHook(() => useDeleteRefugeProposal(), {
+      const { result } = await renderHook(() => useDeleteRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ refugeId: 'refuge-to-delete' });
       });
 
@@ -812,11 +812,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -833,11 +833,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1', reason: 'Motiu' });
       });
 
@@ -853,11 +853,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -873,11 +873,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-inexistent' });
       });
 
@@ -895,11 +895,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -914,11 +914,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -937,11 +937,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -958,11 +958,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1', reason: 'Test reason' });
       });
 
@@ -979,11 +979,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.rejectProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1', reason: 'Test reason' });
       });
 
@@ -998,11 +998,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.approveProposal as jest.Mock).mockRejectedValue(new Error('API Error'));
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1' });
       });
 
@@ -1017,11 +1017,11 @@ describe('useProposalsQuery', () => {
       
       (RefugeProposalsService.rejectProposal as jest.Mock).mockRejectedValue(new Error('API Error'));
 
-      const { result } = renderHook(() => useRejectProposal(), {
+      const { result } = await renderHook(() => useRejectProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ proposalId: 'proposal-1', reason: 'Test' });
       });
 
@@ -1037,11 +1037,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           proposalId: 'proposal-1',
           proposalType: 'create'
@@ -1060,11 +1060,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           proposalId: 'proposal-1',
           proposalType: 'update',
@@ -1084,11 +1084,11 @@ describe('useProposalsQuery', () => {
       (RefugeProposalsService.approveProposal as jest.Mock).mockResolvedValue(true);
       (RefugeProposalsService.listProposals as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useApproveProposal(), {
+      const { result } = await renderHook(() => useApproveProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           proposalId: 'proposal-1',
           proposalType: 'delete',
@@ -1122,11 +1122,11 @@ describe('useProposalsQuery', () => {
 
       (RefugeProposalsService.proposalEditRefuge as jest.Mock).mockResolvedValue(mockUpdateProposal);
 
-      const { result } = renderHook(() => useUpdateRefugeProposal(), {
+      const { result } = await renderHook(() => useUpdateRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           refugeId: 'refuge-1', 
           payload: { name: 'Updated' }
@@ -1159,11 +1159,11 @@ describe('useProposalsQuery', () => {
 
       (RefugeProposalsService.proposalDeleteRefuge as jest.Mock).mockResolvedValue(mockDeleteProposal);
 
-      const { result } = renderHook(() => useDeleteRefugeProposal(), {
+      const { result } = await renderHook(() => useDeleteRefugeProposal(), {
         wrapper: createWrapper(queryClient),
       });
 
-      act(() => {
+      await act(() => {
         result.current.mutate({ 
           refugeId: 'refuge-1'
         });

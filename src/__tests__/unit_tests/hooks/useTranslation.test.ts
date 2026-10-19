@@ -22,7 +22,7 @@ describe('useTranslation Hook', () => {
   });
 
   describe('Funcionalitat bàsica', () => {
-    it('hauria de cridar el hook original de react-i18next', () => {
+    it('hauria de cridar el hook original de react-i18next', async () => {
       const mockReturnValue = {
         t: jest.fn(),
         i18n: {
@@ -34,13 +34,13 @@ describe('useTranslation Hook', () => {
 
       (useTranslationOriginal as jest.Mock).mockReturnValue(mockReturnValue);
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(useTranslationOriginal).toHaveBeenCalled();
       expect(result.current).toBe(mockReturnValue);
     });
 
-    it('hauria de retornar la funció t', () => {
+    it('hauria de retornar la funció t', async () => {
       const mockT = jest.fn();
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -48,13 +48,13 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.t).toBe(mockT);
       expect(typeof result.current.t).toBe('function');
     });
 
-    it('hauria de retornar l\'objecte i18n', () => {
+    it('hauria de retornar l\'objecte i18n', async () => {
       const mockI18n = {
         language: 'ca',
         changeLanguage: jest.fn(),
@@ -66,26 +66,26 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.i18n).toBe(mockI18n);
     });
 
-    it('hauria de retornar la propietat ready', () => {
+    it('hauria de retornar la propietat ready', async () => {
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
         i18n: {},
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.ready).toBe(true);
     });
   });
 
   describe('Funció de traducció t', () => {
-    it('hauria de permetre traduir claus simples', () => {
+    it('hauria de permetre traduir claus simples', async () => {
       const mockT = jest.fn((key: string) => `translated_${key}`);
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -93,7 +93,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       const translation = result.current.t('common.search');
 
@@ -101,7 +101,7 @@ describe('useTranslation Hook', () => {
       expect(translation).toBe('translated_common.search');
     });
 
-    it('hauria de permetre traduir amb interpolació', () => {
+    it('hauria de permetre traduir amb interpolació', async () => {
       const mockT = jest.fn((key: string, options?: any) => {
         if (key === 'favorites.count' && options?.count) {
           return `${options.count} favorits`;
@@ -115,7 +115,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       const translation = result.current.t('favorites.count', { count: 5 });
 
@@ -123,7 +123,7 @@ describe('useTranslation Hook', () => {
       expect(translation).toBe('5 favorits');
     });
 
-    it('hauria de gestionar traduccions amb múltiples paràmetres', () => {
+    it('hauria de gestionar traduccions amb múltiples paràmetres', async () => {
       const mockT = jest.fn((key: string, options?: any) => {
         if (key === 'greeting' && options) {
           return `Hola ${options.name}, tens ${options.count} missatges`;
@@ -137,7 +137,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       const translation = result.current.t('greeting', { name: 'Joan', count: 3 });
 
@@ -145,7 +145,7 @@ describe('useTranslation Hook', () => {
       expect(translation).toBe('Hola Joan, tens 3 missatges');
     });
 
-    it('hauria de gestionar claus inexistents', () => {
+    it('hauria de gestionar claus inexistents', async () => {
       const mockT = jest.fn((key: string) => key);
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -153,7 +153,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       const translation = result.current.t('nonexistent.key');
 
@@ -163,7 +163,7 @@ describe('useTranslation Hook', () => {
   });
 
   describe('Objecte i18n', () => {
-    it('hauria de proporcionar l\'idioma actual', () => {
+    it('hauria de proporcionar l\'idioma actual', async () => {
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
         i18n: {
@@ -173,15 +173,15 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.i18n.language).toBe('ca');
     });
 
-    it('hauria de proporcionar diferents idiomes', () => {
+    it('hauria de proporcionar diferents idiomes', async () => {
       const languages = ['ca', 'es', 'en', 'fr'];
 
-      languages.forEach(lang => {
+      for (const lang of languages) {
         (useTranslationOriginal as jest.Mock).mockReturnValue({
           t: jest.fn(),
           i18n: {
@@ -191,12 +191,12 @@ describe('useTranslation Hook', () => {
           ready: true,
         });
 
-        const { result } = renderHook(() => useTranslation());
+        const { result } = await renderHook(() => useTranslation());
         expect(result.current.i18n.language).toBe(lang);
-      });
+      }
     });
 
-    it('hauria de proporcionar la funció changeLanguage', () => {
+    it('hauria de proporcionar la funció changeLanguage', async () => {
       const mockChangeLanguage = jest.fn();
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
@@ -207,7 +207,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.i18n.changeLanguage).toBe(mockChangeLanguage);
       expect(typeof result.current.i18n.changeLanguage).toBe('function');
@@ -215,33 +215,33 @@ describe('useTranslation Hook', () => {
   });
 
   describe('Estat ready', () => {
-    it('hauria de reflectir quan les traduccions estan llestes', () => {
+    it('hauria de reflectir quan les traduccions estan llestes', async () => {
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
         i18n: {},
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.ready).toBe(true);
     });
 
-    it('hauria de reflectir quan les traduccions no estan llestes', () => {
+    it('hauria de reflectir quan les traduccions no estan llestes', async () => {
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
         i18n: {},
         ready: false,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current.ready).toBe(false);
     });
   });
 
   describe('Múltiples crides', () => {
-    it('hauria de cridar el hook original cada vegada', () => {
+    it('hauria de cridar el hook original cada vegada', async () => {
       const mockReturnValue = {
         t: jest.fn(),
         i18n: { language: 'ca' },
@@ -250,14 +250,14 @@ describe('useTranslation Hook', () => {
 
       (useTranslationOriginal as jest.Mock).mockReturnValue(mockReturnValue);
 
-      renderHook(() => useTranslation());
-      renderHook(() => useTranslation());
-      renderHook(() => useTranslation());
+      await renderHook(() => useTranslation());
+      await renderHook(() => useTranslation());
+      await renderHook(() => useTranslation());
 
       expect(useTranslationOriginal).toHaveBeenCalledTimes(3);
     });
 
-    it('hauria de retornar valors consistents', () => {
+    it('hauria de retornar valors consistents', async () => {
       const mockReturnValue = {
         t: jest.fn((key: string) => `translated_${key}`),
         i18n: { language: 'ca' },
@@ -266,15 +266,15 @@ describe('useTranslation Hook', () => {
 
       (useTranslationOriginal as jest.Mock).mockReturnValue(mockReturnValue);
 
-      const { result: result1 } = renderHook(() => useTranslation());
-      const { result: result2 } = renderHook(() => useTranslation());
+      const { result: result1 } = await renderHook(() => useTranslation());
+      const { result: result2 } = await renderHook(() => useTranslation());
 
       expect(result1.current.t('test')).toBe(result2.current.t('test'));
     });
   });
 
   describe('Re-renders', () => {
-    it('hauria de mantenir la mateixa funció t entre re-renders', () => {
+    it('hauria de mantenir la mateixa funció t entre re-renders', async () => {
       const mockT = jest.fn();
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -282,16 +282,16 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result, rerender } = renderHook(() => useTranslation());
+      const { result, rerender } = await renderHook(() => useTranslation());
 
       const initialT = result.current.t;
 
-      rerender({});
+      await rerender({});
 
       expect(result.current.t).toBe(initialT);
     });
 
-    it('hauria de mantenir el mateix objecte i18n entre re-renders', () => {
+    it('hauria de mantenir el mateix objecte i18n entre re-renders', async () => {
       const mockI18n = { language: 'ca' };
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: jest.fn(),
@@ -299,18 +299,18 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result, rerender } = renderHook(() => useTranslation());
+      const { result, rerender } = await renderHook(() => useTranslation());
 
       const initialI18n = result.current.i18n;
 
-      rerender({});
+      await rerender({});
 
       expect(result.current.i18n).toBe(initialI18n);
     });
   });
 
   describe('Casos especials', () => {
-    it('hauria de gestionar claus amb caràcters especials', () => {
+    it('hauria de gestionar claus amb caràcters especials', async () => {
       const mockT = jest.fn((key: string) => `translated_${key}`);
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -318,14 +318,14 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       result.current.t('common.special-key_with.dots');
 
       expect(mockT).toHaveBeenCalledWith('common.special-key_with.dots');
     });
 
-    it('hauria de gestionar claus buides', () => {
+    it('hauria de gestionar claus buides', async () => {
       const mockT = jest.fn((key: string) => key || 'empty');
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -333,14 +333,14 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       const translation = result.current.t('');
 
       expect(mockT).toHaveBeenCalledWith('');
     });
 
-    it('hauria de gestionar opcions de traducció buides', () => {
+    it('hauria de gestionar opcions de traducció buides', async () => {
       const mockT = jest.fn((key: string, options?: any) => key);
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -348,14 +348,14 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       result.current.t('test.key', {});
 
       expect(mockT).toHaveBeenCalledWith('test.key', {});
     });
 
-    it('hauria de gestionar valors null i undefined en opcions', () => {
+    it('hauria de gestionar valors null i undefined en opcions', async () => {
       const mockT = jest.fn((key: string, options?: any) => key);
       (useTranslationOriginal as jest.Mock).mockReturnValue({
         t: mockT,
@@ -363,7 +363,7 @@ describe('useTranslation Hook', () => {
         ready: true,
       });
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       result.current.t('test.key', { value: null, other: undefined });
 
@@ -372,7 +372,7 @@ describe('useTranslation Hook', () => {
   });
 
   describe('Integració amb propietats addicionals', () => {
-    it('hauria de proporcionar propietats addicionals de react-i18next', () => {
+    it('hauria de proporcionar propietats addicionals de react-i18next', async () => {
       const additionalProps = {
         t: jest.fn(),
         i18n: { language: 'ca' },
@@ -384,7 +384,7 @@ describe('useTranslation Hook', () => {
 
       (useTranslationOriginal as jest.Mock).mockReturnValue(additionalProps);
 
-      const { result } = renderHook(() => useTranslation());
+      const { result } = await renderHook(() => useTranslation());
 
       expect(result.current).toEqual(additionalProps);
     });

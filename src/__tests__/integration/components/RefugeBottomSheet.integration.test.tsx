@@ -119,8 +119,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Renderització i visibilitat', () => {
-    it('no hauria de renderitzar quan isVisible és false', () => {
-      const { queryByText } = renderWithProviders(
+    it('no hauria de renderitzar quan isVisible és false', async () => {
+      const { queryByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={false}
@@ -135,8 +135,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(queryByText('Refugi de Colomers')).toBeNull();
     });
 
-    it('hauria de renderitzar quan isVisible és true', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de renderitzar quan isVisible és true', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -151,8 +151,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(getByText('Refugi de Colomers')).toBeTruthy();
     });
 
-    it('hauria de mostrar la informació bàsica del refugi', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar la informació bàsica del refugi', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -172,8 +172,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Badges i tipus', () => {
-    it('hauria de mostrar el badge de tipus', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el badge de tipus', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -188,8 +188,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(getByTestId('badge-type')).toBeTruthy();
     });
 
-    it('hauria de mostrar el badge de condició si existeix', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el badge de condició si existeix', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -204,13 +204,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(getByTestId('badge-condition')).toBeTruthy();
     });
 
-    it('no hauria de mostrar el badge de condició si no existeix', () => {
+    it('no hauria de mostrar el badge de condició si no existeix', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, condition: undefined },
         isLoading: false,
       };
 
-      const { queryByTestId } = renderWithProviders(
+      const { queryByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -227,8 +227,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Imatge del refugi', () => {
-    it('hauria de mostrar la imatge del refugi', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar la imatge del refugi', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -245,13 +245,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(image.props.source.uri).toBe(mockRefugeData.images_metadata[0].url);
     });
 
-    it('hauria de mostrar una imatge per defecte si no hi ha images_metadata', () => {
+    it('hauria de mostrar una imatge per defecte si no hi ha images_metadata', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, images_metadata: [] },
         isLoading: false,
       };
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -271,8 +271,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Interaccions', () => {
-    it('hauria de cridar onClose quan es fa clic al backdrop', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de cridar onClose quan es fa clic al backdrop', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -285,13 +285,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       );
 
       const backdrop = getByTestId('backdrop');
-      fireEvent.press(backdrop);
+      await fireEvent.press(backdrop);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
     it('hauria de permetre pressionar el botó de favorit', async () => {
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -307,15 +307,15 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       
       // Verificar que el botó existeix i es pot pressionar
       expect(favoriteButton).toBeTruthy();
-      fireEvent.press(favoriteButton);
+      await fireEvent.press(favoriteButton);
       
       await waitFor(() => {
         expect(mockToggleFavourite).toHaveBeenCalled();
       });
     });
 
-    it('hauria de cridar onViewDetails quan es fa clic al botó de detalls', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de cridar onViewDetails quan es fa clic al botó de detalls', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -328,20 +328,20 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       );
 
       const detailsButton = getByText('Veure detalls');
-      fireEvent.press(detailsButton);
+      await fireEvent.press(detailsButton);
 
       expect(mockOnViewDetails).toHaveBeenCalled();
     });
   });
 
   describe('Camps opcionals i casos límit', () => {
-    it('hauria de gestionar altitud undefined', () => {
+    it('hauria de gestionar altitud undefined', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, altitude: undefined },
         isLoading: false,
       };
 
-      const { queryByText } = renderWithProviders(
+      const { queryByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -357,13 +357,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(queryByText(/2135 m/)).toBeNull();
     });
 
-    it('hauria de mostrar "Unknown" si no hi ha regió', () => {
+    it('hauria de mostrar "Unknown" si no hi ha regió', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, region: undefined },
         isLoading: false,
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -378,13 +378,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(getByText(/Unknown/)).toBeTruthy();
     });
 
-    it('hauria de gestionar refugeId buit sense errors', () => {
+    it('hauria de gestionar refugeId buit sense errors', async () => {
       mockUseRefugeReturn = {
         data: null,
         isLoading: false,
       };
 
-      const { queryByTestId } = renderWithProviders(
+      const { queryByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId=""
           isVisible={true}
@@ -400,13 +400,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(queryByTestId('bottom-sheet')).toBeNull();
     });
 
-    it('hauria de gestionar places = 0', () => {
+    it('hauria de gestionar places = 0', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, places: 0 },
         isLoading: false,
       };
 
-      const { getByText } = renderWithProviders(
+      const { getByText } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -424,8 +424,8 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Safe Area i layout', () => {
-    it('hauria de respectar els insets de safe area', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de respectar els insets de safe area', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -444,13 +444,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Diferents tipus de refugis', () => {
-    it('hauria de mostrar correctament un refugi de tipus 0', () => {
+    it('hauria de mostrar correctament un refugi de tipus 0', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, type: 0 },
         isLoading: false,
       };
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -465,13 +465,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
       expect(getByTestId('badge-type')).toBeTruthy();
     });
 
-    it('hauria de mostrar correctament un refugi sense tipus', () => {
+    it('hauria de mostrar correctament un refugi sense tipus', async () => {
       mockUseRefugeReturn = {
         data: { ...mockRefugeData, type: undefined },
         isLoading: false,
       };
 
-      const { getByTestId } = renderWithProviders(
+      const { getByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}
@@ -491,13 +491,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
     const conditions = [1, 2, 3];
 
     conditions.forEach(condition => {
-      it(`hauria de mostrar correctament un refugi amb condició ${condition}`, () => {
+      it(`hauria de mostrar correctament un refugi amb condició ${condition}`, async () => {
         mockUseRefugeReturn = {
           data: { ...mockRefugeData, condition },
           isLoading: false,
         };
 
-        const { getByTestId } = renderWithProviders(
+        const { getByTestId } = await renderWithProviders(
           <RefugeBottomSheet
             refugeId="1"
             isVisible={true}
@@ -515,13 +515,13 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
   });
 
   describe('Estat de carrega', () => {
-    it('no hauria de renderitzar mentre carrega', () => {
+    it('no hauria de renderitzar mentre carrega', async () => {
       mockUseRefugeReturn = {
         data: null,
         isLoading: true,
       };
 
-      const { queryByTestId } = renderWithProviders(
+      const { queryByTestId } = await renderWithProviders(
         <RefugeBottomSheet
           refugeId="1"
           isVisible={true}

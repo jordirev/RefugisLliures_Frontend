@@ -206,7 +206,7 @@ describe('Integració: pujada de mitjans (intent → PUT → confirm)', () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
-    const { result } = renderHook(() => useMediaUpload({ showAlert }), { wrapper });
+    const { result } = await renderHook(() => useMediaUpload({ showAlert }), { wrapper });
 
     MediaUploadService.confirmRightsForSession();
     let uploadResult: any;

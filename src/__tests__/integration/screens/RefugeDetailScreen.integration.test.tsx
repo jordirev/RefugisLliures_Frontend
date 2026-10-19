@@ -158,8 +158,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar el nom del refugi', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de renderitzar el nom del refugi', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -172,8 +172,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByText('Refugi de Colomèrs')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'altitud', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar l\'altitud', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -186,8 +186,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByText('2135m')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nombre de places', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar el nombre de places', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -200,8 +200,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByText('16')).toBeTruthy();
     });
 
-    it('hauria de mostrar la descripció', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar la descripció', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -216,8 +216,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
   });
 
   describe('Interaccions', () => {
-    it('hauria de cridar onBack quan es fa clic al botó de tornar', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de cridar onBack quan es fa clic al botó de tornar', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -228,13 +228,13 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       );
 
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       expect(mockOnBack).toHaveBeenCalled();
     });
 
-    it('hauria de mostrar el botó de favorit', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de favorit', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -247,8 +247,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByTestId('favorite-button')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó de navegació', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de navegació', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -263,8 +263,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
   });
 
   describe('Botons de descàrrega', () => {
-    it('hauria de mostrar el botó de descàrrega GPX', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de descàrrega GPX', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -277,8 +277,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByTestId('download-gpx-button')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó de descàrrega KML', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de descàrrega KML', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -293,8 +293,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
   });
 
   describe('Botons d\'enllaços externs', () => {
-    it('hauria de mostrar el botó de rutes (Wikiloc)', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de rutes (Wikiloc)', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}
@@ -307,8 +307,8 @@ describe('RefugeDetailScreen - Tests d\'integració', () => {
       expect(getByTestId('routes-button')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó de temps (Windy)', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de mostrar el botó de temps (Windy)', async () => {
+      const { getByTestId } = await renderWithProviders(
         <RefugeDetailScreen
           refugeId="1"
           onBack={mockOnBack}

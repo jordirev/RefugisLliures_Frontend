@@ -103,7 +103,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de fer fetch dels dubtes d\'un refugi', async () => {
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([mockDoubtDTO]);
 
-      const { result } = renderHook(() => useDoubts('refuge-1'), {
+      const { result } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -117,7 +117,7 @@ describe('useDoubtsQuery Hooks', () => {
     });
 
     it('no hauria de fer fetch si no hi ha refugeId', async () => {
-      const { result } = renderHook(() => useDoubts(undefined), {
+      const { result } = await renderHook(() => useDoubts(undefined), {
         wrapper: createWrapper(),
       });
 
@@ -130,7 +130,7 @@ describe('useDoubtsQuery Hooks', () => {
         new Error('Network error')
       );
 
-      const { result } = renderHook(() => useDoubts('refuge-1'), {
+      const { result } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -144,7 +144,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de retornar llista buida si no hi ha dubtes', async () => {
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([]);
 
-      const { result } = renderHook(() => useDoubts('refuge-1'), {
+      const { result } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -161,7 +161,7 @@ describe('useDoubtsQuery Hooks', () => {
       const newDoubtDTO = { ...mockDoubtDTO, id: 'doubt-new', answers_count: 0, answers: [] };
       (DoubtsService.createDoubt as jest.Mock).mockResolvedValue(newDoubtDTO);
 
-      const { result } = renderHook(() => useCreateDoubt(), {
+      const { result } = await renderHook(() => useCreateDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -182,7 +182,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Primer carreguem dubtes existents
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([mockDoubtDTO]);
       
-      const { result: doubtsResult } = renderHook(() => useDoubts('refuge-1'), {
+      const { result: doubtsResult } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -194,7 +194,7 @@ describe('useDoubtsQuery Hooks', () => {
       const newDoubtDTO = { id: 'doubt-new', refuge_id: 'refuge-1', text: 'Nou dubte', creator_uid: 'user-new', answers_count: 0, answers: [] };
       (DoubtsService.createDoubt as jest.Mock).mockResolvedValue(newDoubtDTO);
 
-      const { result: createResult } = renderHook(() => useCreateDoubt(), {
+      const { result: createResult } = await renderHook(() => useCreateDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -215,7 +215,7 @@ describe('useDoubtsQuery Hooks', () => {
         new Error('No tens permisos')
       );
 
-      const { result } = renderHook(() => useCreateDoubt(), {
+      const { result } = await renderHook(() => useCreateDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -240,7 +240,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria d\'eliminar un dubte', async () => {
       (DoubtsService.deleteDoubt as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteDoubt(), {
+      const { result } = await renderHook(() => useDeleteDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -258,7 +258,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Primer carreguem dubtes existents
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([mockDoubtDTO]);
       
-      const { result: doubtsResult } = renderHook(() => useDoubts('refuge-1'), {
+      const { result: doubtsResult } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -269,7 +269,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Ara eliminem el dubte
       (DoubtsService.deleteDoubt as jest.Mock).mockResolvedValue(undefined);
 
-      const { result: deleteResult } = renderHook(() => useDeleteDoubt(), {
+      const { result: deleteResult } = await renderHook(() => useDeleteDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -290,7 +290,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de crear una resposta', async () => {
       (DoubtsService.createAnswer as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result } = renderHook(() => useCreateAnswer(), {
+      const { result } = await renderHook(() => useCreateAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -310,7 +310,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de crear una resposta a una resposta', async () => {
       (DoubtsService.createAnswerReply as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result } = renderHook(() => useCreateAnswerReply(), {
+      const { result } = await renderHook(() => useCreateAnswerReply(), {
         wrapper: createWrapper(),
       });
 
@@ -335,7 +335,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria d\'eliminar una resposta', async () => {
       (DoubtsService.deleteAnswer as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteAnswer(), {
+      const { result } = await renderHook(() => useDeleteAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -362,7 +362,7 @@ describe('useDoubtsQuery Hooks', () => {
       };
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([doubtWithAnswers]);
       
-      const { result: doubtsResult } = renderHook(() => useDoubts('refuge-1'), {
+      const { result: doubtsResult } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -373,7 +373,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Ara eliminem una resposta
       (DoubtsService.deleteAnswer as jest.Mock).mockResolvedValue(undefined);
 
-      const { result: deleteResult } = renderHook(() => useDeleteAnswer(), {
+      const { result: deleteResult } = await renderHook(() => useDeleteAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -395,7 +395,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de gestionar eliminació quan no hi ha cache', async () => {
       (DoubtsService.deleteAnswer as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteAnswer(), {
+      const { result } = await renderHook(() => useDeleteAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -421,7 +421,7 @@ describe('useDoubtsQuery Hooks', () => {
       };
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([doubtWithoutAnswers]);
       
-      const { result: doubtsResult } = renderHook(() => useDoubts('refuge-1'), {
+      const { result: doubtsResult } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -432,7 +432,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Ara creem una resposta
       (DoubtsService.createAnswer as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result: createResult } = renderHook(() => useCreateAnswer(), {
+      const { result: createResult } = await renderHook(() => useCreateAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -453,7 +453,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de gestionar crear resposta quan no hi ha cache', async () => {
       (DoubtsService.createAnswer as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result } = renderHook(() => useCreateAnswer(), {
+      const { result } = await renderHook(() => useCreateAnswer(), {
         wrapper: createWrapper(),
       });
 
@@ -479,7 +479,7 @@ describe('useDoubtsQuery Hooks', () => {
       };
       (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([doubtWithAnswer]);
       
-      const { result: doubtsResult } = renderHook(() => useDoubts('refuge-1'), {
+      const { result: doubtsResult } = await renderHook(() => useDoubts('refuge-1'), {
         wrapper: createWrapper(),
       });
 
@@ -490,7 +490,7 @@ describe('useDoubtsQuery Hooks', () => {
       // Ara creem una resposta a la resposta
       (DoubtsService.createAnswerReply as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result: createResult } = renderHook(() => useCreateAnswerReply(), {
+      const { result: createResult } = await renderHook(() => useCreateAnswerReply(), {
         wrapper: createWrapper(),
       });
 
@@ -512,7 +512,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de gestionar crear resposta a resposta quan no hi ha cache', async () => {
       (DoubtsService.createAnswerReply as jest.Mock).mockResolvedValue(mockAnswerDTO);
 
-      const { result } = renderHook(() => useCreateAnswerReply(), {
+      const { result } = await renderHook(() => useCreateAnswerReply(), {
         wrapper: createWrapper(),
       });
 
@@ -538,7 +538,7 @@ describe('useDoubtsQuery Hooks', () => {
       const newDoubtDTO = { id: 'doubt-new', refuge_id: 'refuge-no-cache', text: 'Nou dubte', creator_uid: 'user-new', answers_count: 0, answers: [] };
       (DoubtsService.createDoubt as jest.Mock).mockResolvedValue(newDoubtDTO);
 
-      const { result } = renderHook(() => useCreateDoubt(), {
+      const { result } = await renderHook(() => useCreateDoubt(), {
         wrapper: createWrapper(),
       });
 
@@ -563,7 +563,7 @@ describe('useDoubtsQuery Hooks', () => {
     it('hauria de gestionar eliminació quan no hi ha cache', async () => {
       (DoubtsService.deleteDoubt as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() => useDeleteDoubt(), {
+      const { result } = await renderHook(() => useDeleteDoubt(), {
         wrapper: createWrapper(),
       });
 

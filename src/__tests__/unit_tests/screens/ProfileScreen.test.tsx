@@ -15,6 +15,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ProfileScreen } from '../../../screens/ProfileScreen';
 import { Location } from '../../../models';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -200,30 +201,30 @@ describe('ProfileScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar correctament', async () => {
+      const { toJSON } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar el nom de l\'usuari', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nom de l\'usuari', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('TestUser')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'avatar de l\'usuari si existeix', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar l\'avatar de l\'usuari si existeix', async () => {
+      const { container } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = render(
+    it('snapshot test', async () => {
+      const { toJSON } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(toJSON()).toMatchSnapshot();
@@ -231,36 +232,36 @@ describe('ProfileScreen', () => {
   });
 
   describe('Estadístiques', () => {
-    it('hauria de mostrar el títol d\'estadístiques', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el títol d\'estadístiques', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('Estadístiques')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nombre de refugis visitats', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre de refugis visitats', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('2')).toBeTruthy(); // 2 visited refuges
     });
 
-    it('hauria de mostrar el nombre de renovacions', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre de renovacions', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('5')).toBeTruthy(); // num_renovated_refuges
     });
 
-    it('hauria de mostrar el nombre de contribucions', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre de contribucions', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('10')).toBeTruthy(); // num_shared_experiences
     });
 
-    it('hauria de mostrar el nombre de fotos', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el nombre de fotos', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('3')).toBeTruthy(); // uploaded_photos_keys.length
@@ -268,46 +269,46 @@ describe('ProfileScreen', () => {
   });
 
   describe('Refugis visitats', () => {
-    it('hauria de mostrar el títol de refugis visitats', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el títol de refugis visitats', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('Refugis visitats')).toBeTruthy();
     });
 
-    it('hauria de mostrar el comptador de refugis visitats', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el comptador de refugis visitats', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('(2)')).toBeTruthy();
     });
 
-    it('hauria de renderitzar les targetes de refugis visitats', () => {
-      const { getByTestId } = render(
+    it('hauria de renderitzar les targetes de refugis visitats', async () => {
+      const { getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByTestId('refuge-card-1')).toBeTruthy();
       expect(getByTestId('refuge-card-2')).toBeTruthy();
     });
 
-    it('hauria de cridar onViewDetail quan es prem una targeta', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onViewDetail quan es prem una targeta', async () => {
+      const { getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const detailButton = getByTestId('refuge-detail-1');
-      fireEvent.press(detailButton);
+      await fireEvent.press(detailButton);
       
       expect(mockOnViewDetail).toHaveBeenCalledWith(mockVisitedRefuges[0]);
     });
 
-    it('hauria de cridar onViewMap i navegar quan es prem veure mapa', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onViewMap i navegar quan es prem veure mapa', async () => {
+      const { getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const mapButton = getByTestId('refuge-map-1');
-      fireEvent.press(mapButton);
+      await fireEvent.press(mapButton);
       
       expect(mockOnViewMap).toHaveBeenCalledWith(mockVisitedRefuges[0]);
       expect(mockNavigate).toHaveBeenCalledWith('Map', expect.objectContaining({
@@ -321,15 +322,15 @@ describe('ProfileScreen', () => {
       mockVisitedRefugesData = [];
     });
 
-    it('hauria de mostrar missatge quan no hi ha refugis visitats', () => {
-      const { getByText } = render(
+    it('hauria de mostrar missatge quan no hi ha refugis visitats', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('No has visitat cap refugi')).toBeTruthy();
     });
 
-    it('hauria de mostrar el missatge descriptiu', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el missatge descriptiu', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       expect(getByText('Explora refugis i marca\'ls com a visitats')).toBeTruthy();
@@ -341,23 +342,23 @@ describe('ProfileScreen', () => {
       mockIsLoadingVisited = true;
     });
 
-    it('hauria de mostrar loading quan es carreguen refugis visitats', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar loading quan es carreguen refugis visitats', async () => {
+      const { container } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
-      const activityIndicators = UNSAFE_root.findAllByType(require('react-native').ActivityIndicator);
+      const activityIndicators = findAllByType(container, require('react-native').ActivityIndicator);
       expect(activityIndicators.length).toBeGreaterThan(0);
     });
   });
 
   describe('Navegació a Settings', () => {
-    it('hauria de navegar a Settings quan es prem el botó', () => {
-      const { getByTestId } = render(
+    it('hauria de navegar a Settings quan es prem el botó', async () => {
+      const { getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       const settingsButton = getByTestId('settings-button');
-      fireEvent.press(settingsButton);
+      await fireEvent.press(settingsButton);
       
       expect(mockNavigate).toHaveBeenCalledWith('Settings');
     });
@@ -365,19 +366,19 @@ describe('ProfileScreen', () => {
 
   describe('Avatar Popup', () => {
     it('hauria de mostrar avatar popup quan es prem l\'avatar', async () => {
-      const { UNSAFE_root, getByTestId } = render(
+      const { container, getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       // Trobar el touchable de l'avatar (dins avatarContainer)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // El primer TouchableOpacity després del settings és l'avatar
       const avatarTouchable = touchables.find(t => 
         t.props.activeOpacity === 0.8
       );
       
       if (avatarTouchable) {
-        fireEvent.press(avatarTouchable);
+        await fireEvent.press(avatarTouchable);
         
         await waitFor(() => {
           expect(getByTestId('avatar-popup')).toBeTruthy();
@@ -386,16 +387,16 @@ describe('ProfileScreen', () => {
     });
 
     it('hauria de tancar el popup quan es prem close', async () => {
-      const { UNSAFE_root, getByTestId, queryByTestId } = render(
+      const { container, getByTestId, queryByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       // Obrir popup
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const avatarTouchable = touchables.find(t => t.props.activeOpacity === 0.8);
       
       if (avatarTouchable) {
-        fireEvent.press(avatarTouchable);
+        await fireEvent.press(avatarTouchable);
         
         await waitFor(() => {
           expect(getByTestId('avatar-popup')).toBeTruthy();
@@ -403,7 +404,7 @@ describe('ProfileScreen', () => {
         
         // Tancar popup
         const closeButton = getByTestId('avatar-popup-close');
-        fireEvent.press(closeButton);
+        await fireEvent.press(closeButton);
         
         await waitFor(() => {
           expect(queryByTestId('avatar-popup')).toBeNull();
@@ -412,16 +413,16 @@ describe('ProfileScreen', () => {
     });
 
     it('hauria de cridar refetch quan s\'actualitza l\'avatar', async () => {
-      const { UNSAFE_root, getByTestId } = render(
+      const { container, getByTestId } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       
       // Obrir popup
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const avatarTouchable = touchables.find(t => t.props.activeOpacity === 0.8);
       
       if (avatarTouchable) {
-        fireEvent.press(avatarTouchable);
+        await fireEvent.press(avatarTouchable);
         
         await waitFor(() => {
           expect(getByTestId('avatar-popup')).toBeTruthy();
@@ -429,7 +430,7 @@ describe('ProfileScreen', () => {
         
         // Actualitzar avatar
         const updateButton = getByTestId('avatar-popup-update');
-        fireEvent.press(updateButton);
+        await fireEvent.press(updateButton);
         
         await waitFor(() => {
           expect(mockRefetchUserQuery).toHaveBeenCalled();
@@ -444,8 +445,8 @@ describe('ProfileScreen', () => {
       mockUserFromQuery = null as any;
     });
 
-    it('hauria d\'usar displayName de Firebase quan no hi ha userFromQuery', () => {
-      const { toJSON } = render(
+    it('hauria d\'usar displayName de Firebase quan no hi ha userFromQuery', async () => {
+      const { toJSON } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       // Quan userFromQuery és null, s'ha d'usar firebaseUser
@@ -461,8 +462,8 @@ describe('ProfileScreen', () => {
       };
     });
 
-    it('hauria de mostrar inicials quan no hi ha avatar', () => {
-      const { getByText } = render(
+    it('hauria de mostrar inicials quan no hi ha avatar', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       // Hauria de mostrar les inicials (TE per TestUser)
@@ -471,8 +472,8 @@ describe('ProfileScreen', () => {
   });
 
   describe('Member since date', () => {
-    it('hauria de formatar correctament la data de membre', () => {
-      const { getByText } = render(
+    it('hauria de formatar correctament la data de membre', async () => {
+      const { getByText } = await render(
         <ProfileScreen onViewDetail={mockOnViewDetail} onViewMap={mockOnViewMap} />
       );
       // El mock retorna el text amb la data

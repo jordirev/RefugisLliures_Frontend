@@ -384,9 +384,9 @@ const createQueryClient = () => new QueryClient({
   },
 });
 
-const renderAppNavigator = () => {
+const renderAppNavigator = async () => {
   const queryClient = createQueryClient();
-  return render(
+  return await render(
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <AppNavigator />
@@ -405,51 +405,51 @@ describe('AppNavigator', () => {
       mockBackendUser = { uid: 'test-uid', username: 'Test', age_confirmed: true };
     });
 
-    it('hauria de mostrar AgeGateScreen si age_confirmed === false', () => {
+    it('hauria de mostrar AgeGateScreen si age_confirmed === false', async () => {
       mockBackendUser = { uid: 'test-uid', username: 'Test', age_confirmed: false };
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       expect(getByTestId('age-gate-screen')).toBeTruthy();
       expect(queryByTestId('tabs-navigator')).toBeNull();
     });
 
-    it('no hauria de bloquejar si age_confirmed és undefined (backend antic)', () => {
+    it('no hauria de bloquejar si age_confirmed és undefined (backend antic)', async () => {
       mockBackendUser = { uid: 'test-uid', username: 'Test' };
-      const { queryByTestId, getByTestId } = renderAppNavigator();
+      const { queryByTestId, getByTestId } = await renderAppNavigator();
       expect(queryByTestId('age-gate-screen')).toBeNull();
       expect(getByTestId('tabs-navigator')).toBeTruthy();
     });
 
-    it('no hauria de bloquejar si age_confirmed === true', () => {
-      const { queryByTestId } = renderAppNavigator();
+    it('no hauria de bloquejar si age_confirmed === true', async () => {
+      const { queryByTestId } = await renderAppNavigator();
       expect(queryByTestId('age-gate-screen')).toBeNull();
     });
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el component', () => {
-      const { getByTestId } = renderAppNavigator();
+    it('hauria de renderitzar el component', async () => {
+      const { getByTestId } = await renderAppNavigator();
       expect(getByTestId('tabs-navigator')).toBeTruthy();
     });
 
-    it('hauria de renderitzar sense errors', () => {
-      expect(() => renderAppNavigator()).not.toThrow();
+    it('hauria de renderitzar sense errors', async () => {
+      await expect(renderAppNavigator()).resolves.not.toBeInstanceOf(Error);
     });
 
-    it('hauria de renderitzar el TabsNavigator com a pantalla principal', () => {
-      const { getByTestId } = renderAppNavigator();
+    it('hauria de renderitzar el TabsNavigator com a pantalla principal', async () => {
+      const { getByTestId } = await renderAppNavigator();
       expect(getByTestId('tabs-navigator')).toBeTruthy();
     });
   });
 
   describe('Gestió del Bottom Sheet', () => {
     it('hauria de mostrar el bottom sheet quan es selecciona una ubicació', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Initially no bottom sheet
       expect(queryByTestId('refuge-bottom-sheet')).toBeNull();
       
       // Trigger location select
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-bottom-sheet')).toBeTruthy();
@@ -457,17 +457,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar el bottom sheet quan es prem close', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-bottom-sheet')).toBeTruthy();
       });
       
       // Close bottom sheet
-      fireEvent.press(getByTestId('close-bottom-sheet-button'));
+      await fireEvent.press(getByTestId('close-bottom-sheet-button'));
       
       await waitFor(() => {
         expect(queryByTestId('refuge-bottom-sheet')).toBeNull();
@@ -475,9 +475,9 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de mostrar el refugeId correcte al bottom sheet', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       
       await waitFor(() => {
         expect(getByTestId('bottom-sheet-refuge-id').props.children).toBe('test-id');
@@ -487,13 +487,13 @@ describe('AppNavigator', () => {
 
   describe('Pantalla de detall', () => {
     it('hauria de mostrar la pantalla de detall quan es crida onViewDetail', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Initially no detail screen
       expect(queryByTestId('refuge-detail-screen')).toBeNull();
       
       // Trigger view detail
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-detail-screen')).toBeTruthy();
@@ -501,17 +501,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar la pantalla de detall quan es prem back', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-detail-screen')).toBeTruthy();
       });
       
       // Close detail screen
-      fireEvent.press(getByTestId('back-button'));
+      await fireEvent.press(getByTestId('back-button'));
       
       await waitFor(() => {
         expect(queryByTestId('refuge-detail-screen')).toBeNull();
@@ -519,9 +519,9 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de mostrar el refugeId correcte a la pantalla de detall', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-id').props.children).toBe('detail-id');
@@ -531,17 +531,17 @@ describe('AppNavigator', () => {
 
   describe('Funcionalitat de delete', () => {
     it('hauria de mostrar el popup de delete quan es prem delete', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-detail-screen')).toBeTruthy();
       });
       
       // Trigger delete
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       
       await waitFor(() => {
         expect(getByTestId('delete-popup')).toBeTruthy();
@@ -549,17 +549,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar el popup quan es cancel·la', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger delete
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Cancel delete
-      fireEvent.press(getByTestId('cancel-delete-button'));
+      await fireEvent.press(getByTestId('cancel-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -567,17 +567,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de cridar mutate quan es confirma delete', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger delete
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(mockDeleteMutate).toHaveBeenCalled();
@@ -587,14 +587,14 @@ describe('AppNavigator', () => {
 
   describe('Funcionalitat d\'edició', () => {
     it('hauria de mostrar la pantalla d\'edició quan es prem edit', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Trigger edit
-      fireEvent.press(getByTestId('edit-button'));
+      await fireEvent.press(getByTestId('edit-button'));
       
       await waitFor(() => {
         expect(getByTestId('edit-refuge-screen')).toBeTruthy();
@@ -602,17 +602,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar la pantalla d\'edició quan es cancel·la', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger edit
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('edit-button'));
+      await fireEvent.press(getByTestId('edit-button'));
       await waitFor(() => expect(getByTestId('edit-refuge-screen')).toBeTruthy());
       
       // Cancel edit
-      fireEvent.press(getByTestId('cancel-edit-button'));
+      await fireEvent.press(getByTestId('cancel-edit-button'));
       
       await waitFor(() => {
         expect(queryByTestId('edit-refuge-screen')).toBeNull();
@@ -622,14 +622,14 @@ describe('AppNavigator', () => {
 
   describe('Navegació a Doubts i Experiences', () => {
     it('hauria de mostrar DoubtsScreen quan es navega', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to doubts
-      fireEvent.press(getByTestId('doubts-button'));
+      await fireEvent.press(getByTestId('doubts-button'));
       
       await waitFor(() => {
         expect(getByTestId('doubts-screen')).toBeTruthy();
@@ -637,17 +637,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar DoubtsScreen quan es prem close', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen and navigate to doubts
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('doubts-button'));
+      await fireEvent.press(getByTestId('doubts-button'));
       await waitFor(() => expect(getByTestId('doubts-screen')).toBeTruthy());
       
       // Close doubts
-      fireEvent.press(getByTestId('close-doubts-button'));
+      await fireEvent.press(getByTestId('close-doubts-button'));
       
       await waitFor(() => {
         expect(queryByTestId('doubts-screen')).toBeNull();
@@ -655,14 +655,14 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de mostrar ExperiencesScreen quan es navega', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to experiences
-      fireEvent.press(getByTestId('experiences-button'));
+      await fireEvent.press(getByTestId('experiences-button'));
       
       await waitFor(() => {
         expect(getByTestId('experiences-screen')).toBeTruthy();
@@ -670,17 +670,17 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de tancar ExperiencesScreen quan es prem close', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen and navigate to experiences
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('experiences-button'));
+      await fireEvent.press(getByTestId('experiences-button'));
       await waitFor(() => expect(getByTestId('experiences-screen')).toBeTruthy());
       
       // Close experiences
-      fireEvent.press(getByTestId('close-experiences-button'));
+      await fireEvent.press(getByTestId('close-experiences-button'));
       
       await waitFor(() => {
         expect(queryByTestId('experiences-screen')).toBeNull();
@@ -690,36 +690,36 @@ describe('AppNavigator', () => {
 
   describe('Gestió de favorits i navegació', () => {
     it('hauria de cridar toggle favorite des del bottom sheet', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // Toggle favorite - should not throw
-      expect(() => fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).resolves.not.toBeInstanceOf(Error);
     });
 
     it('hauria de cridar navigate des del bottom sheet', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // Navigate - should not throw
-      expect(() => fireEvent.press(getByTestId('bottom-sheet-navigate'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('bottom-sheet-navigate'))).resolves.not.toBeInstanceOf(Error);
     });
 
     it('hauria de mostrar detall des del bottom sheet', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // View details
-      fireEvent.press(getByTestId('bottom-sheet-view-details'));
+      await fireEvent.press(getByTestId('bottom-sheet-view-details'));
       
       await waitFor(() => {
         // Bottom sheet should close
@@ -732,10 +732,10 @@ describe('AppNavigator', () => {
 
   describe('onViewMap handler', () => {
     it('hauria de gestionar onViewMap des del TabsNavigator', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Trigger view map
-      fireEvent.press(getByTestId('view-map-tabs-button'));
+      await fireEvent.press(getByTestId('view-map-tabs-button'));
       
       await waitFor(() => {
         expect(getByTestId('refuge-bottom-sheet')).toBeTruthy();
@@ -744,22 +744,22 @@ describe('AppNavigator', () => {
   });
 
   describe('Snapshot tests', () => {
-    it('hauria de coincidir amb el snapshot - estat inicial', () => {
-      const { toJSON } = renderAppNavigator();
+    it('hauria de coincidir amb el snapshot - estat inicial', async () => {
+      const { toJSON } = await renderAppNavigator();
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Error handling', () => {
     it('hauria de gestionar onToggleFavorite sense locationId', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open bottom sheet and trigger toggle without ID
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // This should not throw
-      expect(() => fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).resolves.not.toBeInstanceOf(Error);
     });
 
     it('hauria de gestionar delete mutation error', async () => {
@@ -768,17 +768,17 @@ describe('AppNavigator', () => {
         onError(new Error('Delete failed'));
       });
 
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger delete
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete - should trigger error handler
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       // Popup should close on error
       await waitFor(() => {
@@ -792,17 +792,17 @@ describe('AppNavigator', () => {
         onSuccess();
       });
 
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger delete
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete - should trigger success handler
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -815,26 +815,26 @@ describe('AppNavigator', () => {
         onError(new Error("Cannot read property 'long' of undefined"));
       });
 
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger delete
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete - should not show error alert for coord errors
-      expect(() => fireEvent.press(getByTestId('confirm-delete-button'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('confirm-delete-button'))).resolves.not.toBeInstanceOf(Error);
     });
   });
 
   describe('Navegació i overlays adicionals', () => {
     it('hauria de verificar la gestió de detail screen overlay', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen through view detail button
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // The detail screen overlay should be visible
@@ -842,82 +842,82 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de gestionar navegació a experiences i tancar', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to experiences
-      fireEvent.press(getByTestId('experiences-button'));
+      await fireEvent.press(getByTestId('experiences-button'));
       await waitFor(() => expect(getByTestId('experiences-screen')).toBeTruthy());
       
       // Close experiences
-      fireEvent.press(getByTestId('close-experiences-button'));
+      await fireEvent.press(getByTestId('close-experiences-button'));
       
       // Should close experiences screen
       await waitFor(() => expect(queryByTestId('experiences-screen')).toBeNull());
     });
 
     it('hauria de gestionar navegació a doubts i tancar', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to doubts
-      fireEvent.press(getByTestId('doubts-button'));
+      await fireEvent.press(getByTestId('doubts-button'));
       await waitFor(() => expect(getByTestId('doubts-screen')).toBeTruthy());
       
       // Close doubts
-      fireEvent.press(getByTestId('close-doubts-button'));
+      await fireEvent.press(getByTestId('close-doubts-button'));
       
       // Should close doubts screen
       await waitFor(() => expect(queryByTestId('doubts-screen')).toBeNull());
     });
 
     it('hauria de obrir bottom sheet des de view map a tabs', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // View map from tabs should open bottom sheet
-      fireEvent.press(getByTestId('view-map-tabs-button'));
+      await fireEvent.press(getByTestId('view-map-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
     });
 
     it('hauria de gestionar location select des de tabs', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Select location from tabs
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
     });
   });
 
   describe('handleToggleFavorite edge cases', () => {
     it('hauria de retornar early si locationId és undefined', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // This tests the path where locationId is passed
       // The early return for undefined is covered by default mock behavior
-      expect(() => fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).resolves.not.toBeInstanceOf(Error);
     });
   });
 
   describe('onViewMap handlers', () => {
     it('hauria de gestionar onViewMap des de detail screen overlay', async () => {
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Trigger view map - should close detail and show bottom sheet
-      fireEvent.press(getByTestId('view-map-detail-button'));
+      await fireEvent.press(getByTestId('view-map-detail-button'));
       
       // Detail screen should be closed after view map
       await waitFor(() => {
@@ -932,16 +932,16 @@ describe('AppNavigator', () => {
         onError(new Error('coord error in message'));
       });
 
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete - should skip alert for coord errors
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -953,15 +953,15 @@ describe('AppNavigator', () => {
         onError(new Error("Cannot read property 'lat' of undefined"));
       });
 
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -973,15 +973,15 @@ describe('AppNavigator', () => {
         onError({});
       });
 
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -989,15 +989,15 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de passar comment undefined quan és string buit', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       expect(mockDeleteMutate).toHaveBeenCalled();
     });
@@ -1005,20 +1005,20 @@ describe('AppNavigator', () => {
 
   describe('Navigate handler', () => {
     it('hauria de cridar handleNavigate des del detail screen', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Trigger navigate
-      expect(() => fireEvent.press(getByTestId('navigate-button'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('navigate-button'))).resolves.not.toBeInstanceOf(Error);
     });
   });
 
   describe('CustomAlert visibility', () => {
     it('hauria de renderitzar CustomAlert quan alertConfig existeix', async () => {
       // This test covers the alertConfig && <CustomAlert ... /> branch
-      const { queryByTestId } = renderAppNavigator();
+      const { queryByTestId } = await renderAppNavigator();
       
       // By default alertConfig is null so CustomAlert won't render
       expect(queryByTestId('custom-alert')).toBeNull();
@@ -1037,7 +1037,7 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de renderitzar CustomAlert quan alertConfig i alertVisible són true', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
@@ -1045,7 +1045,7 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de mostrar title i message correctes', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       await waitFor(() => {
         expect(getByTestId('alert-title').props.children).toBe('Test Title');
@@ -1054,13 +1054,13 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de cridar hideAlert quan es tanca l\'alerta', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
       });
       
-      fireEvent.press(getByTestId('dismiss-alert-button'));
+      await fireEvent.press(getByTestId('dismiss-alert-button'));
       expect(mockHideAlert).toHaveBeenCalled();
     });
   });
@@ -1087,27 +1087,27 @@ describe('AppNavigator', () => {
       jest.restoreAllMocks();
     });
 
-    it('hauria de registrar el listener de BackHandler en Android', () => {
-      renderAppNavigator();
+    it('hauria de registrar el listener de BackHandler en Android', async () => {
+      await renderAppNavigator();
       expect(mockBackHandler.addEventListener).toHaveBeenCalledWith('hardwareBackPress', expect.any(Function));
     });
 
-    it('hauria de retornar false quan no hi ha overlays oberts', () => {
-      renderAppNavigator();
+    it('hauria de retornar false quan no hi ha overlays oberts', async () => {
+      await renderAppNavigator();
       expect(backPressCallback).not.toBeNull();
       const result = backPressCallback!();
       expect(result).toBe(false);
     });
 
     it('hauria de gestionar back press quan ExperiencesScreen està obert', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to experiences
-      fireEvent.press(getByTestId('experiences-button'));
+      await fireEvent.press(getByTestId('experiences-button'));
       await waitFor(() => expect(getByTestId('experiences-screen')).toBeTruthy());
       
       // Simulate back press - should return true indicating it handled the event
@@ -1116,14 +1116,14 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de gestionar back press quan DoubtsScreen està obert', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen first
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Navigate to doubts
-      fireEvent.press(getByTestId('doubts-button'));
+      await fireEvent.press(getByTestId('doubts-button'));
       await waitFor(() => expect(getByTestId('doubts-screen')).toBeTruthy());
       
       // Simulate back press - should return true indicating it handled the event
@@ -1132,13 +1132,13 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de gestionar back press quan EditRefugeScreen està obert', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen and trigger edit
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('edit-button'));
+      await fireEvent.press(getByTestId('edit-button'));
       await waitFor(() => expect(getByTestId('edit-refuge-screen')).toBeTruthy());
       
       // Simulate back press - should return true indicating it handled the event
@@ -1147,10 +1147,10 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de gestionar back press quan DetailScreen està obert', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open detail screen
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Simulate back press - should return true indicating it handled the event
@@ -1159,10 +1159,10 @@ describe('AppNavigator', () => {
     });
 
     it('hauria de gestionar back press quan BottomSheet està obert', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
       // Open bottom sheet
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // Simulate back press - should return true indicating it handled the event
@@ -1182,13 +1182,13 @@ describe('AppNavigator', () => {
       require('react-native').Platform.OS = originalPlatform.OS;
     });
 
-    it('no hauria de registrar BackHandler en iOS', () => {
+    it('no hauria de registrar BackHandler en iOS', async () => {
       const mockBackHandler = {
         addEventListener: jest.fn(),
       };
       jest.spyOn(require('react-native'), 'BackHandler', 'get').mockReturnValue(mockBackHandler);
       
-      renderAppNavigator();
+      await renderAppNavigator();
       
       // In iOS, BackHandler listener should not be set up
       // The useEffect returns early
@@ -1202,18 +1202,18 @@ describe('AppNavigator', () => {
         onSuccess();
       });
 
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Open detail screen
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
       // Trigger delete
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Confirm delete
-      fireEvent.press(getByTestId('confirm-delete-button'));
+      await fireEvent.press(getByTestId('confirm-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();
@@ -1225,24 +1225,24 @@ describe('AppNavigator', () => {
   describe('handleToggleFavorite error handling', () => {
     it('hauria de mostrar alerta si hi ha error en toggle favorite', async () => {
       // Mock useFavourite to throw - this tests the error catch block
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('location-select-button'));
+      await fireEvent.press(getByTestId('location-select-button'));
       await waitFor(() => expect(getByTestId('refuge-bottom-sheet')).toBeTruthy());
       
       // The toggle favorite should not throw even if there's internal error handling
-      expect(() => fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).not.toThrow();
+      await expect(fireEvent.press(getByTestId('bottom-sheet-toggle-favorite'))).resolves.not.toBeInstanceOf(Error);
     });
   });
 
   describe('onNavigate handler', () => {
     it('hauria de mostrar alerta amb nom del refugi quan es navega', async () => {
-      const { getByTestId } = renderAppNavigator();
+      const { getByTestId } = await renderAppNavigator();
       
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('navigate-button'));
+      await fireEvent.press(getByTestId('navigate-button'));
       
       // Should call showAlert with navigation message
       expect(mockShowAlert).toHaveBeenCalled();
@@ -1253,17 +1253,17 @@ describe('AppNavigator', () => {
     it('hauria de retornar early si refugeToDelete és undefined en confirmDelete', async () => {
       // This is an edge case where handleConfirmDelete is called but refugeToDelete is not set
       // In practice this shouldn't happen due to UI flow, but we test the guard
-      const { getByTestId, queryByTestId } = renderAppNavigator();
+      const { getByTestId, queryByTestId } = await renderAppNavigator();
       
       // Just verify the component renders and delete flow works normally
-      fireEvent.press(getByTestId('view-detail-tabs-button'));
+      await fireEvent.press(getByTestId('view-detail-tabs-button'));
       await waitFor(() => expect(getByTestId('refuge-detail-screen')).toBeTruthy());
       
-      fireEvent.press(getByTestId('delete-button'));
+      await fireEvent.press(getByTestId('delete-button'));
       await waitFor(() => expect(getByTestId('delete-popup')).toBeTruthy());
       
       // Cancel instead of confirm to test the cancel flow
-      fireEvent.press(getByTestId('cancel-delete-button'));
+      await fireEvent.press(getByTestId('cancel-delete-button'));
       
       await waitFor(() => {
         expect(queryByTestId('delete-popup')).toBeNull();

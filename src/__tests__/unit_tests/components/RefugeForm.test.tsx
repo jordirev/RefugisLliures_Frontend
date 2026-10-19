@@ -17,6 +17,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { RefugeForm } from '../../../components/RefugeForm';
 import { Location } from '../../../models';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock fetch for elevation API
 global.fetch = jest.fn(() =>
@@ -107,8 +108,8 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Renderització mode create', () => {
-    it('hauria de renderitzar correctament en mode create', () => {
-      const { getByText, toJSON } = render(
+    it('hauria de renderitzar correctament en mode create', async () => {
+      const { getByText, toJSON } = await render(
         <RefugeForm {...defaultProps} />
       );
 
@@ -118,8 +119,8 @@ describe('RefugeForm Component', () => {
       expect(getByText('createRefuge.coordinates')).toBeTruthy();
     });
 
-    it('hauria de tenir els camps buits en mode create', () => {
-      const { getByTestId, queryAllByTestId } = render(
+    it('hauria de tenir els camps buits en mode create', async () => {
+      const { getByTestId, queryAllByTestId } = await render(
         <RefugeForm {...defaultProps} />
       );
 
@@ -129,15 +130,15 @@ describe('RefugeForm Component', () => {
       expect(textInputs.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('snapshot test - mode create', () => {
-      const { toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('snapshot test - mode create', async () => {
+      const { toJSON } = await render(<RefugeForm {...defaultProps} />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Renderització mode edit', () => {
-    it('hauria de renderitzar amb dades inicials en mode edit', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de renderitzar amb dades inicials en mode edit', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -151,8 +152,8 @@ describe('RefugeForm Component', () => {
       expect(getByDisplayValue('1.2345')).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb dades inicials sense links', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de renderitzar amb dades inicials sense links', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialDataWithoutLinks}
@@ -164,8 +165,8 @@ describe('RefugeForm Component', () => {
       expect(getByDisplayValue('Refugi de Test')).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb dades inicials sense info_comp', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de renderitzar amb dades inicials sense info_comp', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialDataWithoutInfoComp}
@@ -177,8 +178,8 @@ describe('RefugeForm Component', () => {
       expect(getByDisplayValue('Refugi de Test')).toBeTruthy();
     });
 
-    it('snapshot test - mode edit', () => {
-      const { toJSON } = render(
+    it('snapshot test - mode edit', async () => {
+      const { toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -192,159 +193,159 @@ describe('RefugeForm Component', () => {
 
   describe('Validació del formulari', () => {
     it('hauria de no cridar onSubmit quan el formulari és invàlid', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeForm {...defaultProps} />
       );
 
       // Intentar submit sense omplir el nom
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // El callback no s'hauria d'haver cridat si hi ha errors
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar el formulari en submit', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeForm {...defaultProps} />
       );
 
       // Intentar submit sense omplir res
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // La funció onSubmit no s'hauria d'haver cridat si el formulari és invàlid
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar que l\'altitud sigui un enter positiu', async () => {
-      const { getByText } = render(
+      const { getByText } = await render(
         <RefugeForm {...defaultProps} />
       );
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // La validació s'hauria d'haver executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar que l\'altitud no superi 8800m', async () => {
-      const { toJSON } = render(<RefugeForm {...defaultProps} />);
+      const { toJSON } = await render(<RefugeForm {...defaultProps} />);
       // El component hauria de renderitzar correctament
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de validar coordenades amb coma', () => {
-      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar coordenades amb coma', async () => {
+      const { getByPlaceholderText, getByText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42,567'); // amb coma
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1,234'); // amb coma
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42,567'); // amb coma
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1,234'); // amb coma
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de validar nom massa llarg (>100 caràcters)', () => {
-      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar nom massa llarg (>100 caràcters)', async () => {
+      const { getByPlaceholderText, getByText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       const longName = 'A'.repeat(101);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), longName);
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), longName);
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de limitar descripció a màxim 3000 caràcters', () => {
-      const { getByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de limitar descripció a màxim 3000 caràcters', async () => {
+      const { getByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // El component té maxLength=3000 i només accepta text si length <= 3000
       const maxDescription = 'A'.repeat(3000);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.descriptionPlaceholder'), maxDescription);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.descriptionPlaceholder'), maxDescription);
 
       // Text dins del límit s'accepta
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de limitar regió a màxim 100 caràcters', () => {
-      const { getByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de limitar regió a màxim 100 caràcters', async () => {
+      const { getByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // El component té maxLength=100 i només accepta text si length <= 100
       const maxRegion = 'A'.repeat(100);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), maxRegion);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), maxRegion);
 
       // Text dins del límit s'accepta
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de limitar departament a màxim 100 caràcters', () => {
-      const { getByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de limitar departament a màxim 100 caràcters', async () => {
+      const { getByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // El component té maxLength=100 i només accepta text si length <= 100
       const maxDept = 'A'.repeat(100);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), maxDept);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), maxDept);
 
       // Text dins del límit s'accepta
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de validar places amb text invàlid', () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar places amb text invàlid', async () => {
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
       
       const placesInputs = getAllByPlaceholderText('0');
       if (placesInputs.length > 1) {
-        fireEvent.changeText(placesInputs[1], 'abc');
+        await fireEvent.changeText(placesInputs[1], 'abc');
       }
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de validar link amb format invàlid', () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar link amb format invàlid', async () => {
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
-      fireEvent.changeText(getByPlaceholderText('createRefuge.linkPlaceholder'), 'invalid-link');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.linkPlaceholder'), 'invalid-link');
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de acceptar link amb www.', () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de acceptar link amb www.', async () => {
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
-      fireEvent.changeText(getByPlaceholderText('createRefuge.linkPlaceholder'), 'www.example.com');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.linkPlaceholder'), 'www.example.com');
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // El link www. és vàlid
     });
   });
 
   describe('Gestió d\'amenities', () => {
-    it('hauria de renderitzar tots els toggles d\'amenities', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar tots els toggles d\'amenities', async () => {
+      const { getByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -357,8 +358,8 @@ describe('RefugeForm Component', () => {
       expect(getByText('refuge.details.amenities')).toBeTruthy();
     });
 
-    it('hauria de permetre toggle d\'amenities', () => {
-      const { getByText } = render(
+    it('hauria de permetre toggle d\'amenities', async () => {
+      const { getByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -373,8 +374,8 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Gestió d\'enllaços', () => {
-    it('hauria de permetre afegir nous enllaços', () => {
-      const { getByText, queryAllByPlaceholderText } = render(
+    it('hauria de permetre afegir nous enllaços', async () => {
+      const { getByText, queryAllByPlaceholderText } = await render(
         <RefugeForm {...defaultProps} />
       );
 
@@ -383,19 +384,19 @@ describe('RefugeForm Component', () => {
       const addLinkButton = getByText(/createRefuge\.addLink/);
       expect(addLinkButton).toBeTruthy();
       
-      fireEvent.press(addLinkButton);
+      await fireEvent.press(addLinkButton);
       // Després de prémer, hauria d'haver-hi més camps d'enllaços
     });
 
     it('hauria de mostrar la secció de links', async () => {
-      const { getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Verificar que el component renderitza la secció de links
       expect(getByText('createRefuge.links')).toBeTruthy();
     });
 
-    it('hauria de permetre eliminar enllaços', () => {
-      const { getByText, UNSAFE_root } = render(
+    it('hauria de permetre eliminar enllaços', async () => {
+      const { getByText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -408,19 +409,19 @@ describe('RefugeForm Component', () => {
       expect(getByText('createRefuge.links')).toBeTruthy();
       
       // Buscar el botó d'eliminar (-)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const removeButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '-');
       });
 
       if (removeButtons.length > 0) {
-        fireEvent.press(removeButtons[0]);
+        await fireEvent.press(removeButtons[0]);
       }
     });
 
-    it('hauria de permetre modificar un enllaç existent', () => {
-      const { getByDisplayValue, toJSON } = render(
+    it('hauria de permetre modificar un enllaç existent', async () => {
+      const { getByDisplayValue, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -430,7 +431,7 @@ describe('RefugeForm Component', () => {
       );
 
       const linkInput = getByDisplayValue('https://example.com');
-      fireEvent.changeText(linkInput, 'https://newlink.com');
+      await fireEvent.changeText(linkInput, 'https://newlink.com');
       
       expect(toJSON()).toBeTruthy();
     });
@@ -439,22 +440,22 @@ describe('RefugeForm Component', () => {
   describe('Submit i Cancel', () => {
     it('hauria de cridar onSubmit amb dades vàlides', async () => {
       // No hi ha botó cancel visible al formulari, només submit
-      const { getByText, getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByText, getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir camps requerits
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test Refuge');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test Refuge');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       const submitButton = getByText('createRefuge.submit');
       expect(submitButton).toBeTruthy();
     });
 
     it('no hauria de cridar onSubmit si el formulari és invàlid', async () => {
-      const { getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByText } = await render(<RefugeForm {...defaultProps} />);
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockOnSubmit).not.toHaveBeenCalled();
@@ -462,23 +463,23 @@ describe('RefugeForm Component', () => {
     });
 
     it('hauria de cridar onSubmit amb formulari vàlid complert', async () => {
-      const { getByText, getByPlaceholderText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByText, getByPlaceholderText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir tots els camps
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test Refuge');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
-      fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), 'Pirineus');
-      fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), 'Catalunya');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test Refuge');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), 'Pirineus');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), 'Catalunya');
       
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], '2000');
+        await fireEvent.changeText(altitudeInputs[0], '2000');
       }
       
       const submitButton = getByText('createRefuge.submit');
       await act(async () => {
-        fireEvent.press(submitButton);
+        await fireEvent.press(submitButton);
       });
     });
 
@@ -486,7 +487,7 @@ describe('RefugeForm Component', () => {
       const errorOnSubmit = jest.fn().mockRejectedValue(new Error('Error de xarxa'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       
-      const { getByText, getByPlaceholderText } = render(
+      const { getByText, getByPlaceholderText } = await render(
         <RefugeForm
           mode="create"
           onSubmit={errorOnSubmit}
@@ -494,13 +495,13 @@ describe('RefugeForm Component', () => {
         />
       );
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       const submitButton = getByText('createRefuge.submit');
       await act(async () => {
-        fireEvent.press(submitButton);
+        await fireEvent.press(submitButton);
       });
 
       consoleSpy.mockRestore();
@@ -511,10 +512,10 @@ describe('RefugeForm Component', () => {
     it('hauria de fer fetch de l\'elevació quan lat i long són vàlids', async () => {
       jest.useFakeTimers();
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       // El fetch s'hauria de cridar amb debounce
       jest.runAllTimers();
@@ -529,17 +530,17 @@ describe('RefugeForm Component', () => {
     it('no hauria de fer fetch si l\'usuari ha editat manualment l\'altitud', async () => {
       jest.useFakeTimers();
 
-      const { getByPlaceholderText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       // Primer editar l'altitud manualment
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], '2500');
+        await fireEvent.changeText(altitudeInputs[0], '2500');
       }
 
       // Després canviar coordenades
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       jest.runAllTimers();
       jest.useRealTimers();
@@ -551,10 +552,10 @@ describe('RefugeForm Component', () => {
       
       (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API error'));
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       jest.runAllTimers();
       
@@ -574,10 +575,10 @@ describe('RefugeForm Component', () => {
         json: () => Promise.resolve({}),
       });
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       jest.runAllTimers();
       
@@ -596,10 +597,10 @@ describe('RefugeForm Component', () => {
         json: () => Promise.resolve({ results: [] }),
       });
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       jest.runAllTimers();
       
@@ -614,10 +615,10 @@ describe('RefugeForm Component', () => {
       jest.useFakeTimers();
       (global.fetch as jest.Mock).mockClear();
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('42.1234'), 'invalid');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), 'also-invalid');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), 'invalid');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), 'also-invalid');
 
       jest.runAllTimers();
       
@@ -629,8 +630,8 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Mode edit - detecció de canvis', () => {
-    it('hauria de detectar canvis en els camps', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en els camps', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -641,14 +642,14 @@ describe('RefugeForm Component', () => {
 
       // Modificar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Refugi Modificat');
+      await fireEvent.changeText(nameInput, 'Refugi Modificat');
 
       // El component hauria de detectar el canvi
       expect(getByDisplayValue('Refugi Modificat')).toBeTruthy();
     });
 
-    it('hauria de detectar canvis en coordenades', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en coordenades', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -658,13 +659,13 @@ describe('RefugeForm Component', () => {
       );
 
       const latInput = getByDisplayValue('42.5678');
-      fireEvent.changeText(latInput, '42.9999');
+      await fireEvent.changeText(latInput, '42.9999');
 
       expect(getByDisplayValue('42.9999')).toBeTruthy();
     });
 
-    it('hauria de detectar canvis en tipus', () => {
-      const { UNSAFE_root, toJSON } = render(
+    it('hauria de detectar canvis en tipus', async () => {
+      const { container, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -676,8 +677,8 @@ describe('RefugeForm Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de detectar canvis en condició', () => {
-      const { toJSON } = render(
+    it('hauria de detectar canvis en condició', async () => {
+      const { toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -690,7 +691,7 @@ describe('RefugeForm Component', () => {
     });
 
     it('hauria de requerir comentari mínim de 50 caràcters en mode edit', async () => {
-      const { getByText, getByDisplayValue, queryByText } = render(
+      const { getByText, getByDisplayValue, queryByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -701,12 +702,12 @@ describe('RefugeForm Component', () => {
 
       // Modificar un camp
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou nom del refugi');
+      await fireEvent.changeText(nameInput, 'Nou nom del refugi');
 
       // Intentar submit sense comentari suficient
       // El botó en mode edit és 'createRefuge.submit'
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // Esperar que es mostrin errors
       await waitFor(() => {
@@ -716,7 +717,7 @@ describe('RefugeForm Component', () => {
     });
 
     it('hauria de validar comentari massa llarg en mode edit', async () => {
-      const { getByText, getByDisplayValue, queryByPlaceholderText } = render(
+      const { getByText, getByDisplayValue, queryByPlaceholderText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -726,48 +727,48 @@ describe('RefugeForm Component', () => {
       );
 
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou nom');
+      await fireEvent.changeText(nameInput, 'Nou nom');
 
       const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'A'.repeat(3001));
+        await fireEvent.changeText(commentInput, 'A'.repeat(3001));
       }
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
   });
 
   describe('Badge selectors', () => {
-    it('hauria de renderitzar el selector de tipus i condició', () => {
-      const { getByText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de renderitzar el selector de tipus i condició', async () => {
+      const { getByText } = await render(<RefugeForm {...defaultProps} />);
 
       expect(getByText('refuge.details.typeAndCondition')).toBeTruthy();
     });
 
-    it('hauria de mostrar instruccions per editar badges', () => {
-      const { getByText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de mostrar instruccions per editar badges', async () => {
+      const { getByText } = await render(<RefugeForm {...defaultProps} />);
 
       expect(getByText('createRefuge.pressToEdit')).toBeTruthy();
     });
 
-    it('hauria de permetre expandir el selector de tipus', () => {
-      const { UNSAFE_root, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre expandir el selector de tipus', async () => {
+      const { container, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // Buscar BadgeType
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       expect(touchables.length).toBeGreaterThan(0);
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de permetre expandir el selector de condició', () => {
-      const { UNSAFE_root, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre expandir el selector de condició', async () => {
+      const { container, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // Buscar BadgeCondition
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       expect(touchables.length).toBeGreaterThan(0);
 
       expect(toJSON()).toBeTruthy();
@@ -775,72 +776,72 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Gestió de camps', () => {
-    it('hauria de permetre canviar el nom', () => {
-      const { getByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar el nom', async () => {
+      const { getByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
       
       const nameInput = getByPlaceholderText('createRefuge.namePlaceholder');
-      fireEvent.changeText(nameInput, 'Nou Refugi');
+      await fireEvent.changeText(nameInput, 'Nou Refugi');
       
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de permetre canviar les coordenades', () => {
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar les coordenades', async () => {
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
       
       const latInput = getByPlaceholderText('42.1234');
       const longInput = getByPlaceholderText('1.12345');
       
-      fireEvent.changeText(latInput, '42.5678');
-      fireEvent.changeText(longInput, '1.9876');
+      await fireEvent.changeText(latInput, '42.5678');
+      await fireEvent.changeText(longInput, '1.9876');
     });
 
-    it('hauria de permetre canviar l\'altitud', () => {
-      const { getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar l\'altitud', async () => {
+      const { getAllByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
       
       // El placeholder d'altitud és "0"
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], '2500');
+        await fireEvent.changeText(altitudeInputs[0], '2500');
       }
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de permetre canviar les places', () => {
-      const { getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar les places', async () => {
+      const { getAllByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
       
       // El placeholder de places és "0" (el segon)
       const placesInputs = getAllByPlaceholderText('0');
       if (placesInputs.length > 1) {
-        fireEvent.changeText(placesInputs[1], '30');
+        await fireEvent.changeText(placesInputs[1], '30');
       }
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de permetre canviar la descripció', () => {
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar la descripció', async () => {
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
       
       const descInput = getByPlaceholderText('createRefuge.descriptionPlaceholder');
-      fireEvent.changeText(descInput, 'Una descripció del refugi');
+      await fireEvent.changeText(descInput, 'Una descripció del refugi');
     });
 
-    it('hauria de permetre canviar la regió', () => {
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar la regió', async () => {
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
       
       const regionInput = getByPlaceholderText('createRefuge.regionPlaceholder');
-      fireEvent.changeText(regionInput, 'Pirineus');
+      await fireEvent.changeText(regionInput, 'Pirineus');
     });
 
-    it('hauria de permetre canviar el departament', () => {
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de permetre canviar el departament', async () => {
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
       
       const deptInput = getByPlaceholderText('createRefuge.departementPlaceholder');
-      fireEvent.changeText(deptInput, 'Catalunya');
+      await fireEvent.changeText(deptInput, 'Catalunya');
     });
   });
 
   describe('Gestió d\'enllaços complet', () => {
-    it('hauria de permetre eliminar enllaços i deixar un buit', () => {
-      const { UNSAFE_root, toJSON } = render(
+    it('hauria de permetre eliminar enllaços i deixar un buit', async () => {
+      const { container, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -850,14 +851,14 @@ describe('RefugeForm Component', () => {
       );
 
       // Eliminar tots els links hauria de deixar un camp buit
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const removeButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '-');
       });
 
       if (removeButtons.length > 0) {
-        fireEvent.press(removeButtons[0]);
+        await fireEvent.press(removeButtons[0]);
       }
       
       expect(toJSON()).toBeTruthy();
@@ -865,8 +866,8 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Toggle d\'amenities complet', () => {
-    it('hauria de permetre activar i desactivar amenities', () => {
-      const { getByText, UNSAFE_root, toJSON } = render(
+    it('hauria de permetre activar i desactivar amenities', async () => {
+      const { getByText, container, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -876,11 +877,11 @@ describe('RefugeForm Component', () => {
       );
 
       // Buscar els switches d'amenities
-      const switches = UNSAFE_root.findAllByType(require('react-native').Switch);
+      const switches = findAllByType(container, require('react-native').Switch);
       
       if (switches.length > 0) {
         // Toggle el primer switch
-        fireEvent(switches[0], 'valueChange', !switches[0].props.value);
+        await fireEvent(switches[0], 'valueChange', !switches[0].props.value);
       }
 
       expect(toJSON()).toBeTruthy();
@@ -888,56 +889,56 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Validacions específiques', () => {
-    it('hauria de validar coordenades fora de rang', () => {
-      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar coordenades fora de rang', async () => {
+      const { getByPlaceholderText, getByText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // Coordenades invàlides
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '200'); // lat invàlida
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '200'); // long invàlida
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '200'); // lat invàlida
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '200'); // long invàlida
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de validar altitud negativa', () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar altitud negativa', async () => {
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
       
       // El placeholder d'altitud és "0"
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], '-100');
+        await fireEvent.changeText(altitudeInputs[0], '-100');
       }
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de validar nom massa curt', () => {
-      const { getByPlaceholderText, getByText, toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de validar nom massa curt', async () => {
+      const { getByPlaceholderText, getByText, toJSON } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'AB'); // Nom massa curt
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'AB'); // Nom massa curt
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Comentari en mode edit', () => {
-    it('hauria de mostrar camp de comentari quan hi ha canvis', () => {
-      const { getByDisplayValue, toJSON } = render(
+    it('hauria de mostrar camp de comentari quan hi ha canvis', async () => {
+      const { getByDisplayValue, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -948,13 +949,13 @@ describe('RefugeForm Component', () => {
 
       // Modificar un camp
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom');
+      await fireEvent.changeText(nameInput, 'Nou Nom');
 
       expect(toJSON()).toBeTruthy();
     });
 
     it('hauria de validar comentari mínim de 50 caràcters', async () => {
-      const { getByDisplayValue, getByText, getByPlaceholderText, toJSON } = render(
+      const { getByDisplayValue, getByText, getByPlaceholderText, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -965,11 +966,11 @@ describe('RefugeForm Component', () => {
 
       // Modificar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+      await fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
 
       // Intentar submit
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockOnSubmit).not.toHaveBeenCalled();
@@ -977,7 +978,7 @@ describe('RefugeForm Component', () => {
     });
 
     it('hauria de permetre submit amb comentari vàlid', async () => {
-      const { getByDisplayValue, getByText, getByPlaceholderText, queryByPlaceholderText, toJSON } = render(
+      const { getByDisplayValue, getByText, getByPlaceholderText, queryByPlaceholderText, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -988,12 +989,12 @@ describe('RefugeForm Component', () => {
 
       // Modificar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+      await fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
 
       // Buscar el camp de comentari (apareix quan hi ha canvis)
       const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari');
+        await fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari');
       }
 
       expect(toJSON()).toBeTruthy();
@@ -1001,47 +1002,47 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Selecció d\'imatge', () => {
-    it('hauria de renderitzar la zona de selecció d\'imatge', () => {
-      const { toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de renderitzar la zona de selecció d\'imatge', async () => {
+      const { toJSON } = await render(<RefugeForm {...defaultProps} />);
 
       // El component es renderitza correctament
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar alerta quan es prem imatge', () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de mostrar alerta quan es prem imatge', async () => {
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       // Buscar el touchable de la imatge
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // El primer touchable pot ser la zona d'imatge
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
     });
   });
 
   describe('Scroll to error', () => {
     it('hauria de fer scroll al primer error', async () => {
-      const { getByText, UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { getByText, container } = await render(<RefugeForm {...defaultProps} />);
 
       // Submit sense omplir res
       const submitButton = getByText('createRefuge.submit');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       // Hauria d'haver intentat fer scroll
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Build payload', () => {
-    it('hauria de construir payload correcte en mode create', () => {
-      const { toJSON } = render(<RefugeForm {...defaultProps} />);
+    it('hauria de construir payload correcte en mode create', async () => {
+      const { toJSON } = await render(<RefugeForm {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de construir payload amb només camps canviats en mode edit', () => {
-      const { getByDisplayValue, toJSON } = render(
+    it('hauria de construir payload amb només camps canviats en mode edit', async () => {
+      const { getByDisplayValue, toJSON } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1052,7 +1053,7 @@ describe('RefugeForm Component', () => {
 
       // Modificar només el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom');
+      await fireEvent.changeText(nameInput, 'Nou Nom');
 
       expect(toJSON()).toBeTruthy();
     });
@@ -1060,88 +1061,88 @@ describe('RefugeForm Component', () => {
 
   describe('Selectors de tipus i condició', () => {
     it('hauria de desplegar les opcions de tipus quan es prem', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       // Buscar BadgeSelector per tipus
-      const badgeSelectors = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const badgeSelectors = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Prémer el primer selector (tipus)
       if (badgeSelectors.length > 5) {
         await act(async () => {
-          fireEvent.press(badgeSelectors[5]);
+          await fireEvent.press(badgeSelectors[5]);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de desplegar les opcions de condició quan es prem', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
-      const badgeSelectors = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const badgeSelectors = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Prémer el segon selector (condició)
       if (badgeSelectors.length > 6) {
         await act(async () => {
-          fireEvent.press(badgeSelectors[6]);
+          await fireEvent.press(badgeSelectors[6]);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de seleccionar una opció de tipus', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       // Primer, obrir el selector de tipus
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Trobar i prémer el selector de tipus
       if (touchables.length > 5) {
         await act(async () => {
-          fireEvent.press(touchables[5]);
+          await fireEvent.press(touchables[5]);
         });
       }
 
       // Ara hauria de mostrar les opcions de tipus
       // Prémer una opció
-      const newTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const newTouchables = findAllByType(container, require('react-native').TouchableOpacity);
       if (newTouchables.length > 10) {
         await act(async () => {
-          fireEvent.press(newTouchables[10]);
+          await fireEvent.press(newTouchables[10]);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de seleccionar una opció de condició', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Trobar i prémer el selector de condició
       if (touchables.length > 6) {
         await act(async () => {
-          fireEvent.press(touchables[6]);
+          await fireEvent.press(touchables[6]);
         });
       }
 
       // Ara hauria de mostrar les opcions
-      const newTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const newTouchables = findAllByType(container, require('react-native').TouchableOpacity);
       if (newTouchables.length > 10) {
         await act(async () => {
-          fireEvent.press(newTouchables[10]);
+          await fireEvent.press(newTouchables[10]);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Edició de camps en mode edit', () => {
-    it('hauria de detectar canvis en la regió', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en la regió', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1151,13 +1152,13 @@ describe('RefugeForm Component', () => {
       );
 
       const regionInput = getByDisplayValue('Pirineus');
-      fireEvent.changeText(regionInput, 'Nova Regió');
+      await fireEvent.changeText(regionInput, 'Nova Regió');
 
       expect(getByDisplayValue('Nova Regió')).toBeTruthy();
     });
 
-    it('hauria de detectar canvis en el departement', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en el departement', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1167,13 +1168,13 @@ describe('RefugeForm Component', () => {
       );
 
       const deptInput = getByDisplayValue('Catalunya');
-      fireEvent.changeText(deptInput, 'Nou Departament');
+      await fireEvent.changeText(deptInput, 'Nou Departament');
 
       expect(getByDisplayValue('Nou Departament')).toBeTruthy();
     });
 
     it('hauria de detectar canvis en les places', async () => {
-      const { getByDisplayValue, getAllByPlaceholderText } = render(
+      const { getByDisplayValue, getAllByPlaceholderText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1185,14 +1186,14 @@ describe('RefugeForm Component', () => {
       // Buscar l'input de places (placeholder "0")
       const placesInputs = getAllByPlaceholderText('0');
       if (placesInputs.length > 1) {
-        fireEvent.changeText(placesInputs[1], '30');
+        await fireEvent.changeText(placesInputs[1], '30');
       }
 
       expect(placesInputs.length).toBeGreaterThan(0);
     });
 
-    it('hauria de detectar canvis en la descripció', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en la descripció', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1202,15 +1203,15 @@ describe('RefugeForm Component', () => {
       );
 
       const descInput = getByDisplayValue('Un refugi de test');
-      fireEvent.changeText(descInput, 'Nova descripció del refugi');
+      await fireEvent.changeText(descInput, 'Nova descripció del refugi');
 
       expect(getByDisplayValue('Nova descripció del refugi')).toBeTruthy();
     });
   });
 
   describe('Gestió de links en mode edit', () => {
-    it('hauria de detectar canvis en els links', () => {
-      const { getByDisplayValue } = render(
+    it('hauria de detectar canvis en els links', async () => {
+      const { getByDisplayValue } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1220,18 +1221,18 @@ describe('RefugeForm Component', () => {
       );
 
       const linkInput = getByDisplayValue('https://example.com');
-      fireEvent.changeText(linkInput, 'https://newlink.com');
+      await fireEvent.changeText(linkInput, 'https://newlink.com');
 
       expect(getByDisplayValue('https://newlink.com')).toBeTruthy();
     });
 
-    it('hauria de poder eliminar un link quan hi ha múltiples', () => {
+    it('hauria de poder eliminar un link quan hi ha múltiples', async () => {
       const dataWithMultipleLinks = {
         ...mockInitialData,
         links: ['https://example1.com', 'https://example2.com'],
       };
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeForm
           mode="edit"
           initialData={dataWithMultipleLinks}
@@ -1241,24 +1242,24 @@ describe('RefugeForm Component', () => {
       );
 
       // Buscar el botó d'eliminar link (✕)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const removeButton = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '✕');
       });
 
       if (removeButton) {
-        fireEvent.press(removeButton);
+        await fireEvent.press(removeButton);
       }
 
       // Verifiquem que el component encara es renderitza
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Amenities en mode edit', () => {
     it('hauria de detectar canvis en amenities', async () => {
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1268,11 +1269,11 @@ describe('RefugeForm Component', () => {
       );
 
       // Buscar els toggles de amenities
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Trobar un amenity toggle i prémer-lo
       const amenityButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => {
           const content = text.props.children;
           return typeof content === 'string' && (
@@ -1283,11 +1284,11 @@ describe('RefugeForm Component', () => {
 
       if (amenityButtons.length > 0) {
         await act(async () => {
-          fireEvent.press(amenityButtons[0]);
+          await fireEvent.press(amenityButtons[0]);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1296,7 +1297,7 @@ describe('RefugeForm Component', () => {
       const mockOnSubmitError = jest.fn().mockRejectedValue(new Error('Error de test'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const { getByDisplayValue, getByText, queryByPlaceholderText, UNSAFE_root } = render(
+      const { getByDisplayValue, getByText, queryByPlaceholderText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1307,22 +1308,22 @@ describe('RefugeForm Component', () => {
 
       // Modificar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+      await fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
 
       // Afegir comentari vàlid
       const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament');
+        await fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament');
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
 
     it('hauria de gestionar error de coordenades com a èxit', async () => {
       const mockOnSubmitCoordError = jest.fn().mockRejectedValue(new Error("Cannot read property 'coord' of undefined"));
 
-      const { getByDisplayValue, queryByPlaceholderText, UNSAFE_root } = render(
+      const { getByDisplayValue, queryByPlaceholderText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1333,45 +1334,45 @@ describe('RefugeForm Component', () => {
 
       // Modificar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
+      await fireEvent.changeText(nameInput, 'Nou Nom del Refugi');
 
       // Afegir comentari vàlid
       const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament');
+        await fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament');
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Submit en mode create amb dades vàlides', () => {
     it('hauria de fer submit amb totes les dades omplertes', async () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText, queryByPlaceholderText, UNSAFE_root } = render(
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText, queryByPlaceholderText, container } = await render(
         <RefugeForm {...defaultProps} />
       );
 
       // Omplir tots els camps requerits
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi de Prova');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi de Prova');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
 
       // Omplir altitud i places
       const numericInputs = getAllByPlaceholderText('0');
       if (numericInputs.length > 0) {
-        fireEvent.changeText(numericInputs[0], '2000');
+        await fireEvent.changeText(numericInputs[0], '2000');
       }
       if (numericInputs.length > 1) {
-        fireEvent.changeText(numericInputs[1], '20');
+        await fireEvent.changeText(numericInputs[1], '20');
       }
 
       // Omplir comentari
       const commentInput = queryByPlaceholderText('createRefuge.commentPlaceholder');
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament i completament');
+        await fireEvent.changeText(commentInput, 'Comentari de més de cinquanta caràcters per poder fer submit del formulari correctament i completament');
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1382,12 +1383,12 @@ describe('RefugeForm Component', () => {
         json: () => Promise.resolve({ results: [{ elevation: 2500 }] }),
       });
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir coordenades
       await act(async () => {
-        fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-        fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+        await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+        await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
       });
 
       // Esperar que es faci el fetch
@@ -1400,11 +1401,11 @@ describe('RefugeForm Component', () => {
       (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const { getByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       await act(async () => {
-        fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-        fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+        await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+        await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
       });
 
       // No hauria de llençar error
@@ -1415,20 +1416,20 @@ describe('RefugeForm Component', () => {
     it('no hauria de fer fetch si l\'altitud s\'ha editat manualment', async () => {
       (global.fetch as jest.Mock).mockClear();
 
-      const { getByPlaceholderText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
       // Editar altitud manualment primer
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(altitudeInputs[0], '2000');
+          await fireEvent.changeText(altitudeInputs[0], '2000');
         });
       }
 
       // Després canviar coordenades
       await act(async () => {
-        fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
-        fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
+        await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.5678');
+        await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.2345');
       });
 
       // No hauria de fer fetch perquè l'altitud s'ha editat manualment
@@ -1437,8 +1438,8 @@ describe('RefugeForm Component', () => {
   });
 
   describe('Mode create sense info_comp inicial', () => {
-    it('hauria de funcionar amb dades inicials sense info_comp', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de funcionar amb dades inicials sense info_comp', async () => {
+      const { container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialDataWithoutInfoComp}
@@ -1447,13 +1448,13 @@ describe('RefugeForm Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Mode create sense links inicials', () => {
-    it('hauria de funcionar amb dades inicials sense links', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de funcionar amb dades inicials sense links', async () => {
+      const { container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialDataWithoutLinks}
@@ -1462,16 +1463,16 @@ describe('RefugeForm Component', () => {
         />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('BadgeSelector interactions', () => {
     it('hauria de mostrar opcions de tipus quan es prem BadgeSelector type', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       
       // Buscar el BadgeSelector de type (primer badge)
       const badgeButton = touchables.find((t: any) => {
@@ -1486,77 +1487,77 @@ describe('RefugeForm Component', () => {
       // Alternativamente, buscar por testID o posición
       // Fem clic en els primers botons que poden ser BadgeSelectors
       if (touchables.length > 5) {
-        fireEvent.press(touchables[3]); // BadgeSelector type normalment
+        await fireEvent.press(touchables[3]); // BadgeSelector type normalment
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de canviar el tipus quan es selecciona una opció', async () => {
-      const { UNSAFE_root, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { container, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      let touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      let touchables = findAllByType(container, TouchableOpacity);
       
       // Obrir el selector de tipus
       if (touchables.length > 5) {
-        fireEvent.press(touchables[3]);
+        await fireEvent.press(touchables[3]);
       }
 
       // Esperar que es mostrin les opcions
-      await waitFor(() => {
-        touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      await waitFor(async () => {
+        touchables = findAllByType(container, TouchableOpacity);
         // Buscar i prémer una opció de tipus
         const typeOption = touchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => 
             typeof text.props.children === 'string' && 
             (text.props.children.includes('fermée') || text.props.children.includes('non gardé'))
           );
         });
         if (typeOption) {
-          fireEvent.press(typeOption);
+          await fireEvent.press(typeOption);
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de mostrar opcions de condició quan es prem BadgeSelector condition', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      let touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      let touchables = findAllByType(container, TouchableOpacity);
       
       // Buscar i prémer el BadgeSelector de condition (segon badge)
       if (touchables.length > 6) {
-        fireEvent.press(touchables[4]); // BadgeSelector condition normalment
+        await fireEvent.press(touchables[4]); // BadgeSelector condition normalment
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de canviar la condició quan es selecciona una opció', async () => {
-      const { UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { container } = await render(<RefugeForm {...defaultProps} />);
 
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      let touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      let touchables = findAllByType(container, TouchableOpacity);
       
       // Obrir el selector de condició
       if (touchables.length > 6) {
-        fireEvent.press(touchables[4]);
+        await fireEvent.press(touchables[4]);
       }
 
       // Esperar que es mostrin les opcions i seleccionar-ne una
-      await waitFor(() => {
-        touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      await waitFor(async () => {
+        touchables = findAllByType(container, TouchableOpacity);
         // Prémer qualsevol opció nova que aparegui
         if (touchables.length > 10) {
-          fireEvent.press(touchables[10]);
+          await fireEvent.press(touchables[10]);
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1564,18 +1565,18 @@ describe('RefugeForm Component', () => {
     it('hauria de mostrar alerta d\'èxit després de submit correcte', async () => {
       mockOnSubmit.mockResolvedValueOnce(undefined);
       
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir camps obligatoris
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
 
       // Submit
       const submitButton = getByText('createRefuge.submit');
       
       await act(async () => {
-        fireEvent.press(submitButton);
+        await fireEvent.press(submitButton);
       });
 
       // Verificar que showAlert va ser cridat amb missatge d'èxit
@@ -1588,16 +1589,16 @@ describe('RefugeForm Component', () => {
       const coordError = new Error('Cannot read property \'coord\' of undefined');
       mockOnSubmit.mockRejectedValueOnce(coordError);
       
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir camps obligatoris
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
 
       // Submit
       await act(async () => {
-        fireEvent.press(getByText('createRefuge.submit'));
+        await fireEvent.press(getByText('createRefuge.submit'));
       });
 
       // Per errors de coord, el codi s'ha executat
@@ -1608,16 +1609,16 @@ describe('RefugeForm Component', () => {
       const genericError = new Error('Network error');
       mockOnSubmit.mockRejectedValueOnce(genericError);
       
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Omplir camps obligatoris
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Nou Refugi');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
 
       // Submit
       await act(async () => {
-        fireEvent.press(getByText('createRefuge.submit'));
+        await fireEvent.press(getByText('createRefuge.submit'));
       });
 
       // Per errors genèrics, hauria de mostrar alerta d'error
@@ -1631,7 +1632,7 @@ describe('RefugeForm Component', () => {
     it('hauria de construir payload amb només camps canviats', async () => {
       mockOnSubmit.mockResolvedValueOnce(undefined);
       
-      const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+      const { getByDisplayValue, getByPlaceholderText, getByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1642,19 +1643,19 @@ describe('RefugeForm Component', () => {
 
       // Canviar el nom
       const nameInput = getByDisplayValue('Refugi de Test');
-      fireEvent.changeText(nameInput, 'Nou Nom');
+      await fireEvent.changeText(nameInput, 'Nou Nom');
 
       // Canviar descripció
       const descriptionInput = getByPlaceholderText('createRefuge.descriptionPlaceholder');
-      fireEvent.changeText(descriptionInput, 'Nova descripció');
+      await fireEvent.changeText(descriptionInput, 'Nova descripció');
 
       // Afegir comentari (obligatori en mode edit)
       const commentInput = getByPlaceholderText('editRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(commentInput, 'Aquest és un comentari de prova amb més de 50 caràcters per complir el requisit mínim');
+      await fireEvent.changeText(commentInput, 'Aquest és un comentari de prova amb més de 50 caràcters per complir el requisit mínim');
 
       // Submit
       await act(async () => {
-        fireEvent.press(getByText('createRefuge.submit'));
+        await fireEvent.press(getByText('createRefuge.submit'));
       });
 
       await waitFor(() => {
@@ -1667,7 +1668,7 @@ describe('RefugeForm Component', () => {
     it('hauria de detectar canvis en coordenades', async () => {
       mockOnSubmit.mockResolvedValueOnce(undefined);
       
-      const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+      const { getByDisplayValue, getByPlaceholderText, getByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1678,15 +1679,15 @@ describe('RefugeForm Component', () => {
 
       // Canviar la latitud
       const latInput = getByDisplayValue('42.5678');
-      fireEvent.changeText(latInput, '42.99999');
+      await fireEvent.changeText(latInput, '42.99999');
 
       // Afegir comentari
       const commentInput = getByPlaceholderText('editRefuge.adminCommentPlaceholder');
-      fireEvent.changeText(commentInput, 'Aquest és un comentari de prova amb més de 50 caràcters per complir el requisit mínim');
+      await fireEvent.changeText(commentInput, 'Aquest és un comentari de prova amb més de 50 caràcters per complir el requisit mínim');
 
       // Submit
       await act(async () => {
-        fireEvent.press(getByText('createRefuge.submit'));
+        await fireEvent.press(getByText('createRefuge.submit'));
       });
 
       await waitFor(() => {
@@ -1697,7 +1698,7 @@ describe('RefugeForm Component', () => {
     it('hauria de detectar canvis en links', async () => {
       mockOnSubmit.mockResolvedValueOnce(undefined);
       
-      const { getByPlaceholderText, getByText, UNSAFE_root } = render(
+      const { getByPlaceholderText, getByText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1708,24 +1709,24 @@ describe('RefugeForm Component', () => {
 
       // Afegir un nou link
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       
       // Buscar botó d'afegir link (normalment conté '+')
       const addButton = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '+');
       });
 
       if (addButton) {
-        fireEvent.press(addButton);
+        await fireEvent.press(addButton);
       }
 
       // El test exerceix el codi de links
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria de detectar canvis en amenities', async () => {
-      const { UNSAFE_root, getByPlaceholderText, getByText } = render(
+      const { container, getByPlaceholderText, getByText } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1736,11 +1737,11 @@ describe('RefugeForm Component', () => {
 
       // Prémer un amenity toggle (buscar per emoji)
       const TouchableOpacity = require('react-native').TouchableOpacity;
-      const touchables = UNSAFE_root.findAllByType(TouchableOpacity);
+      const touchables = findAllByType(container, TouchableOpacity);
       
       // Buscar botons amb emojis d'amenities
       const amenityButton = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => 
           typeof text.props.children === 'string' && 
           (text.props.children.includes('🔥') || text.props.children.includes('🛏️'))
@@ -1748,155 +1749,155 @@ describe('RefugeForm Component', () => {
       });
 
       if (amenityButton) {
-        fireEvent.press(amenityButton);
+        await fireEvent.press(amenityButton);
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Validation errors - edge cases', () => {
     it('hauria de validar nom massa llarg', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Nom massa llarg (> 100 caràcters)
       const longName = 'a'.repeat(101);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), longName);
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), longName);
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar altitud invàlida', async () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Altitud invàlida (amb lletres)
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], 'abc');
+        await fireEvent.changeText(altitudeInputs[0], 'abc');
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar altitud massa alta', async () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Altitud massa alta (> 8800)
       const altitudeInputs = getAllByPlaceholderText('0');
       if (altitudeInputs.length > 0) {
-        fireEvent.changeText(altitudeInputs[0], '9000');
+        await fireEvent.changeText(altitudeInputs[0], '9000');
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar places invàlides', async () => {
-      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText, getAllByPlaceholderText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Places invàlides (amb lletres)
       const placesInputs = getAllByPlaceholderText('0');
       if (placesInputs.length > 1) {
-        fireEvent.changeText(placesInputs[1], 'abc');
+        await fireEvent.changeText(placesInputs[1], 'abc');
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(true).toBeTruthy();
     });
 
     it('hauria de validar descripció massa llarga', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Descripció massa llarga (> 3000 caràcters)
       const longDescription = 'a'.repeat(3001);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.descriptionPlaceholder'), longDescription);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.descriptionPlaceholder'), longDescription);
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // El test exerceix el codi de validació de descripció
       expect(true).toBeTruthy();
     });
 
     it('hauria de validar link invàlid', async () => {
-      const { getByPlaceholderText, getByText, UNSAFE_root } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText, container } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Afegir link invàlid
       const TextInput = require('react-native').TextInput;
-      const inputs = UNSAFE_root.findAllByType(TextInput);
+      const inputs = findAllByType(container, TextInput);
       const linkInput = inputs.find((i: any) => 
         i.props.placeholder === 'https://example.com'
       );
 
       if (linkInput) {
-        fireEvent.changeText(linkInput, 'not-a-valid-url');
+        await fireEvent.changeText(linkInput, 'not-a-valid-url');
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(true).toBeTruthy();
     });
 
     it('hauria de validar latitud amb coma', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42,12345'); // Coma en lloc de punt
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42,12345'); // Coma en lloc de punt
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat (error de coma)
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar longitud amb coma', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1,12345'); // Coma en lloc de punt
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1,12345'); // Coma en lloc de punt
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar comentari massa curt en mode edit', async () => {
-      const { getByText, UNSAFE_root } = render(
+      const { getByText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1907,24 +1908,24 @@ describe('RefugeForm Component', () => {
 
       // Comentari massa curt (< 50 caràcters)
       const TextInput = require('react-native').TextInput;
-      const inputs = UNSAFE_root.findAllByType(TextInput);
+      const inputs = findAllByType(container, TextInput);
       // Buscar input de comentari (té minChars en el seu texte proper)
       const commentInput = inputs.find((i: any) => 
         i.props.placeholder && i.props.placeholder.includes('editRefuge')
       );
 
       if (commentInput) {
-        fireEvent.changeText(commentInput, 'Curt');
+        await fireEvent.changeText(commentInput, 'Curt');
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
     it('hauria de validar comentari massa llarg', async () => {
-      const { getByText, UNSAFE_root } = render(
+      const { getByText, container } = await render(
         <RefugeForm
           mode="edit"
           initialData={mockInitialData}
@@ -1936,50 +1937,50 @@ describe('RefugeForm Component', () => {
       // Comentari massa llarg (> 3000 caràcters)
       const longComment = 'a'.repeat(3001);
       const TextInput = require('react-native').TextInput;
-      const inputs = UNSAFE_root.findAllByType(TextInput);
+      const inputs = findAllByType(container, TextInput);
       const commentInput = inputs.find((i: any) => 
         i.props.placeholder && i.props.placeholder.includes('editRefuge')
       );
 
       if (commentInput) {
-        fireEvent.changeText(commentInput, longComment);
+        await fireEvent.changeText(commentInput, longComment);
       }
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // La validació s'ha executat - el test exerceix el codi
       expect(true).toBeTruthy();
     });
 
     it('hauria de validar regió massa llarga', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Regió massa llarga (> 100 caràcters)
       const longRegion = 'a'.repeat(101);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), longRegion);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.regionPlaceholder'), longRegion);
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // Test executa el codi de validació
       expect(true).toBeTruthy();
     });
 
     it('hauria de validar departament massa llarg', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
-      fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
-      fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
-      fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Refugi Test');
+      await fireEvent.changeText(getByPlaceholderText('42.1234'), '42.12345');
+      await fireEvent.changeText(getByPlaceholderText('1.12345'), '1.12345');
       
       // Departament massa llarg (> 100 caràcters)
       const longDepartement = 'a'.repeat(101);
-      fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), longDepartement);
+      await fireEvent.changeText(getByPlaceholderText('createRefuge.departementPlaceholder'), longDepartement);
 
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // Test executa el codi de validació
       expect(true).toBeTruthy();
@@ -1988,10 +1989,10 @@ describe('RefugeForm Component', () => {
 
   describe('ScrollToError functionality', () => {
     it('hauria de fer scroll al primer error', async () => {
-      const { getByPlaceholderText, getByText } = render(<RefugeForm {...defaultProps} />);
+      const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       // Submit sense omplir res per generar errors
-      fireEvent.press(getByText('createRefuge.submit'));
+      await fireEvent.press(getByText('createRefuge.submit'));
 
       // Hauria de mostrar errors i fer scroll
       await waitFor(() => {

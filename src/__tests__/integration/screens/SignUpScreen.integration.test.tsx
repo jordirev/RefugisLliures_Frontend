@@ -100,8 +100,8 @@ describe('SignUpScreen - Tests d\'integració', () => {
   });
 
   describe('Selecció d\'idioma', () => {
-    it('hauria de mostrar la pantalla de selecció d\'idioma inicialment', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de mostrar la pantalla de selecció d\'idioma inicialment', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -117,7 +117,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria de canviar l\'idioma quan se selecciona una opció', async () => {
-      const { getByText, getByTestId } = renderWithProviders(
+      const { getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -126,7 +126,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
       );
 
       const catalanButton = getByTestId('language-ca');
-      fireEvent.press(catalanButton);
+      await fireEvent.press(catalanButton);
 
       await waitFor(() => {
         // Hauria de tornar al step anterior (username per defecte)
@@ -139,7 +139,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
   describe('Validació d\'username', () => {
 
     it('hauria de mostrar error si l\'username està buit', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -148,10 +148,10 @@ describe('SignUpScreen - Tests d\'integració', () => {
       );
 
       // Seleccionar idioma
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
         const usernameInput = getByPlaceholderText('Nom d\'usuari');
-        fireEvent.changeText(usernameInput, '');
+        await fireEvent.changeText(usernameInput, '');
       });
 
       // L'error hauria d'aparèixer
@@ -161,7 +161,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar error si l\'username és massa curt', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -169,10 +169,10 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
         const usernameInput = getByPlaceholderText('Nom d\'usuari');
-        fireEvent.changeText(usernameInput, 'a');
+        await fireEvent.changeText(usernameInput, 'a');
       });
 
       await waitFor(() => {
@@ -181,7 +181,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria de mostrar error si l\'username és massa llarg', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -189,10 +189,10 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
         const usernameInput = getByPlaceholderText('Nom d\'usuari');
-        fireEvent.changeText(usernameInput, 'a'.repeat(21));
+        await fireEvent.changeText(usernameInput, 'a'.repeat(21));
       });
 
       await waitFor(() => {
@@ -201,7 +201,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria d\'avançar al step d\'email amb un username vàlid', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -209,10 +209,10 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
         const usernameInput = getByPlaceholderText('Nom d\'usuari');
-        fireEvent.changeText(usernameInput, 'testuser');
+        await fireEvent.changeText(usernameInput, 'testuser');
       });
 
       await waitFor(() => {
@@ -223,7 +223,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
   describe('Validació d\'email', () => {
     it('hauria de mostrar error amb un email invàlid', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -231,14 +231,14 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const emailInput = getByTestId('email-input');
-        fireEvent.changeText(emailInput, 'invalid-email');
+        await fireEvent.changeText(emailInput, 'invalid-email');
       });
 
       await waitFor(() => {
@@ -247,7 +247,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria d\'avançar al step de contrasenya amb un email vàlid', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -255,13 +255,13 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
       await waitFor(() => {
@@ -272,7 +272,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
   describe('Validació de contrasenya', () => {
     it('hauria de mostrar els requisits de la contrasenya', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -280,18 +280,18 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
-        fireEvent.changeText(passwordInput, 'weak');
+        await fireEvent.changeText(passwordInput, 'weak');
       });
 
       await waitFor(() => {
@@ -303,7 +303,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('hauria de validar una contrasenya forta correctament', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -311,17 +311,17 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
       await waitFor(() => {
@@ -335,7 +335,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
   describe('Confirmació de contrasenya', () => {
     it('hauria de mostrar error si les contrasenyes no coincideixen', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -343,21 +343,21 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Different1!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Different1!');
       });
 
       await waitFor(() => {
@@ -366,7 +366,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     });
 
     it('no hauria de mostrar error si les contrasenyes coincideixen', async () => {
-      const { getByPlaceholderText, getByText, queryByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, queryByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -374,28 +374,28 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
       // Data de naixement (pas nou: edat mínima 16 anys)
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('birthdate-day'), '20');
-        fireEvent.changeText(getByTestId('birthdate-month'), '05');
-        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
       await waitFor(() => {
@@ -408,7 +408,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     it('hauria de registrar un usuari correctament', async () => {
       mockSignup.mockResolvedValue(undefined);
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -417,39 +417,39 @@ describe('SignUpScreen - Tests d\'integració', () => {
       );
 
       // Step 1: Seleccionar idioma
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       // Step 2: Username
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
       // Step 3: Email
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
       // Step 4: Password
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
       // Step 5: Confirm Password
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
       // Data de naixement (pas nou: edat mínima 16 anys)
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('birthdate-day'), '20');
-        fireEvent.changeText(getByTestId('birthdate-month'), '05');
-        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
       // Step 6: Submit
-      await waitFor(() => {
+      await waitFor(async () => {
         const signUpButton = getByText('Registrar-se');
-        fireEvent.press(signUpButton);
+        await fireEvent.press(signUpButton);
       });
 
       await waitFor(() => {
@@ -465,7 +465,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     it('hauria de gestionar email ja en ús', async () => {
       mockSignup.mockRejectedValue({ code: 'auth/email-already-in-use' });
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -473,33 +473,33 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'existing@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'existing@example.com');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
       // Data de naixement (pas nou: edat mínima 16 anys)
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('birthdate-day'), '20');
-        fireEvent.changeText(getByTestId('birthdate-month'), '05');
-        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
-      await waitFor(() => {
-        fireEvent.press(getByText('Registrar-se'));
+      await waitFor(async () => {
+        await fireEvent.press(getByText('Registrar-se'));
       });
 
       await waitFor(() => {
@@ -513,7 +513,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
   describe('Visibilitat de contrasenya', () => {
     it('hauria d\'alternar la visibilitat de la contrasenya', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -521,22 +521,22 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const passwordInput = getByTestId('password-input');
         expect(passwordInput.props.secureTextEntry).toBe(true);
 
         const toggleButton = getByTestId('toggle-password-visibility');
-        fireEvent.press(toggleButton);
+        await fireEvent.press(toggleButton);
 
         expect(passwordInput.props.secureTextEntry).toBe(false);
       });
@@ -544,8 +544,8 @@ describe('SignUpScreen - Tests d\'integració', () => {
   });
 
   describe('Navegació entre steps', () => {
-    it('hauria de tornar al login des del primer step', () => {
-      const { getByTestId } = renderWithProviders(
+    it('hauria de tornar al login des del primer step', async () => {
+      const { getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -555,15 +555,15 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
       // Des de la pantalla d'idioma, el back hauria de cridar onBackToLogin
       const backButton = getByTestId('back-button');
-      fireEvent.press(backButton);
+      await fireEvent.press(backButton);
 
       expect(mockOnBackToLogin).toHaveBeenCalled();
     });
   });
 
   describe('Link de login', () => {
-    it('hauria de navegar a login quan es fa clic al link', () => {
-      const { getByText, getByTestId } = renderWithProviders(
+    it('hauria de navegar a login quan es fa clic al link', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -572,7 +572,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
       );
 
       const loginLink = getByText('Inicia sessió');
-      fireEvent.press(loginLink);
+      await fireEvent.press(loginLink);
 
       expect(mockOnBackToLogin).toHaveBeenCalled();
     });
@@ -580,7 +580,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
 
   describe('Casos límit', () => {
     it('hauria de gestionar espais en blanc en l\'username', async () => {
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -588,10 +588,10 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), '  test  ');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), '  test  ');
       });
 
       // Hauria d'acceptar-lo després de fer trim
@@ -603,7 +603,7 @@ describe('SignUpScreen - Tests d\'integració', () => {
     it('hauria de deshabilitar el botó durant la càrrega', async () => {
       mockSignup.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
-      const { getByPlaceholderText, getByText, getByTestId } = renderWithProviders(
+      const { getByPlaceholderText, getByText, getByTestId } = await renderWithProviders(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -611,33 +611,33 @@ describe('SignUpScreen - Tests d\'integració', () => {
         { withNavigation: false }
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Nom d\'usuari'), 'testuser');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
 
-      await waitFor(() => {
-        fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByPlaceholderText('Confirma la contrasenya'), 'Test1234!');
       });
 
       // Data de naixement (pas nou: edat mínima 16 anys)
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('birthdate-day'), '20');
-        fireEvent.changeText(getByTestId('birthdate-month'), '05');
-        fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+        await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+        await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
       });
 
       const signUpButton = getByText('Registrar-se');
-      fireEvent.press(signUpButton);
+      await fireEvent.press(signUpButton);
 
       // El botó hauria d'estar deshabilitat o mostrant càrrega
       // Note: L'estat de càrrega pot no ser accessible en els tests

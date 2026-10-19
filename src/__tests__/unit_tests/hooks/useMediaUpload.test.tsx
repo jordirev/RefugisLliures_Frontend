@@ -27,7 +27,7 @@ describe('useMediaUpload', () => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
-  const renderUpload = () => renderHook(() => useMediaUpload({ showAlert }), { wrapper });
+  const renderUpload = async () => await renderHook(() => useMediaUpload({ showAlert }), { wrapper });
 
   beforeEach(() => {
     queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
@@ -55,16 +55,16 @@ describe('useMediaUpload', () => {
   /** Accepta la declaració de drets quan el hook la demana */
   const acceptRightsWhenAsked = async (result: any) => {
     await waitFor(() => expect(result.current.rightsModalProps.visible).toBe(true));
-    act(() => {
+    await act(() => {
       result.current.rightsModalProps.onAccept();
     });
   };
 
   it('demana la declaració de drets abans de la primera pujada i no la torna a demanar', async () => {
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1', uid: 'me' });
     });
     await acceptRightsWhenAsked(result);
@@ -82,13 +82,13 @@ describe('useMediaUpload', () => {
   });
 
   it('si es cancel·la la declaració no obre el picker ni puja res', async () => {
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1' });
     });
     await waitFor(() => expect(result.current.rightsModalProps.visible).toBe(true));
-    act(() => {
+    await act(() => {
       result.current.rightsModalProps.onCancel();
     });
     let value: any;
@@ -102,7 +102,7 @@ describe('useMediaUpload', () => {
 
   it('obre el picker només amb imatges i vídeos, descarta fitxers no permesos i puja la resta', async () => {
     MediaUploadService.confirmRightsForSession();
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     await act(async () => {
       await result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1', uid: 'me' });
@@ -124,7 +124,7 @@ describe('useMediaUpload', () => {
   it('invalida refugi, mitjans, experiències, llista i usuari després de pujar', async () => {
     MediaUploadService.confirmRightsForSession();
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     await act(async () => {
       await result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1', uid: 'me' });
@@ -149,7 +149,7 @@ describe('useMediaUpload', () => {
       canceled: false,
       assets: [{ uri: 'file:///me.png', mimeType: 'image/png', width: 600, height: 600 }],
     } as any);
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     await act(async () => {
       await result.current.pickAndUpload({ target: 'avatar', uid: 'me' });
@@ -163,7 +163,7 @@ describe('useMediaUpload', () => {
 
   it('avatar: un vídeo passat com a asset es rebutja', async () => {
     MediaUploadService.confirmRightsForSession();
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
     let value: any;
     await act(async () => {
       value = await result.current.pickAndUpload(
@@ -182,7 +182,7 @@ describe('useMediaUpload', () => {
   ])('mostra una alerta específica per al codi %s', async (code, key) => {
     MediaUploadService.confirmRightsForSession();
     uploadSpy.mockRejectedValueOnce(new MediaUploadError('forbidden', code, 403));
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     let value: any;
     await act(async () => {
@@ -199,7 +199,7 @@ describe('useMediaUpload', () => {
       uploaded: [],
       failed: [{ upload_id: 'u1', reason: 'moderation_blocked' }],
     });
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     await act(async () => {
       await result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1' });
@@ -214,7 +214,7 @@ describe('useMediaUpload', () => {
   it('permís de galeria denegat: avís i cap pujada', async () => {
     MediaUploadService.confirmRightsForSession();
     mockedPicker.requestMediaLibraryPermissionsAsync.mockResolvedValueOnce({ status: 'denied' } as any);
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
 
     await act(async () => {
       await result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1' });
@@ -226,7 +226,7 @@ describe('useMediaUpload', () => {
 
   it('pickMedia retorna els fitxers preparats sense pujar-los (experiències)', async () => {
     MediaUploadService.confirmRightsForSession();
-    const { result } = renderUpload();
+    const { result } = await renderUpload();
     let files: any;
     await act(async () => {
       files = await result.current.pickMedia();

@@ -71,45 +71,45 @@ describe('useVisited Hook', () => {
   });
 
   describe('Inicialització', () => {
-    it('hauria de retornar isVisited=true si el refugi està als visitats', () => {
-      const { result } = renderHook(() => useVisited('10'));
+    it('hauria de retornar isVisited=true si el refugi està als visitats', async () => {
+      const { result } = await renderHook(() => useVisited('10'));
       
       expect(result.current.isVisited).toBe(true);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isVisited=false si el refugi NO està als visitats', () => {
-      const { result } = renderHook(() => useVisited('99'));
+    it('hauria de retornar isVisited=false si el refugi NO està als visitats', async () => {
+      const { result } = await renderHook(() => useVisited('99'));
       
       expect(result.current.isVisited).toBe(false);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isVisited=false si refugeId és undefined', () => {
-      const { result } = renderHook(() => useVisited(undefined));
+    it('hauria de retornar isVisited=false si refugeId és undefined', async () => {
+      const { result } = await renderHook(() => useVisited(undefined));
       
       expect(result.current.isVisited).toBe(false);
       expect(result.current.isProcessing).toBe(false);
     });
 
-    it('hauria de retornar isVisited=false si visitedRefugeIds és buit', () => {
+    it('hauria de retornar isVisited=false si visitedRefugeIds és buit', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         visitedRefugeIds: [],
       });
 
-      const { result } = renderHook(() => useVisited('10'));
+      const { result } = await renderHook(() => useVisited('10'));
       
       expect(result.current.isVisited).toBe(false);
     });
 
-    it('hauria de retornar isVisited=false si no hi ha firebaseUser', () => {
+    it('hauria de retornar isVisited=false si no hi ha firebaseUser', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         firebaseUser: null,
       });
 
-      const { result } = renderHook(() => useVisited('10'));
+      const { result } = await renderHook(() => useVisited('10'));
       
       // Encara retorna true perquè l'estat local es basa en visitedRefugeIds
       expect(result.current.isVisited).toBe(true);
@@ -123,7 +123,7 @@ describe('useVisited Hook', () => {
         visitedRefugeIds: ['10', '20'], // No inclou '50'
       });
 
-      const { result } = renderHook(() => useVisited('50'));
+      const { result } = await renderHook(() => useVisited('50'));
       
       expect(result.current.isVisited).toBe(false);
       
@@ -138,7 +138,7 @@ describe('useVisited Hook', () => {
     });
 
     it('NO hauria de fer res si refugeId és undefined', async () => {
-      const { result } = renderHook(() => useVisited(undefined));
+      const { result } = await renderHook(() => useVisited(undefined));
       
       await act(async () => {
         await result.current.toggleVisited();
@@ -154,7 +154,7 @@ describe('useVisited Hook', () => {
         firebaseUser: null,
       });
 
-      const { result } = renderHook(() => useVisited('50'));
+      const { result } = await renderHook(() => useVisited('50'));
       
       await act(async () => {
         await result.current.toggleVisited();
@@ -166,7 +166,7 @@ describe('useVisited Hook', () => {
 
   describe('toggleVisited - Eliminar visitat', () => {
     it('hauria d\'eliminar un refugi dels visitats', async () => {
-      const { result } = renderHook(() => useVisited('10'));
+      const { result } = await renderHook(() => useVisited('10'));
       
       expect(result.current.isVisited).toBe(true);
       
@@ -190,7 +190,7 @@ describe('useVisited Hook', () => {
         visitedRefugeIds: [], // No és visitat, així que s'afegirà
       });
 
-      const { result } = renderHook(() => useVisited('50'));
+      const { result } = await renderHook(() => useVisited('50'));
       
       await expect(act(async () => {
         await result.current.toggleVisited();
@@ -205,7 +205,7 @@ describe('useVisited Hook', () => {
         visitedRefugeIds: [],
       });
 
-      const { result } = renderHook(() => useVisited('50'));
+      const { result } = await renderHook(() => useVisited('50'));
       
       try {
         await act(async () => {
@@ -220,25 +220,25 @@ describe('useVisited Hook', () => {
   });
 
   describe('Casos límit', () => {
-    it('hauria de gestionar IDs numèrics com a strings', () => {
+    it('hauria de gestionar IDs numèrics com a strings', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         visitedRefugeIds: ['123', '456'],
       });
 
-      const { result } = renderHook(() => useVisited('123'));
+      const { result } = await renderHook(() => useVisited('123'));
       
       expect(result.current.isVisited).toBe(true);
     });
 
-    it('hauria de comparar correctament IDs en string', () => {
+    it('hauria de comparar correctament IDs en string', async () => {
       mockUseAuth.mockReturnValue({
         ...defaultAuthReturn,
         visitedRefugeIds: ['10', '20'],
       });
 
-      const { result: resultMatch } = renderHook(() => useVisited('10'));
-      const { result: resultNoMatch } = renderHook(() => useVisited('100'));
+      const { result: resultMatch } = await renderHook(() => useVisited('10'));
+      const { result: resultNoMatch } = await renderHook(() => useVisited('100'));
       
       expect(resultMatch.current.isVisited).toBe(true);
       expect(resultNoMatch.current.isVisited).toBe(false);

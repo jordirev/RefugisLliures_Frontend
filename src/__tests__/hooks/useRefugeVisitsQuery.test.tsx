@@ -85,7 +85,7 @@ describe('useRefugeVisits', () => {
   it('should fetch refuge visits', async () => {
     mockedService.getRefugeVisits.mockResolvedValue(mockVisitsList);
 
-    const { result } = renderHook(() => useRefugeVisits('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeVisits('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -98,7 +98,7 @@ describe('useRefugeVisits', () => {
   });
 
   it('should not fetch when refugeId is undefined', async () => {
-    const { result } = renderHook(() => useRefugeVisits(undefined), {
+    const { result } = await renderHook(() => useRefugeVisits(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -107,7 +107,7 @@ describe('useRefugeVisits', () => {
   });
 
   it('should respect enabled option', async () => {
-    const { result } = renderHook(() => useRefugeVisits('refuge-1', { enabled: false }), {
+    const { result } = await renderHook(() => useRefugeVisits('refuge-1', { enabled: false }), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -118,7 +118,7 @@ describe('useRefugeVisits', () => {
   it('should handle error', async () => {
     mockedService.getRefugeVisits.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useRefugeVisits('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeVisits('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -143,7 +143,7 @@ describe('useUserVisits', () => {
   it('should fetch user visits', async () => {
     mockedService.getUserVisits.mockResolvedValue([mockUserVisit]);
 
-    const { result } = renderHook(() => useUserVisits('user-123'), {
+    const { result } = await renderHook(() => useUserVisits('user-123'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -156,7 +156,7 @@ describe('useUserVisits', () => {
   });
 
   it('should not fetch when uid is undefined', async () => {
-    const { result } = renderHook(() => useUserVisits(undefined), {
+    const { result } = await renderHook(() => useUserVisits(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -167,7 +167,7 @@ describe('useUserVisits', () => {
   it('should handle error', async () => {
     mockedService.getUserVisits.mockRejectedValue(new Error('User not found'));
 
-    const { result } = renderHook(() => useUserVisits('invalid-user'), {
+    const { result } = await renderHook(() => useUserVisits('invalid-user'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -192,7 +192,7 @@ describe('useCreateRefugeVisit', () => {
   it('should create a refuge visit', async () => {
     mockedService.createRefugeVisit.mockResolvedValue(mockVisit);
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -214,7 +214,7 @@ describe('useCreateRefugeVisit', () => {
   it('should handle error when creating visit', async () => {
     mockedService.createRefugeVisit.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -246,7 +246,7 @@ describe('useUpdateRefugeVisit', () => {
     const updatedVisit = { ...mockVisit, num_visitors: 3 };
     mockedService.updateRefugeVisit.mockResolvedValue(updatedVisit);
 
-    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+    const { result } = await renderHook(() => useUpdateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -268,7 +268,7 @@ describe('useUpdateRefugeVisit', () => {
   it('should handle error when updating visit', async () => {
     mockedService.updateRefugeVisit.mockRejectedValue(new Error('Failed to update'));
 
-    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+    const { result } = await renderHook(() => useUpdateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -299,7 +299,7 @@ describe('useDeleteRefugeVisit', () => {
   it('should delete a refuge visit', async () => {
     mockedService.deleteRefugeVisit.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRefugeVisit(), {
+    const { result } = await renderHook(() => useDeleteRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -316,7 +316,7 @@ describe('useDeleteRefugeVisit', () => {
   it('should handle error when deleting visit', async () => {
     mockedService.deleteRefugeVisit.mockRejectedValue(new Error('Failed to delete'));
 
-    const { result } = renderHook(() => useDeleteRefugeVisit(), {
+    const { result } = await renderHook(() => useDeleteRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -356,7 +356,7 @@ describe('Cache updates on success', () => {
     };
     mockedService.createRefugeVisit.mockResolvedValue(newVisit);
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -383,7 +383,7 @@ describe('Cache updates on success', () => {
     };
     mockedService.createRefugeVisit.mockResolvedValue(updatedVisit);
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -403,7 +403,7 @@ describe('Cache updates on success', () => {
     const newVisit = mockVisit;
     mockedService.createRefugeVisit.mockResolvedValue(newVisit);
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -425,7 +425,7 @@ describe('Cache updates on success', () => {
     const updatedVisit = { ...mockVisit, num_visitors: 10 };
     mockedService.updateRefugeVisit.mockResolvedValue(updatedVisit);
 
-    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+    const { result } = await renderHook(() => useUpdateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -445,7 +445,7 @@ describe('Cache updates on success', () => {
     const updatedVisit = mockVisit;
     mockedService.updateRefugeVisit.mockResolvedValue(updatedVisit);
 
-    const { result } = renderHook(() => useUpdateRefugeVisit(), {
+    const { result } = await renderHook(() => useUpdateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -464,7 +464,7 @@ describe('Cache updates on success', () => {
     mockedService.createRefugeVisit.mockResolvedValue(mockVisit);
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
-    const { result } = renderHook(() => useCreateRefugeVisit(), {
+    const { result } = await renderHook(() => useCreateRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -483,7 +483,7 @@ describe('Cache updates on success', () => {
     mockedService.deleteRefugeVisit.mockResolvedValue(undefined);
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
-    const { result } = renderHook(() => useDeleteRefugeVisit(), {
+    const { result } = await renderHook(() => useDeleteRefugeVisit(), {
       wrapper: createWrapper(queryClient),
     });
 

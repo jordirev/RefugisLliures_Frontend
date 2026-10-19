@@ -14,6 +14,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { UserExperience } from '../../../components/UserExperience';
 import { User, Experience, ImageMetadata } from '../../../models';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-image-picker
 jest.mock('expo-image-picker', () => ({
@@ -117,8 +118,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament amb usuari i experiència', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar correctament amb usuari i experiència', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -130,8 +131,8 @@ describe('UserExperience Component', () => {
       expect(getByText('Una experiència fantàstica al refugi. Tot molt net i acollidor.')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'avatar de l\'usuari', () => {
-      const { getByTestId, UNSAFE_root } = render(
+    it('hauria de mostrar l\'avatar de l\'usuari', async () => {
+      const { getByTestId, container } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -140,12 +141,12 @@ describe('UserExperience Component', () => {
       );
 
       // Verificar que hi ha una imatge (avatar)
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar inicials quan no hi ha avatar', () => {
-      const { getByText } = render(
+    it('hauria de mostrar inicials quan no hi ha avatar', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={mockUserWithoutAvatar}
           experience={mockExperience}
@@ -157,8 +158,8 @@ describe('UserExperience Component', () => {
       expect(getByText('U')).toBeTruthy();
     });
 
-    it('hauria de mostrar ? quan no hi ha usuari', () => {
-      const { getByText } = render(
+    it('hauria de mostrar ? quan no hi ha usuari', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={null}
           experience={mockExperience}
@@ -170,8 +171,8 @@ describe('UserExperience Component', () => {
       expect(getByText('common.unknown')).toBeTruthy();
     });
 
-    it('snapshot test - experiència bàsica', () => {
-      const { toJSON } = render(
+    it('snapshot test - experiència bàsica', async () => {
+      const { toJSON } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -183,8 +184,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Format de data', () => {
-    it('hauria de formatar la data correctament', () => {
-      const { getByText } = render(
+    it('hauria de formatar la data correctament', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -196,13 +197,13 @@ describe('UserExperience Component', () => {
       expect(getByText('15-06-2025')).toBeTruthy();
     });
 
-    it('hauria de mostrar "Sense data" per dates invàlides', () => {
+    it('hauria de mostrar "Sense data" per dates invàlides', async () => {
       const experienceWithInvalidDate: Experience = {
         ...mockExperience,
         modified_at: 'invalid-date',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithInvalidDate}
@@ -213,13 +214,13 @@ describe('UserExperience Component', () => {
       expect(getByText('Sense data')).toBeTruthy();
     });
 
-    it('hauria de gestionar data null', () => {
+    it('hauria de gestionar data null', async () => {
       const experienceWithNullDate: Experience = {
         ...mockExperience,
         modified_at: 'null',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithNullDate}
@@ -232,8 +233,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Truncament de text', () => {
-    it('hauria de truncar text llarg', () => {
-      const { getByText } = render(
+    it('hauria de truncar text llarg', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperienceWithLongText}
@@ -245,8 +246,8 @@ describe('UserExperience Component', () => {
       expect(getByText('common.readMore')).toBeTruthy();
     });
 
-    it('hauria de permetre expandir el text', () => {
-      const { getByText } = render(
+    it('hauria de permetre expandir el text', async () => {
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperienceWithLongText}
@@ -255,13 +256,13 @@ describe('UserExperience Component', () => {
       );
 
       const readMoreButton = getByText('common.readMore');
-      fireEvent.press(readMoreButton);
+      await fireEvent.press(readMoreButton);
 
       expect(getByText('common.readLess')).toBeTruthy();
     });
 
-    it('no hauria de mostrar botó readMore per textos curts', () => {
-      const { queryByText } = render(
+    it('no hauria de mostrar botó readMore per textos curts', async () => {
+      const { queryByText } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -274,8 +275,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Galeria de fotos', () => {
-    it('hauria de mostrar el carrusel de fotos', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de mostrar el carrusel de fotos', async () => {
+      const { container } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -284,12 +285,12 @@ describe('UserExperience Component', () => {
       );
 
       // Hauria d'haver-hi imatges
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de cridar onPhotoPress quan es prem una foto', () => {
-      const { UNSAFE_root } = render(
+    it('hauria de cridar onPhotoPress quan es prem una foto', async () => {
+      const { container } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -298,14 +299,14 @@ describe('UserExperience Component', () => {
       );
 
       // Buscar TouchableOpacity de la imatge
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
     });
 
-    it('hauria de mostrar thumbnail per vídeos', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar thumbnail per vídeos', async () => {
+      const { getByTestId } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperienceWithVideo}
@@ -316,13 +317,13 @@ describe('UserExperience Component', () => {
       expect(getByTestId('video-thumbnail')).toBeTruthy();
     });
 
-    it('no hauria de mostrar carrusel si no hi ha fotos', () => {
+    it('no hauria de mostrar carrusel si no hi ha fotos', async () => {
       const experienceNoPhotos: Experience = {
         ...mockExperience,
         images_metadata: [],
       };
 
-      const { queryByTestId } = render(
+      const { queryByTestId } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceNoPhotos}
@@ -336,14 +337,14 @@ describe('UserExperience Component', () => {
   });
 
   describe('Mode d\'edició', () => {
-    it('hauria de mostrar botons d\'edició si l\'usuari és el creador', () => {
+    it('hauria de mostrar botons d\'edició si l\'usuari és el creador', async () => {
       // Modificar el mock per fer coincidir l'usuari actual amb el creador
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -359,8 +360,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Mode resposta', () => {
-    it('hauria d\'aplicar estil de resposta quan isAnswer és true', () => {
-      const { toJSON } = render(
+    it('hauria d\'aplicar estil de resposta quan isAnswer és true', async () => {
+      const { toJSON } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperience}
@@ -375,8 +376,8 @@ describe('UserExperience Component', () => {
   });
 
   describe('Edició d\'experiència', () => {
-    it('snapshot test - amb experiència llarga', () => {
-      const { toJSON } = render(
+    it('snapshot test - amb experiència llarga', async () => {
+      const { toJSON } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperienceWithLongText}
@@ -386,8 +387,8 @@ describe('UserExperience Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('snapshot test - amb vídeo', () => {
-      const { toJSON } = render(
+    it('snapshot test - amb vídeo', async () => {
+      const { toJSON } = await render(
         <UserExperience
           user={mockUser}
           experience={mockExperienceWithVideo}
@@ -397,13 +398,13 @@ describe('UserExperience Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de mostrar botons d\'edició i eliminar quan l\'usuari és el creador', () => {
+    it('hauria de mostrar botons d\'edició i eliminar quan l\'usuari és el creador', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -417,13 +418,13 @@ describe('UserExperience Component', () => {
       expect(getByText('common.delete')).toBeTruthy();
     });
 
-    it('hauria de cridar onDelete quan es prem el botó d\'eliminar', () => {
+    it('hauria de cridar onDelete quan es prem el botó d\'eliminar', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -433,17 +434,17 @@ describe('UserExperience Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.delete'));
+      await fireEvent.press(getByText('common.delete'));
       expect(mockOnDelete).toHaveBeenCalled();
     });
 
-    it('hauria d\'entrar en mode edició quan es prem el botó editar', () => {
+    it('hauria d\'entrar en mode edició quan es prem el botó editar', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, getByDisplayValue } = render(
+      const { getByText, getByDisplayValue } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -453,7 +454,7 @@ describe('UserExperience Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       
       // Hauria de mostrar l'input d'edició
       expect(getByDisplayValue(mockExperience.comment)).toBeTruthy();
@@ -461,13 +462,13 @@ describe('UserExperience Component', () => {
       expect(getByText('experiences.addPhotos')).toBeTruthy();
     });
 
-    it('hauria de cancel·lar l\'edició quan es prem cancel·lar', () => {
+    it('hauria de cancel·lar l\'edició quan es prem cancel·lar', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, queryByDisplayValue } = render(
+      const { getByText, queryByDisplayValue } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -478,24 +479,24 @@ describe('UserExperience Component', () => {
       );
 
       // Entrar en mode edició
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       expect(getByText('common.cancel')).toBeTruthy();
 
       // Cancel·lar
-      fireEvent.press(getByText('common.cancel'));
+      await fireEvent.press(getByText('common.cancel'));
       
       // Hauria de tornar al mode normal
       expect(queryByDisplayValue(mockExperience.comment)).toBeNull();
       expect(getByText('common.edit')).toBeTruthy();
     });
 
-    it('hauria de permetre modificar el comentari', () => {
+    it('hauria de permetre modificar el comentari', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, getByDisplayValue } = render(
+      const { getByText, getByDisplayValue } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -506,23 +507,23 @@ describe('UserExperience Component', () => {
       );
 
       // Entrar en mode edició
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       
       const input = getByDisplayValue(mockExperience.comment);
-      fireEvent.changeText(input, 'Nou comentari modificat');
+      await fireEvent.changeText(input, 'Nou comentari modificat');
       
       expect(getByDisplayValue('Nou comentari modificat')).toBeTruthy();
       // El botó confirm hauria d'aparèixer perquè hi ha canvis
       expect(getByText('common.confirm')).toBeTruthy();
     });
 
-    it('hauria de cridar onEdit quan es confirma l\'edició', () => {
+    it('hauria de cridar onEdit quan es confirma l\'edició', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, getByDisplayValue } = render(
+      const { getByText, getByDisplayValue } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -533,12 +534,12 @@ describe('UserExperience Component', () => {
       );
 
       // Entrar en mode edició
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       
       const input = getByDisplayValue(mockExperience.comment);
-      fireEvent.changeText(input, 'Comentari actualitzat');
+      await fireEvent.changeText(input, 'Comentari actualitzat');
       
-      fireEvent.press(getByText('common.confirm'));
+      await fireEvent.press(getByText('common.confirm'));
       
       expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, 'Comentari actualitzat', []);
     });
@@ -554,7 +555,7 @@ describe('UserExperience Component', () => {
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -565,9 +566,9 @@ describe('UserExperience Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       await act(async () => {
-        fireEvent.press(getByText('experiences.addPhotos'));
+        await fireEvent.press(getByText('experiences.addPhotos'));
       });
 
       expect(mockPickMedia).toHaveBeenCalled();
@@ -576,7 +577,7 @@ describe('UserExperience Component', () => {
       });
 
       // Confirmar envia els fitxers preparats (MIME real, no forçat)
-      fireEvent.press(getByText('common.confirm'));
+      await fireEvent.press(getByText('common.confirm'));
       expect(mockOnEdit).toHaveBeenCalledWith(experienceByCurrentUser.id, experienceByCurrentUser.comment, prepared);
     });
 
@@ -587,7 +588,7 @@ describe('UserExperience Component', () => {
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -598,22 +599,22 @@ describe('UserExperience Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       await act(async () => {
-        fireEvent.press(getByText('experiences.addPhotos'));
+        await fireEvent.press(getByText('experiences.addPhotos'));
       });
 
       expect(mockPickMedia).toHaveBeenCalled();
       expect(queryByText('experiences.newPhotos:')).toBeNull();
     });
 
-    it('hauria de mostrar el comptador de caràcters durant l\'edició', () => {
+    it('hauria de mostrar el comptador de caràcters durant l\'edició', async () => {
       const experienceByCurrentUser: Experience = {
         ...mockExperience,
         creator_uid: 'current-user-uid',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceByCurrentUser}
@@ -623,7 +624,7 @@ describe('UserExperience Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByText('common.edit'));
       
       // Hauria de mostrar el comptador de caràcters
       expect(getByText(`${mockExperience.comment.length} / 2000`)).toBeTruthy();
@@ -631,13 +632,13 @@ describe('UserExperience Component', () => {
   });
 
   describe('Format de data addicional', () => {
-    it('hauria de formatar dates amb hora correctament', () => {
+    it('hauria de formatar dates amb hora correctament', async () => {
       const experienceWithTime: Experience = {
         ...mockExperience,
         modified_at: '2025-03-20T14:30:00.000Z',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithTime}
@@ -648,13 +649,13 @@ describe('UserExperience Component', () => {
       expect(getByText('20-03-2025')).toBeTruthy();
     });
 
-    it('hauria de gestionar data undefined', () => {
+    it('hauria de gestionar data undefined', async () => {
       const experienceWithUndefinedDate: Experience = {
         ...mockExperience,
         modified_at: 'undefined',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithUndefinedDate}
@@ -665,13 +666,13 @@ describe('UserExperience Component', () => {
       expect(getByText('Sense data')).toBeTruthy();
     });
 
-    it('hauria de parsejar altres formats de data', () => {
+    it('hauria de parsejar altres formats de data', async () => {
       const experienceWithDifferentFormat: Experience = {
         ...mockExperience,
         modified_at: 'March 20, 2025',
       };
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithDifferentFormat}
@@ -684,7 +685,7 @@ describe('UserExperience Component', () => {
   });
 
   describe('Scroll de fotos', () => {
-    it('hauria de gestionar el scroll de la galeria', () => {
+    it('hauria de gestionar el scroll de la galeria', async () => {
       const experienceWithMultiplePhotos: Experience = {
         ...mockExperience,
         images_metadata: [
@@ -694,7 +695,7 @@ describe('UserExperience Component', () => {
         ],
       };
 
-      const { UNSAFE_root } = render(
+      const { container } = await render(
         <UserExperience
           user={mockUser}
           experience={experienceWithMultiplePhotos}
@@ -702,10 +703,10 @@ describe('UserExperience Component', () => {
         />
       );
 
-      const scrollView = UNSAFE_root.findAllByType(require('react-native').ScrollView)[0];
+      const scrollView = findAllByType(container, require('react-native').ScrollView)[0];
       
       // Simular scroll
-      fireEvent.scroll(scrollView, {
+      await fireEvent.scroll(scrollView, {
         nativeEvent: {
           contentOffset: { x: 120, y: 0 },
         },
@@ -714,7 +715,7 @@ describe('UserExperience Component', () => {
   });
 
   describe('Helper function isVideo', () => {
-    it('hauria d\'identificar vídeos MP4', () => {
+    it('hauria d\'identificar vídeos MP4', async () => {
       const videoExperience: Experience = {
         ...mockExperience,
         images_metadata: [
@@ -722,7 +723,7 @@ describe('UserExperience Component', () => {
         ],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <UserExperience
           user={mockUser}
           experience={videoExperience}
@@ -733,7 +734,7 @@ describe('UserExperience Component', () => {
       expect(getByTestId('video-thumbnail')).toBeTruthy();
     });
 
-    it('hauria d\'identificar vídeos MOV', () => {
+    it('hauria d\'identificar vídeos MOV', async () => {
       const videoExperience: Experience = {
         ...mockExperience,
         images_metadata: [
@@ -741,7 +742,7 @@ describe('UserExperience Component', () => {
         ],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <UserExperience
           user={mockUser}
           experience={videoExperience}

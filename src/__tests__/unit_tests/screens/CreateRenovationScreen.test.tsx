@@ -13,6 +13,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { CreateRenovationScreen } from '../../../screens/CreateRenovationScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -106,8 +107,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -121,42 +122,42 @@ describe('CreateRenovationScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+    it('hauria de renderitzar correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
       expect(getByText('createRenovation.title')).toBeTruthy();
       expect(getByTestId('renovation-form')).toBeTruthy();
     });
 
-    it('hauria de mostrar el formulari en mode create', () => {
-      const { getByText } = renderWithProviders(<CreateRenovationScreen />);
+    it('hauria de mostrar el formulari en mode create', async () => {
+      const { getByText } = await renderWithProviders(<CreateRenovationScreen />);
 
       expect(getByText('Mode: create')).toBeTruthy();
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = renderWithProviders(<CreateRenovationScreen />);
+    it('snapshot test', async () => {
+      const { toJSON } = await renderWithProviders(<CreateRenovationScreen />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   describe('Navegació', () => {
-    it('hauria de navegar a Renovations quan es prem cancel', () => {
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+    it('hauria de navegar a Renovations quan es prem cancel', async () => {
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
       const cancelButton = getByTestId('cancel-button');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('MainTabs', { screen: 'Renovations' }, { pop: true });
     });
 
-    it('hauria de navegar enrere quan es prem el botó back', () => {
-      const { UNSAFE_root } = renderWithProviders(<CreateRenovationScreen />);
+    it('hauria de navegar enrere quan es prem el botó back', async () => {
+      const { container } = await renderWithProviders(<CreateRenovationScreen />);
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // El primer touchable hauria de ser el botó enrere
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
     });
   });
@@ -167,10 +168,10 @@ describe('CreateRenovationScreen', () => {
         options?.onSuccess?.({ id: 'new-renovation-id' });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -182,10 +183,10 @@ describe('CreateRenovationScreen', () => {
         options?.onSuccess?.({ id: 'new-renovation-id' });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', expect.any(Object));
@@ -195,10 +196,10 @@ describe('CreateRenovationScreen', () => {
 
   describe('Gestió d\'errors', () => {
     it('hauria de tenir callbacks d\'error definits en el mutate', async () => {
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
       const submitButton = getByTestId('submit-button');
-      fireEvent.press(submitButton);
+      await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -215,9 +216,9 @@ describe('CreateRenovationScreen', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
       
       // Just verify that the mutate is called with error handler
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
       
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -235,9 +236,9 @@ describe('CreateRenovationScreen', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
       
       // Just verify that the mutate is called with error handler
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
       
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -253,11 +254,11 @@ describe('CreateRenovationScreen', () => {
   });
 
   describe('Estat de càrrega', () => {
-    it('hauria de passar isLoading al formulari quan mutation està pendent', () => {
+    it('hauria de passar isLoading al formulari quan mutation està pendent', async () => {
       // Nota: El mock de useCreateRenovation retorna isPending: false
       // per tant no podem testejar directament, però podem verificar que
       // el loading es passa al formulari
-      const { queryByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { queryByTestId } = await renderWithProviders(<CreateRenovationScreen />);
       
       // No hauria d'haver loading perquè isPending és false
       expect(queryByTestId('loading')).toBeNull();
@@ -265,33 +266,33 @@ describe('CreateRenovationScreen', () => {
   });
 
   describe('Reset del formulari', () => {
-    it('hauria de resetar el formulari cada vegada que s\'enfoca la pantalla', () => {
+    it('hauria de resetar el formulari cada vegada que s\'enfoca la pantalla', async () => {
       // El useFocusEffect incrementa formResetKey
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
       expect(getByTestId('renovation-form')).toBeTruthy();
     });
   });
 
   describe('Alert informatiu', () => {
-    it('hauria de mostrar alert informatiu en focus', () => {
+    it('hauria de mostrar alert informatiu en focus', async () => {
       // El mock de useFocusEffect executa el callback immediatament
       // que hauria de mostrar l'alert informatiu
-      const { toJSON } = renderWithProviders(<CreateRenovationScreen />);
+      const { toJSON } = await renderWithProviders(<CreateRenovationScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Botons d\'acció del CustomAlert amb error de solapament', () => {
-    it('hauria de cridar mutate amb callbacks per error de solapament', () => {
+    it('hauria de cridar mutate amb callbacks per error de solapament', async () => {
       mockMutate.mockImplementation((data, options) => {
         // Verifiquem que els callbacks estan definits
         expect(options.onSuccess).toBeDefined();
         expect(options.onError).toBeDefined();
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
       
       expect(mockMutate).toHaveBeenCalledWith(
         expect.any(Object),
@@ -307,9 +308,9 @@ describe('CreateRenovationScreen', () => {
         options?.onSuccess?.({ id: 'new-renovation-id' });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
@@ -332,9 +333,9 @@ describe('CreateRenovationScreen', () => {
         options?.onSuccess?.(createdRenovation);
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', {
@@ -354,9 +355,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ message: 'Something went wrong' });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith('Error creating renovation:', expect.any(Object));
@@ -373,9 +374,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({});
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalled();
@@ -395,9 +396,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith('Error creating renovation:', expect.objectContaining({
@@ -417,9 +418,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -437,9 +438,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalled();
@@ -458,9 +459,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalled();
@@ -478,9 +479,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -509,9 +510,9 @@ describe('CreateRenovationScreen', () => {
         options?.onError?.({ overlappingRenovation });
       });
 
-      const { getByTestId } = renderWithProviders(<CreateRenovationScreen />);
+      const { getByTestId } = await renderWithProviders(<CreateRenovationScreen />);
 
-      fireEvent.press(getByTestId('submit-button'));
+      await fireEvent.press(getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();

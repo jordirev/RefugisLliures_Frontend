@@ -92,7 +92,7 @@ describe('useRenovations', () => {
   it('should fetch all renovations', async () => {
     mockedService.getAllRenovations.mockResolvedValue([mockRenovationDTO]);
 
-    const { result } = renderHook(() => useRenovations(), {
+    const { result } = await renderHook(() => useRenovations(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -107,7 +107,7 @@ describe('useRenovations', () => {
   it('should handle error', async () => {
     mockedService.getAllRenovations.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useRenovations(), {
+    const { result } = await renderHook(() => useRenovations(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -132,7 +132,7 @@ describe('useRenovation', () => {
   it('should fetch a single renovation', async () => {
     mockedService.getRenovationById.mockResolvedValue(mockRenovationDTO);
 
-    const { result } = renderHook(() => useRenovation('renovation-1'), {
+    const { result } = await renderHook(() => useRenovation('renovation-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -145,7 +145,7 @@ describe('useRenovation', () => {
   });
 
   it('should not fetch when id is undefined', async () => {
-    const { result } = renderHook(() => useRenovation(undefined), {
+    const { result } = await renderHook(() => useRenovation(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -156,7 +156,7 @@ describe('useRenovation', () => {
   it('should handle error when renovation not found', async () => {
     mockedService.getRenovationById.mockResolvedValue(null);
 
-    const { result } = renderHook(() => useRenovation('invalid'), {
+    const { result } = await renderHook(() => useRenovation('invalid'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -181,7 +181,7 @@ describe('useRefugeRenovations', () => {
   it('should fetch renovations for a refuge', async () => {
     mockedService.getRenovationsByRefugeId.mockResolvedValue([mockRenovationDTO]);
 
-    const { result } = renderHook(() => useRefugeRenovations('refuge-1'), {
+    const { result } = await renderHook(() => useRefugeRenovations('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -194,7 +194,7 @@ describe('useRefugeRenovations', () => {
   });
 
   it('should not fetch when refugeId is undefined', async () => {
-    const { result } = renderHook(() => useRefugeRenovations(undefined), {
+    const { result } = await renderHook(() => useRefugeRenovations(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -218,7 +218,7 @@ describe('useCreateRenovation', () => {
   it('should create a new renovation', async () => {
     mockedService.createRenovation.mockResolvedValue(mockRenovationDTO);
 
-    const { result } = renderHook(() => useCreateRenovation(), {
+    const { result } = await renderHook(() => useCreateRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -238,7 +238,7 @@ describe('useCreateRenovation', () => {
   it('should handle error when creating renovation', async () => {
     mockedService.createRenovation.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateRenovation(), {
+    const { result } = await renderHook(() => useCreateRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -272,7 +272,7 @@ describe('useUpdateRenovation', () => {
     const updatedDTO = { ...mockRenovationDTO, description: 'Updated' };
     mockedService.updateRenovation.mockResolvedValue(updatedDTO);
 
-    const { result } = renderHook(() => useUpdateRenovation(), {
+    const { result } = await renderHook(() => useUpdateRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -289,7 +289,7 @@ describe('useUpdateRenovation', () => {
   it('should handle error when updating renovation', async () => {
     mockedService.updateRenovation.mockRejectedValue(new Error('Failed to update'));
 
-    const { result } = renderHook(() => useUpdateRenovation(), {
+    const { result } = await renderHook(() => useUpdateRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -319,7 +319,7 @@ describe('useDeleteRenovation', () => {
   it('should delete a renovation', async () => {
     mockedService.deleteRenovation.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteRenovation(), {
+    const { result } = await renderHook(() => useDeleteRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -336,7 +336,7 @@ describe('useDeleteRenovation', () => {
   it('should handle error when deleting renovation', async () => {
     mockedService.deleteRenovation.mockRejectedValue(new Error('Failed to delete'));
 
-    const { result } = renderHook(() => useDeleteRenovation(), {
+    const { result } = await renderHook(() => useDeleteRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -366,7 +366,7 @@ describe('useJoinRenovation', () => {
     const joinedDTO = { ...mockRenovationDTO, participants: ['user-456', 'user-789'] };
     mockedService.joinRenovation.mockResolvedValue(joinedDTO);
 
-    const { result } = renderHook(() => useJoinRenovation(), {
+    const { result } = await renderHook(() => useJoinRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -380,7 +380,7 @@ describe('useJoinRenovation', () => {
   it('should handle error when joining renovation', async () => {
     mockedService.joinRenovation.mockRejectedValue(new Error('Already a participant'));
 
-    const { result } = renderHook(() => useJoinRenovation(), {
+    const { result } = await renderHook(() => useJoinRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -408,7 +408,7 @@ describe('useLeaveRenovation', () => {
     const updatedDTO = { ...mockRenovationDTO, participants: [] };
     mockedService.removeParticipant.mockResolvedValue(updatedDTO);
 
-    const { result } = renderHook(() => useLeaveRenovation(), {
+    const { result } = await renderHook(() => useLeaveRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -425,7 +425,7 @@ describe('useLeaveRenovation', () => {
   it('should handle error when leaving renovation', async () => {
     mockedService.removeParticipant.mockRejectedValue(new Error('Not a participant'));
 
-    const { result } = renderHook(() => useLeaveRenovation(), {
+    const { result } = await renderHook(() => useLeaveRenovation(), {
       wrapper: createWrapper(queryClient),
     });
 

@@ -43,8 +43,8 @@ describe('BadgeSelector Component', () => {
   });
 
   describe('Renderització de tipus', () => {
-    it('hauria de renderitzar BadgeType quan type és "type"', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar BadgeType quan type és "type"', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -55,8 +55,8 @@ describe('BadgeSelector Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb valor undefined', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar amb valor undefined', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="type"
           onValueChange={mockOnValueChange}
@@ -68,8 +68,8 @@ describe('BadgeSelector Component', () => {
   });
 
   describe('Renderització de condició', () => {
-    it('hauria de renderitzar BadgeCondition quan type és "condition"', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar BadgeCondition quan type és "condition"', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="condition"
           value={2}
@@ -80,8 +80,8 @@ describe('BadgeSelector Component', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb valor undefined per condició', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar amb valor undefined per condició', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="condition"
           onValueChange={mockOnValueChange}
@@ -93,8 +93,8 @@ describe('BadgeSelector Component', () => {
   });
 
   describe('Toggle intern', () => {
-    it('hauria d\'expandir quan es prem el badge (sense control extern)', () => {
-      const { getByText, queryByText, toJSON } = render(
+    it('hauria d\'expandir quan es prem el badge (sense control extern)', async () => {
+      const { getByText, queryByText, toJSON } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -108,15 +108,15 @@ describe('BadgeSelector Component', () => {
       // Premem per expandir - busquem el text del badge que és la traducció
       // Com que està mockejat, busquem per la key de traducció
       const badge = getByText('refuge.type.noGuarded');
-      fireEvent.press(badge);
+      await fireEvent.press(badge);
 
       // Ara les opcions haurien de ser visibles
       const expandedSnapshot = toJSON();
       expect(expandedSnapshot).not.toEqual(initialSnapshot);
     });
 
-    it('hauria de col·lapsar quan es selecciona una opció', () => {
-      const { getByText } = render(
+    it('hauria de col·lapsar quan es selecciona una opció', async () => {
+      const { getByText } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -125,20 +125,20 @@ describe('BadgeSelector Component', () => {
       );
 
       // Expandim
-      fireEvent.press(getByText('refuge.type.noGuarded'));
+      await fireEvent.press(getByText('refuge.type.noGuarded'));
 
       // Seleccionem una opció
-      fireEvent.press(getByText('refuge.type.closed'));
+      await fireEvent.press(getByText('refuge.type.closed'));
 
       expect(mockOnValueChange).toHaveBeenCalledWith('fermée');
     });
   });
 
   describe('Control extern d\'expansió', () => {
-    it('hauria d\'utilitzar expanded extern quan es proporciona', () => {
+    it('hauria d\'utilitzar expanded extern quan es proporciona', async () => {
       const mockOnToggle = jest.fn();
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -153,10 +153,10 @@ describe('BadgeSelector Component', () => {
       expect(getByText('refuge.type.shelter')).toBeTruthy();
     });
 
-    it('hauria de cridar onToggle extern quan es prem', () => {
+    it('hauria de cridar onToggle extern quan es prem', async () => {
       const mockOnToggle = jest.fn();
 
-      const { getByText } = render(
+      const { getByText } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -166,14 +166,14 @@ describe('BadgeSelector Component', () => {
         />
       );
 
-      fireEvent.press(getByText('refuge.type.noGuarded'));
+      await fireEvent.press(getByText('refuge.type.noGuarded'));
       expect(mockOnToggle).toHaveBeenCalled();
     });
   });
 
   describe('Selecció d\'opcions de tipus', () => {
-    it('hauria de cridar onValueChange amb el valor correcte per tipus', () => {
-      const { getByText } = render(
+    it('hauria de cridar onValueChange amb el valor correcte per tipus', async () => {
+      const { getByText } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -182,18 +182,18 @@ describe('BadgeSelector Component', () => {
       );
 
       // Expandim
-      fireEvent.press(getByText('refuge.type.noGuarded'));
+      await fireEvent.press(getByText('refuge.type.noGuarded'));
 
       // Seleccionem 'orri'
-      fireEvent.press(getByText('refuge.type.shelter'));
+      await fireEvent.press(getByText('refuge.type.shelter'));
 
       expect(mockOnValueChange).toHaveBeenCalledWith('orri');
     });
   });
 
   describe('Selecció d\'opcions de condició', () => {
-    it('hauria de cridar onValueChange amb el valor numèric correcte', () => {
-      const { getByText } = render(
+    it('hauria de cridar onValueChange amb el valor numèric correcte', async () => {
+      const { getByText } = await render(
         <BadgeSelector
           type="condition"
           value={1}
@@ -202,18 +202,18 @@ describe('BadgeSelector Component', () => {
       );
 
       // Expandim
-      fireEvent.press(getByText('refuge.condition.fair'));
+      await fireEvent.press(getByText('refuge.condition.fair'));
 
       // Seleccionem 'excellent' (valor 3)
-      fireEvent.press(getByText('refuge.condition.excellent'));
+      await fireEvent.press(getByText('refuge.condition.excellent'));
 
       expect(mockOnValueChange).toHaveBeenCalledWith(3);
     });
   });
 
   describe('renderOptionsExternal', () => {
-    it('no hauria de renderitzar opcions quan renderOptionsExternal és true', () => {
-      const { queryByText, getByText } = render(
+    it('no hauria de renderitzar opcions quan renderOptionsExternal és true', async () => {
+      const { queryByText, getByText } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -232,8 +232,8 @@ describe('BadgeSelector Component', () => {
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot per tipus col·lapsat', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per tipus col·lapsat', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"
@@ -244,8 +244,8 @@ describe('BadgeSelector Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot per condició col·lapsat', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per condició col·lapsat', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="condition"
           value={2}
@@ -256,8 +256,8 @@ describe('BadgeSelector Component', () => {
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot per tipus expandit', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot per tipus expandit', async () => {
+      const { toJSON } = await render(
         <BadgeSelector
           type="type"
           value="non gardé"

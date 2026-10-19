@@ -71,7 +71,8 @@ jest.mock('../../../hooks/useCustomAlert', () => ({
 jest.mock('../../../components/LanguageSelector', () => ({
   LanguageSelector: ({ visible, onClose }: any) => {
     if (!visible) return null;
-    return <div testID="language-selector">Language Selector</div>;
+    const { Text } = require('react-native');
+    return <Text testID="language-selector">Language Selector</Text>;
   },
 }));
 
@@ -93,8 +94,8 @@ describe('SettingsScreen - Tests d\'integració', () => {
   });
 
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar la pantalla de configuració correctament', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de renderitzar la pantalla de configuració correctament', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
@@ -109,8 +110,8 @@ describe('SettingsScreen - Tests d\'integració', () => {
       expect(getByText('profile.settings.logout.title')).toBeTruthy();
     });
 
-    it('hauria de mostrar l\'idioma actual', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de mostrar l\'idioma actual', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
@@ -121,54 +122,54 @@ describe('SettingsScreen - Tests d\'integració', () => {
   });
 
   describe('Navegació del menú', () => {
-    it('hauria de navegar a EditProfile quan es fa clic', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de navegar a EditProfile quan es fa clic', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const editProfileButton = getByText('profile.settings.editProfile');
-      fireEvent.press(editProfileButton);
+      await fireEvent.press(editProfileButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('EditProfile');
     });
 
-    it('hauria de navegar a ChangeEmail quan es fa clic', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de navegar a ChangeEmail quan es fa clic', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const changeEmailButton = getByText('profile.settings.changeEmail');
-      fireEvent.press(changeEmailButton);
+      await fireEvent.press(changeEmailButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('ChangeEmail');
     });
 
-    it('hauria de navegar a ChangePassword quan es fa clic', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de navegar a ChangePassword quan es fa clic', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const changePasswordButton = getByText('profile.settings.changePassword');
-      fireEvent.press(changePasswordButton);
+      await fireEvent.press(changePasswordButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('ChangePassword');
     });
   });
 
   describe('Selector d\'idioma', () => {
-    it('hauria de mostrar el selector d\'idioma quan es fa clic', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de mostrar el selector d\'idioma quan es fa clic', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const languageButton = getByText('profile.settings.language');
-      fireEvent.press(languageButton);
+      await fireEvent.press(languageButton);
 
       expect(getByTestId('language-selector')).toBeTruthy();
     });
 
     it('hauria d\'actualitzar l\'idioma mostrat quan canvia', async () => {
-      const { getByText, rerender, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, rerender, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
@@ -177,18 +178,18 @@ describe('SettingsScreen - Tests d\'integració', () => {
       expect(getByText('Català')).toBeTruthy();
 
       // Rerenderitzar per reflectir el canvi
-      rerender(<SettingsScreen />);
+      await rerender(<SettingsScreen />);
     });
   });
 
   describe('Logout', () => {
-    it('hauria de mostrar confirmació abans de fer logout', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de mostrar confirmació abans de fer logout', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const logoutButton = getByText('profile.settings.logout.title');
-      fireEvent.press(logoutButton);
+      await fireEvent.press(logoutButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
         'profile.settings.logout.confirmTitle',
@@ -203,12 +204,12 @@ describe('SettingsScreen - Tests d\'integració', () => {
     it('hauria de fer logout quan es confirma', async () => {
       mockLogout.mockResolvedValue(undefined);
 
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const logoutButton = getByText('profile.settings.logout.title');
-      fireEvent.press(logoutButton);
+      await fireEvent.press(logoutButton);
 
       // Simular confirmació de l'alerta
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
@@ -222,12 +223,12 @@ describe('SettingsScreen - Tests d\'integració', () => {
     it('hauria de gestionar errors durant el logout', async () => {
       mockLogout.mockRejectedValue(new Error('Network error'));
 
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const logoutButton = getByText('profile.settings.logout.title');
-      fireEvent.press(logoutButton);
+      await fireEvent.press(logoutButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
       await confirmCallback();
@@ -242,13 +243,13 @@ describe('SettingsScreen - Tests d\'integració', () => {
   });
 
   describe('Eliminació de compte', () => {
-    it('hauria de mostrar confirmació abans d\'eliminar el compte', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de mostrar confirmació abans d\'eliminar el compte', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const deleteButton = getByText('profile.settings.deleteAccount.title');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       expect(mockShowAlert).toHaveBeenCalledWith(
         'profile.settings.deleteAccount.confirmTitle',
@@ -263,12 +264,12 @@ describe('SettingsScreen - Tests d\'integració', () => {
     it('hauria d\'eliminar el compte quan es confirma', async () => {
       mockDeleteAccount.mockResolvedValue(undefined);
 
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const deleteButton = getByText('profile.settings.deleteAccount.title');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
       await confirmCallback();
@@ -281,12 +282,12 @@ describe('SettingsScreen - Tests d\'integració', () => {
     it('hauria de gestionar errors durant l\'eliminació', async () => {
       mockDeleteAccount.mockRejectedValue(new Error('Failed to delete'));
 
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const deleteButton = getByText('profile.settings.deleteAccount.title');
-      fireEvent.press(deleteButton);
+      await fireEvent.press(deleteButton);
 
       const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
       await confirmCallback();
@@ -301,25 +302,25 @@ describe('SettingsScreen - Tests d\'integració', () => {
   });
 
   describe('Opcions de menú sense funcionalitat', () => {
-    it('hauria de permetre fer clic a Ajuda', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de permetre fer clic a Ajuda', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const helpButton = getByText('profile.settings.help');
-      fireEvent.press(helpButton);
+      await fireEvent.press(helpButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
       expect(mockNavigate).not.toHaveBeenCalledWith('Help');
     });
 
-    it('hauria de permetre fer clic a Sobre l\'app', () => {
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de permetre fer clic a Sobre l\'app', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
       const aboutButton = getByText('profile.settings.about');
-      fireEvent.press(aboutButton);
+      await fireEvent.press(aboutButton);
 
       // No hauria de cridar navegació (funcionalitat futura)
       expect(mockNavigate).not.toHaveBeenCalledWith('About');
@@ -329,7 +330,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
 
 
   describe('Casos límit', () => {
-    it('hauria de gestionar usuari sense dades de backend', () => {
+    it('hauria de gestionar usuari sense dades de backend', async () => {
       // Override del mock per aquest test
       jest.spyOn(require('../../../contexts/AuthContext'), 'useAuth').mockReturnValue({
         logout: mockLogout,
@@ -337,7 +338,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
         backendUser: null,
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<SettingsScreen />, {
+      const { getByText, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
@@ -345,8 +346,8 @@ describe('SettingsScreen - Tests d\'integració', () => {
       expect(getByText('profile.settings.title')).toBeTruthy();
     });
 
-    it('hauria de mantenir l\'estat del selector d\'idioma', () => {
-      const { getByText, queryByTestId, getByTestId } = renderWithProviders(<SettingsScreen />, {
+    it('hauria de mantenir l\'estat del selector d\'idioma', async () => {
+      const { getByText, queryByTestId, getByTestId } = await renderWithProviders(<SettingsScreen />, {
         mockNavigation,
       });
 
@@ -355,7 +356,7 @@ describe('SettingsScreen - Tests d\'integració', () => {
 
       // Obrir
       const languageButton = getByText('profile.settings.language');
-      fireEvent.press(languageButton);
+      await fireEvent.press(languageButton);
 
       expect(queryByTestId('language-selector')).toBeTruthy();
     });

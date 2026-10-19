@@ -34,9 +34,11 @@ Errors a la UI: `t(AuthService.getErrorMessageKey(error.code))` amb `useCustomAl
 ## Configuració (només noms)
 Variables a `.env.example` (i `.env` local, ignorat per git a `.gitignore:42`): `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_STORAGE_BUCKET`, `FIREBASE_MESSAGING_SENDER_ID`, `FIREBASE_APP_ID`, `FIREBASE_MEASUREMENT_ID`, `FIREBASE_WEB_CLIENT_ID`.
 
+Firebase JS SDK 13: els imports de `firebase/app` i `firebase/auth` de `src/services/firebase.ts` no han calgut canviar (`tsc`, bundle Android i emulador E2E 23/23 verificats). `getToken.js` usa `dotenv` 18 (`require('dotenv').config()` igual) **[FET]**.
+
 Hi ha **dos mecanismes** de lectura **[FET]**:
 1. `app.config.js` → `Constants.expoConfig.extra.firebase*` per a la config de Firebase (`src/services/firebase.ts:39-47`). Els imports d'`@env` del mateix fitxer (L26-34) no s'usen.
-2. `@env` (react-native-dotenv, `safe:false`, `allowUndefined:true`) per a `FIREBASE_WEB_CLIENT_ID` (`src/services/AuthService.ts:32`).
+2. `@env` (react-native-dotenv 5, `safe:false`, `allowUndefined:true`; les opcions no han canviat respecte de v3) per a `FIREBASE_WEB_CLIENT_ID` (`src/services/AuthService.ts:32`).
 
 Fitxers natius: `google-services.json` (Android) es genera a `app.config.js:9-26` des de `GOOGLE_SERVICES_JSON_BASE64` (variable d'EAS) i està a `.gitignore:50`; `GoogleService-Info.plist` (iOS) es referencia a `app.config.js:52` però no és al repo **[FET]**.
 

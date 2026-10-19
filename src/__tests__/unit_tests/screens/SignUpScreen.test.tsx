@@ -188,8 +188,8 @@ describe('SignUpScreen - Unit Tests', () => {
   // RENDERITZACIÓ INICIAL
   // ============================================
   describe('Renderització inicial', () => {
-    it('hauria de renderitzar la pantalla de selecció d\'idioma inicialment', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria de renderitzar la pantalla de selecció d\'idioma inicialment', async () => {
+      const { getByText, getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -203,8 +203,8 @@ describe('SignUpScreen - Unit Tests', () => {
       expect(getByTestId('language-en')).toBeTruthy();
     });
 
-    it('hauria de mostrar el logo i nom de l\'app', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el logo i nom de l\'app', async () => {
+      const { getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -214,8 +214,8 @@ describe('SignUpScreen - Unit Tests', () => {
       expect(getByText('Refugis Lliures')).toBeTruthy();
     });
 
-    it('hauria de mostrar el botó per tornar a login', () => {
-      const { getByTestId } = render(
+    it('hauria de mostrar el botó per tornar a login', async () => {
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -225,8 +225,8 @@ describe('SignUpScreen - Unit Tests', () => {
       expect(getByTestId('back-button')).toBeTruthy();
     });
 
-    it('snapshot test - pantalla de selecció d\'idioma', () => {
-      const { toJSON } = render(
+    it('snapshot test - pantalla de selecció d\'idioma', async () => {
+      const { toJSON } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -241,14 +241,14 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Selecció d\'idioma', () => {
     it('hauria de canviar a català i mostrar el formulari', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('ca', expect.any(Function));
@@ -257,14 +257,14 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de canviar a espanyol', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-es'));
+      await fireEvent.press(getByTestId('language-es'));
 
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('es', expect.any(Function));
@@ -272,14 +272,14 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de canviar a francès', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-fr'));
+      await fireEvent.press(getByTestId('language-fr'));
 
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('fr', expect.any(Function));
@@ -287,14 +287,14 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de canviar a anglès', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-en'));
+      await fireEvent.press(getByTestId('language-en'));
 
       await waitFor(() => {
         expect(i18n.changeLanguage).toHaveBeenCalledWith('en', expect.any(Function));
@@ -302,7 +302,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de validar username buit després de seleccionar idioma', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -310,7 +310,7 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       // Seleccionar idioma sense haver escrit res
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         // Hauria de mostrar error d'username buit
@@ -319,7 +319,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de validar username massa curt després de canviar idioma', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -327,7 +327,7 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       // Primer seleccionar idioma
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         expect(getByTestId('username-input')).toBeTruthy();
@@ -335,7 +335,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       // Escriure un username curt
       const usernameInput = getByTestId('username-input');
-      fireEvent.changeText(usernameInput, 'a');
+      await fireEvent.changeText(usernameInput, 'a');
 
       // Tornar a seleccionar idioma per forçar revalidació
       // Primer tornem a la selecció d'idioma
@@ -352,18 +352,18 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Validació d\'username', () => {
     it('hauria de mostrar error si l\'username està buit', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const usernameInput = getByTestId('username-input');
-        fireEvent.changeText(usernameInput, '');
+        await fireEvent.changeText(usernameInput, '');
       });
 
       await waitFor(() => {
@@ -372,17 +372,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de mostrar error si l\'username és massa curt (1 caràcter)', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'a');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'a');
       });
 
       await waitFor(() => {
@@ -391,17 +391,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de mostrar error si l\'username és massa llarg (>20 caràcters)', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'a'.repeat(21));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'a'.repeat(21));
       });
 
       await waitFor(() => {
@@ -410,17 +410,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar un username vàlid (2-20 caràcters)', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
 
       await waitFor(() => {
@@ -431,17 +431,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar un username amb exactament 2 caràcters', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'ab');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'ab');
       });
 
       await waitFor(() => {
@@ -450,17 +450,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar un username amb exactament 20 caràcters', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'a'.repeat(20));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'a'.repeat(20));
       });
 
       await waitFor(() => {
@@ -469,17 +469,17 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de fer trim de l\'username', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), '  testuser  ');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), '  testuser  ');
       });
 
       await waitFor(() => {
@@ -494,9 +494,9 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Validació d\'email', () => {
     const setupToEmailStep = async (getByTestId: any) => {
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
       await waitFor(() => {
         expect(getByTestId('email-input')).toBeTruthy();
@@ -504,7 +504,7 @@ describe('SignUpScreen - Unit Tests', () => {
     };
 
     it('hauria de mostrar error amb un email invàlid', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -513,7 +513,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToEmailStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('email-input'), 'invalid-email');
+      await fireEvent.changeText(getByTestId('email-input'), 'invalid-email');
 
       await waitFor(() => {
         expect(getByText('El format de l\'email no és vàlid')).toBeTruthy();
@@ -521,7 +521,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar un email vàlid', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -530,7 +530,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToEmailStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
 
       await waitFor(() => {
         expect(queryByText('El format de l\'email no és vàlid')).toBeNull();
@@ -539,7 +539,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de netejar l\'error quan l\'email es buida', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -549,14 +549,14 @@ describe('SignUpScreen - Unit Tests', () => {
       await setupToEmailStep(getByTestId);
 
       // Escriure email invàlid
-      fireEvent.changeText(getByTestId('email-input'), 'invalid');
+      await fireEvent.changeText(getByTestId('email-input'), 'invalid');
 
       await waitFor(() => {
         expect(queryByText('El format de l\'email no és vàlid')).toBeTruthy();
       });
 
       // Buidar el camp
-      fireEvent.changeText(getByTestId('email-input'), '');
+      await fireEvent.changeText(getByTestId('email-input'), '');
 
       await waitFor(() => {
         expect(queryByText('El format de l\'email no és vàlid')).toBeNull();
@@ -569,12 +569,12 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Validació de contrasenya', () => {
     const setupToPasswordStep = async (getByTestId: any) => {
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -582,7 +582,7 @@ describe('SignUpScreen - Unit Tests', () => {
     };
 
     it('hauria de mostrar errors de contrasenya feble', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -591,7 +591,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToPasswordStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('password-input'), 'weak');
+      await fireEvent.changeText(getByTestId('password-input'), 'weak');
 
       await waitFor(() => {
         expect(getByText('La contrasenya ha de tenir:')).toBeTruthy();
@@ -603,7 +603,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de detectar contrasenya sense minúscula', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -612,7 +612,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToPasswordStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('password-input'), 'TEST1234!');
+      await fireEvent.changeText(getByTestId('password-input'), 'TEST1234!');
 
       await waitFor(() => {
         expect(getByText('Una minúscula')).toBeTruthy();
@@ -620,7 +620,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar contrasenya forta i mostrar confirmació', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -629,7 +629,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToPasswordStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('Mínim 8 caràcters')).toBeNull();
@@ -643,15 +643,15 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Confirmació de contrasenya', () => {
     const setupToConfirmPasswordStep = async (getByTestId: any) => {
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
       await waitFor(() => {
         expect(getByTestId('confirm-password-input')).toBeTruthy();
@@ -659,7 +659,7 @@ describe('SignUpScreen - Unit Tests', () => {
     };
 
     it('hauria de mostrar error si les contrasenyes no coincideixen', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -668,7 +668,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToConfirmPasswordStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'Different1!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'Different1!');
 
       await waitFor(() => {
         expect(getByText('Les contrasenyes no coincideixen')).toBeTruthy();
@@ -676,7 +676,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'acceptar si les contrasenyes coincideixen', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -685,7 +685,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await setupToConfirmPasswordStep(getByTestId);
 
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('Les contrasenyes no coincideixen')).toBeNull();
@@ -694,7 +694,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de netejar error quan es buida el camp de confirmació', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -704,14 +704,14 @@ describe('SignUpScreen - Unit Tests', () => {
       await setupToConfirmPasswordStep(getByTestId);
 
       // Escriure contrasenya diferent
-      fireEvent.changeText(getByTestId('confirm-password-input'), 'Different1!');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), 'Different1!');
 
       await waitFor(() => {
         expect(queryByText('Les contrasenyes no coincideixen')).toBeTruthy();
       });
 
       // Buidar el camp
-      fireEvent.changeText(getByTestId('confirm-password-input'), '');
+      await fireEvent.changeText(getByTestId('confirm-password-input'), '');
 
       await waitFor(() => {
         expect(queryByText('Les contrasenyes no coincideixen')).toBeNull();
@@ -724,12 +724,12 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Visibilitat de contrasenya', () => {
     const setupToPasswordStep = async (getByTestId: any) => {
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
@@ -737,7 +737,7 @@ describe('SignUpScreen - Unit Tests', () => {
     };
 
     it('hauria d\'alternar la visibilitat de la contrasenya', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -750,14 +750,14 @@ describe('SignUpScreen - Unit Tests', () => {
       expect(passwordInput.props.secureTextEntry).toBe(true);
 
       const toggleButton = getByTestId('toggle-password-visibility');
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(getByTestId('password-input').props.secureTextEntry).toBe(false);
       });
 
       // Toggle back
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(getByTestId('password-input').props.secureTextEntry).toBe(true);
@@ -765,7 +765,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria d\'alternar la visibilitat de la confirmació de contrasenya', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -775,7 +775,7 @@ describe('SignUpScreen - Unit Tests', () => {
       await setupToPasswordStep(getByTestId);
 
       // Escriure contrasenya forta per mostrar confirmació
-      fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
 
       await waitFor(() => {
         expect(getByTestId('confirm-password-input')).toBeTruthy();
@@ -785,7 +785,7 @@ describe('SignUpScreen - Unit Tests', () => {
       expect(confirmPasswordInput.props.secureTextEntry).toBe(true);
 
       const toggleButton = getByTestId('toggle-confirm-password-visibility');
-      fireEvent.press(toggleButton);
+      await fireEvent.press(toggleButton);
 
       await waitFor(() => {
         expect(getByTestId('confirm-password-input').props.secureTextEntry).toBe(false);
@@ -801,18 +801,18 @@ describe('SignUpScreen - Unit Tests', () => {
     // cada camp amb una sola waitFor i omplim amb fireEvent (ja va dins d'act).
     const fillWhenVisible = async (getByTestId: any, id: string, value: string) => {
       await waitFor(() => expect(getByTestId(id)).toBeTruthy());
-      fireEvent.changeText(getByTestId(id), value);
+      await fireEvent.changeText(getByTestId(id), value);
     };
     const completeForm = async (getByTestId: any) => {
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
       await fillWhenVisible(getByTestId, 'username-input', 'testuser');
       await fillWhenVisible(getByTestId, 'email-input', 'test@example.com');
       await fillWhenVisible(getByTestId, 'password-input', 'Test1234!');
       await fillWhenVisible(getByTestId, 'confirm-password-input', 'Test1234!');
       await waitFor(() => expect(getByTestId('signup-button')).toBeTruthy());
-      fireEvent.changeText(getByTestId('birthdate-day'), '20');
-      fireEvent.changeText(getByTestId('birthdate-month'), '05');
-      fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+      await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+      await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
     };
 
     // Timeout explícit: amb la CPU carregada (execució paral·lela completa) el primer
@@ -820,7 +820,7 @@ describe('SignUpScreen - Unit Tests', () => {
     it('hauria de registrar un usuari correctament', async () => {
       mockSignup.mockResolvedValue(undefined);
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -829,7 +829,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await completeForm(getByTestId);
 
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockSignup).toHaveBeenCalledWith(
@@ -848,7 +848,7 @@ describe('SignUpScreen - Unit Tests', () => {
     }, 20000);
 
     it('hauria de mostrar error i no registrar si la data de naixement és invàlida', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -856,9 +856,9 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       await completeForm(getByTestId);
-      fireEvent.changeText(getByTestId('birthdate-day'), '31');
-      fireEvent.changeText(getByTestId('birthdate-month'), '02');
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.changeText(getByTestId('birthdate-day'), '31');
+      await fireEvent.changeText(getByTestId('birthdate-month'), '02');
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(getByTestId('birthdate-error')).toBeTruthy();
@@ -867,7 +867,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de bloquejar localment un menor de 16 anys sense crear el compte', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -876,8 +876,8 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await completeForm(getByTestId);
       const thisYear = new Date().getFullYear();
-      fireEvent.changeText(getByTestId('birthdate-year'), String(thisYear - 10));
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.changeText(getByTestId('birthdate-year'), String(thisYear - 10));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage');
@@ -888,7 +888,7 @@ describe('SignUpScreen - Unit Tests', () => {
     it('hauria de mostrar el missatge d\'edat si el backend respon 403 underage', async () => {
       mockSignup.mockRejectedValue({ code: 'underage', message: 'UNDERAGE' });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -896,7 +896,7 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       await completeForm(getByTestId);
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('age.underageTitle', 'age.underageMessage');
@@ -908,7 +908,7 @@ describe('SignUpScreen - Unit Tests', () => {
       mockSignup.mockRejectedValue({ code: 'auth/email-already-in-use' });
       mockGetErrorMessageKey.mockReturnValue('auth.errors.emailInUse');
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -917,7 +917,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await completeForm(getByTestId);
 
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', expect.any(String));
@@ -928,7 +928,7 @@ describe('SignUpScreen - Unit Tests', () => {
       mockSignup.mockRejectedValue({ code: 'auth/unknown-error' });
       mockGetErrorMessageKey.mockReturnValue('auth.errors.unknown');
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -937,7 +937,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await completeForm(getByTestId);
 
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalledWith('Error', expect.any(String));
@@ -945,9 +945,11 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de mostrar estat de càrrega durant el registre', async () => {
-      mockSignup.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      // Promesa diferida controlada manualment: evita dependre de timers reals (racy sota càrrega de CPU)
+      let resolveSignup!: (v?: any) => void;
+      mockSignup.mockImplementation(() => new Promise(r => { resolveSignup = r; }));
 
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -956,18 +958,22 @@ describe('SignUpScreen - Unit Tests', () => {
 
       await completeForm(getByTestId);
 
+      // Sense await: el handler queda pendent fins que resolguem la promesa
       fireEvent.press(getByTestId('signup-button'));
 
       // El botó hauria de mostrar text de càrrega
       await waitFor(() => {
         expect(getByText('Carregant...')).toBeTruthy();
       });
+
+      await act(async () => { resolveSignup(); });
     });
 
     it('hauria de deshabilitar inputs durant la càrrega', async () => {
-      mockSignup.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 1000)));
+      let resolveSignup!: (v?: any) => void;
+      mockSignup.mockImplementation(() => new Promise(r => { resolveSignup = r; }));
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -982,6 +988,8 @@ describe('SignUpScreen - Unit Tests', () => {
         // Els inputs haurien d'estar deshabilititats
         expect(getByTestId('username-input').props.editable).toBe(false);
       });
+
+      await act(async () => { resolveSignup(); });
     });
   });
 
@@ -990,7 +998,7 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Validació durant handleSignUp', () => {
     it('hauria de mostrar error si l\'username està buit en el submit', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1000,10 +1008,10 @@ describe('SignUpScreen - Unit Tests', () => {
       // Aquest test és difícil de replicar perquè el botó de signup
       // no apareix fins que tots els camps són vàlids
       // Però podem verificar que la validació inline funciona
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), '');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), '');
       });
 
       await waitFor(() => {
@@ -1016,41 +1024,41 @@ describe('SignUpScreen - Unit Tests', () => {
   // NAVEGACIÓ
   // ============================================
   describe('Navegació', () => {
-    it('hauria de tornar a login quan es prem el botó back', () => {
-      const { getByTestId } = render(
+    it('hauria de tornar a login quan es prem el botó back', async () => {
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('back-button'));
+      await fireEvent.press(getByTestId('back-button'));
 
       expect(mockOnBackToLogin).toHaveBeenCalled();
     });
 
-    it('hauria de navegar a login quan es fa clic al link', () => {
-      const { getByText } = render(
+    it('hauria de navegar a login quan es fa clic al link', async () => {
+      const { getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByText('Inicia sessió'));
+      await fireEvent.press(getByText('Inicia sessió'));
 
       expect(mockOnBackToLogin).toHaveBeenCalled();
     });
 
     it('hauria de tornar a la selecció d\'idioma des del formulari', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         expect(getByTestId('username-input')).toBeTruthy();
@@ -1058,7 +1066,7 @@ describe('SignUpScreen - Unit Tests', () => {
 
       // Prémer el botó de tornar a idioma
       const backToLanguageButton = getByText('Tornar a idioma');
-      fireEvent.press(backToLanguageButton);
+      await fireEvent.press(backToLanguageButton);
 
       await waitFor(() => {
         expect(getByText('Selecciona el teu idioma')).toBeTruthy();
@@ -1078,7 +1086,7 @@ describe('SignUpScreen - Unit Tests', () => {
         }
       });
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1086,27 +1094,27 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       // Completar formulari
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
       });
       await waitFor(() => {
         expect(getByTestId('signup-button')).toBeTruthy();
       });
-      fireEvent.changeText(getByTestId('birthdate-day'), '20');
-      fireEvent.changeText(getByTestId('birthdate-month'), '05');
-      fireEvent.changeText(getByTestId('birthdate-year'), '1990');
+      await fireEvent.changeText(getByTestId('birthdate-day'), '20');
+      await fireEvent.changeText(getByTestId('birthdate-month'), '05');
+      await fireEvent.changeText(getByTestId('birthdate-year'), '1990');
 
-      fireEvent.press(getByTestId('signup-button'));
+      await fireEvent.press(getByTestId('signup-button'));
 
       await waitFor(() => {
         expect(mockShowAlert).toHaveBeenCalled();
@@ -1133,8 +1141,8 @@ describe('SignUpScreen - Unit Tests', () => {
       return backPressCall?.[1];
     };
 
-    it('hauria de registrar el listener de back', () => {
-      render(
+    it('hauria de registrar el listener de back', async () => {
+      await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1148,7 +1156,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de tornar a login des de la pantalla d\'idioma', async () => {
-      render(
+      await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1167,7 +1175,7 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de tornar a la selecció d\'idioma des del formulari', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1175,7 +1183,7 @@ describe('SignUpScreen - Unit Tests', () => {
       );
 
       // Avançar al formulari
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         expect(getByTestId('username-input')).toBeTruthy();
@@ -1217,17 +1225,17 @@ describe('SignUpScreen - Unit Tests', () => {
   // ============================================
   describe('Casos límit', () => {
     it('hauria de gestionar espais en blanc només en l\'username', async () => {
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), '   ');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), '   ');
       });
 
       await waitFor(() => {
@@ -1236,27 +1244,27 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de gestionar canvis ràpids de contrasenya', async () => {
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
       await waitFor(() => {
         expect(getByTestId('password-input')).toBeTruthy();
       });
 
       // Canviar ràpidament la contrasenya
-      fireEvent.changeText(getByTestId('password-input'), 'weak');
-      fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await fireEvent.changeText(getByTestId('password-input'), 'weak');
+      await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
 
       await waitFor(() => {
         expect(queryByText('Mínim 8 caràcters')).toBeNull();
@@ -1264,29 +1272,29 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('hauria de reiniciar confirmació quan canvia la contrasenya', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('username-input'), 'testuser');
+      await fireEvent.press(getByTestId('language-ca'));
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('username-input'), 'testuser');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('email-input'), 'test@example.com');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('password-input'), 'Test1234!');
       });
-      await waitFor(() => {
-        fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
+      await waitFor(async () => {
+        await fireEvent.changeText(getByTestId('confirm-password-input'), 'Test1234!');
       });
 
       // Canviar la contrasenya - hauria de netejar la confirmació
-      fireEvent.changeText(getByTestId('password-input'), 'NewPass123!');
+      await fireEvent.changeText(getByTestId('password-input'), 'NewPass123!');
 
       await waitFor(() => {
         // El camp de confirmació hauria d'estar buit
@@ -1299,8 +1307,8 @@ describe('SignUpScreen - Unit Tests', () => {
   // TESTS DE SNAPSHOT
   // ============================================
   describe('Snapshot tests', () => {
-    it('snapshot - pantalla d\'idioma', () => {
-      const { toJSON } = render(
+    it('snapshot - pantalla d\'idioma', async () => {
+      const { toJSON } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
@@ -1310,14 +1318,14 @@ describe('SignUpScreen - Unit Tests', () => {
     });
 
     it('snapshot - formulari amb username', async () => {
-      const { getByTestId, toJSON } = render(
+      const { getByTestId, toJSON } = await render(
         <SignUpScreen
           onSignUpSuccess={mockOnSignUpSuccess}
           onBackToLogin={mockOnBackToLogin}
         />
       );
 
-      fireEvent.press(getByTestId('language-ca'));
+      await fireEvent.press(getByTestId('language-ca'));
 
       await waitFor(() => {
         expect(getByTestId('username-input')).toBeTruthy();

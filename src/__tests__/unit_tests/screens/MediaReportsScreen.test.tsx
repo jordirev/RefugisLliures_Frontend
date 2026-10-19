@@ -59,34 +59,34 @@ describe('MediaReportsScreen', () => {
     mockReports = [report];
   });
 
-  it('carrega les pendents per defecte i mostra la previsualització', () => {
-    const { getByText, UNSAFE_root } = render(<MediaReportsScreen />);
+  it('carrega les pendents per defecte i mostra la previsualització', async () => {
+    const { getByText, container } = await render(<MediaReportsScreen />);
     expect(mockUseMediaReports).toHaveBeenCalledWith('pending');
     expect(getByText('media.report.reasons.my_image')).toBeTruthy();
     expect(getByText('Hi surto jo')).toBeTruthy();
-    const images = UNSAFE_root.findAll((n: any) => n.type === 'ExpoImage');
+    const images = container.queryAll((n: any) => n.type === 'ExpoImage');
     expect(images[0].props.source.uri).toBe('https://r2/a_thumb.webp');
   });
 
-  it('canvia a resoltes', () => {
-    const { getByTestId } = render(<MediaReportsScreen />);
-    fireEvent.press(getByTestId('media-reports-tab-resolved'));
+  it('canvia a resoltes', async () => {
+    const { getByTestId } = await render(<MediaReportsScreen />);
+    await fireEvent.press(getByTestId('media-reports-tab-resolved'));
     expect(mockUseMediaReports).toHaveBeenLastCalledWith('resolved');
   });
 
-  it('exigeix una motivació abans de resoldre', () => {
-    const { getByTestId } = render(<MediaReportsScreen />);
-    fireEvent.press(getByTestId('media-report-rep-1-action-remove_and_strike'));
+  it('exigeix una motivació abans de resoldre', async () => {
+    const { getByTestId } = await render(<MediaReportsScreen />);
+    await fireEvent.press(getByTestId('media-report-rep-1-action-remove_and_strike'));
     expect(getByTestId('media-report-confirm').props.accessibilityState?.disabled).toBe(true);
-    fireEvent.press(getByTestId('media-report-confirm'));
+    await fireEvent.press(getByTestId('media-report-confirm'));
     expect(mockResolve).not.toHaveBeenCalled();
   });
 
-  it('resol amb acció i motivació', () => {
-    const { getByTestId } = render(<MediaReportsScreen />);
-    fireEvent.press(getByTestId('media-report-rep-1-action-remove_and_strike'));
-    fireEvent.changeText(getByTestId('media-report-statement'), '  Imatge d\'una persona sense consentiment  ');
-    fireEvent.press(getByTestId('media-report-confirm'));
+  it('resol amb acció i motivació', async () => {
+    const { getByTestId } = await render(<MediaReportsScreen />);
+    await fireEvent.press(getByTestId('media-report-rep-1-action-remove_and_strike'));
+    await fireEvent.changeText(getByTestId('media-report-statement'), '  Imatge d\'una persona sense consentiment  ');
+    await fireEvent.press(getByTestId('media-report-confirm'));
     expect(mockResolve).toHaveBeenCalledWith(
       {
         reportId: 'rep-1',
@@ -99,9 +99,9 @@ describe('MediaReportsScreen', () => {
     );
   });
 
-  it('llista buida', () => {
+  it('llista buida', async () => {
     mockReports = [];
-    const { getByText } = render(<MediaReportsScreen />);
+    const { getByText } = await render(<MediaReportsScreen />);
     expect(getByText('media.admin.empty')).toBeTruthy();
   });
 });

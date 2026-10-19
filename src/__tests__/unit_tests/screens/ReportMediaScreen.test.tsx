@@ -40,8 +40,8 @@ describe('ReportMediaScreen', () => {
     mockIsPending = false;
   });
 
-  it('mostra els 16 motius del contracte agrupats', () => {
-    const { getByTestId, getByText } = render(<ReportMediaScreen />);
+  it('mostra els 16 motius del contracte agrupats', async () => {
+    const { getByTestId, getByText } = await render(<ReportMediaScreen />);
     expect(MEDIA_REPORT_REASONS).toHaveLength(16);
     MEDIA_REPORT_REASONS.forEach((reason) => {
       expect(getByTestId(`report-reason-${reason}`)).toBeTruthy();
@@ -59,44 +59,44 @@ describe('ReportMediaScreen', () => {
     ].forEach((group) => expect(getByText(`media.report.groups.${group}`)).toBeTruthy());
   });
 
-  it('exigeix triar un motiu', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-submit'));
+  it('exigeix triar un motiu', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-submit'));
     expect(getByTestId('report-validation-error').props.children).toBe('media.report.errors.reasonRequired');
     expect(mockMutate).not.toHaveBeenCalled();
   });
 
-  it('exigeix detalls per al motiu «other»', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-other'));
-    fireEvent.press(getByTestId('report-good-faith'));
-    fireEvent.press(getByTestId('report-submit'));
+  it('exigeix detalls per al motiu «other»', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-other'));
+    await fireEvent.press(getByTestId('report-good-faith'));
+    await fireEvent.press(getByTestId('report-submit'));
     expect(getByTestId('report-validation-error').props.children).toBe('media.report.errors.detailsRequired');
     expect(mockMutate).not.toHaveBeenCalled();
   });
 
-  it('exigeix la declaració de bona fe', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-my_image'));
-    fireEvent.press(getByTestId('report-submit'));
+  it('exigeix la declaració de bona fe', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-my_image'));
+    await fireEvent.press(getByTestId('report-submit'));
     expect(getByTestId('report-validation-error').props.children).toBe('media.report.errors.goodFaithRequired');
     expect(mockMutate).not.toHaveBeenCalled();
   });
 
-  it('limita els detalls a 1000 caràcters', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
+  it('limita els detalls a 1000 caràcters', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
     expect(getByTestId('report-details').props.maxLength).toBe(1000);
     expect(validateMediaReport({ reason: 'other', details: 'x'.repeat(1001), goodFaith: true })).toBe(
       'media.report.errors.detailsTooLong'
     );
   });
 
-  it('envia la denúncia amb refugeId, mediaKey, motiu i detalls', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-other'));
-    fireEvent.changeText(getByTestId('report-details'), '  Publicitat d\'una botiga  ');
-    fireEvent.press(getByTestId('report-good-faith'));
-    fireEvent.press(getByTestId('report-submit'));
+  it('envia la denúncia amb refugeId, mediaKey, motiu i detalls', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-other'));
+    await fireEvent.changeText(getByTestId('report-details'), '  Publicitat d\'una botiga  ');
+    await fireEvent.press(getByTestId('report-good-faith'));
+    await fireEvent.press(getByTestId('report-submit'));
 
     expect(mockMutate).toHaveBeenCalledWith(
       {
@@ -109,20 +109,20 @@ describe('ReportMediaScreen', () => {
     );
   });
 
-  it('detalls opcionals: no s\'envien si són buits', () => {
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-violence_gore'));
-    fireEvent.press(getByTestId('report-good-faith'));
-    fireEvent.press(getByTestId('report-submit'));
+  it('detalls opcionals: no s\'envien si són buits', async () => {
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-violence_gore'));
+    await fireEvent.press(getByTestId('report-good-faith'));
+    await fireEvent.press(getByTestId('report-submit'));
     expect(mockMutate.mock.calls[0][0].details).toBeUndefined();
   });
 
   it('èxit: mostra el missatge amb el correu de contacte i torna enrere', async () => {
     mockMutate.mockImplementation((_vars, opts) => opts.onSuccess());
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-hate_speech'));
-    fireEvent.press(getByTestId('report-good-faith'));
-    fireEvent.press(getByTestId('report-submit'));
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-hate_speech'));
+    await fireEvent.press(getByTestId('report-good-faith'));
+    await fireEvent.press(getByTestId('report-submit'));
 
     expect(mockShowAlert).toHaveBeenCalledWith(
       'media.report.successTitle',
@@ -130,7 +130,7 @@ describe('ReportMediaScreen', () => {
       expect.any(Array)
     );
     const buttons = mockShowAlert.mock.calls[0][2];
-    act(() => buttons[0].onPress());
+    await act(() => buttons[0].onPress());
     expect(mockGoBack).toHaveBeenCalled();
   });
 
@@ -141,10 +141,10 @@ describe('ReportMediaScreen', () => {
     ['unknown', 'media.report.errors.generic'],
   ])('error %s → %s', async (code, key) => {
     mockMutate.mockImplementation((_vars, opts) => opts.onError({ code }));
-    const { getByTestId } = render(<ReportMediaScreen />);
-    fireEvent.press(getByTestId('report-reason-fraud_scam_spam'));
-    fireEvent.press(getByTestId('report-good-faith'));
-    fireEvent.press(getByTestId('report-submit'));
+    const { getByTestId } = await render(<ReportMediaScreen />);
+    await fireEvent.press(getByTestId('report-reason-fraud_scam_spam'));
+    await fireEvent.press(getByTestId('report-good-faith'));
+    await fireEvent.press(getByTestId('report-submit'));
     await waitFor(() => expect(mockShowAlert).toHaveBeenCalledWith('common.error', key));
   });
 });

@@ -19,7 +19,8 @@ Cap d'aquests serveis requereix clau **[FET]**. Disponibilitat i límits d'Open-
 |---|---|---|
 | Ubicació | `expo-location` (permís foreground) | `src/components/MapViewComponent.tsx:67-112`; plugin a `app.config.js:76-81` |
 | Galeria (fotos/vídeos) | `expo-image-picker` | `RefugeDetailScreen.tsx:542-599`, `QuickActionsMenu.tsx:165-225`, `ExperiencesScreen.tsx:138-172` |
-| Avatar amb retall | `react-native-image-crop-picker` (no a Expo Go) | `src/components/AvatarPopup.tsx:138-170` |
+| Avatar amb retall | `react-native-image-crop-picker` 0.52 (no a Expo Go; sense config plugin; a 0.52 no existeix `cropperStatusBarColor`, s'usa `cropperStatusBarLight`) | `src/components/AvatarPopup.tsx:138-170` |
+| Compressió de vídeo | `react-native-compressor` 2 (reescrit amb Nitro Modules: requereix `react-native-nitro-modules` i build nativa nova; el config plugin `"react-native-compressor"` d'`app.config.js` continua existint i és un no-op; l'API `Video.compress`/`getVideoMetaData` no ha canviat) **[FET]**; comportament natiu al dispositiu **[NO VERIFICAT]** | `src/services/MediaUploadService.ts` (`loadCompressor`) |
 | Fitxers GPX/KML | `expo-file-system` (SAF a Android) i `expo-sharing` (iOS) | `RefugeDetailScreen.tsx:298-412` |
 | Connectivitat | `@react-native-community/netinfo` | `App.js:22-34`, `src/screens/LoginScreen.tsx:89` |
 | Emmagatzematge local | `@react-native-async-storage/async-storage` | idioma (`src/i18n/index.ts:22,56`), cache de mapes |

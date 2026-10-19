@@ -14,6 +14,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { RefugeOccupationModal } from '../../../components/RefugeOccupationModal';
 import { Location } from '../../../models';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock SVG icons
 jest.mock('../../../assets/icons/x.svg', () => 'CloseIcon');
@@ -100,8 +101,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -129,31 +130,31 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar quan és visible', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de renderitzar quan és visible', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       expect(getByText('refuge.occupation.title')).toBeTruthy();
     });
 
-    it('hauria de mostrar el nom del mes actual', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de mostrar el nom del mes actual', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('snapshot test - modal visible', () => {
-      const { toJSON } = renderWithProviders(
+    it('snapshot test - modal visible', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('snapshot test - modal tancat', () => {
-      const { toJSON } = renderWithProviders(
+    it('snapshot test - modal tancat', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} visible={false} />
       );
       expect(toJSON()).toMatchSnapshot();
@@ -161,8 +162,8 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Calendari', () => {
-    it('hauria de mostrar els dies de la setmana', () => {
-      const { getByText } = renderWithProviders(
+    it('hauria de mostrar els dies de la setmana', async () => {
+      const { getByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -170,36 +171,36 @@ describe('RefugeOccupationModal Component', () => {
       expect(getByText('refuge.occupation.title')).toBeTruthy();
     });
 
-    it('hauria de permetre navegar al mes anterior', () => {
-      const { UNSAFE_root } = renderWithProviders(
+    it('hauria de permetre navegar al mes anterior', async () => {
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       expect(touchables.length).toBeGreaterThan(0);
     });
 
-    it('hauria de permetre navegar al mes següent', () => {
-      const { UNSAFE_root } = renderWithProviders(
+    it('hauria de permetre navegar al mes següent', async () => {
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       expect(touchables.length).toBeGreaterThan(0);
     });
   });
 
   describe('Selecció de dies', () => {
-    it('hauria de permetre seleccionar un dia futur', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de permetre seleccionar un dia futur', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('no hauria de permetre seleccionar dies passats', () => {
-      const { toJSON } = renderWithProviders(
+    it('no hauria de permetre seleccionar dies passats', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -208,16 +209,16 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Afegir visites', () => {
-    it('hauria de mostrar botó per afegir visita', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de mostrar botó per afegir visita', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar disclaimer abans d\'afegir', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de mostrar disclaimer abans d\'afegir', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -226,8 +227,8 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Editar visites', () => {
-    it('hauria de permetre editar una visita existent', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de permetre editar una visita existent', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -236,8 +237,8 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Eliminar visites', () => {
-    it('hauria de mostrar confirmació abans d\'eliminar', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de mostrar confirmació abans d\'eliminar', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -246,8 +247,8 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Validació', () => {
-    it('hauria de validar que el número de visitants sigui positiu', () => {
-      const { toJSON } = renderWithProviders(
+    it('hauria de validar que el número de visitants sigui positiu', async () => {
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -256,25 +257,25 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Tancament del modal', () => {
-    it('hauria de cridar onClose quan es prem el botó de tancar', () => {
-      const { UNSAFE_root } = renderWithProviders(
+    it('hauria de cridar onClose quan es prem el botó de tancar', async () => {
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // El primer touchable probablement és el botó de tancar
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
     });
 
-    it('hauria de resetejar l\'estat quan es tanca', () => {
-      const { rerender } = renderWithProviders(
+    it('hauria de resetejar l\'estat quan es tanca', async () => {
+      const { rerender } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Tancar el modal
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <QueryClientProvider client={queryClient}>
           <RefugeOccupationModal {...defaultProps} visible={false} />
         </QueryClientProvider>
@@ -287,14 +288,14 @@ describe('RefugeOccupationModal Component', () => {
   });
 
   describe('Estats de càrrega', () => {
-    it('hauria de mostrar loading mentre carrega les visites', () => {
+    it('hauria de mostrar loading mentre carrega les visites', async () => {
       const { useRefugeVisits } = require('../../../hooks/useRefugeVisitsQuery');
       useRefugeVisits.mockReturnValueOnce({
         data: undefined,
         isLoading: true,
       });
 
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -304,81 +305,81 @@ describe('RefugeOccupationModal Component', () => {
 
   describe('Navegació del calendari', () => {
     it('hauria de navegar al mes anterior', async () => {
-      const { getAllByRole, getByText, UNSAFE_root } = renderWithProviders(
+      const { getAllByRole, getByText, container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Buscar el botó de mes anterior (generalment el primer dels botons de navegació)
       const navigationButtons = touchables.filter((t: any) => {
-        const hasText = t.findAllByType(require('react-native').Text);
+        const hasText = findAllByType(t, require('react-native').Text);
         return hasText.some((text: any) => text.props.children === '<' || text.props.children === '>');
       });
 
       if (navigationButtons.length > 0) {
-        fireEvent.press(navigationButtons[0]);
+        await fireEvent.press(navigationButtons[0]);
       }
     });
 
     it('hauria de navegar al mes següent', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Buscar el botó de mes següent
       const navigationButtons = touchables.filter((t: any) => {
-        const hasText = t.findAllByType(require('react-native').Text);
+        const hasText = findAllByType(t, require('react-native').Text);
         return hasText.some((text: any) => text.props.children === '<' || text.props.children === '>');
       });
 
       if (navigationButtons.length > 1) {
-        fireEvent.press(navigationButtons[1]);
+        await fireEvent.press(navigationButtons[1]);
       }
     });
   });
 
   describe('Selecció de dates', () => {
     it('hauria de seleccionar un dia del calendari', async () => {
-      const { UNSAFE_root, getByText } = renderWithProviders(
+      const { container, getByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar tots els touchables que representen dies
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Intentar trobar un dia amb visita (15)
       const dayButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15 || text.props.children === '15');
       });
 
       if (dayButtons.length > 0) {
-        fireEvent.press(dayButtons[0]);
+        await fireEvent.press(dayButtons[0]);
       }
     });
 
     it('hauria de mostrar opcions quan se selecciona un dia amb visita', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar el dia 15 que té una visita
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       const dayButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15 || text.props.children === '15');
       });
 
       if (dayButtons.length > 0) {
-        fireEvent.press(dayButtons[0]);
+        await fireEvent.press(dayButtons[0]);
       }
 
       // El component hauria de mostrar les opcions d'editar/eliminar
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -386,22 +387,22 @@ describe('RefugeOccupationModal Component', () => {
     it('hauria de cridar createVisitMutation quan es crea una visita', async () => {
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 3 });
       
-      const { UNSAFE_root, queryByText } = renderWithProviders(
+      const { container, queryByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Primer seleccionar un dia (futur)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       // Buscar un dia futur (25)
       const dayButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 25 || text.props.children === '25');
       });
 
       if (dayButtons.length > 0) {
         await act(async () => {
-          fireEvent.press(dayButtons[0]);
+          await fireEvent.press(dayButtons[0]);
         });
       }
     });
@@ -410,7 +411,7 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Error de creació'));
       
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -421,7 +422,7 @@ describe('RefugeOccupationModal Component', () => {
     it('hauria de cridar updateVisitMutation quan es modifica una visita', async () => {
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 5 });
       
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -432,7 +433,7 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Error d\'actualització'));
       
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -443,7 +444,7 @@ describe('RefugeOccupationModal Component', () => {
     it('hauria de cridar deleteVisitMutation quan es suprimeix una visita', async () => {
       mockMutateAsync.mockResolvedValueOnce({});
       
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -454,7 +455,7 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Error d\'eliminació'));
       
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
@@ -465,54 +466,54 @@ describe('RefugeOccupationModal Component', () => {
 
   describe('Validació de visitants', () => {
     it('hauria de mostrar error per número invàlid de visitants', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar un TextInput per al número de visitants
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       
       if (textInputs.length > 0) {
-        fireEvent.changeText(textInputs[0], '0');
+        await fireEvent.changeText(textInputs[0], '0');
       }
     });
 
     it('hauria de validar número negatiu de visitants', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       
       if (textInputs.length > 0) {
-        fireEvent.changeText(textInputs[0], '-5');
+        await fireEvent.changeText(textInputs[0], '-5');
       }
     });
 
     it('hauria de validar text no numèric', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       
       if (textInputs.length > 0) {
-        fireEvent.changeText(textInputs[0], 'abc');
+        await fireEvent.changeText(textInputs[0], 'abc');
       }
     });
   });
 
   describe('Disclaimer', () => {
     it('hauria de mostrar disclaimer abans d\'afegir visita', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar un botó d'afegir
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       const addButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => {
           const children = text.props.children;
           return typeof children === 'string' && children.toLowerCase().includes('add');
@@ -520,7 +521,7 @@ describe('RefugeOccupationModal Component', () => {
       });
 
       if (addButtons.length > 0) {
-        fireEvent.press(addButtons[0]);
+        await fireEvent.press(addButtons[0]);
       }
     });
   });
@@ -543,7 +544,7 @@ describe('RefugeOccupationModal Component', () => {
         places: 50,
       };
 
-      const { toJSON } = renderWithProviders(
+      const { toJSON } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
@@ -553,15 +554,15 @@ describe('RefugeOccupationModal Component', () => {
 
   describe('Cancel·lació d\'accions', () => {
     it('hauria de cancel·lar l\'acció d\'afegir', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar botons de cancel·lar
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
       const cancelButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => {
           const children = text.props.children;
           return typeof children === 'string' && children.toLowerCase().includes('cancel');
@@ -569,7 +570,7 @@ describe('RefugeOccupationModal Component', () => {
       });
 
       if (cancelButtons.length > 0) {
-        fireEvent.press(cancelButtons[0]);
+        await fireEvent.press(cancelButtons[0]);
       }
     });
   });
@@ -594,35 +595,35 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 3 });
 
-      const { getByText, UNSAFE_root, getByPlaceholderText } = renderWithProviders(
+      const { getByText, container, getByPlaceholderText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Seleccionar un dia futur
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const dayButtons = touchables.filter((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 25);
       });
 
       if (dayButtons.length > 0) {
         await act(async () => {
-          fireEvent.press(dayButtons[0]);
+          await fireEvent.press(dayButtons[0]);
         });
       }
 
       // Buscar i prémer el botó d'afegir visita
-      await waitFor(() => {
-        const addButton = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity)
+      await waitFor(async () => {
+        const addButton = findAllByType(container, require('react-native').TouchableOpacity)
           .find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('addVisit');
             });
           });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
     });
@@ -640,11 +641,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Network error'));
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -671,35 +672,35 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 7 });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Seleccionar el dia 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Hauria de mostrar opcions d'editar/eliminar
-      await waitFor(() => {
-        const editButton = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity)
+      await waitFor(async () => {
+        const editButton = findAllByType(container, require('react-native').TouchableOpacity)
           .find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('editVisit');
             });
           });
         if (editButton) {
-          fireEvent.press(editButton);
+          await fireEvent.press(editButton);
         }
       });
     });
@@ -713,20 +714,20 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Seleccionar el dia 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
     });
@@ -744,11 +745,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Update failed'));
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -780,35 +781,35 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({});
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Seleccionar el dia 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Buscar el botó d'eliminar
-      await waitFor(() => {
-        const deleteButton = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity)
+      await waitFor(async () => {
+        const deleteButton = findAllByType(container, require('react-native').TouchableOpacity)
           .find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('deleteVisit');
             });
           });
         if (deleteButton) {
-          fireEvent.press(deleteButton);
+          await fireEvent.press(deleteButton);
         }
       });
 
@@ -833,11 +834,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce('Delete error string');
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -845,72 +846,72 @@ describe('RefugeOccupationModal Component', () => {
   describe('Navegació del calendari - Canvi d\'any', () => {
     it('hauria de retrocedir a l\'any anterior quan es navega de gener', async () => {
       // El mes inicial és gener (mes 0), retrocedir hauria de portar a desembre de l'any anterior
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar el botó de navegació cap a l'esquerra (mes anterior)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const prevButton = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '←');
       });
 
       if (prevButton) {
         await act(async () => {
-          fireEvent.press(prevButton);
+          await fireEvent.press(prevButton);
         });
       }
 
       // Verificar que s'ha canviat a desembre
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('hauria d\'avançar a l\'any següent quan es navega de desembre', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Navegar 11 vegades cap endavant per arribar a desembre
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const nextButton = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === '→');
       });
 
       if (nextButton) {
         for (let i = 0; i < 12; i++) {
           await act(async () => {
-            fireEvent.press(nextButton);
+            await fireEvent.press(nextButton);
           });
         }
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Capacitat del refugi', () => {
-    it('hauria de mostrar la capacitat del refugi', () => {
+    it('hauria de mostrar la capacitat del refugi', async () => {
       const refugeWithPlaces: Location = {
         ...mockRefuge,
         places: 20,
       };
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
       // Verifiquem que el component es renderitza correctament amb la capacitat
-      const texts = UNSAFE_root.findAllByType(require('react-native').Text);
+      const texts = findAllByType(container, require('react-native').Text);
       const capacityText = texts.find((t: any) => {
         const content = t.props.children;
         return Array.isArray(content) && content.includes('filters.capacity');
       });
-      expect(capacityText || UNSAFE_root).toBeTruthy();
+      expect(capacityText || container).toBeTruthy();
     });
 
-    it('hauria de marcar dies amb sobre-capacitat', () => {
+    it('hauria de marcar dies amb sobre-capacitat', async () => {
       const { useRefugeVisits } = require('../../../hooks/useRefugeVisitsQuery');
       useRefugeVisits.mockReturnValue({
         data: [
@@ -924,11 +925,11 @@ describe('RefugeOccupationModal Component', () => {
         places: 20,
       };
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -940,23 +941,23 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Botons de formulari', () => {
-    it('hauria de mostrar ActivityIndicator durant la càrrega de creació', () => {
+    it('hauria de mostrar ActivityIndicator durant la càrrega de creació', async () => {
       const { useCreateRefugeVisit } = require('../../../hooks/useRefugeVisitsQuery');
       useCreateRefugeVisit.mockReturnValue({
         mutate: mockMutate,
@@ -964,14 +965,14 @@ describe('RefugeOccupationModal Component', () => {
         isPending: true,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar ActivityIndicator durant la càrrega d\'actualització', () => {
+    it('hauria de mostrar ActivityIndicator durant la càrrega d\'actualització', async () => {
       const { useUpdateRefugeVisit } = require('../../../hooks/useRefugeVisitsQuery');
       useUpdateRefugeVisit.mockReturnValue({
         mutate: mockMutate,
@@ -979,26 +980,26 @@ describe('RefugeOccupationModal Component', () => {
         isPending: true,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Interacció amb el modal', () => {
     it('hauria de poder tancar el modal amb el botó de tancar', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Buscar el botó de tancar (CloseIcon)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const closeButton = touchables.find((t: any) => {
         try {
           // Comprovar si té un CloseIcon dins
-          const views = t.findAllByType(require('react-native').View);
+          const views = findAllByType(t, require('react-native').View);
           return views.length > 0 && t.props.onPress;
         } catch {
           return false;
@@ -1012,16 +1013,16 @@ describe('RefugeOccupationModal Component', () => {
         expect(mockOnClose).toHaveBeenCalled();
       } else {
         // Si no trobem el botó, verifiquem que el component es renderitza
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       }
     });
 
     it('hauria de renderitzar correctament el modal overlay', async () => {
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const pressables = UNSAFE_root.findAllByType(require('react-native').Pressable);
+      const pressables = findAllByType(container, require('react-native').Pressable);
       // Verifiquem que hi ha Pressables al component
       expect(pressables.length).toBeGreaterThanOrEqual(0);
     });
@@ -1035,34 +1036,34 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root, getByText, queryByText, getByPlaceholderText } = renderWithProviders(
+      const { container, getByText, queryByText, getByPlaceholderText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select a future day (day 28)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
 
         // Find and press add visit button
-        await waitFor(() => {
-          const addButton = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity)
+        await waitFor(async () => {
+          const addButton = findAllByType(container, require('react-native').TouchableOpacity)
             .find((t: any) => {
-              const texts = t.findAllByType(require('react-native').Text);
+              const texts = findAllByType(t, require('react-native').Text);
               return texts.some((text: any) => 
                 typeof text.props.children === 'string' && 
                 text.props.children.includes('addVisit')
               );
             });
           if (addButton) {
-            fireEvent.press(addButton);
+            await fireEvent.press(addButton);
           }
         });
       }
@@ -1079,27 +1080,27 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15 which has a visit
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
 
         // Find and press edit button
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const editButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('editVisit');
@@ -1107,13 +1108,13 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (editButton) {
             await act(async () => {
-              fireEvent.press(editButton);
+              await fireEvent.press(editButton);
             });
           }
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1136,27 +1137,27 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
 
         // Find and press delete button
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const deleteButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('deleteVisit');
@@ -1164,7 +1165,7 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (deleteButton) {
             await act(async () => {
-              fireEvent.press(deleteButton);
+              await fireEvent.press(deleteButton);
             });
           }
         });
@@ -1198,24 +1199,24 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 5, num_visitors: 5 });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // 1. Select a future day
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should show places exceeded warning when total exceeds capacity', async () => {
@@ -1242,11 +1243,11 @@ describe('RefugeOccupationModal Component', () => {
         places: 100,
       };
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should handle create visit error with Error instance', async () => {
@@ -1268,11 +1269,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Network error'));
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
 
@@ -1295,11 +1296,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce('String error message');
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -1325,24 +1326,24 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({ total_visitors: 8, num_visitors: 5 });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should show error when no changes detected in update', async () => {
@@ -1354,11 +1355,11 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should show places exceeded warning when update exceeds capacity', async () => {
@@ -1387,11 +1388,11 @@ describe('RefugeOccupationModal Component', () => {
         places: 100,
       };
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should handle update visit error with Error instance', async () => {
@@ -1415,11 +1416,11 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Update failed'));
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -1451,27 +1452,27 @@ describe('RefugeOccupationModal Component', () => {
 
       mockMutateAsync.mockResolvedValueOnce({});
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
 
         // Find and press delete button
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const deleteButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('deleteVisit');
@@ -1479,7 +1480,7 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (deleteButton) {
             await act(async () => {
-              fireEvent.press(deleteButton);
+              await fireEvent.press(deleteButton);
             });
           }
         });
@@ -1492,7 +1493,7 @@ describe('RefugeOccupationModal Component', () => {
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should handle delete visit error with Error instance', async () => {
@@ -1522,26 +1523,26 @@ describe('RefugeOccupationModal Component', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsync.mockRejectedValueOnce(new Error('Delete failed'));
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
 
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const deleteButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('deleteVisit');
@@ -1549,7 +1550,7 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (deleteButton) {
             await act(async () => {
-              fireEvent.press(deleteButton);
+              await fireEvent.press(deleteButton);
             });
           }
         });
@@ -1565,7 +1566,7 @@ describe('RefugeOccupationModal Component', () => {
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
       consoleSpy.mockRestore();
     });
   });
@@ -1578,27 +1579,27 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select a future day
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
 
         // Find cancel button
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const cancelButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.toLowerCase().includes('cancel');
@@ -1606,13 +1607,13 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (cancelButton) {
             await act(async () => {
-              fireEvent.press(cancelButton);
+              await fireEvent.press(cancelButton);
             });
           }
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1624,29 +1625,29 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
           // First set an invalid value
-          fireEvent.changeText(textInputs[0], '0');
+          await fireEvent.changeText(textInputs[0], '0');
         });
 
         await act(async () => {
           // Then change to valid value - this should clear the error
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Confirm button disabled state', () => {
-    it('should show ActivityIndicator when create mutation is pending', () => {
+    it('should show ActivityIndicator when create mutation is pending', async () => {
       const { useCreateRefugeVisit, useRefugeVisits } = require('../../../hooks/useRefugeVisitsQuery');
       useCreateRefugeVisit.mockReturnValue({
         mutate: mockMutate,
@@ -1658,15 +1659,15 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const activityIndicators = UNSAFE_root.findAllByType(require('react-native').ActivityIndicator);
-      expect(UNSAFE_root).toBeTruthy();
+      const activityIndicators = findAllByType(container, require('react-native').ActivityIndicator);
+      expect(container).toBeTruthy();
     });
 
-    it('should show ActivityIndicator when update mutation is pending', () => {
+    it('should show ActivityIndicator when update mutation is pending', async () => {
       const { useUpdateRefugeVisit, useRefugeVisits } = require('../../../hooks/useRefugeVisitsQuery');
       useUpdateRefugeVisit.mockReturnValue({
         mutate: mockMutate,
@@ -1680,11 +1681,11 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1696,24 +1697,24 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Try to press day 1 (likely past)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day1Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 1);
       });
 
       if (day1Button) {
         await act(async () => {
-          fireEvent.press(day1Button);
+          await fireEvent.press(day1Button);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should deselect day when pressing same day again', async () => {
@@ -1723,40 +1724,40 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         // Select day 28
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
 
         // Press again to deselect
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
   describe('Overlay press to close', () => {
     it('should call onClose when pressing overlay', async () => {
       const localMockOnClose = jest.fn();
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} onClose={localMockOnClose} />
       );
 
-      const pressables = UNSAFE_root.findAllByType(require('react-native').Pressable);
+      const pressables = findAllByType(container, require('react-native').Pressable);
       // The first Pressable is the overlay
       if (pressables.length > 0 && pressables[0].props.onPress) {
         await act(async () => {
@@ -1765,22 +1766,22 @@ describe('RefugeOccupationModal Component', () => {
         expect(localMockOnClose).toHaveBeenCalled();
       } else {
         // Just verify the component renders
-        expect(UNSAFE_root).toBeTruthy();
+        expect(container).toBeTruthy();
       }
     });
 
     it('should stop propagation when pressing modal container', async () => {
       const localMockOnClose = jest.fn();
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} onClose={localMockOnClose} />
       );
 
-      const pressables = UNSAFE_root.findAllByType(require('react-native').Pressable);
+      const pressables = findAllByType(container, require('react-native').Pressable);
       // The second Pressable is the modal container
       if (pressables.length > 1) {
         await act(async () => {
           // This should NOT trigger onClose because of stopPropagation
-          fireEvent.press(pressables[1]);
+          await fireEvent.press(pressables[1]);
         });
       }
 
@@ -1797,27 +1798,27 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root, queryByText } = renderWithProviders(
+      const { container, queryByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select a future day
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
 
         // Find and press add button
         await waitFor(async () => {
-          const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
           const addButton = allTouchables.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('addVisit');
@@ -1825,13 +1826,13 @@ describe('RefugeOccupationModal Component', () => {
           });
           if (addButton) {
             await act(async () => {
-              fireEvent.press(addButton);
+              await fireEvent.press(addButton);
             });
           }
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1843,18 +1844,18 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], 'not-a-number');
+          await fireEvent.changeText(textInputs[0], 'not-a-number');
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should return false for zero input', async () => {
@@ -1864,18 +1865,18 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '0');
+          await fireEvent.changeText(textInputs[0], '0');
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should return true and clear error for valid input', async () => {
@@ -1885,18 +1886,18 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -1924,29 +1925,29 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root, getByTestId, queryByTestId, getByText } = renderWithProviders(
+      const { container, getByTestId, queryByTestId, getByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // 1. Select a future day (day 28)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       expect(day28Button).toBeTruthy();
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // 2. Find and press the "Add Visit" button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
@@ -1954,23 +1955,23 @@ describe('RefugeOccupationModal Component', () => {
         });
         expect(addButton).toBeTruthy();
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // 3. Find and press the "Understand" button on the disclaimer alert
-      await waitFor(() => {
+      await waitFor(async () => {
         try {
-          const alertButtons = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+          const alertButtons = findAllByType(container, require('react-native').TouchableOpacity);
           const understandButton = alertButtons.find((t: any) => {
-            const texts = t.findAllByType(require('react-native').Text);
+            const texts = findAllByType(t, require('react-native').Text);
             return texts.some((text: any) => {
               const content = text.props.children;
               return typeof content === 'string' && content.includes('understand');
             });
           });
           if (understandButton) {
-            fireEvent.press(understandButton);
+            await fireEvent.press(understandButton);
           }
         } catch (e) {
           // Alert might not be visible
@@ -1978,29 +1979,29 @@ describe('RefugeOccupationModal Component', () => {
       });
 
       // 4. Enter number of visitors
-      await waitFor(() => {
-        const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      await waitFor(async () => {
+        const textInputs = findAllByType(container, require('react-native').TextInput);
         if (textInputs.length > 0) {
-          fireEvent.changeText(textInputs[0], '3');
+          await fireEvent.changeText(textInputs[0], '3');
         }
       });
 
       // 5. Press Confirm button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should show places exceeded warning when creating visit exceeds capacity', async () => {
@@ -2032,79 +2033,79 @@ describe('RefugeOccupationModal Component', () => {
         places: 100,
       };
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} refuge={refugeWithPlaces} />
       );
 
       // Select day 28
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // Press add button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
           });
         });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // Press understand button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const understandButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('understand');
           });
         });
         if (understandButton) {
-          fireEvent.press(understandButton);
+          await fireEvent.press(understandButton);
         }
       });
 
       // Enter number
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
       // Press confirm
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
       // Just verify the component is truthy - the mutation may or may not be called
       // depending on the flow state
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2134,58 +2135,58 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // 1. Select day 15 (which has a visit)
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // 2. Press Edit button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const editButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('editVisit');
           });
         });
         if (editButton) {
-          fireEvent.press(editButton);
+          await fireEvent.press(editButton);
         }
       });
 
       // 3. Change the value in the input
-      await waitFor(() => {
-        const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      await waitFor(async () => {
+        const textInputs = findAllByType(container, require('react-native').TextInput);
         if (textInputs.length > 0) {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         }
       });
 
       // 4. Press Confirm button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
@@ -2210,50 +2211,50 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root, queryByText } = renderWithProviders(
+      const { container, queryByText } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Press Edit button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const editButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('editVisit');
           });
         });
         if (editButton) {
-          fireEvent.press(editButton);
+          await fireEvent.press(editButton);
         }
       });
 
       // Do NOT change the value - try to confirm with same value
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
@@ -2294,35 +2295,35 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // 1. Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // 2. Press Delete button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const deleteButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('deleteVisit');
           });
         });
         if (deleteButton) {
-          fireEvent.press(deleteButton);
+          await fireEvent.press(deleteButton);
         }
       });
 
@@ -2346,69 +2347,69 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 28
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // Press add button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
           });
         });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // Press understand
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const understandButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('understand');
           });
         });
         if (understandButton) {
-          fireEvent.press(understandButton);
+          await fireEvent.press(understandButton);
         }
       });
 
       // Press cancel button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const cancelButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.toLowerCase().includes('cancel');
           });
         });
         if (cancelButton) {
-          fireEvent.press(cancelButton);
+          await fireEvent.press(cancelButton);
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
 
     it('should reset state when pressing cancel in edit mode', async () => {
@@ -2420,54 +2421,54 @@ describe('RefugeOccupationModal Component', () => {
         isLoading: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Press edit button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const editButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('editVisit');
           });
         });
         if (editButton) {
-          fireEvent.press(editButton);
+          await fireEvent.press(editButton);
         }
       });
 
       // Press cancel button
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const cancelButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.toLowerCase().includes('cancel');
           });
         });
         if (cancelButton) {
-          fireEvent.press(cancelButton);
+          await fireEvent.press(cancelButton);
         }
       });
 
-      expect(UNSAFE_root).toBeTruthy();
+      expect(container).toBeTruthy();
     });
   });
 
@@ -2496,73 +2497,73 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 28
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // Press add
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
           });
         });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // Press understand
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const understandButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('understand');
           });
         });
         if (understandButton) {
-          fireEvent.press(understandButton);
+          await fireEvent.press(understandButton);
         }
       });
 
       // Enter number
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
       // Press confirm
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
@@ -2597,73 +2598,73 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 28
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // Press add
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
           });
         });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // Press understand
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const understandButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('understand');
           });
         });
         if (understandButton) {
-          fireEvent.press(understandButton);
+          await fireEvent.press(understandButton);
         }
       });
 
       // Enter number
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '5');
+          await fireEvent.changeText(textInputs[0], '5');
         });
       }
 
       // Press confirm
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
@@ -2700,58 +2701,58 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Press edit
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const editButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('editVisit');
           });
         });
         if (editButton) {
-          fireEvent.press(editButton);
+          await fireEvent.press(editButton);
         }
       });
 
       // Change value
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '10');
+          await fireEvent.changeText(textInputs[0], '10');
         });
       }
 
       // Press confirm
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 
@@ -2793,35 +2794,35 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 15
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day15Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 15);
       });
 
       if (day15Button) {
         await act(async () => {
-          fireEvent.press(day15Button);
+          await fireEvent.press(day15Button);
         });
       }
 
       // Press delete
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const deleteButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('deleteVisit');
           });
         });
         if (deleteButton) {
-          fireEvent.press(deleteButton);
+          await fireEvent.press(deleteButton);
         }
       });
 
@@ -2848,73 +2849,73 @@ describe('RefugeOccupationModal Component', () => {
         isPending: false,
       });
 
-      const { UNSAFE_root } = renderWithProviders(
+      const { container } = await renderWithProviders(
         <RefugeOccupationModal {...defaultProps} />
       );
 
       // Select day 28
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       const day28Button = touchables.find((t: any) => {
-        const texts = t.findAllByType(require('react-native').Text);
+        const texts = findAllByType(t, require('react-native').Text);
         return texts.some((text: any) => text.props.children === 28);
       });
 
       if (day28Button) {
         await act(async () => {
-          fireEvent.press(day28Button);
+          await fireEvent.press(day28Button);
         });
       }
 
       // Press add
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const addButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('addVisit');
           });
         });
         if (addButton) {
-          fireEvent.press(addButton);
+          await fireEvent.press(addButton);
         }
       });
 
       // Press understand
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const understandButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('understand');
           });
         });
         if (understandButton) {
-          fireEvent.press(understandButton);
+          await fireEvent.press(understandButton);
         }
       });
 
       // Enter INVALID number (0)
-      const textInputs = UNSAFE_root.findAllByType(require('react-native').TextInput);
+      const textInputs = findAllByType(container, require('react-native').TextInput);
       if (textInputs.length > 0) {
         await act(async () => {
-          fireEvent.changeText(textInputs[0], '0');
+          await fireEvent.changeText(textInputs[0], '0');
         });
       }
 
       // Press confirm
-      await waitFor(() => {
-        const allTouchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+      await waitFor(async () => {
+        const allTouchables = findAllByType(container, require('react-native').TouchableOpacity);
         const confirmButton = allTouchables.find((t: any) => {
-          const texts = t.findAllByType(require('react-native').Text);
+          const texts = findAllByType(t, require('react-native').Text);
           return texts.some((text: any) => {
             const content = text.props.children;
             return typeof content === 'string' && content.includes('confirm');
           });
         });
         if (confirmButton) {
-          fireEvent.press(confirmButton);
+          await fireEvent.press(confirmButton);
         }
       });
 

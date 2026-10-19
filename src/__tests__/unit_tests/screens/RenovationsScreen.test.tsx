@@ -102,7 +102,7 @@ describe('RenovationsScreen', () => {
     });
   });
 
-  it('hauria de mostrar estat de càrrega', () => {
+  it('hauria de mostrar estat de càrrega', async () => {
     (useRenovations as jest.Mock).mockReturnValue({
       data: [],
       isLoading: true,
@@ -113,7 +113,7 @@ describe('RenovationsScreen', () => {
       isLoading: true,
     });
 
-    const { getByTestId } = render(<RenovationsScreen />);
+    const { getByTestId } = await render(<RenovationsScreen />);
     
     // ActivityIndicator hauria de ser visible
     expect(getByTestId).toBeDefined();
@@ -130,7 +130,7 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText } = render(<RenovationsScreen />);
+    const { getByText } = await render(<RenovationsScreen />);
     
     await waitFor(() => {
       expect(getByText('renovations.title')).toBeTruthy();
@@ -151,7 +151,7 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText, getByTestId } = render(<RenovationsScreen />);
+    const { getByText, getByTestId } = await render(<RenovationsScreen />);
     
     await waitFor(() => {
       expect(getByText('renovations.my_renovations')).toBeTruthy();
@@ -180,7 +180,7 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByText, getByTestId } = render(<RenovationsScreen />);
+    const { getByText, getByTestId } = await render(<RenovationsScreen />);
     
     await waitFor(() => {
       expect(getByText('renovations.other_renovations')).toBeTruthy();
@@ -202,13 +202,13 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByTestId } = render(<RenovationsScreen />);
+    const { getByTestId } = await render(<RenovationsScreen />);
     
     await waitFor(() => {
       expect(getByTestId('more-info-btn')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('more-info-btn'));
+    await fireEvent.press(getByTestId('more-info-btn'));
     
     expect(mockNavigate).toHaveBeenCalledWith('RefromDetail', { renovationId: 'renovation-1' });
   });
@@ -228,13 +228,13 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByTestId } = render(<RenovationsScreen onViewMap={mockOnViewMap} />);
+    const { getByTestId } = await render(<RenovationsScreen onViewMap={mockOnViewMap} />);
     
     await waitFor(() => {
       expect(getByTestId('view-map-btn')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('view-map-btn'));
+    await fireEvent.press(getByTestId('view-map-btn'));
     
     expect(mockOnViewMap).toHaveBeenCalledWith(mockRefuge);
   });
@@ -265,13 +265,13 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { getByTestId } = render(<RenovationsScreen />);
+    const { getByTestId } = await render(<RenovationsScreen />);
     
     await waitFor(() => {
       expect(getByTestId('join-btn')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('join-btn'));
+    await fireEvent.press(getByTestId('join-btn'));
     
     expect(mockMutate).toHaveBeenCalledWith('renovation-2', expect.any(Object));
   });
@@ -287,7 +287,7 @@ describe('RenovationsScreen', () => {
       isLoading: false,
     });
 
-    const { toJSON } = render(<RenovationsScreen />);
+    const { toJSON } = await render(<RenovationsScreen />);
     
     // Component renderitza correctament
     expect(toJSON()).toBeTruthy();

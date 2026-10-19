@@ -31,8 +31,8 @@ describe('DeleteRefugePopUp Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar el modal quan és visible', () => {
-      const { getByText } = render(
+    it('hauria de renderitzar el modal quan és visible', async () => {
+      const { getByText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -44,8 +44,8 @@ describe('DeleteRefugePopUp Component', () => {
       expect(getByText('deleteRefuge.title')).toBeTruthy();
     });
 
-    it('hauria de mostrar el missatge d\'advertència amb el nom del refugi', () => {
-      const { getByText } = render(
+    it('hauria de mostrar el missatge d\'advertència amb el nom del refugi', async () => {
+      const { getByText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -60,8 +60,8 @@ describe('DeleteRefugePopUp Component', () => {
   });
 
   describe('Funcionalitat de cancel·lar', () => {
-    it('hauria de cridar onCancel quan es prem el botó cancel·lar', () => {
-      const { getByText } = render(
+    it('hauria de cridar onCancel quan es prem el botó cancel·lar', async () => {
+      const { getByText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -70,14 +70,14 @@ describe('DeleteRefugePopUp Component', () => {
         />
       );
 
-      fireEvent.press(getByText('common.cancel'));
+      await fireEvent.press(getByText('common.cancel'));
       expect(mockOnCancel).toHaveBeenCalled();
     });
   });
 
   describe('Validació del comentari', () => {
-    it('no hauria de permetre confirmar amb comentari curt', () => {
-      const { getByText, getByPlaceholderText } = render(
+    it('no hauria de permetre confirmar amb comentari curt', async () => {
+      const { getByText, getByPlaceholderText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -88,15 +88,15 @@ describe('DeleteRefugePopUp Component', () => {
 
       // Introduir un comentari curt (menys de 50 caràcters)
       const input = getByPlaceholderText('deleteRefuge.commentPlaceholder');
-      fireEvent.changeText(input, 'Comentari curt');
+      await fireEvent.changeText(input, 'Comentari curt');
 
       // El botó de confirmar hauria d'estar disabled o no cridar onConfirm
-      fireEvent.press(getByText('deleteRefuge.confirm'));
+      await fireEvent.press(getByText('deleteRefuge.confirm'));
       expect(mockOnConfirm).not.toHaveBeenCalled();
     });
 
-    it('hauria de permetre confirmar amb comentari de 50+ caràcters', () => {
-      const { getByText, getByPlaceholderText } = render(
+    it('hauria de permetre confirmar amb comentari de 50+ caràcters', async () => {
+      const { getByText, getByPlaceholderText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -108,16 +108,16 @@ describe('DeleteRefugePopUp Component', () => {
       // Introduir un comentari llarg (50+ caràcters)
       const longComment = 'A'.repeat(55);
       const input = getByPlaceholderText('deleteRefuge.commentPlaceholder');
-      fireEvent.changeText(input, longComment);
+      await fireEvent.changeText(input, longComment);
 
-      fireEvent.press(getByText('deleteRefuge.confirm'));
+      await fireEvent.press(getByText('deleteRefuge.confirm'));
       expect(mockOnConfirm).toHaveBeenCalledWith(longComment);
     });
   });
 
   describe('Reset del comentari', () => {
     it('hauria de resetejar el comentari després de cancel·lar', async () => {
-      const { getByText, getByPlaceholderText, rerender } = render(
+      const { getByText, getByPlaceholderText, rerender } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -127,16 +127,16 @@ describe('DeleteRefugePopUp Component', () => {
       );
 
       const input = getByPlaceholderText('deleteRefuge.commentPlaceholder');
-      fireEvent.changeText(input, 'Un comentari de prova');
+      await fireEvent.changeText(input, 'Un comentari de prova');
 
-      fireEvent.press(getByText('common.cancel'));
+      await fireEvent.press(getByText('common.cancel'));
       
       // Després de cancel·lar, el comentari hauria d'estar buit
       expect(mockOnCancel).toHaveBeenCalled();
     });
 
-    it('hauria de resetejar el comentari després de confirmar', () => {
-      const { getByText, getByPlaceholderText } = render(
+    it('hauria de resetejar el comentari després de confirmar', async () => {
+      const { getByText, getByPlaceholderText } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}
@@ -147,16 +147,16 @@ describe('DeleteRefugePopUp Component', () => {
 
       const longComment = 'A'.repeat(55);
       const input = getByPlaceholderText('deleteRefuge.commentPlaceholder');
-      fireEvent.changeText(input, longComment);
+      await fireEvent.changeText(input, longComment);
 
-      fireEvent.press(getByText('deleteRefuge.confirm'));
+      await fireEvent.press(getByText('deleteRefuge.confirm'));
       expect(mockOnConfirm).toHaveBeenCalledWith(longComment);
     });
   });
 
   describe('Snapshots', () => {
-    it('hauria de coincidir amb el snapshot quan és visible', () => {
-      const { toJSON } = render(
+    it('hauria de coincidir amb el snapshot quan és visible', async () => {
+      const { toJSON } = await render(
         <DeleteRefugePopUp
           visible={true}
           refugeName={refugeName}

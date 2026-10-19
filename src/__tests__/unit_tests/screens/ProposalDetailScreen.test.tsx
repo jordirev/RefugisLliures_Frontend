@@ -14,6 +14,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ProposalDetailScreen } from '../../../screens/ProposalDetailScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => ({
@@ -247,8 +248,8 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
+const renderWithProviders = async (component: React.ReactElement) => {
+  return await render(
     <QueryClientProvider client={queryClient}>
       {component}
     </QueryClientProvider>
@@ -264,23 +265,23 @@ describe('ProposalDetailScreen', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar correctament', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar correctament', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar el component sense errors', () => {
-      const { UNSAFE_root } = renderWithProviders(<ProposalDetailScreen />);
-      expect(UNSAFE_root).toBeTruthy();
+    it('hauria de renderitzar el component sense errors', async () => {
+      const { container } = await renderWithProviders(<ProposalDetailScreen />);
+      expect(container).toBeTruthy();
     });
 
-    it('hauria de mostrar la informació del creador', () => {
-      const { getByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar la informació del creador', async () => {
+      const { getByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(getByText('TestUser')).toBeTruthy();
     });
 
-    it('snapshot test', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('snapshot test', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toMatchSnapshot();
     });
   });
@@ -291,8 +292,8 @@ describe('ProposalDetailScreen', () => {
       mockProposal = mockProposalCreate;
     });
 
-    it('hauria de renderitzar en mode admin', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar en mode admin', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -302,8 +303,8 @@ describe('ProposalDetailScreen', () => {
       mockMode = 'my';
     });
 
-    it('hauria de renderitzar en mode my', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar en mode my', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -313,13 +314,13 @@ describe('ProposalDetailScreen', () => {
       mockProposal = mockProposalRejected;
     });
 
-    it('hauria de renderitzar proposal rebutjada', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar proposal rebutjada', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar la informació del revisor', () => {
-      const { getByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar la informació del revisor', async () => {
+      const { getByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(getByText('AdminUser')).toBeTruthy();
     });
   });
@@ -329,8 +330,8 @@ describe('ProposalDetailScreen', () => {
       mockProposal = mockProposalUpdate;
     });
 
-    it('hauria de renderitzar proposal d\'actualització', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar proposal d\'actualització', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -341,20 +342,20 @@ describe('ProposalDetailScreen', () => {
       mockMode = 'admin';
     });
 
-    it('hauria de renderitzar tots els camps de comparació', () => {
-      const { toJSON, getAllByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar tots els camps de comparació', async () => {
+      const { toJSON, getAllByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
       // Check that both old and new names are displayed
       expect(getAllByText(/Original Refuge|Updated Refuge/).length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar canvis de coordenades', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar canvis de coordenades', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar canvis de tipus i condició', () => {
-      const { toJSON, queryAllByTestId } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar canvis de tipus i condició', async () => {
+      const { toJSON, queryAllByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
       // Should display badge type and condition
       const badgeTypes = queryAllByTestId('badge-type');
@@ -363,51 +364,51 @@ describe('ProposalDetailScreen', () => {
       expect(badgeConditions.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('hauria de mostrar canvis de links', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar canvis de links', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Navegació', () => {
-    it('hauria de navegar enrere quan es prem back', () => {
-      const { UNSAFE_root } = renderWithProviders(<ProposalDetailScreen />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria de navegar enrere quan es prem back', async () => {
+      const { container } = await renderWithProviders(<ProposalDetailScreen />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
       expect(mockGoBack).toHaveBeenCalled();
     });
   });
 
   describe('Gestió d\'errors', () => {
-    it('hauria de gestionar errors correctament', () => {
+    it('hauria de gestionar errors correctament', async () => {
       mockApproveMutate.mockImplementation((data, options) => {
         options?.onError?.({ message: 'Error approving' });
       });
 
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Format de dates', () => {
-    it('hauria de formatar les dates correctament', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de formatar les dates correctament', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
 
   describe('Avatar handling', () => {
-    it('hauria de mostrar avatar del creador', () => {
-      const { UNSAFE_root } = renderWithProviders(<ProposalDetailScreen />);
-      const images = UNSAFE_root.findAllByType(require('react-native').Image);
+    it('hauria de mostrar avatar del creador', async () => {
+      const { container } = await renderWithProviders(<ProposalDetailScreen />);
+      const images = findAllByType(container, require('react-native').Image);
       expect(images.length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar placeholder quan no hi ha avatar', () => {
+    it('hauria de mostrar placeholder quan no hi ha avatar', async () => {
       mockProposal = mockProposalRejected;
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -419,10 +420,10 @@ describe('ProposalDetailScreen', () => {
     });
 
     it('hauria de cridar handleApprove quan es prem el botó d\'aprovar', async () => {
-      const { getByText } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText } = await renderWithProviders(<ProposalDetailScreen />);
       
       const approveButton = getByText('proposals.detail.approve');
-      fireEvent.press(approveButton);
+      await fireEvent.press(approveButton);
       
       await waitFor(() => {
         expect(mockApproveMutate).toHaveBeenCalledWith(
@@ -435,25 +436,25 @@ describe('ProposalDetailScreen', () => {
       });
     });
 
-    it('hauria de mostrar el popup de rebutjar quan es prem el botó de rebutjar', () => {
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar el popup de rebutjar quan es prem el botó de rebutjar', async () => {
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       expect(getByTestId('reject-popup')).toBeTruthy();
     });
 
     it('hauria de cridar handleReject quan es confirma el rebuig', async () => {
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       // Obrir popup de rebuig
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       // Confirmar rebuig
       const confirmButton = getByTestId('reject-confirm');
-      fireEvent.press(confirmButton);
+      await fireEvent.press(confirmButton);
       
       await waitFor(() => {
         expect(mockRejectMutate).toHaveBeenCalledWith(
@@ -466,18 +467,18 @@ describe('ProposalDetailScreen', () => {
       });
     });
 
-    it('hauria de tancar el popup quan es cancel·la el rebuig', () => {
-      const { getByText, getByTestId, queryByTestId } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de tancar el popup quan es cancel·la el rebuig', async () => {
+      const { getByText, getByTestId, queryByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       // Obrir popup de rebuig
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       expect(getByTestId('reject-popup')).toBeTruthy();
       
       // Cancel·lar
       const cancelButton = getByTestId('reject-cancel');
-      fireEvent.press(cancelButton);
+      await fireEvent.press(cancelButton);
       
       expect(queryByTestId('reject-popup')).toBeNull();
     });
@@ -487,10 +488,10 @@ describe('ProposalDetailScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const approveButton = getByText('proposals.detail.approve');
-      fireEvent.press(approveButton);
+      await fireEvent.press(approveButton);
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
@@ -503,10 +504,10 @@ describe('ProposalDetailScreen', () => {
         options?.onError?.({ message: 'Error al aprovar' });
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const approveButton = getByText('proposals.detail.approve');
-      fireEvent.press(approveButton);
+      await fireEvent.press(approveButton);
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
@@ -518,13 +519,13 @@ describe('ProposalDetailScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       const confirmButton = getByTestId('reject-confirm');
-      fireEvent.press(confirmButton);
+      await fireEvent.press(confirmButton);
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
@@ -536,13 +537,13 @@ describe('ProposalDetailScreen', () => {
         options?.onError?.({ message: 'Error al rebutjar' });
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       const confirmButton = getByTestId('reject-confirm');
-      fireEvent.press(confirmButton);
+      await fireEvent.press(confirmButton);
       
       await waitFor(() => {
         expect(getByTestId('custom-alert')).toBeTruthy();
@@ -556,8 +557,8 @@ describe('ProposalDetailScreen', () => {
       mockProposal = mockProposalCreate;
     });
 
-    it('no hauria de mostrar botons d\'aprovar/rebutjar en mode my', () => {
-      const { queryByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('no hauria de mostrar botons d\'aprovar/rebutjar en mode my', async () => {
+      const { queryByText } = await renderWithProviders(<ProposalDetailScreen />);
       
       expect(queryByText('proposals.detail.approve')).toBeNull();
       expect(queryByText('proposals.detail.reject')).toBeNull();
@@ -573,8 +574,8 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('no hauria de mostrar botons d\'accions per proposals ja processades', () => {
-      const { queryByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('no hauria de mostrar botons d\'accions per proposals ja processades', async () => {
+      const { queryByText } = await renderWithProviders(<ProposalDetailScreen />);
       
       expect(queryByText('proposals.detail.approve')).toBeNull();
       expect(queryByText('proposals.detail.reject')).toBeNull();
@@ -598,8 +599,8 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de renderitzar proposal de tipus delete', () => {
-      const { getAllByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar proposal de tipus delete', async () => {
+      const { getAllByText } = await renderWithProviders(<ProposalDetailScreen />);
       // Pot haver-hi múltiples elements amb el nom del refugi
       expect(getAllByText('Refugi a eliminar').length).toBeGreaterThan(0);
     });
@@ -633,13 +634,13 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de mostrar amenities del refugi', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar amenities del refugi', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar el link del refugi', () => {
-      const { toJSON, getByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar el link del refugi', async () => {
+      const { toJSON, getByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
       expect(getByText('https://example.com/refuge')).toBeTruthy();
     });
@@ -680,14 +681,14 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de renderitzar proposal create amb info_comp', () => {
-      const { toJSON, getAllByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar proposal create amb info_comp', async () => {
+      const { toJSON, getAllByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
       expect(getAllByText('New Complete Refuge').length).toBeGreaterThan(0);
     });
 
-    it('hauria de mostrar links en proposal create', () => {
-      const { getByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar links en proposal create', async () => {
+      const { getByText } = await renderWithProviders(<ProposalDetailScreen />);
       expect(getByText('https://newrefuge.com')).toBeTruthy();
     });
   });
@@ -701,13 +702,13 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de poder expandir i contraure comentaris llargs', () => {
-      const { getByText, queryByText } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de poder expandir i contraure comentaris llargs', async () => {
+      const { getByText, queryByText } = await renderWithProviders(<ProposalDetailScreen />);
       
       // Buscar el botó de "llegir més"
       const readMoreButton = queryByText('common.readMore');
       if (readMoreButton) {
-        fireEvent.press(readMoreButton);
+        await fireEvent.press(readMoreButton);
         expect(queryByText('common.readLess')).toBeTruthy();
       }
     });
@@ -722,8 +723,8 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de mostrar unknown user quan reviewer_uid és unknown', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar unknown user quan reviewer_uid és unknown', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -738,8 +739,8 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de mostrar Admin quan el refugi ha estat eliminat', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar Admin quan el refugi ha estat eliminat', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -755,17 +756,17 @@ describe('ProposalDetailScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const approveButton = getByText('proposals.detail.approve');
-      fireEvent.press(approveButton);
+      await fireEvent.press(approveButton);
       
       await waitFor(() => {
         expect(getByTestId('alert-button-0')).toBeTruthy();
       });
 
       // Press OK button in alert
-      fireEvent.press(getByTestId('alert-button-0'));
+      await fireEvent.press(getByTestId('alert-button-0'));
       
       expect(mockGoBack).toHaveBeenCalled();
     });
@@ -775,19 +776,19 @@ describe('ProposalDetailScreen', () => {
         options?.onSuccess?.();
       });
 
-      const { getByText, getByTestId } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, getByTestId } = await renderWithProviders(<ProposalDetailScreen />);
       
       const rejectButton = getByText('proposals.detail.reject');
-      fireEvent.press(rejectButton);
+      await fireEvent.press(rejectButton);
       
       const confirmButton = getByTestId('reject-confirm');
-      fireEvent.press(confirmButton);
+      await fireEvent.press(confirmButton);
       
       await waitFor(() => {
         expect(getByTestId('alert-button-0')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('alert-button-0'));
+      await fireEvent.press(getByTestId('alert-button-0'));
       
       expect(mockGoBack).toHaveBeenCalled();
     });
@@ -804,10 +805,10 @@ describe('ProposalDetailScreen', () => {
         // Don't call success/error to simulate pending state
       });
 
-      const { getByText, toJSON } = renderWithProviders(<ProposalDetailScreen />);
+      const { getByText, toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       
       const approveButton = getByText('proposals.detail.approve');
-      fireEvent.press(approveButton);
+      await fireEvent.press(approveButton);
       
       expect(toJSON()).toBeTruthy();
     });
@@ -843,13 +844,13 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de renderitzar comparació de camps amb valors nuls', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de renderitzar comparació de camps amb valors nuls', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar canvis de info_comp', () => {
-      const { toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de mostrar canvis de info_comp', async () => {
+      const { toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
     });
   });
@@ -863,8 +864,8 @@ describe('ProposalDetailScreen', () => {
       };
     });
 
-    it('hauria de truncar comentaris llargs del creador', () => {
-      const { queryByText, toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de truncar comentaris llargs del creador', async () => {
+      const { queryByText, toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       expect(toJSON()).toBeTruthy();
       // The readMore button may or may not be present depending on where the comment is rendered
       const readMoreButton = queryByText('common.readMore');
@@ -872,12 +873,12 @@ describe('ProposalDetailScreen', () => {
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de poder expandir comentari del creador si existeix', () => {
-      const { queryByText, toJSON } = renderWithProviders(<ProposalDetailScreen />);
+    it('hauria de poder expandir comentari del creador si existeix', async () => {
+      const { queryByText, toJSON } = await renderWithProviders(<ProposalDetailScreen />);
       
       const readMoreButton = queryByText('common.readMore');
       if (readMoreButton) {
-        fireEvent.press(readMoreButton);
+        await fireEvent.press(readMoreButton);
         expect(queryByText('common.readLess')).toBeTruthy();
       } else {
         // If no read more button, just check render works

@@ -104,7 +104,7 @@ describe('useExperiences', () => {
   it('should fetch experiences for a refuge', async () => {
     mockedService.getExperiencesByRefuge.mockResolvedValue([mockExperienceDTO]);
 
-    const { result } = renderHook(() => useExperiences('refuge-1'), {
+    const { result } = await renderHook(() => useExperiences('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -117,7 +117,7 @@ describe('useExperiences', () => {
   });
 
   it('should not fetch when refugeId is undefined', async () => {
-    const { result } = renderHook(() => useExperiences(undefined), {
+    const { result } = await renderHook(() => useExperiences(undefined), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -128,7 +128,7 @@ describe('useExperiences', () => {
   it('should handle error', async () => {
     mockedService.getExperiencesByRefuge.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useExperiences('refuge-1'), {
+    const { result } = await renderHook(() => useExperiences('refuge-1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -153,7 +153,7 @@ describe('useCreateExperience', () => {
   it('should create a new experience', async () => {
     mockedService.createExperience.mockResolvedValue(mockCreateResponse);
 
-    const { result } = renderHook(() => useCreateExperience(), {
+    const { result } = await renderHook(() => useCreateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -173,7 +173,7 @@ describe('useCreateExperience', () => {
   it('should create experience with files', async () => {
     mockedService.createExperience.mockResolvedValue(mockCreateResponse);
 
-    const { result } = renderHook(() => useCreateExperience(), {
+    const { result } = await renderHook(() => useCreateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -193,7 +193,7 @@ describe('useCreateExperience', () => {
   it('should handle error when creating experience', async () => {
     mockedService.createExperience.mockRejectedValue(new Error('Failed to create'));
 
-    const { result } = renderHook(() => useCreateExperience(), {
+    const { result } = await renderHook(() => useCreateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -223,7 +223,7 @@ describe('useUpdateExperience', () => {
   it('should update an experience', async () => {
     mockedService.updateExperience.mockResolvedValue(mockUpdateResponse);
 
-    const { result } = renderHook(() => useUpdateExperience(), {
+    const { result } = await renderHook(() => useUpdateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -241,7 +241,7 @@ describe('useUpdateExperience', () => {
   it('should update experience with files', async () => {
     mockedService.updateExperience.mockResolvedValue(mockUpdateResponse);
 
-    const { result } = renderHook(() => useUpdateExperience(), {
+    const { result } = await renderHook(() => useUpdateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -268,7 +268,7 @@ describe('useUpdateExperience', () => {
   it('should handle error when updating experience', async () => {
     mockedService.updateExperience.mockRejectedValue(new Error('Failed to update'));
 
-    const { result } = renderHook(() => useUpdateExperience(), {
+    const { result } = await renderHook(() => useUpdateExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -299,7 +299,7 @@ describe('useDeleteExperience', () => {
   it('should delete an experience', async () => {
     mockedService.deleteExperience.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useDeleteExperience(), {
+    const { result } = await renderHook(() => useDeleteExperience(), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -316,7 +316,7 @@ describe('useDeleteExperience', () => {
   it('should handle error when deleting experience', async () => {
     mockedService.deleteExperience.mockRejectedValue(new Error('Failed to delete'));
 
-    const { result } = renderHook(() => useDeleteExperience(), {
+    const { result } = await renderHook(() => useDeleteExperience(), {
       wrapper: createWrapper(queryClient),
     });
 

@@ -118,16 +118,18 @@ const AllTheProviders = ({ children, mockAuthValue }: AllTheProvidersProps) => {
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   mockAuthValue?: MockAuthContextValue;
   withNavigation?: boolean;
+  /** Acceptada per compatibilitat amb els tests, però no es passa a RNTL (que avisa d'opcions desconegudes) */
+  mockNavigation?: unknown;
 }
 
 /**
  * Renderitza un component amb tots els providers necessaris
  */
-export function renderWithProviders(
+export async function renderWithProviders(
   ui: ReactElement,
   options: CustomRenderOptions = {}
 ) {
-  const { mockAuthValue, withNavigation = true, ...renderOptions } = options;
+  const { mockAuthValue, withNavigation = true, mockNavigation: _mockNavigation, ...renderOptions } = options;
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
     // Crear un nou QueryClient per a cada test
@@ -181,7 +183,7 @@ export function renderWithProviders(
     return <AllTheProviders mockAuthValue={mockAuthValue}>{children}</AllTheProviders>;
   };
 
-  return render(ui, { wrapper: Wrapper, ...renderOptions });
+  return await render(ui, { wrapper: Wrapper, ...renderOptions });
 }
 
 /**

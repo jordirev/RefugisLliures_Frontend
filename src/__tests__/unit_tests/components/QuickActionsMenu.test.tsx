@@ -15,6 +15,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { PanResponder, Animated, Dimensions } from 'react-native';
 import { QuickActionsMenu } from '../../../components/QuickActionsMenu';
 import { Location } from '../../../models';
+import { findAllByType } from '../../testHelpers/findByType';
 
 // Capturar els handlers de PanResponder
 let capturedPanResponderHandlers: any = {};
@@ -100,18 +101,18 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar quan és visible', () => {
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
+    it('hauria de renderitzar quan és visible', async () => {
+      const { toJSON } = await render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('snapshot test - menú obert', () => {
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
+    it('snapshot test - menú obert', async () => {
+      const { toJSON } = await render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toMatchSnapshot();
     });
 
-    it('snapshot test - menú tancat', () => {
-      const { toJSON } = render(
+    it('snapshot test - menú tancat', async () => {
+      const { toJSON } = await render(
         <QuickActionsMenu {...defaultProps} visible={false} />
       );
       expect(toJSON()).toMatchSnapshot();
@@ -119,29 +120,29 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Acció de favorit', () => {
-    it('hauria de mostrar icona de favorit no marcat', () => {
-      const { toJSON } = render(
+    it('hauria de mostrar icona de favorit no marcat', async () => {
+      const { toJSON } = await render(
         <QuickActionsMenu {...defaultProps} isFavourite={false} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar icona de favorit marcat', () => {
-      const { toJSON } = render(
+    it('hauria de mostrar icona de favorit marcat', async () => {
+      const { toJSON } = await render(
         <QuickActionsMenu {...defaultProps} isFavourite={true} />
       );
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de cridar onToggleFavorite quan es prem', () => {
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-favorite'));
+    it('hauria de cridar onToggleFavorite quan es prem', async () => {
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-favorite'));
       expect(mockOnToggleFavorite).toHaveBeenCalled();
     });
   });
 
   describe('Acció de visitat', () => {
-    it('hauria de mostrar l\'estat de visitat', () => {
+    it('hauria de mostrar l\'estat de visitat', async () => {
       const useVisited = require('../../../hooks/useVisited').default;
       useVisited.mockReturnValue({
         isVisited: true,
@@ -149,11 +150,11 @@ describe('QuickActionsMenu Component', () => {
         isProcessing: false,
       });
 
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
+      const { toJSON } = await render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de mostrar loading quan està processant', () => {
+    it('hauria de mostrar loading quan està processant', async () => {
       const useVisited = require('../../../hooks/useVisited').default;
       useVisited.mockReturnValue({
         isVisited: false,
@@ -161,7 +162,7 @@ describe('QuickActionsMenu Component', () => {
         isProcessing: true,
       });
 
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
+      const { toJSON } = await render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
@@ -174,8 +175,8 @@ describe('QuickActionsMenu Component', () => {
         isProcessing: false,
       });
 
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-visited'));
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-visited'));
       await waitFor(() => {
         expect(mockToggleVisited).toHaveBeenCalled();
       });
@@ -190,8 +191,8 @@ describe('QuickActionsMenu Component', () => {
         isProcessing: false,
       });
 
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-visited'));
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-visited'));
       // No hauria de llençar excepció
       await waitFor(() => {
         expect(mockToggleVisited).toHaveBeenCalled();
@@ -201,28 +202,28 @@ describe('QuickActionsMenu Component', () => {
 
   describe('Afegir fotos', () => {
     // La pujada la gestiona el pare (useMediaUpload); el menú només delega i es tanca
-    it('hauria de delegar la pujada al pare i tancar el menú', () => {
+    it('hauria de delegar la pujada al pare i tancar el menú', async () => {
       const mockOnAddPhoto = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onAddPhoto={mockOnAddPhoto}
         />
       );
 
-      fireEvent.press(getByTestId('menu-photo'));
+      await fireEvent.press(getByTestId('menu-photo'));
       expect(mockOnAddPhoto).toHaveBeenCalledTimes(1);
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
 
-    it('no hauria de fallar si no hi ha onAddPhoto', () => {
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      expect(() => fireEvent.press(getByTestId('menu-photo'))).not.toThrow();
+    it('no hauria de fallar si no hi ha onAddPhoto', async () => {
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await expect(fireEvent.press(getByTestId('menu-photo'))).resolves.not.toBeInstanceOf(Error);
     });
 
-    it('hauria de mostrar estat de càrrega i desactivar el botó durant la pujada', () => {
+    it('hauria de mostrar estat de càrrega i desactivar el botó durant la pujada', async () => {
       const mockOnAddPhoto = jest.fn();
-      const { getByTestId, getByText } = render(
+      const { getByTestId, getByText } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onAddPhoto={mockOnAddPhoto}
@@ -231,153 +232,153 @@ describe('QuickActionsMenu Component', () => {
       );
 
       expect(getByText('common.loading')).toBeTruthy();
-      fireEvent.press(getByTestId('menu-photo'));
+      await fireEvent.press(getByTestId('menu-photo'));
       expect(mockOnAddPhoto).not.toHaveBeenCalled();
     });
   });
 
   describe('Accions d\'edició i eliminació', () => {
-    it('hauria de cridar onEdit quan es prem', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onEdit quan es prem', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onEdit={mockOnEdit}
         />
       );
 
-      fireEvent.press(getByTestId('menu-edit'));
+      await fireEvent.press(getByTestId('menu-edit'));
       expect(mockOnEdit).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de cridar onDelete quan es prem', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onDelete quan es prem', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onDelete={mockOnDelete}
         />
       );
 
-      fireEvent.press(getByTestId('menu-delete'));
+      await fireEvent.press(getByTestId('menu-delete'));
       expect(mockOnDelete).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de funcionar sense onEdit', () => {
-      const { getByTestId } = render(
+    it('hauria de funcionar sense onEdit', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu {...defaultProps} />
       );
-      fireEvent.press(getByTestId('menu-edit'));
+      await fireEvent.press(getByTestId('menu-edit'));
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de funcionar sense onDelete', () => {
-      const { getByTestId } = render(
+    it('hauria de funcionar sense onDelete', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu {...defaultProps} />
       );
-      fireEvent.press(getByTestId('menu-delete'));
+      await fireEvent.press(getByTestId('menu-delete'));
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Navegació a experiències i dubtes', () => {
-    it('hauria de navegar a experiències amb callback', () => {
-      const { getByTestId } = render(
+    it('hauria de navegar a experiències amb callback', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onNavigateToExperiences={mockOnNavigateToExperiences}
         />
       );
 
-      fireEvent.press(getByTestId('menu-share-experience'));
+      await fireEvent.press(getByTestId('menu-share-experience'));
       expect(mockOnNavigateToExperiences).toHaveBeenCalledWith('refuge-1', 'Test Refuge');
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de navegar a dubtes amb callback', () => {
-      const { getByTestId } = render(
+    it('hauria de navegar a dubtes amb callback', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onNavigateToDoubts={mockOnNavigateToDoubts}
         />
       );
 
-      fireEvent.press(getByTestId('menu-ask'));
+      await fireEvent.press(getByTestId('menu-ask'));
       expect(mockOnNavigateToDoubts).toHaveBeenCalledWith('refuge-1', 'Test Refuge');
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de navegar a experiències sense callback', () => {
+    it('hauria de navegar a experiències sense callback', async () => {
       const mockNavigate = jest.fn();
       jest.spyOn(require('@react-navigation/native'), 'useNavigation').mockReturnValue({
         navigate: mockNavigate,
       });
 
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-share-experience'));
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-share-experience'));
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de navegar a dubtes sense callback', () => {
+    it('hauria de navegar a dubtes sense callback', async () => {
       const mockNavigate = jest.fn();
       jest.spyOn(require('@react-navigation/native'), 'useNavigation').mockReturnValue({
         navigate: mockNavigate,
       });
 
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-ask'));
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-ask'));
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Veure al mapa', () => {
-    it('hauria de cridar onViewMap quan es prem', () => {
-      const { getByTestId } = render(
+    it('hauria de cridar onViewMap quan es prem', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onViewMap={mockOnViewMap}
         />
       );
 
-      fireEvent.press(getByTestId('menu-view-map'));
+      await fireEvent.press(getByTestId('menu-view-map'));
       expect(mockOnViewMap).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it('hauria de funcionar sense onViewMap', () => {
-      const { getByTestId } = render(
+    it('hauria de funcionar sense onViewMap', async () => {
+      const { getByTestId } = await render(
         <QuickActionsMenu {...defaultProps} />
       );
-      fireEvent.press(getByTestId('menu-view-map'));
+      await fireEvent.press(getByTestId('menu-view-map'));
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Tancament del menú', () => {
-    it('hauria de cridar onClose quan es prem overlay', () => {
-      const { UNSAFE_root } = render(<QuickActionsMenu {...defaultProps} />);
-      const touchables = UNSAFE_root.findAllByType(require('react-native').TouchableOpacity);
+    it('hauria de cridar onClose quan es prem overlay', async () => {
+      const { container } = await render(<QuickActionsMenu {...defaultProps} />);
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       // L'overlay és el primer touchable
       if (touchables.length > 0) {
-        fireEvent.press(touchables[0]);
+        await fireEvent.press(touchables[0]);
       }
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   describe('Format de coordenades', () => {
-    it('hauria de renderitzar el component amb coordenades', () => {
+    it('hauria de renderitzar el component amb coordenades', async () => {
       // Nota: formatCoord és una funció interna que pot ser utilitzada per futures funcionalitats
-      const { toJSON } = render(<QuickActionsMenu {...defaultProps} />);
+      const { toJSON } = await render(<QuickActionsMenu {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb diferents coordenades', () => {
+    it('hauria de renderitzar amb diferents coordenades', async () => {
       const refugeWithDifferentCoords: Location = {
         ...mockRefuge,
         coord: { lat: 0.0001, long: -123.45678 },
       };
-      const { toJSON } = render(
+      const { toJSON } = await render(
         <QuickActionsMenu {...defaultProps} refuge={refugeWithDifferentCoords} />
       );
       expect(toJSON()).toBeTruthy();
@@ -395,8 +396,8 @@ describe('QuickActionsMenu Component', () => {
         isProcessing: false,
       });
 
-      const { getByTestId } = render(<QuickActionsMenu {...defaultProps} />);
-      fireEvent.press(getByTestId('menu-visited'));
+      const { getByTestId } = await render(<QuickActionsMenu {...defaultProps} />);
+      await fireEvent.press(getByTestId('menu-visited'));
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith('Error toggling visited:', expect.any(Error));
@@ -414,8 +415,8 @@ describe('QuickActionsMenu Component', () => {
       capturedPanResponderHandlers = {};
     });
 
-    it('onStartShouldSetPanResponder hauria de retornar true quan és a la vora dreta', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onStartShouldSetPanResponder hauria de retornar true quan és a la vora dreta', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onStartShouldSetPanResponder) {
         const evt = {
@@ -426,8 +427,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onStartShouldSetPanResponder hauria de retornar false quan no és a la vora', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onStartShouldSetPanResponder hauria de retornar false quan no és a la vora', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onStartShouldSetPanResponder) {
         const evt = {
@@ -438,8 +439,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onMoveShouldSetPanResponder hauria de retornar true quan és a la vora i dx > 5', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onMoveShouldSetPanResponder hauria de retornar true quan és a la vora i dx > 5', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
         const evt = {
@@ -451,8 +452,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onMoveShouldSetPanResponder hauria de retornar false quan dx <= 5', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onMoveShouldSetPanResponder hauria de retornar false quan dx <= 5', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
         const evt = {
@@ -464,8 +465,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onMoveShouldSetPanResponder hauria de retornar false quan no és a la vora', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onMoveShouldSetPanResponder hauria de retornar false quan no és a la vora', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onMoveShouldSetPanResponder) {
         const evt = {
@@ -477,8 +478,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderMove hauria de moure el menú quan visible=false i dx < 0', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onPanResponderMove hauria de moure el menú quan visible=false i dx < 0', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onPanResponderMove) {
         const gestureState = { dx: -60 };
@@ -487,8 +488,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderMove hauria de moure el menú quan visible=true i dx > 0', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+    it('onPanResponderMove hauria de moure el menú quan visible=true i dx > 0', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={true} />);
       
       if (capturedPanResponderHandlers.onPanResponderMove) {
         const gestureState = { dx: 60 };
@@ -497,8 +498,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderMove no hauria de fer res quan visible=false i dx >= 0', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onPanResponderMove no hauria de fer res quan visible=false i dx >= 0', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onPanResponderMove) {
         const gestureState = { dx: 30 };
@@ -507,8 +508,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderMove no hauria de fer res quan visible=true i dx <= 0', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+    it('onPanResponderMove no hauria de fer res quan visible=true i dx <= 0', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={true} />);
       
       if (capturedPanResponderHandlers.onPanResponderMove) {
         const gestureState = { dx: -30 };
@@ -517,8 +518,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderRelease hauria de cridar onOpen quan dx < -50 i no visible', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onPanResponderRelease hauria de cridar onOpen quan dx < -50 i no visible', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onPanResponderRelease) {
         const gestureState = { dx: -60 };
@@ -527,8 +528,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderRelease hauria de cridar onClose quan dx > 50 i visible', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+    it('onPanResponderRelease hauria de cridar onClose quan dx > 50 i visible', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={true} />);
       
       if (capturedPanResponderHandlers.onPanResponderRelease) {
         const gestureState = { dx: 60 };
@@ -537,8 +538,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderRelease hauria de tornar a la posició original quan dx no és suficient', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={false} />);
+    it('onPanResponderRelease hauria de tornar a la posició original quan dx no és suficient', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={false} />);
       
       if (capturedPanResponderHandlers.onPanResponderRelease) {
         const gestureState = { dx: -20 }; // No suficient per obrir
@@ -547,8 +548,8 @@ describe('QuickActionsMenu Component', () => {
       }
     });
 
-    it('onPanResponderRelease amb visible=true i dx <= 50 hauria de tornar a la posició', () => {
-      render(<QuickActionsMenu {...defaultProps} visible={true} />);
+    it('onPanResponderRelease amb visible=true i dx <= 50 hauria de tornar a la posició', async () => {
+      await render(<QuickActionsMenu {...defaultProps} visible={true} />);
       
       if (capturedPanResponderHandlers.onPanResponderRelease) {
         const gestureState = { dx: 20 }; // No suficient per tancar
@@ -559,8 +560,8 @@ describe('QuickActionsMenu Component', () => {
   });
 
   describe('Amb totes les props opcionals', () => {
-    it('hauria de renderitzar correctament amb totes les funcionalitats', () => {
-      const { toJSON } = render(
+    it('hauria de renderitzar correctament amb totes les funcionalitats', async () => {
+      const { toJSON } = await render(
         <QuickActionsMenu
           {...defaultProps}
           onEdit={mockOnEdit}

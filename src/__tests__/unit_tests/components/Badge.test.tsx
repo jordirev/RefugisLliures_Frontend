@@ -15,14 +15,14 @@ import { Badge } from '../../../components/Badge';
 
 describe('Badge Component', () => {
   describe('Renderització bàsica', () => {
-    it('hauria de renderitzar amb text', () => {
-      const { getByText } = render(<Badge text="Test Badge" />);
+    it('hauria de renderitzar amb text', async () => {
+      const { getByText } = await render(<Badge text="Test Badge" />);
       
       expect(getByText('Test Badge')).toBeTruthy();
     });
 
-    it('hauria de renderitzar amb els colors per defecte', () => {
-      const { getByText, getByTestId } = render(<Badge text="Test" testID="badge-container" />);
+    it('hauria de renderitzar amb els colors per defecte', async () => {
+      const { getByText, getByTestId } = await render(<Badge text="Test" testID="badge-container" />);
       
       const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
@@ -33,8 +33,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria de aplicar el color de text per defecte', () => {
-      const { getByText } = render(<Badge text="Test" testID="badge-container" />);
+    it('hauria de aplicar el color de text per defecte', async () => {
+      const { getByText } = await render(<Badge text="Test" testID="badge-container" />);
       
       const textElement = getByText('Test');
       expect(textElement.props.style).toContainEqual(
@@ -46,8 +46,8 @@ describe('Badge Component', () => {
   });
 
   describe('Props de colors personalitzats', () => {
-    it('hauria d\'aplicar background personalitzat', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'aplicar background personalitzat', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" background="#FF0000" />
       );
       
@@ -59,8 +59,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'aplicar color de text personalitzat', () => {
-      const { getByText } = render(
+    it('hauria d\'aplicar color de text personalitzat', async () => {
+      const { getByText } = await render(
         <Badge text="Test" color="#FFFFFF" />
       );
       
@@ -72,8 +72,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'aplicar borderColor personalitzat', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'aplicar borderColor personalitzat', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" borderColor="#0000FF" />
       );
       
@@ -85,8 +85,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'aplicar múltiples colors personalitzats alhora', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'aplicar múltiples colors personalitzats alhora', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge 
           text="Test" 
           testID="badge-container"
@@ -114,8 +114,8 @@ describe('Badge Component', () => {
   });
 
   describe('textColor override', () => {
-    it('hauria d\'usar textColor quan es proporciona', () => {
-      const { getByText } = render(
+    it('hauria d\'usar textColor quan es proporciona', async () => {
+      const { getByText } = await render(
         <Badge 
           text="Test" 
           color="#FF0000"
@@ -131,8 +131,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'usar color quan textColor és undefined', () => {
-      const { getByText } = render(
+    it('hauria d\'usar color quan textColor és undefined', async () => {
+      const { getByText } = await render(
         <Badge 
           text="Test" 
           color="#FF0000"
@@ -150,9 +150,9 @@ describe('Badge Component', () => {
   });
 
   describe('Estils personalitzats', () => {
-    it('hauria d\'aplicar containerStyle personalitzat', () => {
+    it('hauria d\'aplicar containerStyle personalitzat', async () => {
       const customStyle = { marginTop: 10, marginBottom: 20 };
-      const { getByText, getByTestId } = render(
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" containerStyle={customStyle} />
       );
       
@@ -162,9 +162,9 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'aplicar textStyle personalitzat', () => {
+    it('hauria d\'aplicar textStyle personalitzat', async () => {
       const customStyle = { fontSize: 16, fontWeight: '700' as const };
-      const { getByText } = render(
+      const { getByText } = await render(
         <Badge text="Test" textStyle={customStyle} />
       );
       
@@ -174,9 +174,9 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria de combinar containerStyle amb estils per defecte', () => {
+    it('hauria de combinar containerStyle amb estils per defecte', async () => {
       const customStyle = { opacity: 0.8 };
-      const { getByText, getByTestId } = render(
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" containerStyle={customStyle} />
       );
       
@@ -196,79 +196,79 @@ describe('Badge Component', () => {
   });
 
   describe('Gestió de text invalid', () => {
-    it('hauria de renderitzar string buit quan text és null', () => {
-      const { getByText } = render(<Badge text={null as any} />);
+    it('hauria de renderitzar string buit quan text és null', async () => {
+      const { getByText } = await render(<Badge text={null as any} />);
       
       expect(getByText('')).toBeTruthy();
     });
 
-    it('hauria de renderitzar string buit quan text és undefined', () => {
-      const { getByText } = render(<Badge text={undefined as any} />);
+    it('hauria de renderitzar string buit quan text és undefined', async () => {
+      const { getByText } = await render(<Badge text={undefined as any} />);
       
       expect(getByText('')).toBeTruthy();
     });
 
-    it('hauria de convertir números a string', () => {
-      const { getByText } = render(<Badge text={123 as any} />);
+    it('hauria de convertir números a string', async () => {
+      const { getByText } = await render(<Badge text={123 as any} />);
       
       expect(getByText('123')).toBeTruthy();
     });
 
-    it('hauria de convertir booleans a string', () => {
-      const { getByText: getByTextTrue } = render(<Badge text={true as any} />);
+    it('hauria de convertir booleans a string', async () => {
+      const { getByText: getByTextTrue } = await render(<Badge text={true as any} />);
       expect(getByTextTrue('true')).toBeTruthy();
 
-      const { getByText: getByTextFalse } = render(<Badge text={false as any} />);
+      const { getByText: getByTextFalse } = await render(<Badge text={false as any} />);
       expect(getByTextFalse('false')).toBeTruthy();
     });
 
-    it('hauria de gestionar string buit', () => {
-      const { getByText } = render(<Badge text="" />);
+    it('hauria de gestionar string buit', async () => {
+      const { getByText } = await render(<Badge text="" />);
       
       expect(getByText('')).toBeTruthy();
     });
   });
 
   describe('Casos límit', () => {
-    it('hauria de renderitzar text molt llarg', () => {
+    it('hauria de renderitzar text molt llarg', async () => {
       const longText = 'A'.repeat(1000);
-      const { getByText } = render(<Badge text={longText} />);
+      const { getByText } = await render(<Badge text={longText} />);
       
       expect(getByText(longText)).toBeTruthy();
     });
 
-    it('hauria de gestionar text amb caràcters especials', () => {
+    it('hauria de gestionar text amb caràcters especials', async () => {
       const specialText = '<>&"\'àèìòù ñ ç';
-      const { getByText } = render(<Badge text={specialText} />);
+      const { getByText } = await render(<Badge text={specialText} />);
       
       expect(getByText(specialText)).toBeTruthy();
     });
 
-    it('hauria de gestionar text amb emojis', () => {
+    it('hauria de gestionar text amb emojis', async () => {
       const emojiText = '🏔️ Refugi ✅';
-      const { getByText } = render(<Badge text={emojiText} />);
+      const { getByText } = await render(<Badge text={emojiText} />);
       
       expect(getByText(emojiText)).toBeTruthy();
     });
 
-    it('hauria de gestionar text amb salts de línia', () => {
+    it('hauria de gestionar text amb salts de línia', async () => {
       const multilineText = 'Línia 1\nLínia 2\nLínia 3';
-      const { getByText } = render(<Badge text={multilineText} />);
+      const { getByText } = await render(<Badge text={multilineText} />);
       
       expect(getByText(multilineText)).toBeTruthy();
     });
 
-    it('hauria de gestionar text amb espais', () => {
+    it('hauria de gestionar text amb espais', async () => {
       const spacedText = '   Text amb espais   ';
-      const { getByText } = render(<Badge text={spacedText} />);
+      const { getByText } = await render(<Badge text={spacedText} />);
       
       expect(getByText(spacedText)).toBeTruthy();
     });
   });
 
   describe('Propietats de borderWidth', () => {
-    it('hauria de tenir borderWidth de 1.25', () => {
-      const { getByText, getByTestId } = render(<Badge text="Test" testID="badge-container" />);
+    it('hauria de tenir borderWidth de 1.25', async () => {
+      const { getByText, getByTestId } = await render(<Badge text="Test" testID="badge-container" />);
       
       const badge = getByTestId("badge-container");
       expect(badge?.props.style).toContainEqual(
@@ -280,8 +280,8 @@ describe('Badge Component', () => {
   });
 
   describe('Colors en diferents formats', () => {
-    it('hauria d\'acceptar colors en format hex', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'acceptar colors en format hex', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" background="#FF5733" color="#C70039" />
       );
       
@@ -293,8 +293,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'acceptar colors en format rgb', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'acceptar colors en format rgb', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge 
           text="Test" 
           testID="badge-container"
@@ -311,8 +311,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'acceptar colors en format rgba', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'acceptar colors en format rgba', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge 
           text="Test" 
           testID="badge-container"
@@ -329,8 +329,8 @@ describe('Badge Component', () => {
       );
     });
 
-    it('hauria d\'acceptar colors amb noms', () => {
-      const { getByText, getByTestId } = render(
+    it('hauria d\'acceptar colors amb noms', async () => {
+      const { getByText, getByTestId } = await render(
         <Badge text="Test" testID="badge-container" background="red" color="white" borderColor="blue" />
       );
       
@@ -352,13 +352,13 @@ describe('Badge Component', () => {
   });
 
   describe('Snapshot testing', () => {
-    it('hauria de coincidir amb el snapshot amb props per defecte', () => {
-      const tree = render(<Badge text="Snapshot Test" />).toJSON();
+    it('hauria de coincidir amb el snapshot amb props per defecte', async () => {
+      const tree = (await render(<Badge text="Snapshot Test" />)).toJSON();
       expect(tree).toMatchSnapshot();
     });
 
-    it('hauria de coincidir amb el snapshot amb props personalitzades', () => {
-      const tree = render(
+    it('hauria de coincidir amb el snapshot amb props personalitzades', async () => {
+      const tree = (await render(
         <Badge 
           text="Custom Badge"
           background="#123456"
@@ -367,7 +367,7 @@ describe('Badge Component', () => {
           containerStyle={{ margin: 10 }}
           textStyle={{ fontSize: 14 }}
         />
-      ).toJSON();
+      )).toJSON();
       expect(tree).toMatchSnapshot();
     });
   });

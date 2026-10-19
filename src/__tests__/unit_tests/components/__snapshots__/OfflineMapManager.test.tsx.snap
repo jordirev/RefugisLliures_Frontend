@@ -129,7 +129,7 @@ exports[`OfflineMapManager Component Snapshot hauria de coincidir amb el snapsho
                   "width": 12,
                 },
                 {
-                  "backgroundColor": "#6b7280",
+                  "backgroundColor": "#10b981",
                 },
               ]
             }
@@ -143,8 +143,122 @@ exports[`OfflineMapManager Component Snapshot hauria de coincidir amb el snapsho
               }
             }
           >
-            No hi ha mapes offline
+            Mapes offline disponibles
           </Text>
+        </View>
+        <View
+          style={
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#e5e7eb",
+              "borderRadius": 12,
+              "borderWidth": 1,
+              "marginBottom": 24,
+              "padding": 16,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "borderBottomColor": "#f3f4f6",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#6b7280",
+                  "fontSize": 14,
+                }
+              }
+            >
+              Mida del cache:
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#1f2937",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              50.0 MB
+            </Text>
+          </View>
+          <View
+            style={
+              {
+                "borderBottomColor": "#f3f4f6",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#6b7280",
+                  "fontSize": 14,
+                }
+              }
+            >
+              Tiles descarregats:
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#1f2937",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              1000
+               / 
+              1000
+            </Text>
+          </View>
+          <View
+            style={
+              {
+                "borderBottomColor": "#f3f4f6",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#6b7280",
+                  "fontSize": 14,
+                }
+              }
+            >
+              Última actualització:
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#1f2937",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              Invalid Date
+            </Text>
+          </View>
         </View>
         <View
           style={
@@ -203,6 +317,57 @@ exports[`OfflineMapManager Component Snapshot hauria de coincidir amb el snapsho
               }
             >
               📱 Descarregar Mapes dels Pirineus
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#ef4444",
+                "borderRadius": 12,
+                "opacity": 1,
+                "paddingHorizontal": 24,
+                "paddingVertical": 16,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#fff",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              🗑️ Eliminar Mapes
             </Text>
           </View>
         </View>
@@ -404,6 +569,52 @@ exports[`OfflineMapManager Component Snapshot hauria de coincidir amb el snapsho
           >
             No hi ha mapes offline
           </Text>
+        </View>
+        <View
+          style={
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#e5e7eb",
+              "borderRadius": 12,
+              "borderWidth": 1,
+              "marginBottom": 24,
+              "padding": 16,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "borderBottomColor": "#f3f4f6",
+                "borderBottomWidth": 1,
+                "flexDirection": "row",
+                "justifyContent": "space-between",
+                "paddingVertical": 8,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#6b7280",
+                  "fontSize": 14,
+                }
+              }
+            >
+              Mida del cache:
+            </Text>
+            <Text
+              style={
+                {
+                  "color": "#1f2937",
+                  "fontSize": 14,
+                  "fontWeight": "600",
+                }
+              }
+            >
+              0 KB
+            </Text>
+          </View>
         </View>
         <View
           style={
