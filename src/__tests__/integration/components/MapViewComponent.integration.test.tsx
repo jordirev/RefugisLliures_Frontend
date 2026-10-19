@@ -244,31 +244,19 @@ describe('MapViewComponent - Tests d\'integració', () => {
       const targetButton = getByTestId('target-button');
       await fireEvent.press(targetButton);
 
+      // Ja no es mostra cap popup propi: es demana directament el permís natiu
       await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalledWith(
-          'Permís d\'ubicació',
-          'Necessitem accés a la teva ubicació',
-          expect.arrayContaining([
-            expect.objectContaining({ text: 'Cancel·lar' }),
-            expect.objectContaining({ text: 'Permetre' }),
-          ])
-        );
+        expect(mockRequestPermissions).toHaveBeenCalled();
+        expect(mockGetCurrentPosition).toHaveBeenCalled();
       });
+      expect(mockShowAlert).not.toHaveBeenCalled();
     });
 
     it('hauria de gestionar el cas quan es denega el permís', async () => {
       const mockRequestPermissions = ExpoLocation.requestForegroundPermissionsAsync as jest.Mock;
       mockRequestPermissions.mockResolvedValue({ status: 'denied' });
 
-      const mockShowAlert = jest.fn((title, message, buttons) => {
-        // Simular que l'usuari fa clic a "Permetre"
-        if (buttons && Array.isArray(buttons)) {
-          const allowButton = buttons.find((b: any) => b.text === 'Permetre');
-          if (allowButton?.onPress) {
-            allowButton.onPress();
-          }
-        }
-      });
+      const mockShowAlert = jest.fn();
 
       jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
@@ -289,14 +277,9 @@ describe('MapViewComponent - Tests d\'integració', () => {
       await fireEvent.press(targetButton);
 
       await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalled();
-      });
-
-      // Hauria de mostrar un altre alert indicant que el permís va ser denegat
-      await waitFor(() => {
         expect(mockRequestPermissions).toHaveBeenCalled();
-        // Should have been called twice - once for permission request, once for denied message
-        expect(mockShowAlert).toHaveBeenCalledTimes(2);
+        // Un sol alert: el de permís denegat
+        expect(mockShowAlert).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -307,15 +290,7 @@ describe('MapViewComponent - Tests d\'integració', () => {
       const mockGetCurrentPosition = ExpoLocation.getCurrentPositionAsync as jest.Mock;
       mockGetCurrentPosition.mockRejectedValue(new Error('Location error'));
 
-      const mockShowAlert = jest.fn((title, message, buttons) => {
-        // Simular que l'usuari fa clic a "Permetre"
-        if (buttons && Array.isArray(buttons)) {
-          const allowButton = buttons.find((b: any) => b.text === 'Permetre');
-          if (allowButton?.onPress) {
-            allowButton.onPress();
-          }
-        }
-      });
+      const mockShowAlert = jest.fn();
 
       jest.spyOn(require('../../../hooks/useCustomAlert'), 'useCustomAlert').mockReturnValue({
         alertVisible: false,
@@ -336,9 +311,8 @@ describe('MapViewComponent - Tests d\'integració', () => {
       await fireEvent.press(targetButton);
 
       await waitFor(() => {
-        expect(mockShowAlert).toHaveBeenCalled();
-        // Should be called twice - once for permission, once for error
-        expect(mockShowAlert).toHaveBeenCalledTimes(2);
+        // Un sol alert: el d'error en obtenir la ubicació
+        expect(mockShowAlert).toHaveBeenCalledTimes(1);
       });
     });
 

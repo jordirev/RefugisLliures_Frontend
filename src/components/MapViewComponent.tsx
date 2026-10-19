@@ -74,33 +74,18 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
               return;
             }
 
-            showAlert(
-              t('permissions.location.title'),
-              t('permissions.location.message'),
-              [
-                { text: t('common.cancel'), style: 'cancel' },
-                { text: t('common.allow'), onPress: () => {
-                    (async () => {
-                      try {
-                        let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
-                        if (status !== 'granted') {
-                          showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
-                          return;
-                        }
-                        let location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
-                        const latitude = location.coords.latitude;
-                        const longitude = location.coords.longitude;
-
-                        // Guardar la ubicació de l'usuari sense seleccionar-la
-                        setUserLocation({ latitude, longitude });
-                      } catch (err: any) {
-                        showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
-                      }
-                    })();
-                  }
-                }
-              ]
-            );
+            try {
+              const { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+              if (status !== 'granted') {
+                showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
+                return;
+              }
+              const location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
+              // Guardar la ubicació de l'usuari sense seleccionar-la
+              setUserLocation({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+            } catch (err: any) {
+              showAlert('Error', "No s'ha pogut obtenir la ubicació: " + (err.message || err));
+            }
           }}
         >
           <Image source={TargetIcon} style={{ width: 20, height: 20, tintColor: '#4A5565' }} />

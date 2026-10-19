@@ -17,7 +17,7 @@ Cap d'aquests serveis requereix clau **[FET]**. Disponibilitat i límits d'Open-
 ## Capacitats natives
 | Capacitat | Llibreria | On |
 |---|---|---|
-| Ubicació | `expo-location` (permís foreground) | `src/components/MapViewComponent.tsx:67-112`; plugin a `app.config.js:76-81` |
+| Ubicació | `expo-location` (permís foreground, només el diàleg natiu d'Android; sense popup propi) | `src/components/MapViewComponent.tsx`; plugin a `app.config.js:76-81` |
 | Galeria (fotos/vídeos) | `expo-image-picker` | `RefugeDetailScreen.tsx:542-599`, `QuickActionsMenu.tsx:165-225`, `ExperiencesScreen.tsx:138-172` |
 | Avatar amb retall | `react-native-image-crop-picker` 0.52 (no a Expo Go; sense config plugin; a 0.52 no existeix `cropperStatusBarColor`, s'usa `cropperStatusBarLight`) | `src/components/AvatarPopup.tsx:138-170` |
 | Compressió de vídeo | `react-native-compressor` 2 (reescrit amb Nitro Modules: requereix `react-native-nitro-modules` i build nativa nova; el config plugin `"react-native-compressor"` d'`app.config.js` continua existint i és un no-op; l'API `Video.compress`/`getVideoMetaData` no ha canviat) **[FET]**; comportament natiu al dispositiu **[NO VERIFICAT]** | `src/services/MediaUploadService.ts` (`loadCompressor`) |
