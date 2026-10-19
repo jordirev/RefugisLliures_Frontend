@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Modal, TextInput } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../hooks/useTranslation';
 import { LanguageSelector } from '../components/LanguageSelector';
@@ -10,6 +10,7 @@ import i18n from '../i18n';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { isUserAdmin } from '../utils/authUtils';
+import { AuthService } from '../services/AuthService';
 
 // Icon imports
 import LogoutIcon from '../assets/icons/logout.svg';
@@ -23,6 +24,9 @@ export function SettingsScreen() {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
   const [isAdmin, setIsAdmin] = useState(false);
+  // Reautenticació amb contrasenya abans d'esborrar el compte (la sessió és persistent)
+  const [passwordPromptVisible, setPasswordPromptVisible] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
   // Fixed header height (used to pad the scrollable content)
   const HEADER_HEIGHT = 96;
   // Insets for adaptive safe area padding (bottom on devices with home indicator)
@@ -54,6 +58,33 @@ export function SettingsScreen() {
     };
   }, []);
   
+  const runDeleteAccount = async (password?: string) => {
+    try {
+      await deleteAccount(password);
+    } catch (error: any) {
+      if (error?.message === 'LOGIN_CANCELLED') return;
+      console.error('Error durant la eliminació del compte:', error);
+      const key = error?.code ? AuthService.getErrorMessageKey(error.code) : 'auth.errors.generic';
+      showAlert(t('common.error'), t(key));
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (AuthService.currentUserUsesPassword()) {
+      setDeletePassword('');
+      setPasswordPromptVisible(true);
+    } else {
+      runDeleteAccount();
+    }
+  };
+
+  const handleSubmitPassword = () => {
+    const password = deletePassword;
+    setDeletePassword('');
+    setPasswordPromptVisible(false);
+    runDeleteAccount(password);
+  };
+
   const handleGoBack = () => {
     // Navigate to the Profile tab
     navigation.navigate('MainTabs', { screen: 'Profile' }, { pop: true });
@@ -168,17 +199,7 @@ export function SettingsScreen() {
                 t('profile.settings.deleteAccount.confirmMessage'),
                 [
                   { text: t('common.cancel'), style: 'cancel' },
-                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: () => {
-                      (async () => {
-                        try {
-                          await deleteAccount();
-                        } catch (error) {
-                          console.error('Error durant la eliminació del compte:', error);
-                          showAlert(t('common.error'), t('auth.errors.generic'));
-                        }
-                      })();
-                    }
-                  }
+                  { text: t('profile.settings.deleteAccount.title'), style: 'destructive', onPress: handleConfirmDelete }
                 ]
               );
             }}
@@ -219,6 +240,38 @@ export function SettingsScreen() {
         onClose={() => setShowLanguageSelector(false)}
       />
       
+      <Modal
+        visible={passwordPromptVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPasswordPromptVisible(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{t('profile.settings.deleteAccount.passwordTitle')}</Text>
+            <Text style={styles.modalMessage}>{t('profile.settings.deleteAccount.passwordMessage')}</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={deletePassword}
+              onChangeText={setDeletePassword}
+              placeholder={t('profile.settings.deleteAccount.passwordPlaceholder')}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              testID="delete-account-password"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={() => { setDeletePassword(''); setPasswordPromptVisible(false); }}>
+                <Text style={styles.modalCancel}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSubmitPassword} disabled={!deletePassword} testID="delete-account-confirm">
+                <Text style={[styles.modalConfirm, !deletePassword && { opacity: 0.4 }]}>{t('common.confirm')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* CustomAlert */}
       {alertConfig && (
         <CustomAlert
@@ -239,6 +292,14 @@ export function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 24 },
+  modalCard: { backgroundColor: '#fff', borderRadius: 12, padding: 20, gap: 12 },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#111827' },
+  modalMessage: { fontSize: 14, color: '#4b5563' },
+  modalInput: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 10, fontSize: 16 },
+  modalButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: 24, marginTop: 4 },
+  modalCancel: { fontSize: 16, color: '#6b7280' },
+  modalConfirm: { fontSize: 16, fontWeight: 'bold', color: '#dc2626' },
   root: {
     flex: 1,
   },

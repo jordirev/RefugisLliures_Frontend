@@ -54,7 +54,7 @@ Fitxers natius: `google-services.json` (Android) es genera a `app.config.js:9-26
 - Límits: no pot recuperar-se si la sessió de Firebase ha caducat del tot, el compte està revocat/desactivat o no hi ha xarxa; en aquests casos el servei rep el 401 original. No hi ha refresc proactiu, ni cua per a 401 simultanis (cada petició refresca per separat), ni backoff, ni `onIdTokenChanged` **[FET]**.
 
 ## Gotchas
-- Sense persistència React Native (`initializeAuth` + `getReactNativePersistence(AsyncStorage)` absent) **[FET]** → sessió en memòria **[INFERÈNCIA]**.
+- Persistència: `initializeAuth` + `getReactNativePersistence(secureAuthStorage)` (expo-secure-store → Keystore/Keychain, no AsyncStorage). Cal una build nativa nova en afegir `expo-secure-store` **[FET]**.
 - `FIREBASE_WEB_CLIENT_ID` es llegeix de `.env` en temps de bundle; a EAS, `.env` no és al repo → cal que l'entorn d'EAS el proporcioni **[NO VERIFICAT]**.
 - Emulador d'Auth per a E2E: `firebase.json` (port 9099, UI 4000) **[FET]**.
 - Vegeu també els fluxos [01](../flows/01-signup.md), [02](../flows/02-login-logout-session.md), [03](../flows/03-profile-settings-account.md).

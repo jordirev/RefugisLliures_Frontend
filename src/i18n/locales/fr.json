@@ -176,7 +176,10 @@
       "deleteAccount": {
         "title": "Supprimer le compte",
         "confirmTitle": "Supprimer le compte",
-        "confirmMessage": "Cette action supprimera définitivement votre compte et les données associées. Êtes-vous sûr(e) ?"
+        "confirmMessage": "Cette action supprimera définitivement votre compte et les données associées. Êtes-vous sûr(e) ?",
+        "passwordTitle": "Confirmez votre identité",
+        "passwordMessage": "Saisissez votre mot de passe actuel pour supprimer le compte.",
+        "passwordPlaceholder": "Mot de passe actuel"
       },
       "mediaReportsManagement": "Gestion des signalements de photos"
     },

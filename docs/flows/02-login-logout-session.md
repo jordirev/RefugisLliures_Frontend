@@ -83,9 +83,11 @@ sequenceDiagram
 - **Mode offline**: `enterOfflineMode`/`exitOfflineMode` (`AuthContext.tsx:221-239`) deixen entrar a `AppNavigator` sense usuari.
 
 ## Gotchas i bugs
-- **Sense persistència de sessió**: `getAuth(app)` sense `initializeAuth` + `getReactNativePersistence` (`src/services/firebase.ts:60-61`; el comentari diu que es configurarà després i no es fa) **[FET]** → amb Firebase JS a React Native la sessió és en memòria i cal tornar a fer login a cada arrencada **[INFERÈNCIA]**.
+- **Sessió persistent (resolt)**: `firebase.ts` fa `initializeAuth(app, { persistence: getReactNativePersistence(secureAuthStorage) })`. `secureAuthStorage` (`src/services/secureAuthStorage.ts`) desa l'estat d'Auth (ID token + refresh token, mai la contrasenya) a Android Keystore / iOS Keychain amb `expo-secure-store` (`AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY`), en blocs de 1800 caràcters. En reobrir l'app `onAuthStateChanged` restaura l'usuari i no cal fer login.
+- **Caducitat de tokens**: l'ID token dura 1 h; Firebase el renova sol amb el refresh token (`getIdToken()`), i `apiClient` força un refresc en 401. Si el refresh token ja no és vàlid (`auth/user-token-expired`, `user-disabled`, `user-not-found`), `AuthService.getAuthToken` tanca la sessió i l'usuari torna al login. Sense xarxa la sessió es manté.
+- **Reautenticació per a accions sensibles**: canviar contrasenya/correu demanen la contrasenya actual; `deleteAccount(password?)` reautentica **abans** d'esborrar res (contrasenya per a comptes email, selector de Google per als de Google). `SettingsScreen` mostra un modal de contrasenya.
+- **Logout**: fa `GoogleSignin.signOut()` (errors ignorats) i `signOut(auth)`, que esborra la sessió persistida.
 - **Logout no buida la cache de React Query** (cap `queryClient.clear/removeQueries/resetQueries` a `src/`) **[FET]** → dades d'un usuari visibles per al següent (p. ex. `is_visitor` a visites) **[INFERÈNCIA]**.
-- Logout no fa `GoogleSignin.signOut()` **[FET]**.
 - Google: usuari backend creat amb `language: 'ca'` fix (`AuthService.ts:180`) i si el `POST` falla només es loggeja (185-189) → usuari sense fila al backend **[FET]**.
 - Carrera entre els reintents del listener (3 × 1 s) i el `POST /users/` del flux Google; amb el backend en *cold start* de Render `backendUser` pot quedar `null` **[INFERÈNCIA]**.
 - `isUserAdmin` no força refresc del token: un canvi de rol no es veu fins al refresc horari **[FET + INFERÈNCIA]**.

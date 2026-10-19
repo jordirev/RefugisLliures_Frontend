@@ -29,6 +29,7 @@ const mockGoogleSignin = {
   configure: jest.fn(),
   hasPlayServices: jest.fn(),
   signIn: jest.fn(),
+  signOut: jest.fn().mockResolvedValue(undefined),
 };
 
 // Mock del credential de GoogleAuthProvider
@@ -64,6 +65,7 @@ describe('AuthService - Tests Unitaris', () => {
     displayName: 'Test User',
     emailVerified: false,
     photoURL: null,
+    providerData: [{ providerId: 'password' }],
     getIdToken: jest.fn().mockResolvedValue('mock-token-123'),
     reload: jest.fn().mockResolvedValue(undefined),
     delete: jest.fn().mockResolvedValue(undefined),
@@ -397,6 +399,15 @@ describe('AuthService - Tests Unitaris', () => {
 
       // Assert
       expect(firebase.signOut).toHaveBeenCalledWith(mockAuth);
+      expect(mockGoogleSignin.signOut).toHaveBeenCalled();
+    });
+
+    it('no ha de fallar si GoogleSignin.signOut falla', async () => {
+      mockGoogleSignin.signOut.mockRejectedValueOnce(new Error('x'));
+      (firebase.signOut as jest.Mock).mockResolvedValue(undefined);
+
+      await expect(AuthService.logout()).resolves.toBeUndefined();
+      expect(firebase.signOut).toHaveBeenCalledWith(mockAuth);
     });
 
     it('hauria de propagar errors de Firebase', async () => {
@@ -475,6 +486,33 @@ describe('AuthService - Tests Unitaris', () => {
       await expect(AuthService.resendVerificationEmail(verifiedUser)).rejects.toThrow(
         'L\'email ja està verificat'
       );
+    });
+  });
+
+  describe('getAuthToken (sessió persistida invàlida)', () => {
+    it('tanca la sessió si el refresh token ja no és vàlid', async () => {
+      mockAuth.currentUser = mockUser;
+      (mockUser.getIdToken as jest.Mock).mockRejectedValueOnce(
+        Object.assign(new Error('expired'), { code: 'auth/user-token-expired' })
+      );
+      (firebase.signOut as jest.Mock).mockResolvedValue(undefined);
+
+      const token = await AuthService.getAuthToken();
+
+      expect(token).toBeNull();
+      expect(firebase.signOut).toHaveBeenCalledWith(mockAuth);
+    });
+
+    it('no tanca la sessió per un error de xarxa', async () => {
+      mockAuth.currentUser = mockUser;
+      (mockUser.getIdToken as jest.Mock).mockRejectedValueOnce(
+        Object.assign(new Error('net'), { code: 'auth/network-request-failed' })
+      );
+
+      const token = await AuthService.getAuthToken();
+
+      expect(token).toBeNull();
+      expect(firebase.signOut).not.toHaveBeenCalled();
     });
   });
 
@@ -612,7 +650,7 @@ describe('AuthService - Tests Unitaris', () => {
       (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await AuthService.deleteAccount();
+      await AuthService.deleteAccount('Pass123!');
 
       // Assert
       expect(UsersService.deleteUser).toHaveBeenCalledWith(mockUser.uid, 'delete-token');
@@ -627,7 +665,7 @@ describe('AuthService - Tests Unitaris', () => {
       (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await AuthService.deleteAccount();
+      await AuthService.deleteAccount('Pass123!');
 
       // Assert
       expect(mockUser.delete).toHaveBeenCalled();
@@ -652,7 +690,56 @@ describe('AuthService - Tests Unitaris', () => {
       (mockUser.delete as jest.Mock).mockRejectedValue(error);
 
       // Act & Assert
-      await expect(AuthService.deleteAccount()).rejects.toThrow(error);
+      await expect(AuthService.deleteAccount('Pass123!')).rejects.toThrow(error);
+    });
+
+    it("hauria de reautenticar amb la contrasenya abans d'esborrar res", async () => {
+      mockAuth.currentUser = mockUser;
+      (firebase.EmailAuthProvider.credential as jest.Mock).mockReturnValue('pwd-cred');
+      (firebase.reauthenticateWithCredential as jest.Mock).mockResolvedValue(undefined);
+      (mockUser.getIdToken as jest.Mock).mockResolvedValue('t');
+      (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
+      (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
+
+      await AuthService.deleteAccount('Pass123!');
+
+      expect(firebase.reauthenticateWithCredential).toHaveBeenCalledWith(mockUser, 'pwd-cred');
+    });
+
+    it("no ha d'esborrar res si falta la contrasenya (compte email/contrasenya)", async () => {
+      mockAuth.currentUser = mockUser;
+      (UsersService.deleteUser as jest.Mock).mockClear();
+
+      await expect(AuthService.deleteAccount()).rejects.toThrow('PASSWORD_REQUIRED');
+      expect(UsersService.deleteUser).not.toHaveBeenCalled();
+    });
+
+    it("no ha d'esborrar res si la reautenticació falla", async () => {
+      mockAuth.currentUser = mockUser;
+      (UsersService.deleteUser as jest.Mock).mockClear();
+      (firebase.reauthenticateWithCredential as jest.Mock).mockRejectedValueOnce(
+        Object.assign(new Error('bad'), { code: 'auth/invalid-credential' })
+      );
+
+      await expect(AuthService.deleteAccount('wrong')).rejects.toThrow('bad');
+      expect(UsersService.deleteUser).not.toHaveBeenCalled();
+    });
+
+    it('compte de Google: reautentica amb el selector de Google', async () => {
+      const googleUser = { ...mockUser, providerData: [{ providerId: 'google.com' }] };
+      mockAuth.currentUser = googleUser;
+      mockGoogleSignin.hasPlayServices.mockResolvedValue(true);
+      mockGoogleSignin.signIn.mockResolvedValue({ data: { idToken: 'g-id-token' } });
+      (firebase.reauthenticateWithCredential as jest.Mock).mockResolvedValue(undefined);
+      (googleUser.getIdToken as jest.Mock).mockResolvedValue('t');
+      (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
+      (googleUser.delete as jest.Mock).mockResolvedValue(undefined);
+
+      await AuthService.deleteAccount();
+
+      expect(mockGoogleSignin.signIn).toHaveBeenCalled();
+      expect(firebase.reauthenticateWithCredential).toHaveBeenCalled();
+      expect(googleUser.delete).toHaveBeenCalled();
     });
   });
 

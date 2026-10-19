@@ -3,6 +3,9 @@ import { initializeApp } from "firebase/app";
 import Constants from 'expo-constants';
 import { 
   getAuth,
+  initializeAuth,
+  // @ts-ignore: només exportada al bundle de React Native (condició "react-native"), no als typings web
+  getReactNativePersistence,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -21,6 +24,7 @@ import {
   fetchSignInMethodsForEmail
 } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
+import { secureAuthStorage } from './secureAuthStorage';
 
 // Importar variables d'entorn
 import {
@@ -56,9 +60,23 @@ if (!firebaseConfig.projectId || !firebaseConfig.apiKey || !firebaseConfig.appId
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Auth
-// Note: For React Native, AsyncStorage persistence will be configured after initialization
-const auth = getAuth(app);
+// Initialize Auth amb sessió persistent.
+// Firebase desa tokens (refresh token inclòs) a Keystore/Keychain via expo-secure-store
+// i renova l'ID token (1 h) automàticament, així l'usuari no ha de tornar a iniciar sessió.
+function createAuth() {
+  try {
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(secureAuthStorage),
+    });
+  } catch (e: any) {
+    // Fast refresh: l'auth ja estava inicialitzat
+    if (e?.code === 'auth/already-initialized') {
+      return getAuth(app);
+    }
+    throw e;
+  }
+}
+const auth = createAuth();
 const provider = new GoogleAuthProvider();
 
 export { 

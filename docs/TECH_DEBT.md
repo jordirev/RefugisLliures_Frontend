@@ -12,7 +12,6 @@
 | A5 | `condition = 0` substituïda per heurística (`||` en lloc de `??`) | `src/services/mappers/RefugiMapper.ts:111` | FET |
 | A6 | Mapes offline no funcionals: tiles descarregades no usades, Leaflet via CDN | `src/services/MapCacheService.ts:212-234`, `src/components/LeafletWebMap.tsx:163-176,221-228` | FET |
 | A7 | Cache de React Query no es buida al logout → dades per usuari (p. ex. `is_visitor`) visibles al següent usuari | cap `clear/removeQueries` a `src/`; `src/hooks/useRefugeVisitsQuery.ts:20` | FET + INFERÈNCIA |
-| A8 | Sessió no persistent (Firebase sense persistència RN) | `src/services/firebase.ts:60-61` | FET + INFERÈNCIA |
 
 ## Mitjà
 | # | Problema | Evidència | Tipus |

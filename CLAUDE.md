@@ -43,7 +43,7 @@ Screen → hook use*Query (React Query) → *Service (static, retorna DTO) → a
 1. Els serveis han de **llançar** en error; `UsersService` retorna `null` i les mutacions creuen que han anat bé.
 2. Mutacions sempre via hook amb invalidacions; fotos/vídeos/avatar només amb `useMediaUpload` (URL PUT prefirmada, el PUT a R2 sense Bearer) i renderitzats amb `MediaImage` (expo-image, `cacheKey` = clau).
 3. `mutate()` amb el tipus exacte de `mutationFn`.
-4. La cache de React Query **no es buida** al logout; la sessió Firebase **no persisteix** entre arrencades.
+4. La cache de React Query **no es buida** al logout; la sessió Firebase **sí persisteix** (expo-secure-store → Keystore/Keychain).
 5. La UI no és seguretat: comprovacions d'autor/admin són visuals; autoritza el backend.
 6. Cap hook condicional, dins `try/catch` o dins render-props de `Tab.Screen`.
 7. No decideixis èxit/error pel text del missatge (`RefugeForm` mostra èxit si l'error conté "coord").

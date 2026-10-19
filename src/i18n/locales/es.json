@@ -176,7 +176,10 @@
       "deleteAccount": {
         "title": "Eliminar cuenta",
         "confirmTitle": "Eliminar cuenta",
-        "confirmMessage": "Esta acción eliminará permanentemente tu cuenta y los datos asociados. ¿Estás seguro/a?"
+        "confirmMessage": "Esta acción eliminará permanentemente tu cuenta y los datos asociados. ¿Estás seguro/a?",
+        "passwordTitle": "Confirma tu identidad",
+        "passwordMessage": "Introduce tu contraseña actual para eliminar la cuenta.",
+        "passwordPlaceholder": "Contraseña actual"
       },
       "mediaReportsManagement": "Gestión de denuncias de fotos"
     },

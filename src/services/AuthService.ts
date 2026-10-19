@@ -31,6 +31,9 @@ try {
 }
 import { FIREBASE_WEB_CLIENT_ID } from '@env';
 
+/** Codis de Firebase que indiquen que la sessió persistida ja no és vàlida (revocada, compte esborrat/inhabilitat) */
+const INVALID_SESSION_CODES = ['auth/user-token-expired', 'auth/user-disabled', 'auth/user-not-found', 'auth/invalid-user-token'];
+
 export interface SignUpData {
   email: string;
   password: string;
@@ -221,10 +224,83 @@ export class AuthService {
   }
 
   /**
+   * Mostra el selector de comptes de Google i retorna l'ID token (sense autenticar amb Firebase)
+   */
+  private static async getGoogleIdToken(): Promise<string> {
+    // Configurar Google Sign In
+    GoogleSignin.configure({
+      webClientId: FIREBASE_WEB_CLIENT_ID,
+      offlineAccess: false,
+    });
+
+    // Verificar disponibilitat de Google Play Services (només Android)
+    await GoogleSignin.hasPlayServices();
+
+    const userInfo = await GoogleSignin.signIn();
+    const { idToken } = userInfo.data || {};
+
+    if (!idToken) {
+      throw new Error("No s'ha pogut obtenir l'ID token de Google");
+    }
+    return idToken;
+  }
+
+  /**
+   * Reautentica l'usuari actual abans d'una acció sensible (esborrar el compte).
+   * La sessió és persistent, així que no n'hi ha prou amb estar "loguejat":
+   * - Compte amb contrasenya: cal la contrasenya actual.
+   * - Compte de Google: es torna a mostrar el selector de comptes.
+   *
+   * @param user - Usuari de Firebase actual
+   * @param password - Contrasenya actual (només comptes email/contrasenya)
+   */
+  private static async reauthenticate(user: FirebaseUser, password?: string): Promise<void> {
+    const usesPassword = user.providerData.some((p) => p.providerId === 'password');
+    if (usesPassword) {
+      if (!password || !user.email) {
+        const error: any = new Error('PASSWORD_REQUIRED');
+        error.code = 'auth/missing-password';
+        throw error;
+      }
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+      return;
+    }
+
+    if (!GoogleSignin) {
+      throw new Error('GOOGLE_SIGNIN_NOT_AVAILABLE');
+    }
+    try {
+      const idToken = await AuthService.getGoogleIdToken();
+      await reauthenticateWithCredential(user, GoogleAuthProvider.credential(idToken));
+    } catch (error: any) {
+      if (error.code === 'SIGN_IN_CANCELLED') {
+        throw new Error('LOGIN_CANCELLED');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Indica si el compte actual necessita contrasenya per reautenticar-se
+   */
+  static currentUserUsesPassword(): boolean {
+    return !!auth.currentUser?.providerData.some((p) => p.providerId === 'password');
+  }
+
+  /**
    * Tanca la sessió de l'usuari actual
+   * Esborra la sessió persistida (Keystore/Keychain) i desvincula el compte de Google
    */
   static async logout(): Promise<void> {
     try {
+      if (GoogleSignin) {
+        // Perquè el selector no recordi el compte; no ha de bloquejar el logout
+        try {
+          await GoogleSignin.signOut();
+        } catch (e) {
+          console.warn("No s'ha pogut tancar la sessió de Google:", e);
+        }
+      }
       await signOut(auth);
       console.log('Sessió tancada correctament');
     } catch (error: any) {
@@ -287,6 +363,10 @@ export class AuthService {
       return token;
     } catch (error: any) {
       console.error('Error obtenint token d\'autenticació:', error);
+      // Sessió persistida invàlida (refresh token revocat, compte inhabilitat...): tancar-la
+      if (INVALID_SESSION_CODES.includes(error?.code)) {
+        await signOut(auth).catch(() => undefined);
+      }
       return null;
     }
   }
@@ -331,13 +411,19 @@ export class AuthService {
   /**
    * Elimina el compte de l'usuari actual
    * Elimina l'usuari tant del backend com de Firebase Auth
+   * Requereix reautenticació (abans d'esborrar res, perquè no quedi un estat a mitges)
+   *
+   * @param password - Contrasenya actual (només comptes email/contrasenya)
    */
-  static async deleteAccount(): Promise<void> {
+  static async deleteAccount(password?: string): Promise<void> {
     try {
       const user = auth.currentUser;
       if (!user) {
         throw new Error('No hi ha cap usuari autenticat');
       }
+
+      // 0. Reautenticar
+      await AuthService.reauthenticate(user, password);
 
       // 1. Obtenir el token d'autenticació
       const token = await user.getIdToken();
@@ -379,6 +465,8 @@ export class AuthService {
         return 'auth.errors.userDisabled';
       case 'auth/user-not-found':
       case 'auth/wrong-password':
+      case 'auth/invalid-credential':
+      case 'auth/missing-password':
         return 'auth.errors.invalidCredentials';
       case 'auth/too-many-requests':
         return 'auth.errors.tooManyRequests';

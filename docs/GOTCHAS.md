@@ -28,7 +28,7 @@
 
 ## Auth i seguretat
 17. La UI **no és una barrera de seguretat**: botons d'eliminar/editar i el mode admin depenen de comparacions locals de `uid` i de paràmetres de ruta. El backend és qui autoritza **[FET]**.
-18. Sense persistència de sessió (`src/services/firebase.ts:60-61`): no assumeixis que l'usuari continua loguejat després de reiniciar **[INFERÈNCIA]**.
+18. La sessió Firebase **és persistent** (Keystore/Keychain via `secureAuthStorage`): no guardis tokens ni contrasenyes en cap altre lloc; les accions sensibles han de reautenticar (vegeu `AuthService.deleteAccount`).
 19. `isUserAdmin()` no força refresc del token: un rol nou no es veu immediatament **[FET]**.
 20. **NO llegeixis ni imprimeixis** `.env`, `google-services.json` ni `GoogleService-Info.plist`. Només s'esmenten noms de variables (`.env.example`).
 21. Abans d'operacions sensibles de Firebase (`user.delete()`, `updatePassword`), cal **reautenticar**; `deleteAccount` no ho fa i esborra primer el backend (`AuthService.ts:328-335`) **[FET]**.

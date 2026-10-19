@@ -177,7 +177,10 @@
       "deleteAccount": {
         "title": "Eliminar compte",
         "confirmTitle": "Eliminar compte?",
-        "confirmMessage": "Aquesta acció eliminarà permanentment el teu compte i les dades associades. Estàs segur/ra?"
+        "confirmMessage": "Aquesta acció eliminarà permanentment el teu compte i les dades associades. Estàs segur/ra?",
+        "passwordTitle": "Confirma la teva identitat",
+        "passwordMessage": "Introdueix la teva contrasenya actual per eliminar el compte.",
+        "passwordPlaceholder": "Contrasenya actual"
       },
       "mediaReportsManagement": "Gestió de denúncies de fotos"
     },

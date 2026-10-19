@@ -166,7 +166,10 @@
       "deleteAccount": {
         "title": "Delete account",
         "confirmTitle": "Delete account?",
-        "confirmMessage": "This action will permanently delete your account and associated data. Are you sure?"
+        "confirmMessage": "This action will permanently delete your account and associated data. Are you sure?",
+        "passwordTitle": "Confirm your identity",
+        "passwordMessage": "Enter your current password to delete the account.",
+        "passwordPlaceholder": "Current password"
       },
       "mediaReportsManagement": "Photo reports management"
     },

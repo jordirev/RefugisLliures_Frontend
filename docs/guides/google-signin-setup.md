@@ -52,12 +52,12 @@ Checklist:
 - No cal verificar l'email: Google ja el dona per verificat.
 - Usuari nou al backend amb `username` = `displayName` de Google, o la part abans de `@` del correu, o `'Usuari'`; `language: 'ca'` fix (es pot canviar a Settings). Si la creació al backend falla, només es registra al log (vegeu [TECH_DEBT M10](../TECH_DEBT.md)).
 - La foto de Google és a `firebaseUser.photoURL`, però l'app no la fa servir com a avatar.
-- El logout no fa `GoogleSignin.signOut()`: el selector pot recordar el darrer compte.
+- El logout fa `GoogleSignin.signOut()`.
 
 ## 7. Solució de problemes
 | Error | Causa | Solució |
 |---|---|---|
-| `DEVELOPER_ERROR` / codi `10` | SHA-1 no registrat, package diferent o Web Client ID incorrecte | Revisa §2 i §3; espera uns minuts després de canviar-ho; recompila |
+| `DEVELOPER_ERROR` / codi `10` | SHA-1 de la clau que signa l'APK no registrat a Firebase (el més habitual), package diferent o Web Client ID incorrecte | Les builds locals (`npm run android`) signen amb `android/app/debug.keystore`, no amb `~/.android/debug.keystore`: registra el SHA-1 d'aquell (`keytool -keystore android/app/debug.keystore -list -v -alias androiddebugkey -storepass android`), baixa el `google-services.json` nou, recompila |
 | `GOOGLE_SIGNIN_NOT_AVAILABLE` | Expo Go o build sense el mòdul natiu | `npm run android` |
 | "No s'ha pogut obtenir l'ID token de Google" | `webClientId` buit o de tipus Android | Revisa `FIREBASE_WEB_CLIENT_ID` i `npx expo start -c` |
 | `SIGN_IN_REQUIRED` / Play Services | Emulador sense Google Play o `google-services.json` antic | Fes servir una imatge d'emulador amb Play Store; torna a descarregar el JSON i recompila |

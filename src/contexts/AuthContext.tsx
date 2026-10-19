@@ -25,7 +25,7 @@ interface AuthContextType {
   /** Confirma l'edat mínima (usuaris existents i de Google). Llança ApiError `underage` si < 16 */
   confirmAge: (birthDate: string) => Promise<void>;
   logout: () => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  deleteAccount: (password?: string) => Promise<void>;
   refreshToken: () => Promise<string | null>;
   reloadUser: () => Promise<void>;
   refreshUserData: () => Promise<void>;
@@ -137,8 +137,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
-  const deleteAccount = async () => {
-    await AuthService.deleteAccount();
+  const deleteAccount = async (password?: string) => {
+    await AuthService.deleteAccount(password);
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 
