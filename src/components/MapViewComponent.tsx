@@ -80,9 +80,19 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
                 showAlert('Permís denegat', 'No es pot accedir a la ubicació.');
                 return;
               }
-              const location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.High });
+              const toCoords = (l: ExpoLocation.LocationObject) => ({ latitude: l.coords.latitude, longitude: l.coords.longitude });
+              // Mostrem a l'instant l'última posició coneguda (si n'hi ha) i la refinem en segon pla
+              const lastKnown = await ExpoLocation.getLastKnownPositionAsync();
+              if (lastKnown) {
+                setUserLocation(toCoords(lastKnown));
+                ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.Balanced })
+                  .then((fresh) => setUserLocation(toCoords(fresh)))
+                  .catch(() => { /* ens quedem amb l'última posició coneguda */ });
+                return;
+              }
+              const location = await ExpoLocation.getCurrentPositionAsync({ accuracy: ExpoLocation.Accuracy.Balanced });
               // Guardar la ubicació de l'usuari sense seleccionar-la
-              setUserLocation({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+              setUserLocation(toCoords(location));
             } catch (err: any) {
               showAlert('Error', "No s'ha pogut obtenir la ubicació: " + (err.message || err));
             }

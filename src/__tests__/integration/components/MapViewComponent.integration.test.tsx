@@ -20,8 +20,10 @@ import * as ExpoLocation from 'expo-location';
 jest.mock('expo-location', () => ({
   requestForegroundPermissionsAsync: jest.fn(),
   getCurrentPositionAsync: jest.fn(),
+  getLastKnownPositionAsync: jest.fn(),
   Accuracy: {
     High: 4,
+    Balanced: 3,
   },
 }));
 
@@ -250,6 +252,23 @@ describe('MapViewComponent - Tests d\'integració', () => {
         expect(mockGetCurrentPosition).toHaveBeenCalled();
       });
       expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it("hauria de mostrar l'última posició coneguda i refinar-la en segon pla", async () => {
+      (ExpoLocation.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
+      (ExpoLocation.getLastKnownPositionAsync as jest.Mock).mockResolvedValue({ coords: { latitude: 42.1, longitude: 1.1 } });
+      (ExpoLocation.getCurrentPositionAsync as jest.Mock).mockResolvedValue({ coords: { latitude: 42.2, longitude: 1.2 } });
+
+      const { getByTestId } = await renderWithProviders(
+        <MapViewComponent locations={mockLocations} onLocationSelect={mockOnLocationSelect} />,
+        { withNavigation: false }
+      );
+      await fireEvent.press(getByTestId('target-button'));
+
+      await waitFor(() => {
+        expect(ExpoLocation.getLastKnownPositionAsync).toHaveBeenCalled();
+        expect(ExpoLocation.getCurrentPositionAsync).toHaveBeenCalledWith({ accuracy: 3 });
+      });
     });
 
     it('hauria de gestionar el cas quan es denega el permís', async () => {
