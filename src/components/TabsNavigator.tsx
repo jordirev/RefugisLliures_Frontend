@@ -24,6 +24,9 @@ type TabParamList = {
   Profile: undefined;
 };
 
+/** Alçada de la barra (sense l'àrea segura inferior) */
+const TAB_BAR_HEIGHT = 64;
+
 const Tab = createBottomTabNavigator<TabParamList, undefined>();
 
 interface TabsNavigatorProps {
@@ -49,17 +52,19 @@ export function TabsNavigator({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarLabelPosition: 'below-icon',
-        // El contingut (icona + text) s'ajusta a tot l'ítem; sense padding propi
+        // Botons amb la mateixa alçada que la barra: el sombrejat l'omple sencera
         tabBarItemStyle: {
+          height: '100%',
           paddingVertical: 0,
           paddingHorizontal: 0,
         },
         tabBarIconStyle: {
           width: '100%',
+          height: '100%',
           marginTop: 0,
         },
         tabBarStyle: {
-          // Sense alçada fixa: la barra s'adapta a l'alçada del sombrejat
+          height: TAB_BAR_HEIGHT + insets.bottom,
           paddingTop: 0,
           paddingBottom: 0,
           backgroundColor: '#ffffff',
@@ -73,7 +78,7 @@ export function TabsNavigator({
         name="Map"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: 8 + insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
               <MapIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -124,7 +129,7 @@ export function TabsNavigator({
         name="Favorites"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: 8 + insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
               <FavIcon width={20} height={20} />
               <Text
                 style={styles.tabLabel}
@@ -151,7 +156,7 @@ export function TabsNavigator({
         name="Renovations"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: 8 + insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
               <ReformIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -175,7 +180,7 @@ export function TabsNavigator({
         name="Profile"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabIconContainer, { paddingBottom: 8 + insets.bottom }, focused && styles.tabIconActive]}>
+            <View style={[styles.tabIconContainer, { paddingBottom: insets.bottom }, focused && styles.tabIconActive]}>
               <UserIcon width={20} height={20} color="#4A5565" />
               <Text
                 style={styles.tabLabel}
@@ -202,7 +207,7 @@ const styles = StyleSheet.create({
   tabIconContainer: {
     backgroundColor: 'transparent',
     width: '100%',
-    paddingTop: 8,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
