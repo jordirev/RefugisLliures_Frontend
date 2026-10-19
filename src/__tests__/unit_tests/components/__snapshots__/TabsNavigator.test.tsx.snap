@@ -34,11 +34,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -70,11 +77,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -164,11 +178,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -199,11 +220,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -328,11 +356,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -364,11 +399,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -454,11 +496,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -490,11 +539,18 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -626,11 +682,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -662,11 +725,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -756,11 +826,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -791,11 +868,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -920,11 +1004,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -956,11 +1047,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1046,11 +1144,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1082,11 +1187,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1218,11 +1330,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1254,11 +1373,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1348,11 +1474,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1383,11 +1516,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1512,11 +1652,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1548,11 +1695,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1638,11 +1792,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >
@@ -1674,11 +1835,18 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
             </Text>
           </View>
           <Text
+            adjustsFontSizeToFit={true}
+            allowFontScaling={false}
+            minimumFontScale={0.7}
+            numberOfLines={1}
             style={
               {
                 "color": "#4A5565",
                 "fontSize": 10,
                 "marginTop": 4,
+                "paddingHorizontal": 2,
+                "textAlign": "center",
+                "width": "100%",
               }
             }
           >

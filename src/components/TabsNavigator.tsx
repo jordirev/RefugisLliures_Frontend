@@ -48,8 +48,20 @@ export function TabsNavigator({
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarLabelPosition: 'below-icon',
+        // El contingut (icona + text) s'ajusta a tot l'ítem; sense padding propi
+        tabBarItemStyle: {
+          paddingVertical: 0,
+          paddingHorizontal: 0,
+        },
+        tabBarIconStyle: {
+          width: '100%',
+          height: '100%',
+          marginTop: 0,
+        },
         tabBarStyle: {
-          height: 60 + insets.bottom,
+          height: 68 + insets.bottom,
+          paddingTop: 8,
           paddingBottom: insets.bottom,
           backgroundColor: '#ffffff',
           borderTopWidth: 0,
@@ -64,7 +76,13 @@ export function TabsNavigator({
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
               <MapIcon width={20} height={20} color="#4A5565" />
-              <Text style={styles.tabLabel}>
+              <Text
+                style={styles.tabLabel}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                allowFontScaling={false}
+              >
                 {t('navigation.map')}
               </Text>
             </View>
@@ -109,7 +127,13 @@ export function TabsNavigator({
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
               <FavIcon width={20} height={20} />
-              <Text style={styles.tabLabel}>
+              <Text
+                style={styles.tabLabel}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                allowFontScaling={false}
+              >
                 {t('navigation.favorites')}
               </Text>
             </View>
@@ -130,7 +154,13 @@ export function TabsNavigator({
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
               <ReformIcon width={20} height={20} color="#4A5565" />
-              <Text style={styles.tabLabel}>
+              <Text
+                style={styles.tabLabel}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                allowFontScaling={false}
+              >
                 {t('navigation.renovations')}
               </Text>
             </View>
@@ -148,7 +178,13 @@ export function TabsNavigator({
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabIconContainer, focused && styles.tabIconActive]}>
               <UserIcon width={20} height={20} color="#4A5565" />
-              <Text style={styles.tabLabel}>
+              <Text
+                style={styles.tabLabel}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                allowFontScaling={false}
+              >
                 {t('navigation.profile')}
               </Text>
             </View>
@@ -178,5 +214,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#4A5565',
     marginTop: 4,
+    width: '100%',
+    paddingHorizontal: 2,
+    textAlign: 'center',
   },
 });
