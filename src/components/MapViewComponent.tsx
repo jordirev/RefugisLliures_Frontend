@@ -93,11 +93,6 @@ export const MapViewComponent = memo(function MapViewComponent({ locations, onLo
 
                         // Guardar la ubicació de l'usuari sense seleccionar-la
                         setUserLocation({ latitude, longitude });
-
-                        if (typeof window !== 'undefined' && 'CustomEvent' in window) {
-                          const ev = new CustomEvent('centerMapTo', { detail: { lat: latitude, lng: longitude, zoom: 15 } });
-                          window.dispatchEvent(ev);
-                        }
                       } catch (err: any) {
                         showAlert('Error', 'No s\'ha pogut obtenir la ubicació: ' + (err.message || err));
                       }

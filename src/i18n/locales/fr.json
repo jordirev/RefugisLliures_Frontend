@@ -381,8 +381,6 @@
     "representation": {
       "title": "Représentation des refuges",
       "subtitle": "Choisissez comment afficher les refuges sur la carte",
-      "markers": "Marqueurs",
-      "markersDesc": "Afficher chaque refuge avec un marqueur individuel sur la carte",
       "heatmap": "Carte de chaleur",
       "heatmapDesc": "Afficher la densité des refuges avec des couleurs. Les marqueurs apparaissent avec le zoom",
       "cluster": "Groupements",

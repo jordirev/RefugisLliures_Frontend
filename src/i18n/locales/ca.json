@@ -382,8 +382,6 @@
     "representation": {
       "title": "Representació dels refugis",
       "subtitle": "Tria com veure els refugis al mapa",
-      "markers": "Marcadors",
-      "markersDesc": "Mostra cada refugi amb un marcador individual al mapa",
       "heatmap": "Mapa de calor",
       "heatmapDesc": "Mostra la densitat de refugis amb colors. Els marcadors apareixen amb el zoom",
       "cluster": "Agrupacions",

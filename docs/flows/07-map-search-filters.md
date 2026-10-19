@@ -34,7 +34,7 @@ sequenceDiagram
     S-->>H: DTOs → mapRefugisFromDTO
     MS->>MS: filtre local per nom (≥2 caràcters) + suggeriments
     MS->>W: injectJavaScript(updateMarkers JSON)
-    W->>W: cluster / heatmap / markers (Leaflet + plugins via unpkg)
+    W->>W: cluster / heatmap (Leaflet + plugins via unpkg)
     U->>W: toca marcador
     W-->>MS: postMessage {type:'locationSelect', id}
     MS->>BS: AppNavigator mostra bottom sheet
@@ -70,7 +70,7 @@ sequenceDiagram
 - Filtres al servidor: `Filters {types, altitude[0..3250], places[0..30], condition[]}` (`MapScreen.tsx:21-22,40-45`) → `filterParams` (48-74) amb `type` i `condition` separats per comes.
 - Cerca per nom: **client-side** sobre la llista carregada (`MapScreen.tsx:133-149`); el paràmetre `search → name` del servei (`RefugisService.ts:45-46`) no s'usa.
 - Sense filtres el backend retorna la llista de coordenades (id, name, surname, coord, geohash); el mapper la tracta com un `RefugiDTO` complet i perd `geohash` (`src/services/mappers/RefugiMapper.ts:91-127`) **[FET]**.
-- Capes: OpenTopoMap per defecte o OpenStreetMap (`LeafletWebMap.tsx:221-228`); representació `cluster` (`maxClusterRadius` 80, sense clúster a zoom ≥12), heatmap o markers.
+- Capes: OpenTopoMap per defecte o OpenStreetMap (`LeafletWebMap.tsx:221-228`); representació `cluster` (`maxClusterRadius` 80, sense clúster a zoom ≥12), o heatmap (ja no hi ha representació de punts individuals).
 - "Localitza'm": `expo-location` → `setUserLocation` → injecció a la WebView amb zoom 8 (`MapViewComponent.tsx:67-112`).
 - Mode offline: `MapScreen.tsx:80-113` llegeix `MapCacheService.getOfflineRefuges()`.
 - Gestor offline a la UI: botó de descàrrega dels controls del mapa (`MapViewComponent.tsx:57-64`, `testID="download-button"`) → modal `OfflineMapManager` amb barra de progrés, estat i mida de la cache, i botons per descarregar o esborrar. Zona `PYRENEES_BOUNDS` = lat 41.5–43.5, long −2.5–3.5, zoom 6–14 (`MapCacheService.ts:46-51`, `OfflineMapManager.tsx:63-66`); tiles PNG d'OpenTopoMap a `documentDirectory`. L'antiga documentació (zoom 8–14, 50–150 MB, "funciona offline") no quadra amb el codi.
@@ -81,6 +81,5 @@ sequenceDiagram
 - Marcadors obsolets quan un filtre retorna 0 resultats: només s'injecta si `locations.length > 0` (`LeafletWebMap.tsx:54`) **[FET]**.
 - Hooks dins el render-prop del `Tab.Screen` i `onLocationSelect(null)` en perdre el focus, que deixa `showBottomSheet=true` amb ubicació nul·la (`TabsNavigator.tsx:70-84`, `AppNavigator.tsx:123-126`) **[FET]**.
 - El HTML de la WebView es regenera quan arriba l'estat de la cache (`LeafletWebMap.tsx:546`) → recàrrega del mapa **[INFERÈNCIA]**.
-- `CustomEvent` despatxat al `window` de RN mai arriba a la WebView (`MapViewComponent.tsx:97-100`) **[FET]**.
-- Strings en català fixos a `OfflineMapManager.tsx` i `MapViewComponent.tsx:87,102` **[FET]**.
+- Strings en català fixos a `OfflineMapManager.tsx` i `MapViewComponent.tsx` **[FET]**.
 - Els màxims de filtre (30 places, 3250 m) s'envien com a límit superior quan es toca el filtre i exclouen refugis per sobre **[INFERÈNCIA]**.

@@ -368,8 +368,6 @@
     "representation": {
       "title": "Shelter representation",
       "subtitle": "Choose how to view shelters on the map",
-      "markers": "Markers",
-      "markersDesc": "Show each shelter with an individual marker on the map",
       "heatmap": "Heatmap",
       "heatmapDesc": "Show shelter density with colors. Markers appear with zoom",
       "cluster": "Clusters",

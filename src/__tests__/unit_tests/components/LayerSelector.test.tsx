@@ -3,7 +3,7 @@
  *
  * Aquest fitxer cobreix:
  * - Renderització del modal
- * - Selecció de representació (markers, heatmap, cluster)
+ * - Selecció de representació (heatmap, cluster)
  * - Selecció de capa de mapa (OpenTopoMap, OpenStreetMap)
  * - Tancament del modal
  * - Snapshot tests
@@ -19,7 +19,6 @@ jest.mock('../../../assets/icons/x.svg', () => 'XIcon');
 jest.mock('../../../assets/icons/layers.svg', () => 'LayersIcon');
 
 // Mock images
-jest.mock('../../../assets/images/Markers.jpeg', () => 'MarkersImage');
 jest.mock('../../../assets/images/Clusters.jpeg', () => 'ClustersImage');
 jest.mock('../../../assets/images/OpenStreetMap.jpeg', () => 'OpenStreetMapImage');
 jest.mock('../../../assets/images/OpenTopoMap.jpeg', () => 'OpenTopoMapImage');
@@ -31,7 +30,7 @@ const mockOnMapLayerChange = jest.fn();
 const defaultProps = {
   isOpen: true,
   onClose: mockOnClose,
-  representation: 'markers' as RepresentationType,
+  representation: 'heatmap' as RepresentationType,
   mapLayer: 'opentopomap' as MapLayerType,
   onRepresentationChange: mockOnRepresentationChange,
   onMapLayerChange: mockOnMapLayerChange,
@@ -75,7 +74,7 @@ describe('LayerSelector Component', () => {
   });
 
   describe('Selecció de representació', () => {
-    it('hauria de tenir markers seleccionat per defecte', async () => {
+    it('hauria de tenir heatmap seleccionat per defecte', async () => {
       const { toJSON } = await render(<LayerSelector {...defaultProps} />);
       expect(toJSON()).toBeTruthy();
     });
@@ -186,14 +185,14 @@ describe('LayerSelector Component', () => {
       const applyButton = getByText('common.apply');
       await fireEvent.press(applyButton);
 
-      expect(mockOnRepresentationChange).toHaveBeenCalledWith('markers');
+      expect(mockOnRepresentationChange).toHaveBeenCalledWith('heatmap');
       expect(mockOnMapLayerChange).toHaveBeenCalledWith('opentopomap');
       expect(mockOnClose).toHaveBeenCalled();
     });
 
     it('hauria de aplicar els canvis de representació locals', async () => {
       const { getByText, container } = await render(
-        <LayerSelector {...defaultProps} representation="markers" />
+        <LayerSelector {...defaultProps} representation="heatmap" />
       );
 
       // Seleccionar una opció de representació diferent (cluster)
@@ -259,13 +258,13 @@ describe('LayerSelector Component', () => {
   describe('Selecció d\'opcions de representació', () => {
     it('hauria de permetre seleccionar l\'opció de cluster', async () => {
       const { container, getByText } = await render(
-        <LayerSelector {...defaultProps} representation="markers" />
+        <LayerSelector {...defaultProps} representation="heatmap" />
       );
 
       // Trobem totes les TouchableOpacity i fem click a l'opció de cluster
       const touchables = findAllByType(container, require('react-native').TouchableOpacity);
       
-      // L'ordre típic és: overlay, close, markers-option, cluster-option, osm-option, topo-option, cancel, apply
+      // L'ordre típic és: overlay, close, heatmap-option, cluster-option, osm-option, topo-option, cancel, apply
       // Cluster hauria de ser l'índex 3 (la segona opció de representació)
       if (touchables.length >= 4) {
         await fireEvent.press(touchables[3]);

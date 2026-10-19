@@ -498,7 +498,7 @@ describe('LeafletWebMap - Tests d\'integració', () => {
       // Check that injectJavaScript was called with user location centering code
       await waitFor(() => {
         expect(mockInjectJavaScript).toHaveBeenCalledWith(
-          expect.stringContaining('map.setView([ul.latitude, ul.longitude], 8)')
+          expect.stringContaining('map.setView([ul.latitude, ul.longitude], 15)')
         );
       });
     });

@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { Location } from '../models';
 import { MapCacheService } from '../services/MapCacheService';
 
-export type RepresentationType = 'markers' | 'heatmap' | 'cluster';
+export type RepresentationType = 'heatmap' | 'cluster';
 export type MapLayerType = 'opentopomap' | 'openstreetmap';
 
 interface LeafletWebMapProps {
@@ -138,7 +138,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
               // Add a round blue marker with white border and shadow
               window.userMarker = L.marker([ul.latitude, ul.longitude], { icon: userLocationIcon }).addTo(map);
               // Center map to the user location
-              map.setView([ul.latitude, ul.longitude], 8);
+              map.setView([ul.latitude, ul.longitude], 15);
             }
           } catch(err) {
             // swallow errors coming from injected code
@@ -409,9 +409,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         window.changeRepresentation = function(newRepresentation, locations, selectedId) {
           currentRepresentation = newRepresentation;
           
-          if (newRepresentation === 'markers') {
-            addMarkers(locations, selectedId);
-          } else if (newRepresentation === 'heatmap') {
+          if ( === 'heatmap') {
             addHeatmap(locations, selectedId);
           } else if (newRepresentation === 'cluster') {
             addCluster(locations, selectedId);
@@ -431,9 +429,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         window.updateMarkers = function(newLocations, selectedId, representation) {
           representation = representation || currentRepresentation;
           
-          if (representation === 'markers') {
-            addMarkers(newLocations, selectedId);
-          } else if (representation === 'heatmap') {
+          if ( === 'heatmap') {
             addHeatmap(newLocations, selectedId);
           } else if (representation === 'cluster') {
             addCluster(newLocations, selectedId);
@@ -487,9 +483,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         var selectedLocationId = ${JSON.stringify(selectedLocation?.id || null)};
         var initialRepresentation = '${representation}';
         
-        if (initialRepresentation === 'markers') {
-          addMarkers(initialLocations, selectedLocationId);
-        } else if (initialRepresentation === 'heatmap') {
+        if ( === 'heatmap') {
           addHeatmap(initialLocations, selectedLocationId);
         } else if (initialRepresentation === 'cluster') {
           addCluster(initialLocations, selectedLocationId);
@@ -509,14 +503,6 @@ export const LeafletWebMap = memo(function LeafletWebMap({
             icon: userLocationIcon
           }).addTo(map);
         }
-
-        // Event listener per centrar el mapa en la ubicació de l'usuari
-        window.addEventListener('centerMapTo', function(event) {
-          var detail = event.detail;
-          if (detail && detail.lat && detail.lng) {
-            map.setView([detail.lat, detail.lng], detail.zoom || 15);
-          }
-        });
 
         // Si vols centrar el mapa a una ubicació seleccionada, fes-ho només si NO hi ha userLocation actiu
         // Així evitem sobreescriure el centrat de la ubicació de l'usuari

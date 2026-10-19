@@ -378,8 +378,6 @@
     "representation": {
       "title": "Representación de los refugios",
       "subtitle": "Elige cómo ver los refugios en el mapa",
-      "markers": "Marcadores",
-      "markersDesc": "Muestra cada refugio con un marcador individual en el mapa",
       "heatmap": "Mapa de calor",
       "heatmapDesc": "Muestra la densidad de refugios con colores. Los marcadores aparecen con el zoom",
       "cluster": "Agrupaciones",

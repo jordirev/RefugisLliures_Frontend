@@ -14,12 +14,11 @@ import XIcon from '../assets/icons/x.svg';
 import LayersIcon from '../assets/icons/layers.svg';
 import { useTranslation } from '../hooks/useTranslation';
 
-const MarkersImage = require('../assets/images/Markers.jpeg');
 const ClustersImage = require('../assets/images/Clusters.jpeg');
 const OpenStreetMapImage = require('../assets/images/OpenStreetMap.jpeg');
 const OpenTopoMapImage = require('../assets/images/OpenTopoMap.jpeg');
 
-export type RepresentationType = 'markers' | 'heatmap' | 'cluster';
+export type RepresentationType = 'heatmap' | 'cluster';
 export type MapLayerType = 'opentopomap' | 'openstreetmap';
 
 interface LayerSelectorProps {
@@ -59,7 +58,6 @@ export function LayerSelector({
   const handleTouchStart = () => setIsDragging(true);
 
   const representationOptions = [
-    { id: 'markers' as RepresentationType, label: t('layers.representation.markers'), description: t('layers.representation.markersDesc'), image: MarkersImage },
     { id: 'heatmap' as RepresentationType, label: t('layers.representation.heatmap'), description: t('layers.representation.heatmapDesc'), image: OpenStreetMapImage },
     { id: 'cluster' as RepresentationType, label: t('layers.representation.cluster'), description: t('layers.representation.clusterDesc'), image: ClustersImage },
   ];
