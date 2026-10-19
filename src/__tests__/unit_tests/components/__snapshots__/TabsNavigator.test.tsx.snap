@@ -13,8 +13,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -58,8 +58,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -158,8 +158,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -202,8 +202,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -335,8 +335,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -380,8 +380,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -475,8 +475,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -520,8 +520,8 @@ exports[`TabsNavigator Component Snapshot tests adicionals hauria de coincidir a
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -661,8 +661,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -706,8 +706,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -806,8 +806,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -850,8 +850,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -983,8 +983,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1028,8 +1028,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -1123,8 +1123,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1168,8 +1168,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -1309,8 +1309,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1354,8 +1354,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -1454,8 +1454,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1498,8 +1498,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -1631,8 +1631,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1676,8 +1676,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,
@@ -1771,8 +1771,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               {
@@ -1816,8 +1816,8 @@ exports[`TabsNavigator Component Snapshot tests hauria de coincidir amb el snaps
               {
                 "alignItems": "center",
                 "backgroundColor": "transparent",
-                "height": "100%",
                 "justifyContent": "center",
+                "paddingVertical": 8,
                 "width": "100%",
               },
               false,

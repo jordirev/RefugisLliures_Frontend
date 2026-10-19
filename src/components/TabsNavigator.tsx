@@ -56,11 +56,10 @@ export function TabsNavigator({
         },
         tabBarIconStyle: {
           width: '100%',
-          height: '100%',
           marginTop: 0,
         },
         tabBarStyle: {
-          height: 68 + insets.bottom,
+          // Sense alçada fixa: la barra s'adapta a l'alçada del sombrejat
           paddingTop: 8,
           paddingBottom: insets.bottom,
           backgroundColor: '#ffffff',
@@ -203,7 +202,7 @@ const styles = StyleSheet.create({
   tabIconContainer: {
     backgroundColor: 'transparent',
     width: '100%',
-    height: '100%',
+    paddingVertical: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
