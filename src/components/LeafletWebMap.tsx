@@ -359,11 +359,11 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         function addCluster(locations, selectedId) {
           clearRepresentations();
           
-          var currentZoom = map.getZoom();
           var TRANSITION_ZOOM = 12; // Zoom a partir del qual desactivem clustering
           
           markerClusterGroup = L.markerClusterGroup({
-            maxClusterRadius: currentZoom >= TRANSITION_ZOOM ? 0 : 80,
+            // Radi fix: el radi no pot dependre del zoom actual, o en refiltrar amb molt zoom el grup quedaria sense agrupar en allunyar
+            maxClusterRadius: 80,
             disableClusteringAtZoom: TRANSITION_ZOOM,
             spiderfyOnMaxZoom: false,
             showCoverageOnHover: false,
