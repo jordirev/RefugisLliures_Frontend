@@ -409,7 +409,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         window.changeRepresentation = function(newRepresentation, locations, selectedId) {
           currentRepresentation = newRepresentation;
           
-          if ( === 'heatmap') {
+          if (newRepresentation === 'heatmap') {
             addHeatmap(locations, selectedId);
           } else if (newRepresentation === 'cluster') {
             addCluster(locations, selectedId);
@@ -429,7 +429,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         window.updateMarkers = function(newLocations, selectedId, representation) {
           representation = representation || currentRepresentation;
           
-          if ( === 'heatmap') {
+          if (representation === 'heatmap') {
             addHeatmap(newLocations, selectedId);
           } else if (representation === 'cluster') {
             addCluster(newLocations, selectedId);
@@ -483,7 +483,7 @@ export const LeafletWebMap = memo(function LeafletWebMap({
         var selectedLocationId = ${JSON.stringify(selectedLocation?.id || null)};
         var initialRepresentation = '${representation}';
         
-        if ( === 'heatmap') {
+        if (initialRepresentation === 'heatmap') {
           addHeatmap(initialLocations, selectedLocationId);
         } else if (initialRepresentation === 'cluster') {
           addCluster(initialLocations, selectedLocationId);
