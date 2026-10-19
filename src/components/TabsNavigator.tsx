@@ -25,7 +25,7 @@ type TabParamList = {
 };
 
 /** Alçada de la barra (sense l'àrea segura inferior) */
-const TAB_BAR_HEIGHT = 64;
+const TAB_BAR_HEIGHT = 58;
 
 /**
  * Botó de la tab bar sense el padding intern per defecte de React Navigation:
