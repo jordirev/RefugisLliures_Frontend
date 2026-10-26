@@ -23,7 +23,7 @@ Fotos, vídeos i avatar **ja no** es pugen en multipart: es fa amb URL PUT prefi
 - Classes amb mètodes `static async` (p. ex. `RenovationService`, `src/services/RenovationService.ts:41`).
 - El lloc del mapatge DTO→model és **mixt**: `RenovationService`, `ExperienceService` i `DoubtsService` retornen **DTOs** (`src/services/dto/*.ts`) i el mapatge a models (`src/models/index.ts`) el fan els **hooks** amb `src/services/mappers/*` (p. ex. `src/hooks/useRenovationsQuery.ts:18-19`, patró de referència); `RefugisService`, `UsersService`, `RefugeProposalsService` i `RefugeVisitService` mapegen dins el servei (p. ex. `RefugisService.ts:23,86`). Vegeu [architecture/design-patterns.md](../architecture/design-patterns.md).
 - Gestió d'errors **inconsistent**:
-  - `RenovationService`, `RefugeVisitService`: llancen `Error` amb missatges en català (alguns perden l'status).
+  - `RenovationService`, `RefugeVisitService`, `DoubtsService`: llancen `Error` amb missatges en català (alguns perden l'status); els 403/404 del contracte nou llancen `ApiError` amb `code` (vegeu «Contracte de visites, reformes i dubtes»).
   - `UsersService`: retorna `null`/`false` en error (no llança) → les mutacions creuen que han anat bé.
   - `RenovationService.getRenovationById`: qualsevol error → `null`.
 
@@ -31,7 +31,7 @@ Fotos, vídeos i avatar **ja no** es pugen en multipart: es fa amb URL PUT prefi
 | Domini | Endpoints usats | Notes |
 |---|---|---|
 | Usuaris | `POST /users/` (+ `birth_date`), `GET/PATCH/DELETE /users/{uid}/` (el `DELETE` esborra dades **i** el compte de Firebase; 204 = ok, 500 `{error, error_id}` = res esborrat, reintentable; `deleteUser` retorna `false` i `AuthService.deleteAccount` llança `delete_failed`), `DELETE /users/{uid}/avatar/`, `PATCH /users/{uid}/age-confirmation/`, `GET /users/{uid}/moderation-notices/`, `.../favorite-refuges/`, `.../visited-refuges/` | `POST /users/` envia `email` de més; idioma en majúscules des de Settings |
-| Visites | `GET /refuges/{id}/visits/`, `GET /users/{uid}/visits/`, `POST/PATCH/DELETE /refuges/{id}/visits/{date}/` | coincideix |
+| Visites | `GET /refuges/{id}/visits/`, `GET /users/{uid}/visits/`, `POST/PATCH/DELETE /refuges/{id}/visits/{date}/` | coincideix; `num_visitors` ≤ 100 i data `YYYY-MM-DD` estricta (vegeu més avall) |
 | Renovations | `GET/POST /renovations/`, `GET/PATCH/DELETE /renovations/{id}/`, participants, `GET /refuges/{id}/renovations/` | `?id=` redundant a PATCH/DELETE; DELETE trencat des de la UI |
 | Refugis, fotos, propostes, experiències, dubtes | vegeu fluxos 07-11 | |
 
@@ -64,6 +64,15 @@ Contracte compartit amb el backend (`Backend/.../docs/flows/03-refuge-media-uplo
 - `PATCH /users/{uid}/age-confirmation/` → 200 amb l'usuari serialitzat (`age_confirmed: true`). `POST /users/` sense `birth_date` → `age_confirmed = false` (AgeGate).
 - Els vídeos conserven el contenidor (clau final `.mp4/.mov/.webm`); `thumb_url` és un pòster WebP.
 - Interpretació del client: qualsevol 403 de `POST /users/` o d'`age-confirmation` es tracta com `underage` [INFERÈNCIA].
+
+## Contracte de visites, reformes i dubtes (PostgreSQL)
+
+> **[FET]** implementat al frontend (branca `feature/contracte-visites-reformes-dubtes`) · **[NO VERIFICAT]** contra el backend en producció: el backend nou encara no hi és desplegat; el contracte ve de l'encàrrec, no s'ha provat contra un servidor real.
+
+- **Escriptures de contingut** (visites: `POST`/`PATCH` `/refuges/{id}/visits/{date}/`; reformes: `POST /renovations/`, `PATCH /renovations/{id}/`, `POST /renovations/{id}/participants/`; dubtes: `POST /doubts/`, `POST /doubts/{id}/answers/`, `POST /doubts/{id}/answers/{aid}/`) poden respondre `403 {error, code, message}` amb `code = user_blocked` o `age_not_confirmed`. `GET` i `DELETE` no ho exigeixen. Els serveis llancen `ApiError` (`buildApiError` a `src/services/apiErrors.ts`); la UI tradueix per `code` amb `getContentErrorMessage` (`src/utils/apiErrorMessage.ts`, claus `contentErrors.*` a les 4 locales). Per a `age_not_confirmed` només es mostra el missatge (no s'obre l'AgeGate: això només passa quan `backendUser.age_confirmed === false`).
+- **Reformes**: `group_link` només és al JSON per al creador, participants i admins (i s'omet a les reformes passades d'un creador esborrat, `creator_uid: 'unknown'`) → `RenovationDTO.group_link` i `Renovation.group_link` són opcionals. `expelled_uids` no es retorna mai (no és al DTO, al model ni al mapper). Unir-se estant expulsat → 403 (el servei el mapeja a `code: 'expelled'` quan el cos no porta un dels codis coneguts) [INFERÈNCIA: el codi exacte del backend per a «expulsat» no s'ha vist]. `group_link` ha de ser `http(s)://` de ≤ 2048 caràcters (si no, 400; validat al formulari). Reformes d'un sol dia (`ini_date == fin_date`) permeses. `POST /renovations/` amb refugi inexistent → 404 i `GET /refuges/{id}/renovations/` d'un refugi inexistent → 404 (abans `[]`); ambdós llancen `ApiError` amb `code: 'not_found'`. `GET /refuges/{id}/renovations/?active_only=true` filtra les actives; `getRenovationsByRefugeId(id, { activeOnly })` només l'envia si es demana (per defecte retorna totes, com fins ara).
+- **Dubtes**: esborrar un dubte o una resposta d'algú altre (sense ser creador ni admin) → `403 {error:'not_owner', code:'not_owner', message}` (`ApiError.code = 'not_owner'`). Esborrar una resposta esborra **tot el subarbre**: `useDeleteAnswer` el treu de la cache i invalida `['doubts','refuge',id]`. `answers` ve sempre (`[]` si no n'hi ha).
+- **Visites**: `num_visitors` ≤ 100 (si no, 400; validat al modal amb `MAX_NUM_VISITORS`, `src/utils/visitLimits.ts`). La data de la URL ha de ser estrictament `YYYY-MM-DD`: el modal ja la construeix així i el servei ho comprova abans de fer la petició.
 
 ## Gotchas
 - El backend és a Render (pla amb *spin-down* **[INFERÈNCIA]**): la primera petició pot trigar segons; el listener d'auth només reintenta 3 × 1 s (`src/contexts/AuthContext.tsx:65-74`).

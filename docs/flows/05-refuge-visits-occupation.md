@@ -43,7 +43,12 @@ sequenceDiagram
 - Calendari amb setmana començant en dilluns; dies passats deshabilitats comparant strings de data (`RefugeOccupationModal.tsx:67-82`).
 - Crear (151-178), editar (181-215), eliminar (218-233). Errors via `error.message`.
 - Hooks: create (46-85) i update (90-120) fan `setQueryData` + invalidació de visites d'usuari; delete (125-146) invalida.
-- Servei: tots els endpoints (`RefugeVisitService.ts:55-261`) coincideixen amb el backend **[FET]**; llança missatges en català segons status.
+- Servei: tots els endpoints (`RefugeVisitService.ts`) coincideixen amb el backend **[FET]**; llança missatges en català segons status.
+- Contracte PostgreSQL (vegeu [backend-api](../integrations/backend-api.md#contracte-de-visites-reformes-i-dubtes-postgresql)):
+  - `POST`/`PATCH` poden respondre `403` amb `code` `user_blocked` o `age_not_confirmed`: el servei llança `ApiError` i el modal mostra el missatge traduït (`getContentErrorMessage`, claus `contentErrors.*`) en lloc del text cru **[FET]**. `GET`/`DELETE` no ho exigeixen.
+  - `num_visitors` ≤ 100: el modal ho valida (`refuge.occupation.numVisitorsTooMany`) abans d'enviar; el backend respon 400 per sobre **[FET]**.
+  - La data de la URL és estrictament `YYYY-MM-DD`: el modal la construeix amb `padStart` i el servei rebutja qualsevol altre format sense fer la petició **[FET]**.
+  - Sense test de modal per al límit de 100: els tests existents del modal depenen de dates fixes de gener de 2026 (ara passades) i no exerciten el formulari **[FET]**; el servei sí que té tests de data i 403.
 
 ## Gotchas i bugs
 - `is_visitor`/`num_visitors` són per usuari però la clau de cache és per refugi; sense buidat de cache al logout, un altre usuari pot veure dades de l'anterior durant `gcTime` (15 min) **[INFERÈNCIA]**.

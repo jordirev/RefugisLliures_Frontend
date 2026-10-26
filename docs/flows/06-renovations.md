@@ -31,13 +31,17 @@ sequenceDiagram
     U->>CS: FAB + (tab Renovations)
     CS-->>U: alerta informativa a cada focus
     U->>F: refugi (autocompletar), dates, descripció, materials, enllaç grup
-    F->>F: valida (dates vs avui Madrid, 1000/500 caràcters, enllaç WhatsApp/Telegram)
+    F->>F: valida (dates vs avui Madrid, ini ≤ fin, 1000/500 caràcters, enllaç http(s) ≤ 2048)
     CS->>H: mutate(CreateRenovationRequest)
     H->>S: createRenovation
     S->>BE: POST /api/renovations/
     alt 409 solapament
         S-->>CS: Error + overlappingRenovation
         CS-->>U: alerta amb opció de veure la solapada
+    else 403 user_blocked / age_not_confirmed
+        S-->>CS: ApiError(code) → missatge traduït
+    else 404 refugi inexistent
+        S-->>CS: ApiError(code not_found)
     else 400
         S-->>CS: Error amb details concatenats
     else 201
@@ -71,7 +75,7 @@ sequenceDiagram
 
 ## Passos
 - Llista: `useRenovations()` + `useRefugesBatch(ids)`; separa "les meves" (creador o participant) de la resta (`RenovationsScreen.tsx:45-82`).
-- Detall: carrega renovation, refugi, creador i participants (`RenovationDetailScreen.tsx:61-76`); l'enllaç de grup es mostra a creador **i** participants (338-359) i s'obre amb `Linking.openURL` (110-114).
+- Detall: carrega renovation, refugi, creador i participants (`RenovationDetailScreen.tsx:61-76`); l'enllaç de grup es mostra **quan el backend el retorna** (creador, participants i admins; per a la resta la clau s'omet) i s'obre amb `Linking.openURL`. L'etiqueta és WhatsApp/Telegram segons el domini o, per a qualsevol altre enllaç http(s), el text genèric `renovations.join_group_link` **[FET]**.
 - Servei: `GET /renovations/` (46-61), `GET /renovations/{id}/` (67-86), `GET /refuges/{id}/renovations/` (95-110), `POST` (118-154), `PATCH` (168), `DELETE` (209), join/leave (237-301).
 
 ## Gotchas i bugs
@@ -84,5 +88,7 @@ sequenceDiagram
 - Join/leave no invaliden `['users','detail']` tot i que el backend canvia `num_renovated_refuges` **[FET]**.
 - `useUsers` i `useRefugesBatch` fan `.sort()` in-place sobre arrays que poden venir de la cache (`useUsersQuery.ts:391`, `useRefugesQuery.ts:46`) **[FET]**.
 - `Linking.openURL` sense `catch` ni `canOpenURL` (`RenovationDetailScreen.tsx:112`, `RenovationCard.tsx:46`) **[FET]**.
-- El mapper descarta `expelled_uids` (`RenovationMapper.ts:11-22`) **[FET]**: la UI no sap si l'usuari ha estat expulsat fins que el backend respon 403 **[INFERÈNCIA]**.
+- `expelled_uids` ja no es retorna mai: no és al DTO, al model ni al mapper. Si un usuari expulsat intenta unir-se, el backend respon 403 i `RenovationService.joinRenovation` llança `ApiError` amb `code: 'expelled'` (missatge `contentErrors.expelled`) **[FET]**; el codi exacte que envia el backend per a «expulsat» no s'ha verificat (el servei el dedueix de qualsevol 403 sense `user_blocked`/`age_not_confirmed`) **[INFERÈNCIA]**.
+- Contracte PostgreSQL (vegeu [backend-api](../integrations/backend-api.md#contracte-de-visites-reformes-i-dubtes-postgresql)): `group_link` és opcional al DTO i al model (omès per a no participants i a les reformes passades d'un creador esborrat, `creator_uid: 'unknown'`) **[FET]**; crear/editar/unir-se poden respondre 403 `user_blocked`/`age_not_confirmed` (`getContentErrorMessage` a Create/Edit/Detail) **[FET]**; `POST /renovations/` amb refugi inexistent → 404 (`code: 'not_found'`, missatge `contentErrors.refugeNotFound`) **[FET]**; `GET /refuges/{id}/renovations/` d'un refugi inexistent → 404 (`ApiError not_found`) i accepta `{ activeOnly }` → `?active_only=true` (el hook `useRefugeRenovations` i les pantalles no l'usen: continuen demanant-ho tot) **[FET]**.
+- Formulari (`RenovationForm.tsx`): reformes d'un sol dia permeses (`fin_date < ini_date` és l'únic error de data; el text `finDateBeforeIniDate` diu «no pot ser anterior»); l'enllaç de grup ha de ser `http://`/`https://` de ≤ 2048 caràcters (`groupLinkInvalid`, `groupLinkTooLong`). **S'ha eliminat la restricció prèvia a WhatsApp/Telegram** perquè el backend accepta qualsevol http(s) **[FET]** (decisió a confirmar).
 - CreateRenovation queda a la pila després de crear (`CreateRenovationScreen.tsx:65`) **[FET]**.
