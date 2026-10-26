@@ -889,6 +889,38 @@ describe('RefugeOccupationModal Component', () => {
 
       expect(container).toBeTruthy();
     });
+
+    it('no hauria de permetre navegar més enllà del límit de 12 mesos', async () => {
+      const { container, getByText, queryByText } = await renderWithProviders(
+        <RefugeOccupationModal {...defaultProps} />
+      );
+
+      const touchables = findAllByType(container, require('react-native').TouchableOpacity);
+      const nextButton = touchables.find((t: any) => {
+        const texts = findAllByType(t, require('react-native').Text);
+        return texts.some((text: any) => text.props.children === '→');
+      });
+
+      // Avui (congelat) és 10/01/2026: el límit és 10/01/2027
+      for (let i = 0; i < 20; i++) {
+        await act(async () => {
+          await fireEvent.press(nextButton);
+        });
+      }
+
+      expect(getByText('common.months.january 2027')).toBeTruthy();
+      // El dia 11 de gener de 2027 ja no es pot seleccionar
+      const dayTexts = findAllByType(container, require('react-native').Text)
+        .filter((t: any) => t.props.children === 11);
+      expect(dayTexts.length).toBe(1);
+      const cell = findAllByType(container, require('react-native').TouchableOpacity).find((t: any) => findAllByType(t, require('react-native').Text)
+        .some((x: any) => x.props.children === 11));
+      await act(async () => {
+        await fireEvent.press(cell);
+      });
+      // No es selecciona cap data: no apareix el botó d'afegir visita
+      expect(queryByText('refuge.occupation.addVisit')).toBeNull();
+    });
   });
 
   describe('Capacitat del refugi', () => {
