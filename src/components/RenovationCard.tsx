@@ -123,7 +123,11 @@ export function RenovationCard({
             )}
 
             <Text style={groupType === 'telegram' ? styles.telegramText : styles.whatsappText}>
-              {groupType === 'telegram' ? t('renovations.join_telegram_link') : t('renovations.join_whatapp_link')}
+              {groupType === 'telegram'
+                ? t('renovations.join_telegram_link')
+                : groupType === 'whatsapp'
+                  ? t('renovations.join_whatapp_link')
+                  : t('renovations.join_group_link')}
             </Text>
           </TouchableOpacity>
         )}

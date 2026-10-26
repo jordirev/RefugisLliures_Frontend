@@ -156,8 +156,28 @@ export function useCreateAnswerReply() {
 }
 
 /**
+ * Retorna els ids d'una resposta i de tots els seus descendents (el backend
+ * esborra tot el subarbre en esborrar una resposta).
+ */
+export function collectAnswerSubtreeIds(answers: Answer[], rootId: string): Set<string> {
+  const ids = new Set<string>([rootId]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const answer of answers) {
+      if (!ids.has(answer.id) && answer.parent_answer_id && ids.has(answer.parent_answer_id)) {
+        ids.add(answer.id);
+        grew = true;
+      }
+    }
+  }
+  return ids;
+}
+
+/**
  * Hook to delete an answer
- * Optimistically removes the answer from the doubt and updates the counter
+ * Esborra la resposta i TOT el seu subarbre: treu la resposta i els descendents de la
+ * cache i després invalida la consulta del dubte perquè es refaci des del backend.
  */
 export function useDeleteAnswer() {
   const queryClient = useQueryClient();
@@ -176,24 +196,27 @@ export function useDeleteAnswer() {
       return { doubtId, answerId, refugeId };
     },
     onSuccess: ({ doubtId, answerId, refugeId }) => {
-      // Remove the answer from the doubt's answers list and decrement counter
       const queryKey = ['doubts', 'refuge', refugeId];
       
       queryClient.setQueryData<Doubt[]>(queryKey, (oldData) => {
-        if (!oldData) return [];
+        if (!oldData) return oldData;
         
         return oldData.map(doubt => {
           if (doubt.id === doubtId) {
-            const filteredAnswers = (doubt.answers || []).filter(answer => answer.id !== answerId);
+            const removed = collectAnswerSubtreeIds(doubt.answers || [], answerId);
+            const filteredAnswers = (doubt.answers || []).filter(answer => !removed.has(answer.id));
             return {
               ...doubt,
-              answers_count: doubt.answers_count - 1,
+              answers_count: filteredAnswers.length,
               answers: filteredAnswers,
             };
           }
           return doubt;
         });
       });
+
+      // Refer la consulta: el backend és la font de veritat del subarbre esborrat
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }

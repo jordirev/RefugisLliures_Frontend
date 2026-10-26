@@ -15,6 +15,8 @@ import { useRefugeVisits, useCreateRefugeVisit, useUpdateRefugeVisit, useDeleteR
 import { Location } from '../models';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { MAX_NUM_VISITORS } from '../utils/visitLimits';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 import CloseIcon from '../assets/icons/x.svg';
 
 interface RefugeOccupationModalProps {
@@ -143,6 +145,10 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setNumVisitorsError(t('refuge.occupation.numVisitorsError'));
       return false;
     }
+    if (num > MAX_NUM_VISITORS) {
+      setNumVisitorsError(t('refuge.occupation.numVisitorsTooMany', { max: MAX_NUM_VISITORS }));
+      return false;
+    }
     setNumVisitorsError(null);
     return true;
   };
@@ -173,7 +179,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setNumVisitors('');
     } catch (error) {
       console.error('Error creating visit:', error);
-      showAlert(t('common.error'), error instanceof Error ? error.message : String(error));
+      const { title, message } = getContentErrorMessage(error, t, 'common.error');
+      showAlert(title, message);
     }
   };
 
@@ -210,7 +217,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setOriginalNumVisitors('');
     } catch (error) {
       console.error('Error updating visit:', error);
-      showAlert(t('common.error'), error instanceof Error ? error.message : String(error));
+      const { title, message } = getContentErrorMessage(error, t, 'common.error');
+      showAlert(title, message);
     }
   };
 

@@ -142,7 +142,8 @@
       "infoMessage": "Ici sont affichées les rénovations à réaliser dans les refuges libres que les utilisateurs publient. Si vous souhaitez collaborer pour entretenir les refuges libres, vous pouvez rejoindre n'importe quelle rénovation et communiquer avec les participants via le groupe WhatsApp ou Telegram établi par le créateur.",
       "infoCreationTittle": "⚠️ Avant de créer une rénovation",
       "infoCreationMessage": "Avant d'entreprendre des travaux de rénovation, assurez-vous de vérifier la réglementation en vigueur et de vous renseigner auprès du parc naturel ou de la mairie pour savoir si le projet est réalisable."
-    }
+    },
+    "join_group_link": "Rejoignez le groupe"
   },
   "profile": {
     "title": "Profil",
@@ -348,7 +349,8 @@
       "numVisitorsPlaceholder": "Ex: 4",
       "numVisitorsError": "Le nombre de visiteurs doit être supérieur à 0",
       "disclaimer": "Vous ne réservez pas de place au refuge. Vous indiquez seulement que vous irez à ce refuge à cette date pour que les autres utilisateurs le sachent.",
-      "placesExceeded": "L'occupation du refuge ({{total}} visiteurs) dépasse la capacité disponible ({{places}} places). Tenez-en compte avant d'y aller."
+      "placesExceeded": "L'occupation du refuge ({{total}} visiteurs) dépasse la capacité disponible ({{places}} places). Tenez-en compte avant d'y aller.",
+      "numVisitorsTooMany": "Le nombre de visiteurs ne peut pas dépasser {{max}}"
     }
   },
   "filters": {
@@ -550,8 +552,8 @@
     "materialsLabel": "Matériaux nécessaires",
     "materialsPlaceholder": "Liste des matériaux nécessaires (facultatif)...",
     "groupLinkLabel": "Lien du groupe",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... ou https://t.me/...",
-    "groupLinkInfo": "Collez ici le lien d'invitation du groupe WhatsApp ou Telegram où la rénovation sera coordonnée.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Collez ici le lien d'invitation du groupe (WhatsApp, Telegram...) où la rénovation sera coordonnée. Il doit commencer par http:// ou https://.",
     "submit": "Créer Rénovation",
     "viewOverlappingRenovation": "Voir rénovation",
     "errors": {
@@ -559,14 +561,15 @@
       "refugeNotFound": "Le refuge sélectionné n'existe pas",
       "iniDateRequired": "Vous devez sélectionner la date de début",
       "finDateRequired": "Vous devez sélectionner la date de fin",
-      "finDateBeforeIniDate": "La date de fin doit être postérieure à la date de début",
+      "finDateBeforeIniDate": "La date de fin ne peut pas être antérieure à la date de début",
       "invalidDate": "Format de date invalide",
       "descriptionRequired": "Vous devez écrire une description",
       "descriptionTooLong": "La description ne peut pas dépasser 1000 caractères",
       "groupLinkRequired": "Vous devez ajouter un lien de groupe",
-      "groupLinkInvalid": "Le lien doit être de WhatsApp ou Telegram",
+      "groupLinkInvalid": "Le lien doit commencer par http:// ou https://",
       "overlapMessage": "Une rénovation est déjà planifiée pour ce refuge à ces dates.",
-      "generic": "Impossible de créer la rénovation. Veuillez réessayer."
+      "generic": "Impossible de créer la rénovation. Veuillez réessayer.",
+      "groupLinkTooLong": "Le lien ne peut pas dépasser {{max}} caractères"
     }
   },
   "deleteRefuge": {
@@ -1029,5 +1032,13 @@
     "confirmError": "Votre âge n'a pas pu être confirmé. Réessayez",
     "logout": "Se déconnecter",
     "privacyNote": "Nous conservons uniquement le fait que vous avez confirmé l'âge minimum, pas la date de naissance."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Action non autorisée",
+    "userBlocked": "Votre compte est bloqué pour non-respect des règles et ne peut pas publier de contenu",
+    "ageNotConfirmed": "Vous devez confirmer que vous avez 16 ans ou plus avant de publier du contenu",
+    "notOwner": "Vous n'avez pas l'autorisation de supprimer ce contenu : seuls son créateur ou un administrateur peuvent le faire",
+    "expelled": "Le créateur vous a exclu de cette rénovation et vous ne pouvez plus la rejoindre",
+    "refugeNotFound": "Le refuge n'existe plus"
   }
 }

@@ -68,3 +68,39 @@ export async function readJsonSafe(response: Response): Promise<any> {
     return null;
   }
 }
+
+/**
+ * Codis 403 que poden respondre els POST/PATCH d'escriptura de contingut
+ * (visites, reformes, dubtes i respostes): usuari bloquejat per moderació o
+ * edat no confirmada.
+ */
+export const CONTENT_WRITE_ERROR_CODES = ['user_blocked', 'age_not_confirmed'] as const;
+
+/**
+ * Construeix un `ApiError` a partir d'una resposta HTTP d'error del backend
+ * (`{error, code, message}`). El `code` es llegeix del cos, mai del text del missatge.
+ *
+ * @param response - Resposta no OK
+ * @param fallbackMessage - Missatge si el cos no en porta
+ * @param options.knownCodes - Codis admesos; qualsevol altre queda com a `defaultCode`
+ * @param options.defaultCode - Codi si el cos no en porta cap de conegut (per defecte `unknown`)
+ */
+export async function buildApiError(
+  response: Response,
+  fallbackMessage: string,
+  options: { knownCodes?: readonly string[]; defaultCode?: string } = {}
+): Promise<ApiError> {
+  const { knownCodes, defaultCode = 'unknown' } = options;
+  const data = await readJsonSafe(response);
+  let code: string | null = null;
+  if (data && typeof data.code === 'string' && (!knownCodes || knownCodes.includes(data.code))) {
+    code = data.code;
+  } else if (knownCodes) {
+    code = extractApiErrorCode(data, knownCodes);
+  }
+  const message =
+    (data && typeof data.message === 'string' && data.message) ||
+    (data && typeof data.error === 'string' && data.error) ||
+    fallbackMessage;
+  return new ApiError(message, code || defaultCode, response.status, data);
+}

@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPatch, apiDelete } from './apiClient';
 import { RenovationDTO } from './dto/RenovationDTO';
+import { buildApiError, CONTENT_WRITE_ERROR_CODES } from './apiErrors';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -86,26 +87,40 @@ export class RenovationService {
   }
 
   /**
-   * Obté totes les renovations actives d'un refugi específic
+   * Obté les renovations d'un refugi específic
    * Requereix autenticació
-   * 
+   *
+   * Per defecte retorna totes (actives i passades). Amb `activeOnly` envia
+   * `?active_only=true` i el backend només retorna les actives.
+   *
    * @param refugeId - ID del refugi
-   * @returns Array de renovations actives del refugi
+   * @param options.activeOnly - Si true, només les renovations actives
+   * @returns Array de renovations del refugi
+   * @throws ApiError amb codi `not_found` (404) si el refugi no existeix
    */
-  static async getRenovationsByRefugeId(refugeId: string): Promise<RenovationDTO[]> {
+  static async getRenovationsByRefugeId(
+    refugeId: string,
+    options: { activeOnly?: boolean } = {}
+  ): Promise<RenovationDTO[]> {
     try {
-      const url = `${API_BASE_URL}/refuges/${refugeId}/renovations/`;
+      const query = options.activeOnly ? '?active_only=true' : '';
+      const url = `${API_BASE_URL}/refuges/${encodeURIComponent(refugeId)}/renovations/${query}`;
       const response = await apiGet(url);
-      
+
+      if (response.status === 404) {
+        throw await buildApiError(response, 'Refugi no trobat', { defaultCode: 'not_found' });
+      }
+
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
+
       const data: RenovationDTO[] = await response.json();
       return data;
     } catch (error) {
       console.error(`Error loading renovations for refuge ${refugeId}:`, error);
-      throw new Error('No s\'han pogut carregar les renovations del refugi');
+      if ((error as any)?.code === 'not_found') throw error;
+      throw new Error("No s'han pogut carregar les renovations del refugi");
     }
   }
 
@@ -119,6 +134,19 @@ export class RenovationService {
     try {
       const url = `${API_BASE_URL}/renovations/`;
       const response = await apiPost(url, renovation);
+
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per crear la renovation', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
+      if (response.status === 404) {
+        // Refugi inexistent
+        throw await buildApiError(response, 'Refugi no trobat', { defaultCode: 'not_found' });
+      }
       
       if (response.status === 409) {
         // Solapament amb una altra renovation
@@ -169,7 +197,11 @@ export class RenovationService {
       const response = await apiPatch(url, updates);
       
       if (response.status === 403) {
-        throw new Error('Només el creador pot actualitzar aquesta renovation');
+        // user_blocked / age_not_confirmed, o no ser el creador
+        throw await buildApiError(response, 'Només el creador pot actualitzar aquesta renovation', {
+          knownCodes: [...CONTENT_WRITE_ERROR_CODES, 'not_owner'],
+          defaultCode: 'not_owner',
+        });
       }
       
       if (response.status === 404) {
@@ -232,12 +264,20 @@ export class RenovationService {
    * El creador no pot unir-se a la seva pròpia renovation
    * Requereix autenticació
    * 
-   * @throws Error si l'usuari és el creador o ja és participant
+   * @throws ApiError amb codi `user_blocked`, `age_not_confirmed` o `expelled` (403); Error si és el creador o ja és participant
    */
   static async joinRenovation(id: string): Promise<RenovationDTO> {
     try {
       const url = `${API_BASE_URL}/renovations/${id}/participants/`;
       const response = await apiPost(url, {});
+
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed, o expulsat pel creador (el backend no retorna cap llista)
+        throw await buildApiError(response, "Has estat expulsat d'aquesta renovation", {
+          knownCodes: [...CONTENT_WRITE_ERROR_CODES, 'expelled'],
+          defaultCode: 'expelled',
+        });
+      }
       
       if (response.status === 400) {
         const errorData: RenovationErrorResponse = await response.json();

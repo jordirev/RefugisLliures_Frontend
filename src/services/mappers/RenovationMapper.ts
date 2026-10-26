@@ -17,7 +17,8 @@ export function mapRenovationFromDTO(renovationDTO: RenovationDTO): Renovation {
     fin_date: renovationDTO.fin_date,
     description: renovationDTO.description,
     materials_needed: renovationDTO.materials_needed || null,
-    group_link: renovationDTO.group_link,
+    // La clau pot ser absent: no s'inventa cap valor
+    group_link: renovationDTO.group_link ?? undefined,
     participants_uids: renovationDTO.participants_uids || [],
   };
 }

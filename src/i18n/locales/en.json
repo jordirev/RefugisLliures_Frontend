@@ -132,7 +132,8 @@
       "infoMessage": "Here are displayed the renovations to be carried out in free shelters that users publish. If you want to collaborate to maintain free shelters, you can join any renovation and communicate with the participants through the WhatsApp or Telegram group established by the creator.",
       "infoCreationTittle": "⚠️Before creating a renovation",
       "infoCreationMessage": "Before creating a renovation, make sure to check current regulations and ask the natural park or town hall if it is viable."
-    }
+    },
+    "join_group_link": "Join the group"
   },
   "profile": {
     "title": "Profile",
@@ -335,7 +336,8 @@
       "numVisitorsPlaceholder": "Ex: 4",
       "numVisitorsError": "The number of visitors must be greater than 0",
       "disclaimer": "You are not reserving any spot at the refuge. You are only indicating that you will go to this refuge on this date so other users know.",
-      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going."
+      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going.",
+      "numVisitorsTooMany": "The number of visitors cannot exceed {{max}}"
     }
   },
   "filters": {
@@ -537,8 +539,8 @@
     "materialsLabel": "Materials needed",
     "materialsPlaceholder": "List the materials needed (optional)...",
     "groupLinkLabel": "Group link",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... or https://t.me/...",
-    "groupLinkInfo": "Paste here the invitation link of the WhatsApp or Telegram group where the renovation will be coordinated.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Paste the invitation link of the group (WhatsApp, Telegram...) where the renovation will be coordinated. It must start with http:// or https://.",
     "submit": "Create Renovation",
     "viewOverlappingRenovation": "View renovation",
     "errors": {
@@ -546,14 +548,15 @@
       "refugeNotFound": "The selected shelter does not exist",
       "iniDateRequired": "You must select the start date",
       "finDateRequired": "You must select the end date",
-      "finDateBeforeIniDate": "The end date must be after the start date",
+      "finDateBeforeIniDate": "The end date cannot be before the start date",
       "invalidDate": "Invalid date format",
       "descriptionRequired": "You must write a description",
       "descriptionTooLong": "Description cannot exceed 1000 characters",
       "groupLinkRequired": "You must add a group link",
-      "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
+      "groupLinkInvalid": "The link must start with http:// or https://",
       "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
-      "generic": "Could not create renovation. Please try again."
+      "generic": "Could not create renovation. Please try again.",
+      "groupLinkTooLong": "The link cannot exceed {{max}} characters"
     }
   },
   "deleteRefuge": {
@@ -1016,5 +1019,13 @@
     "confirmError": "Your age could not be confirmed. Please try again",
     "logout": "Log out",
     "privacyNote": "We only store that you confirmed the minimum age, not your date of birth."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Action not allowed",
+    "userBlocked": "Your account is blocked for breaching the rules and cannot publish content",
+    "ageNotConfirmed": "You must confirm that you are 16 or older before publishing content",
+    "notOwner": "You are not allowed to delete this content: only its creator or an admin can",
+    "expelled": "The creator has removed you from this renovation and you cannot join again",
+    "refugeNotFound": "The refuge no longer exists"
   }
 }

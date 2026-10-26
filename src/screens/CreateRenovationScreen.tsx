@@ -14,6 +14,7 @@ import { RenovationForm, RenovationFormData } from '../components/RenovationForm
 import { Location } from '../models';
 import { useRefuges } from '../hooks/useRefugesQuery';
 import { useCreateRenovation } from '../hooks/useRenovationsQuery';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
@@ -99,7 +100,10 @@ export function CreateRenovationScreen() {
               ]
             );
           } else {
-            showAlert(t('common.error'), error.message || t('createRenovation.errors.generic'));
+            const { title, message } = getContentErrorMessage(error, t, 'createRenovation.errors.generic', {
+              not_found: 'contentErrors.refugeNotFound',
+            });
+            showAlert(title, message);
           }
           reject(error);
         }

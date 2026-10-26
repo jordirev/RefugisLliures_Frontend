@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiDelete } from './apiClient';
 import { DoubtDTO, AnswerDTO } from './dto/DoubtDTO';
+import { buildApiError, CONTENT_WRITE_ERROR_CODES } from './apiErrors';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -33,11 +34,12 @@ export class DoubtsService {
   /**
    * Obté tots els dubtes d'un refugi amb les seves respostes
    * GET /api/doubts/?refuge_id={refuge_id}
+   * `answers` ve sempre (`[]` si no n'hi ha)
    * Requereix autenticació
    */
   static async getDoubtsByRefuge(refugeId: string): Promise<DoubtDTO[]> {
     try {
-      const url = `${API_BASE_URL}/doubts/?refuge_id=${refugeId}`;
+      const url = `${API_BASE_URL}/doubts/?refuge_id=${encodeURIComponent(refugeId)}`;
       const response = await apiGet(url);
       
       if (response.status === 404) {
@@ -71,6 +73,14 @@ export class DoubtsService {
       const url = `${API_BASE_URL}/doubts/`;
       const response = await apiPost(url, request);
       
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per crear el dubte', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
       if (response.status === 400) {
         const errorData: DoubtErrorResponse = await response.json();
         throw new Error(errorData.error || 'Dades invàlides');
@@ -100,7 +110,7 @@ export class DoubtsService {
   /**
    * Elimina un dubte i totes les seves respostes
    * DELETE /api/doubts/{doubt_id}/
-   * Requereix autenticació i ser el creador del dubte
+   * Requereix autenticació i ser el creador del dubte o admin (si no, 403 `not_owner`)
    */
   static async deleteDoubt(doubtId: string): Promise<void> {
     try {
@@ -108,7 +118,11 @@ export class DoubtsService {
       const response = await apiDelete(url);
       
       if (response.status === 403) {
-        throw new Error('No tens permisos per eliminar aquest dubte');
+        // not_owner: no n'ets el creador ni admin
+        throw await buildApiError(response, 'No tens permisos per eliminar aquest dubte', {
+          knownCodes: ['not_owner'],
+          defaultCode: 'not_owner',
+        });
       }
       
       if (response.status === 404) {
@@ -139,6 +153,14 @@ export class DoubtsService {
       const url = `${API_BASE_URL}/doubts/${doubtId}/answers/`;
       const response = await apiPost(url, request);
       
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per respondre', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
       if (response.status === 400) {
         const errorData: DoubtErrorResponse = await response.json();
         throw new Error(errorData.error || 'Dades invàlides');
@@ -179,6 +201,14 @@ export class DoubtsService {
       const url = `${API_BASE_URL}/doubts/${doubtId}/answers/${parentAnswerId}/`;
       const response = await apiPost(url, request);
       
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per respondre', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
       if (response.status === 400) {
         const errorData: DoubtErrorResponse = await response.json();
         throw new Error(errorData.error || 'Dades invàlides');
@@ -206,9 +236,9 @@ export class DoubtsService {
   }
 
   /**
-   * Elimina una resposta
+   * Elimina una resposta i tot el seu subarbre (les respostes filles)
    * DELETE /api/doubts/{doubt_id}/answers/{answer_id}/
-   * Requereix autenticació i ser el creador de la resposta
+   * Requereix autenticació i ser el creador de la resposta o admin (si no, 403 `not_owner`)
    */
   static async deleteAnswer(doubtId: string, answerId: string): Promise<void> {
     try {
@@ -216,7 +246,11 @@ export class DoubtsService {
       const response = await apiDelete(url);
       
       if (response.status === 403) {
-        throw new Error('No tens permisos per eliminar aquesta resposta');
+        // not_owner: no n'ets el creador ni admin
+        throw await buildApiError(response, 'No tens permisos per eliminar aquesta resposta', {
+          knownCodes: ['not_owner'],
+          defaultCode: 'not_owner',
+        });
       }
       
       if (response.status === 404) {

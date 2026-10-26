@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { User } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
+import { useIsAdmin } from '../hooks/useIsAdmin';
 
 interface UserMessageProps {
   user: User | null;
@@ -23,6 +24,7 @@ export function UserMessage({
 }: UserMessageProps) {
   const { t } = useTranslation();
   const { backendUser: currentUser } = useAuth();
+  const isAdmin = useIsAdmin();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -35,7 +37,9 @@ export function UserMessage({
 
   const shouldTruncate = message.length > 150;
   const displayMessage = shouldTruncate && !isExpanded ? `${message.substring(0, 150)}...` : message;
-  const isCreator = currentUser?.uid === user?.uid;
+  const isCreator = !!currentUser?.uid && currentUser.uid === user?.uid;
+  // Només el creador o un admin veuen esborrar (el backend respon 403 not_owner a la resta)
+  const canDelete = isCreator || isAdmin;
 
   return (
     <View style={[styles.container, isAnswer && styles.answerContainer]}>
@@ -79,7 +83,7 @@ export function UserMessage({
         <TouchableOpacity onPress={onReply} style={styles.actionButton}>
           <Text style={styles.actionButtonText}>{t('doubts.reply')}</Text>
         </TouchableOpacity>
-        {isCreator && onDelete && (
+        {canDelete && onDelete && (
           <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>{t('common.delete')}</Text>
           </TouchableOpacity>

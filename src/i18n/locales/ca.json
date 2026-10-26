@@ -142,7 +142,8 @@
       "infoMessage": "Aquí es mostren les reformes a fer a refugis lliures que els usuaris pengen. Si vols col·laborar per a mantenir els refugis lliures, pots unir-te a qualsevol reforma i comunicar-te amb els participants mitjançant el grup de Whatsapp o Telegram que el creador hagi establert.",
       "infoCreationTittle": "⚠️Abans de crear una reforma...",
       "infoCreationMessage": "Abans de crear una reforma, assegure't de consultar la normativa vigent i de preguntar al parc natural o ajuntament si és viable."
-    }
+    },
+    "join_group_link": "Uneix-te al grup"
   },
   "profile": {
     "title": "Perfil",
@@ -349,7 +350,8 @@
       "numVisitorsPlaceholder": "Ex: 4",
       "numVisitorsError": "El nombre de visitants ha de ser superior a 0",
       "disclaimer": "No estàs reservant cap plaça al refugi. Només estàs indicant que aniràs a aquest refugi en aquesta data perquè la resta d'usuaris ho sàpiguen.",
-      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi."
+      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi.",
+      "numVisitorsTooMany": "El nombre de visitants no pot superar {{max}}"
     }
   },
   "filters": {
@@ -551,8 +553,8 @@
     "materialsLabel": "Materials necessaris",
     "materialsPlaceholder": "Llista els materials necessaris (opcional)...",
     "groupLinkLabel": "Enllaç del grup",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
-    "groupLinkInfo": "Enganxa aquí l'enllaç d'invitació del grup de WhatsApp o Telegram on es coordinarà la reforma.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Enganxa aquí l'enllaç d'invitació del grup (WhatsApp, Telegram...) on es coordinarà la reforma. Ha de començar per http:// o https://.",
     "submit": "Crear Reforma",
     "viewOverlappingRenovation": "Veure reforma",
     "errors": {
@@ -560,14 +562,15 @@
       "refugeNotFound": "El refugi seleccionat no existeix",
       "iniDateRequired": "Has de seleccionar la data d'inici",
       "finDateRequired": "Has de seleccionar la data de finalització",
-      "finDateBeforeIniDate": "La data de finalització ha de ser posterior a la d'inici",
+      "finDateBeforeIniDate": "La data de finalització no pot ser anterior a la d'inici",
       "invalidDate": "Format de data no vàlid",
       "descriptionRequired": "Has d'escriure una descripció",
       "descriptionTooLong": "La descripció no pot superar els 1000 caràcters",
       "groupLinkRequired": "Has d'afegir un enllaç del grup",
-      "groupLinkInvalid": "L'enllaç ha de ser de WhatsApp o Telegram",
+      "groupLinkInvalid": "L'enllaç ha de començar per http:// o https://",
       "overlapMessage": "Ja existeix una reforma planificada per aquest refugi en aquestes dates.",
-      "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
+      "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar.",
+      "groupLinkTooLong": "L'enllaç no pot superar els {{max}} caràcters"
     }
   },
   "deleteRefuge": {
@@ -1030,5 +1033,13 @@
     "confirmError": "No s'ha pogut confirmar l'edat. Torna-ho a provar",
     "logout": "Tancar la sessió",
     "privacyNote": "Només desem que has confirmat l'edat mínima, no la data de naixement."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Acció no permesa",
+    "userBlocked": "El teu compte està bloquejat per incompliment de les normes i no pot publicar contingut",
+    "ageNotConfirmed": "Has de confirmar que tens 16 anys o més abans de publicar contingut",
+    "notOwner": "No tens permís per eliminar aquest contingut: només el seu creador o un administrador ho pot fer",
+    "expelled": "El creador t'ha expulsat d'aquesta reforma i no t'hi pots tornar a unir",
+    "refugeNotFound": "El refugi ja no existeix"
   }
 }

@@ -21,6 +21,10 @@ import { RefugisService } from '../services/RefugisService';
 // Icon imports
 import InformationIcon from '../assets/icons/information-circle.svg';
 
+/** Enllaç de grup: http:// o https:// i com a molt 2048 caràcters */
+const GROUP_LINK_REGEX = /^https?:\/\/\S+$/i;
+const GROUP_LINK_MAX_LENGTH = 2048;
+
 export interface RenovationFormData {
   refuge_id?: string;
   ini_date: string;
@@ -162,10 +166,10 @@ export function RenovationForm({
     }
   };
 
+  // El backend accepta qualsevol enllaç http(s) de com a molt 2048 caràcters (si no, 400)
   const validateGroupLink = (link: string): boolean => {
-    const whatsappRegex = /^https:\/\/chat\.whatsapp\.com\/.+/;
-    const telegramRegex = /^https:\/\/t\.me\/.+/;
-    return whatsappRegex.test(link) || telegramRegex.test(link);
+    const trimmed = link.trim();
+    return GROUP_LINK_REGEX.test(trimmed) && trimmed.length <= GROUP_LINK_MAX_LENGTH;
   };
 
   const getTodayMadridDateString = (): string => {
@@ -210,7 +214,7 @@ export function RenovationForm({
       }
     }
 
-    // Validate fin_date
+    // Validate fin_date (es permeten reformes d'un sol dia: fin_date == ini_date)
     if (!finDate) {
       setFinDateError(t('createRenovation.errors.finDateRequired'));
       isValid = false;
@@ -236,6 +240,9 @@ export function RenovationForm({
     // Validate group_link
     if (!groupLink.trim()) {
       setGroupLinkError(t('createRenovation.errors.groupLinkRequired'));
+      isValid = false;
+    } else if (groupLink.trim().length > GROUP_LINK_MAX_LENGTH) {
+      setGroupLinkError(t('createRenovation.errors.groupLinkTooLong', { max: GROUP_LINK_MAX_LENGTH }));
       isValid = false;
     } else if (!validateGroupLink(groupLink)) {
       setGroupLinkError(t('createRenovation.errors.groupLinkInvalid'));

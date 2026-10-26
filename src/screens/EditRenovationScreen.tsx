@@ -15,6 +15,7 @@ import { RenovationForm, RenovationFormData } from '../components/RenovationForm
 import { Location } from '../models';
 import { useRefuges, useRefuge } from '../hooks/useRefugesQuery';
 import { useRenovation, useUpdateRenovation } from '../hooks/useRenovationsQuery';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 
 // Icon imports
 import BackIcon from '../assets/icons/arrow-left.svg';
@@ -62,7 +63,7 @@ export function EditRenovationScreen() {
         fin_date: renovation.fin_date,
         description: renovation.description,
         materials_needed: renovation.materials_needed,
-        group_link: renovation.group_link,
+        group_link: renovation.group_link ?? '',
       });
       setFormResetKey(prev => prev + 1);
     }
@@ -119,7 +120,8 @@ export function EditRenovationScreen() {
               ]
             );
           } else {
-            showAlert(t('common.error'), error.message || t('renovations.errorUpdating'));
+            const { title, message } = getContentErrorMessage(error, t, 'renovations.errorUpdating');
+            showAlert(title, message);
           }
           reject(error);
         }

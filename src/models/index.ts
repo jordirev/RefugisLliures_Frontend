@@ -177,7 +177,8 @@ export interface Renovation {
   fin_date: string // ISO date string
   description: string
   materials_needed?: string | null
-  group_link: string
+  /** Absent si l'usuari no és creador, participant ni admin (o creador esborrat) */
+  group_link?: string
   participants_uids?: string[] | null
 }
 

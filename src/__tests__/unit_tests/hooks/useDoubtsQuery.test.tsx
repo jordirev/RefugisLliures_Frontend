@@ -370,8 +370,11 @@ describe('useDoubtsQuery Hooks', () => {
         expect(doubtsResult.current.isSuccess).toBe(true);
       });
 
-      // Ara eliminem una resposta
+      // Ara eliminem una resposta; en refer la consulta el backend ja no la retorna
       (DoubtsService.deleteAnswer as jest.Mock).mockResolvedValue(undefined);
+      (DoubtsService.getDoubtsByRefuge as jest.Mock).mockResolvedValue([
+        { ...doubtWithAnswers, answers: [doubtWithAnswers.answers[1]], answers_count: 1 },
+      ]);
 
       const { result: deleteResult } = await renderHook(() => useDeleteAnswer(), {
         wrapper: createWrapper(),
@@ -390,6 +393,34 @@ describe('useDoubtsQuery Hooks', () => {
       const doubtInCache = cachedData?.find(d => d.id === 'doubt-1');
       expect(doubtInCache?.answers?.find((a: any) => a.id === 'answer-1')).toBeUndefined();
       expect(doubtInCache?.answers_count).toBe(1);
+    });
+
+    it("hauria d'eliminar el subarbre de la resposta i invalidar la consulta del dubte", async () => {
+      const { collectAnswerSubtreeIds } = require('../../../hooks/useDoubtsQuery');
+      const answers = [
+        { id: 'a1', parent_answer_id: null },
+        { id: 'a2', parent_answer_id: 'a1' },
+        { id: 'a3', parent_answer_id: 'a2' },
+        { id: 'a4', parent_answer_id: null },
+      ];
+      expect(Array.from(collectAnswerSubtreeIds(answers, 'a1')).sort()).toEqual(['a1', 'a2', 'a3']);
+      expect(Array.from(collectAnswerSubtreeIds(answers, 'a4'))).toEqual(['a4']);
+
+      const { result } = await renderHook(() => useDeleteAnswer(), { wrapper: createWrapper() });
+      queryClient.setQueryData(['doubts', 'refuge', 'refuge-1'], [
+        { id: 'doubt-1', answers_count: 4, answers },
+      ]);
+      (DoubtsService.deleteAnswer as jest.Mock).mockResolvedValue(undefined);
+      const invalidate = jest.spyOn(queryClient, 'invalidateQueries');
+
+      await act(async () => {
+        await result.current.mutateAsync({ doubtId: 'doubt-1', answerId: 'a1', refugeId: 'refuge-1' });
+      });
+
+      const cached = queryClient.getQueryData<any[]>(['doubts', 'refuge', 'refuge-1']);
+      expect(cached?.[0].answers.map((a: any) => a.id)).toEqual(['a4']);
+      expect(cached?.[0].answers_count).toBe(1);
+      expect(invalidate).toHaveBeenCalledWith({ queryKey: ['doubts', 'refuge', 'refuge-1'] });
     });
 
     it('hauria de gestionar eliminació quan no hi ha cache', async () => {

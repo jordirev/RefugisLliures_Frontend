@@ -254,7 +254,7 @@ describe('RenovationForm Component', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de validar que el link de grup sigui de WhatsApp o Telegram', async () => {
+    it('hauria de rebutjar un enllaç de grup que no sigui http(s)', async () => {
       const { getByText, getByPlaceholderText, queryByText } = await render(
         <RenovationForm
           {...defaultProps}
@@ -268,13 +268,36 @@ describe('RenovationForm Component', () => {
 
       // Omplir link invàlid
       const linkInput = getByPlaceholderText('createRenovation.groupLinkPlaceholder');
-      await fireEvent.changeText(linkInput, 'https://invalid-link.com');
+      await fireEvent.changeText(linkInput, 'ftp://invalid-link.com');
 
       const submitButton = getByText('createRenovation.submit');
       await fireEvent.press(submitButton);
 
       await waitFor(() => {
         expect(queryByText('createRenovation.errors.groupLinkInvalid')).toBeTruthy();
+      });
+    });
+
+    it('hauria de rebutjar un enllaç de grup de més de 2048 caràcters', async () => {
+      const { getByText, getByPlaceholderText, queryByText } = await render(
+        <RenovationForm
+          {...defaultProps}
+          initialRefuge={mockRefuges[0]}
+        />
+      );
+
+      await fireEvent.changeText(
+        getByPlaceholderText('createRenovation.descriptionPlaceholder'),
+        'Una descripció vàlida de la renovació del refugi'
+      );
+      await fireEvent.changeText(
+        getByPlaceholderText('createRenovation.groupLinkPlaceholder'),
+        'https://example.com/' + 'a'.repeat(2048)
+      );
+      await fireEvent.press(getByText('createRenovation.submit'));
+
+      await waitFor(() => {
+        expect(queryByText('createRenovation.errors.groupLinkTooLong')).toBeTruthy();
       });
     });
 
