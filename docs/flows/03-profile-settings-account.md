@@ -14,7 +14,7 @@
 | Email | `src/screens/ChangeEmailScreen.tsx:51-109` → `AuthService.changeEmail` (421-463) | Firebase `reauthenticateWithCredential` + `verifyBeforeUpdateEmail` |
 | Contrasenya | `src/screens/ChangePasswordScreen.tsx:82-142` → `AuthService.changePassword` (392-411) | Firebase `reauthenticateWithCredential` + `updatePassword` |
 | Idioma | `src/screens/SettingsScreen.tsx:91-101` → `src/components/LanguageSelector.tsx:23-61` | `changeLanguage` + `PATCH /api/users/{uid}/ {language}` |
-| Esborrar compte | `src/screens/SettingsScreen.tsx:153-177` → `AuthService.deleteAccount` (317-342) | `DELETE /api/users/{uid}/` + `user.delete()` |
+| Esborrar compte | `src/screens/SettingsScreen.tsx:153-177` → `AuthService.deleteAccount` | `DELETE /api/users/{uid}/` (el backend esborra dades i compte de Firebase) + `signOut` local |
 
 ## Diagrama — pujar avatar
 
@@ -54,6 +54,8 @@ sequenceDiagram
 
 ## Diagrama — esborrar compte
 
+El backend esborra **ell mateix** el compte de Firebase Auth dins `DELETE /users/{uid}/` (primer les dades, després el compte). El client **no** crida `user.delete()`.
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -64,24 +66,32 @@ sequenceDiagram
     participant BE as Backend
     participant FB as Firebase Auth
 
-    U->>SS: Eliminar compte → confirma
-    SS->>AS: deleteAccount()
+    U->>SS: Eliminar compte → confirma (+ contrasenya si és compte email)
+    SS->>AS: deleteAccount(password?)
+    AS->>FB: reauthenticate (contrasenya o selector de Google)
     AS->>FB: getIdToken()
     AS->>US: deleteUser(uid)
-    US->>BE: DELETE /api/users/{uid}/ (cascada al backend)
-    alt backend retorna false
-        AS->>AS: console.warn i continua
-    end
-    AS->>FB: user.delete() — sense reautenticació
-    alt auth/requires-recent-login
-        FB-->>SS: error → alerta genèrica (backend JA esborrat)
-    else ok
+    US->>BE: DELETE /api/users/{uid}/
+    BE->>BE: 1) esborra dades 2) esborra el compte de Firebase
+    alt backend falla (500 {error, error_id}) o xarxa
+        US-->>AS: false
+        AS-->>SS: Error code='delete_failed' (no es toca res; es pot reintentar)
+        SS->>U: alerta auth.errors.deleteFailed
+    else 204
+        BE-->>US: 204
+        AS->>FB: logout(): GoogleSignin.signOut + signOut(auth) local
         FB-->>SS: listener user=null → LoginScreen
     end
 ```
 
+- `UsersService.deleteUser` retorna `true` (2xx) o `false` (qualsevol error, inclòs 404/500 i excepcions de xarxa); `AuthService.deleteAccount` tradueix `false`/excepció a un error amb `code = 'delete_failed'` **[FET]**.
+- `SettingsScreen.runDeleteAccount` fa `AuthService.getErrorMessageKey(error.code)` → `delete_failed` = `auth.errors.deleteFailed` (4 locales) **[FET]**.
+- Si el backend va bé, el compte de Firebase ja no existeix: el `signOut(auth)` local només serveix per esborrar la sessió persistida. Si fallés, no es llança (el compte ja és esborrat) **[FET]**. `AuthContext.deleteAccount` fa a més `resetSessionRights()`, com el logout **[FET]**.
+- La cache de React Query no es buida (igual que al logout, vegeu GOTCHAS) **[FET]**.
+- Aquest comportament **requereix el backend amb U7 desplegat**: amb un backend antic el compte de Firebase quedaria viu **[INFERÈNCIA]**. El rollback del registre (`firebaseUser.delete()` a `signUp`) es manté perquè allà el backend no té dades **[FET]**.
+
 ## Gotchas i bugs
-- **Esborrat de compte**: backend primer, Firebase després i sense reautenticar. Si Firebase demana login recent, queda un compte d'Auth sense fila al backend; al següent login `GET /users/{uid}/` fa 404 i `backendUser` queda `null` **[FET ordre / INFERÈNCIA conseqüència]** (`AuthService.ts:328-335`).
+- **Esborrat de compte**: ja no hi ha estat a mitges al client; si el backend falla, no es toca res i es pot reintentar (abans: backend primer i `user.delete()` des del client podia deixar un compte d'Auth orfe) **[FET]**.
 - **Idioma**: `UsersService.updateUser` retorna `null` en lloc de llançar → `onError` no s'executa; `onSuccess` fa `reloadUser`, que torna a llegir l'idioma **antic** del backend i reverteix la UI **[FET + INFERÈNCIA]** (`LanguageSelector.tsx:37-49`, `src/hooks/useUsersQuery.ts:376-381`).
 - Idioma enviat en **majúscules** (`'CA'`, `LanguageSelector.tsx:35`) però en minúscules al registre i a Google (`AuthService.ts:82,180`); el lector fa `toLowerCase()` (`AuthContext.tsx:86`) **[FET]**. El backend valida `ca|es|en|fr` **[NO VERIFICAT si accepta majúscules]**.
 - Canviar email **no** actualitza res al backend; la branca `BACKEND_UPDATE_FAILED` (`ChangeEmailScreen.tsx:101`) és codi mort **[FET]**.

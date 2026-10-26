@@ -421,11 +421,13 @@ export class AuthService {
   }
 
   /**
-   * Elimina el compte de l'usuari actual
-   * Elimina l'usuari tant del backend com de Firebase Auth
-   * Requereix reautenticació (abans d'esborrar res, perquè no quedi un estat a mitges)
+   * Elimina el compte de l'usuari actual.
+   * El backend esborra primer les dades i després el compte de Firebase Auth (`DELETE /users/{uid}/`);
+   * el client NO crida `user.delete()`. Si el backend falla, no es toca res i es pot reintentar.
+   * Requereix reautenticació (abans d'esborrar res, perquè no quedi un estat a mitges).
    *
    * @param password - Contrasenya actual (només comptes email/contrasenya)
+   * @throws Error amb `code = 'delete_failed'` si el backend no ha pogut esborrar el compte
    */
   static async deleteAccount(password?: string): Promise<void> {
     try {
@@ -440,17 +442,29 @@ export class AuthService {
       // 1. Obtenir el token d'autenticació
       const token = await user.getIdToken();
 
-      // 2. Eliminar l'usuari del backend primer
-      const backendDeleted = await UsersService.deleteUser(user.uid, token);
+      // 2. Demanar al backend que esborri dades i compte de Firebase.
+      //    `UsersService.deleteUser` retorna false (no llança) si el backend respon amb error (p. ex. 500).
+      let backendDeleted = false;
+      try {
+        backendDeleted = await UsersService.deleteUser(user.uid, token);
+      } catch (e) {
+        console.error("Error eliminant l'usuari al backend:", e);
+      }
       if (!backendDeleted) {
-        console.warn('No s\'ha pogut eliminar l\'usuari del backend, continuant amb Firebase...');
+        const error: any = new Error('DELETE_FAILED');
+        error.code = 'delete_failed';
+        throw error;
       }
 
-      // 3. Eliminar l'usuari de Firebase Auth
-      // Firebase automàticament envia un email de confirmació de tancament de compte
-      await user.delete();
-      
-      console.log('Compte eliminat correctament de Firebase i del backend');
+      // 3. El compte de Firebase ja no existeix: tancar la sessió local perquè s'esborri la sessió persistida
+      try {
+        await AuthService.logout();
+      } catch (e) {
+        // El compte ja s'ha esborrat; si falla el tancament local, el listener/getAuthToken netejaran la sessió
+        console.warn("No s'ha pogut tancar la sessió local després d'esborrar el compte:", e);
+      }
+
+      console.log('Compte eliminat correctament (backend i Firebase)');
     } catch (error: any) {
       console.error('Error eliminant compte:', error);
       throw error;
@@ -486,6 +500,8 @@ export class AuthService {
         return 'auth.errors.networkError';
       case 'GOOGLE_SIGNIN_NOT_AVAILABLE':
         return 'auth.errors.googleSigninNotAvailable';
+      case 'delete_failed':
+        return 'auth.errors.deleteFailed';
       default:
         return 'auth.errors.generic';
     }

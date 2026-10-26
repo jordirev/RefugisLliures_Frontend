@@ -139,6 +139,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const deleteAccount = async (password?: string) => {
     await AuthService.deleteAccount(password);
+    // La declaració de drets de pujada és per sessió (igual que al logout)
+    resetSessionRights();
     // L'estat s'actualitzarà automàticament pel listener onAuthStateChange
   };
 

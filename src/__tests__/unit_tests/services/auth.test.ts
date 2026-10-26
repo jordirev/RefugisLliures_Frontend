@@ -654,33 +654,57 @@ describe('AuthService - Tests Unitaris', () => {
   });
 
   describe('deleteAccount', () => {
-    it('hauria d\'eliminar el compte correctament', async () => {
-      // Arrange
+    beforeEach(() => {
+      (mockUser.delete as jest.Mock).mockClear();
+      (firebase.signOut as jest.Mock).mockClear();
+      (UsersService.deleteUser as jest.Mock).mockReset();
+    });
+
+    it('si el backend va bé, tanca la sessió local i NO crida user.delete()', async () => {
       mockAuth.currentUser = mockUser;
       (mockUser.getIdToken as jest.Mock).mockResolvedValue('delete-token');
       (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
-      (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
 
-      // Act
       await AuthService.deleteAccount('Pass123!');
 
-      // Assert
       expect(UsersService.deleteUser).toHaveBeenCalledWith(mockUser.uid, 'delete-token');
-      expect(mockUser.delete).toHaveBeenCalled();
+      expect(firebase.signOut).toHaveBeenCalledWith(mockAuth);
+      expect(mockUser.delete).not.toHaveBeenCalled();
     });
 
-    it('hauria de continuar encara que falli l\'eliminació al backend', async () => {
-      // Arrange
+    it('si el backend retorna false, llança delete_failed i no fa signOut ni user.delete()', async () => {
       mockAuth.currentUser = mockUser;
       (mockUser.getIdToken as jest.Mock).mockResolvedValue('delete-token');
       (UsersService.deleteUser as jest.Mock).mockResolvedValue(false);
-      (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
 
-      // Act
-      await AuthService.deleteAccount('Pass123!');
+      await expect(AuthService.deleteAccount('Pass123!')).rejects.toMatchObject({ code: 'delete_failed' });
 
-      // Assert
-      expect(mockUser.delete).toHaveBeenCalled();
+      expect(mockUser.delete).not.toHaveBeenCalled();
+      expect(firebase.signOut).not.toHaveBeenCalled();
+    });
+
+    it('si el backend llança, es converteix en delete_failed i no fa signOut ni user.delete()', async () => {
+      mockAuth.currentUser = mockUser;
+      (mockUser.getIdToken as jest.Mock).mockResolvedValue('delete-token');
+      (UsersService.deleteUser as jest.Mock).mockRejectedValue(new Error('network'));
+
+      await expect(AuthService.deleteAccount('Pass123!')).rejects.toMatchObject({ code: 'delete_failed' });
+
+      expect(mockUser.delete).not.toHaveBeenCalled();
+      expect(firebase.signOut).not.toHaveBeenCalled();
+    });
+
+    it('delete_failed es tradueix a auth.errors.deleteFailed', () => {
+      expect(AuthService.getErrorMessageKey('delete_failed')).toBe('auth.errors.deleteFailed');
+    });
+
+    it("si el tancament de sessió local falla després d'esborrar, no llança", async () => {
+      mockAuth.currentUser = mockUser;
+      (mockUser.getIdToken as jest.Mock).mockResolvedValue('delete-token');
+      (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
+      (firebase.signOut as jest.Mock).mockRejectedValueOnce(new Error('signout failed'));
+
+      await expect(AuthService.deleteAccount('Pass123!')).resolves.toBeUndefined();
     });
 
     it('hauria de fallar si no hi ha usuari', async () => {
@@ -693,25 +717,12 @@ describe('AuthService - Tests Unitaris', () => {
       );
     });
 
-    it('hauria de propagar errors de Firebase', async () => {
-      // Arrange
-      mockAuth.currentUser = mockUser;
-      (mockUser.getIdToken as jest.Mock).mockResolvedValue('delete-token');
-      (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
-      const error = new Error('Delete failed');
-      (mockUser.delete as jest.Mock).mockRejectedValue(error);
-
-      // Act & Assert
-      await expect(AuthService.deleteAccount('Pass123!')).rejects.toThrow(error);
-    });
-
     it("hauria de reautenticar amb la contrasenya abans d'esborrar res", async () => {
       mockAuth.currentUser = mockUser;
       (firebase.EmailAuthProvider.credential as jest.Mock).mockReturnValue('pwd-cred');
       (firebase.reauthenticateWithCredential as jest.Mock).mockResolvedValue(undefined);
       (mockUser.getIdToken as jest.Mock).mockResolvedValue('t');
       (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
-      (mockUser.delete as jest.Mock).mockResolvedValue(undefined);
 
       await AuthService.deleteAccount('Pass123!');
 
@@ -735,6 +746,7 @@ describe('AuthService - Tests Unitaris', () => {
 
       await expect(AuthService.deleteAccount('wrong')).rejects.toThrow('bad');
       expect(UsersService.deleteUser).not.toHaveBeenCalled();
+      expect(firebase.signOut).not.toHaveBeenCalled();
     });
 
     it('compte de Google: reautentica amb el selector de Google', async () => {
@@ -745,13 +757,13 @@ describe('AuthService - Tests Unitaris', () => {
       (firebase.reauthenticateWithCredential as jest.Mock).mockResolvedValue(undefined);
       (googleUser.getIdToken as jest.Mock).mockResolvedValue('t');
       (UsersService.deleteUser as jest.Mock).mockResolvedValue(true);
-      (googleUser.delete as jest.Mock).mockResolvedValue(undefined);
 
       await AuthService.deleteAccount();
 
       expect(mockGoogleSignin.signIn).toHaveBeenCalled();
       expect(firebase.reauthenticateWithCredential).toHaveBeenCalled();
-      expect(googleUser.delete).toHaveBeenCalled();
+      expect(googleUser.delete).not.toHaveBeenCalled();
+      expect(firebase.signOut).toHaveBeenCalledWith(mockAuth);
     });
   });
 

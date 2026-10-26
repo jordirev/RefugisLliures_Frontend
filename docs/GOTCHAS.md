@@ -31,7 +31,7 @@
 18. La sessió Firebase **és persistent** (Keystore/Keychain via `secureAuthStorage`): no guardis tokens ni contrasenyes en cap altre lloc; les accions sensibles han de reautenticar (vegeu `AuthService.deleteAccount`).
 19. `isUserAdmin()` no força refresc del token: un rol nou no es veu immediatament **[FET]**.
 20. **NO llegeixis ni imprimeixis** `.env`, `google-services.json` ni `GoogleService-Info.plist`. Només s'esmenten noms de variables (`.env.example`).
-21. Abans d'operacions sensibles de Firebase (`user.delete()`, `updatePassword`), cal **reautenticar**; `deleteAccount` no ho fa i esborra primer el backend (`AuthService.ts:328-335`) **[FET]**.
+21. Abans d'operacions sensibles de Firebase (`user.delete()`, `updatePassword`), cal **reautenticar**; `deleteAccount` reautentica i després delega l'esborrat al backend (`DELETE /users/{uid}/` esborra dades i compte de Firebase); el client no crida `user.delete()` i només fa `signOut` local **[FET]**. No hi tornis a afegir `user.delete()`: amb el backend nou fallaria (compte inexistent).
 
 ## i18n i textos
 22. Afegeix cada clau a **les quatre** locales (`src/i18n/locales/{ca,es,en,fr}.json`). Hi ha claus que falten i es mostren crues (`proposals.errorLoading`) **[FET]**.

@@ -7,7 +7,7 @@
 | # | Problema | Evidència | Tipus |
 |---|---|---|---|
 | A2 | Errors de serveis d'usuari reportats com a èxit (preferits, visitats, perfil, idioma): retornen `null`/`false`, sense rollback | `src/services/UsersService.ts:50-61,112-123,209-227,245-255,309-327,345-355`; `src/hooks/useFavourite.ts:40,47`; `src/hooks/useVisited.ts:40,47`; `src/components/LanguageSelector.tsx:37-49` | FET |
-| A3 | Esborrar compte: backend primer, sense reautenticació → compte de Firebase orfe si `requires-recent-login` | `src/services/AuthService.ts:328-335` | FET (ordre) + INFERÈNCIA (efecte) |
+| ~~A3~~ | ~~Esborrar compte: backend primer, sense reautenticació → compte de Firebase orfe~~ **Resolt** (octubre 2026, backend U7): reautentica i el backend esborra dades i compte de Firebase; el client no crida `user.delete()`. Cal desplegar-ho alhora que el backend | `src/services/AuthService.ts` (`deleteAccount`) | FET |
 | A4 | Errors de proposta amb "coord" al missatge es mostren com a **èxit**; errors d'eliminació silenciats | `src/components/RefugeForm.tsx:515-541`, `src/components/AppNavigator.tsx:98-108` | FET |
 | A5 | `condition = 0` substituïda per heurística (`||` en lloc de `??`) | `src/services/mappers/RefugiMapper.ts:111` | FET |
 | A6 | Mapes offline no funcionals: tiles descarregades no usades, Leaflet via CDN | `src/services/MapCacheService.ts:212-234`, `src/components/LeafletWebMap.tsx:163-176,221-228` | FET |
