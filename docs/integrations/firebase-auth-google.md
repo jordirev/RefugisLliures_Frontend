@@ -19,7 +19,7 @@ Registre, login (email i Google), verificació d'email, reset i canvi de contras
 Guies de configuració pas a pas: [guides/firebase-setup.md](../guides/firebase-setup.md) i [guides/google-signin-setup.md](../guides/google-signin-setup.md).
 
 ## API exposada
-**`AuthService`** (`src/services/AuthService.ts`, mètodes `static`): `signUp`, `login`, `loginWithGoogle`, `logout`, `resetPassword`, `resendVerificationEmail`, `getAuthToken(forceRefresh)`, `getCurrentUser`, `onAuthStateChange`, `reloadUser`, `deleteAccount`, `changePassword`, `changeEmail`, `getErrorMessageKey(code)` (codi de Firebase → clau `auth.errors.*`), `isGoogleSignInAvailable`.
+**`AuthService`** (`src/services/AuthService.ts`, mètodes `static`): `signUp`, `login`, `loginWithGoogle`, `logout`, `resetPassword`, `resendVerificationEmail`, `getAuthToken(forceRefresh)`, `getCurrentUser`, `onAuthStateChange`, `reloadUser`, `deleteAccount` (reautentica; l'esborrat del compte de Firebase el fa el backend dins `DELETE /users/{uid}/`, el client només fa `signOut` local; error `code='delete_failed'`), `changePassword`, `changeEmail`, `getErrorMessageKey(code)` (codi de Firebase → clau `auth.errors.*`), `isGoogleSignInAvailable`.
 
 **`useAuth()`** (`src/contexts/AuthContext.tsx:10-34`):
 | Grup | Camps |

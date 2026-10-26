@@ -518,7 +518,8 @@
       "networkError": "Connection error. Check your internet connection",
       "generic": "An error occurred. Please try again",
       "googleLoginFailed": "Error during Google authentication",
-      "googleSigninNotAvailable": "Google Sign In is not available in Expo Go. Use a native build to enable this feature."
+      "googleSigninNotAvailable": "Google Sign In is not available in Expo Go. Use a native build to enable this feature.",
+      "deleteFailed": "The account could not be deleted. Please try again."
     }
   },
   "createRenovation": {

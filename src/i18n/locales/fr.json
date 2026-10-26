@@ -531,7 +531,8 @@
       "networkError": "Erreur de connexion. Vérifiez votre connexion Internet",
       "generic": "Une erreur s'est produite. Veuillez réessayer",
       "googleLoginFailed": "Erreur lors de l'authentification avec Google",
-      "googleSigninNotAvailable": "Google Sign In n'est pas disponible dans Expo Go. Utilisez une version native pour activer cette fonctionnalité."
+      "googleSigninNotAvailable": "Google Sign In n'est pas disponible dans Expo Go. Utilisez une version native pour activer cette fonctionnalité.",
+      "deleteFailed": "Le compte n'a pas pu être supprimé. Veuillez réessayer."
     }
   },
   "createRenovation": {

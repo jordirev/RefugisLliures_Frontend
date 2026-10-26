@@ -299,6 +299,26 @@ describe('SettingsScreen - Tests d\'integració', () => {
         );
       });
     });
+
+    it("hauria de mostrar el missatge d'esborrat fallit si el backend no ha pogut eliminar el compte", async () => {
+      mockDeleteAccount.mockRejectedValue(Object.assign(new Error('DELETE_FAILED'), { code: 'delete_failed' }));
+
+      const { getByText } = await renderWithProviders(<SettingsScreen />, {
+        mockNavigation,
+      });
+
+      await fireEvent.press(getByText('profile.settings.deleteAccount.title'));
+
+      const confirmCallback = mockShowAlert.mock.calls[0][2][1].onPress;
+      await confirmCallback();
+
+      await waitFor(() => {
+        expect(mockShowAlert).toHaveBeenCalledWith(
+          'common.error',
+          'auth.errors.deleteFailed'
+        );
+      });
+    });
   });
 
   describe('Opcions de menú sense funcionalitat', () => {

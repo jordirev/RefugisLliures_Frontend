@@ -532,7 +532,8 @@
       "networkError": "Error de connexió. Comprova la teva connexió a internet",
       "generic": "S'ha produït un error. Si us plau, torna-ho a intentar",
       "googleLoginFailed": "Error durant l'autenticació amb Google",
-      "googleSigninNotAvailable": "Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat."
+      "googleSigninNotAvailable": "Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat.",
+      "deleteFailed": "No s'ha pogut eliminar el compte. Torna-ho a provar."
     }
   },
   "createRenovation": {
