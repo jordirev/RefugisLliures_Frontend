@@ -115,10 +115,10 @@ jest.mock('../../../components/UserExperience', () => ({
       <View testID="user-experience">
         <Text>{experience.text || experience.comment}</Text>
         {user && <Text>{user.username}</Text>}
-        <TouchableOpacity testID="edit-btn" onPress={() => onEdit(experience.id, 'edited', [])}>
+        <TouchableOpacity testID="edit-btn" onPress={() => onEdit(experience.id, 'edited', [], 2)}>
           <Text>Editar</Text>
         </TouchableOpacity>
-        <TouchableOpacity testID="edit-long-btn" onPress={() => onEdit(experience.id, 'a'.repeat(2001), [])}>
+        <TouchableOpacity testID="edit-long-btn" onPress={() => onEdit(experience.id, 'a'.repeat(2001), [], 2)}>
           <Text>Editar Llarg</Text>
         </TouchableOpacity>
         <TouchableOpacity testID="delete-btn" onPress={onDelete}>
@@ -583,12 +583,13 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, container } = await render(
+      const { getByPlaceholderText, getByTestId, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
       await fireEvent.changeText(input, 'Nova experiència');
+      await fireEvent.press(getByTestId('experience-condition-2'));
 
       const { TouchableOpacity } = require('react-native');
       const touchables = findAllByType(container, TouchableOpacity);
@@ -614,12 +615,13 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, container } = await render(
+      const { getByPlaceholderText, getByTestId, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
       await fireEvent.changeText(input, 'Experiència amb fotos fallides');
+      await fireEvent.press(getByTestId('experience-condition-2'));
 
       const { TouchableOpacity } = require('react-native');
       const touchables = findAllByType(container, TouchableOpacity);
@@ -972,11 +974,12 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { container, getByPlaceholderText } = await render(
+      const { container, getByPlaceholderText, getByTestId } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
       mockPickMedia.mockResolvedValue(null);
       await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text');
+      await fireEvent.press(getByTestId('experience-condition-2'));
       await act(async () => {
         await pressAllTouchables(container);
       });
@@ -1262,12 +1265,13 @@ describe('ExperiencesScreen', () => {
         isLoading: false,
       });
 
-      const { getByPlaceholderText, container } = await render(
+      const { getByPlaceholderText, getByTestId, container } = await render(
         <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
       );
 
       const input = getByPlaceholderText('experiences.placeholder');
       await fireEvent.changeText(input, 'Test experience');
+      await fireEvent.press(getByTestId('experience-condition-2'));
 
       const { TouchableOpacity } = require('react-native');
       const touchables = findAllByType(container, TouchableOpacity);
@@ -1278,6 +1282,89 @@ describe('ExperiencesScreen', () => {
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('Condició obligatòria en crear (contracte PostgreSQL)', () => {
+    const setup = (mutate = jest.fn()) => {
+      (useCreateExperience as jest.Mock).mockReturnValue({ mutate, isPending: false });
+      (useExperiences as jest.Mock).mockReturnValue({ data: [], isLoading: false });
+      return mutate;
+    };
+
+    it('no hauria de permetre enviar sense triar condition (botó desactivat i missatge)', async () => {
+      const mockMutate = setup();
+      const { getByPlaceholderText, getByTestId } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text sense estat');
+
+      expect(getByTestId('experience-condition-required')).toBeTruthy();
+      expect(getByTestId('send-experience-button').props.accessibilityState?.disabled ?? getByTestId('send-experience-button').props.disabled).toBeTruthy();
+      await fireEvent.press(getByTestId('send-experience-button'));
+      expect(mockMutate).not.toHaveBeenCalled();
+    });
+
+    it.each([0, 1, 2, 3])('hauria d\'enviar la condition %s escollida', async (value) => {
+      const mockMutate = setup();
+      const { getByPlaceholderText, getByTestId } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Amb estat');
+      await fireEvent.press(getByTestId(`experience-condition-${value}`));
+      await fireEvent.press(getByTestId('send-experience-button'));
+
+      expect(mockMutate).toHaveBeenCalledWith(
+        expect.objectContaining({ refuge_id: 'refuge-1', comment: 'Amb estat', condition: value }),
+        expect.any(Object)
+      );
+    });
+
+    it('hauria de buidar la condition després d\'enviar amb èxit', async () => {
+      const mockMutate = setup(jest.fn((data, options) => options?.onSuccess?.({ failed_files: [] })));
+      const { getByPlaceholderText, getByTestId } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Un altre');
+      await fireEvent.press(getByTestId('experience-condition-1'));
+      await fireEvent.press(getByTestId('send-experience-button'));
+
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(getByTestId('experience-condition-required')).toBeTruthy());
+    });
+
+    it.each([
+      ['user_blocked', 'contentErrors.userBlocked'],
+      ['age_not_confirmed', 'contentErrors.ageNotConfirmed'],
+    ])('hauria de mostrar el missatge específic per %s en crear', async (code, key) => {
+      setup(jest.fn((data, options) => options?.onError?.({ code, message: 'Forbidden' })));
+      const { getByPlaceholderText, getByTestId } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Text');
+      await fireEvent.press(getByTestId('experience-condition-2'));
+      await fireEvent.press(getByTestId('send-experience-button'));
+
+      expect(mockShowAlert).toHaveBeenCalledWith('contentErrors.notAllowedTitle', key);
+    });
+
+    it('hauria de mostrar el missatge específic per user_blocked en editar', async () => {
+      (useUpdateExperience as jest.Mock).mockReturnValue({
+        mutate: jest.fn((data, options) => options?.onError?.({ code: 'user_blocked', message: 'x' })),
+        isPending: false,
+      });
+      (useExperiences as jest.Mock).mockReturnValue({ data: [mockExperience], isLoading: false });
+      const { getByTestId } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.press(getByTestId('edit-btn'));
+
+      expect(mockShowAlert).toHaveBeenCalledWith('contentErrors.notAllowedTitle', 'contentErrors.userBlocked');
     });
   });
 

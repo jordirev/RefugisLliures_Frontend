@@ -16,6 +16,7 @@ export function mapExperienceFromDTO(experienceDTO: ExperienceDTO): Experience {
     creator_uid: experienceDTO.creator_uid,
     modified_at: experienceDTO.modified_at,
     comment: experienceDTO.comment,
+    condition: experienceDTO.condition,
     images_metadata: experienceDTO.images_metadata 
       ? experienceDTO.images_metadata.map(mapImageMetadataFromDTO)
       : undefined,

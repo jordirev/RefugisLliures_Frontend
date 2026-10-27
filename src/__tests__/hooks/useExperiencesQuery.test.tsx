@@ -161,12 +161,14 @@ describe('useCreateExperience', () => {
       await result.current.mutateAsync({
         refuge_id: 'refuge-1',
         comment: 'Great experience!',
+        condition: 2,
       });
     });
 
     expect(mockedService.createExperience).toHaveBeenCalledWith({
       refuge_id: 'refuge-1',
       comment: 'Great experience!',
+      condition: 2,
     });
   });
 
@@ -182,7 +184,7 @@ describe('useCreateExperience', () => {
     await act(async () => {
       await result.current.mutateAsync({
         refuge_id: 'refuge-1',
-        comment: 'Great!',
+        comment: 'Great!', condition: 2,
         files: [mockFile],
       });
     });
@@ -201,7 +203,7 @@ describe('useCreateExperience', () => {
       act(async () => {
         await result.current.mutateAsync({
           refuge_id: 'refuge-1',
-          comment: 'Test',
+          comment: 'Test', condition: 2,
         });
       })
     ).rejects.toThrow('Failed to create');
@@ -231,11 +233,11 @@ describe('useUpdateExperience', () => {
       await result.current.mutateAsync({
         experienceId: 'exp-1',
         refugeId: 'refuge-1',
-        request: { comment: 'Updated comment' },
+        request: { comment: 'Updated comment', condition: 3 },
       });
     });
 
-    expect(mockedService.updateExperience).toHaveBeenCalledWith('exp-1', { comment: 'Updated comment' });
+    expect(mockedService.updateExperience).toHaveBeenCalledWith('exp-1', { comment: 'Updated comment', condition: 3 });
   });
 
   it('should update experience with files', async () => {
@@ -251,12 +253,12 @@ describe('useUpdateExperience', () => {
       await result.current.mutateAsync({
         experienceId: 'exp-1',
         refugeId: 'refuge-1',
-        request: { files: [mockFile] },
+        request: { condition: 1, files: [mockFile] },
       });
     });
 
-    // Només fitxers: no cal PATCH; es pugen amb target=experience
-    expect(mockedService.updateExperience).not.toHaveBeenCalled();
+    // Només fitxers: el PATCH s'envia igualment amb la condition; els fitxers van amb target=experience
+    expect(mockedService.updateExperience).toHaveBeenCalledWith('exp-1', { comment: undefined, condition: 1 });
     expect(MediaUploadService.uploadFiles).toHaveBeenCalledWith({
       target: 'experience',
       refugeId: 'refuge-1',
@@ -277,7 +279,7 @@ describe('useUpdateExperience', () => {
         await result.current.mutateAsync({
           experienceId: 'exp-1',
           refugeId: 'refuge-1',
-          request: { comment: 'Test' },
+          request: { comment: 'Test', condition: 1 },
         });
       })
     ).rejects.toThrow('Failed to update');

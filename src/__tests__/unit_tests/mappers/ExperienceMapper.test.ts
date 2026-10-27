@@ -99,5 +99,19 @@ describe('ExperienceMapper', () => {
       expect(result.modified_at).toBe('2025-12-25T00:00:00Z');
       expect(result.comment).toBe('Comentari especial amb caràcters especials: àèéíòóú');
     });
+
+    it('hauria de mapejar la condition (inclòs el 0)', () => {
+      const base: ExperienceDTO = {
+        id: 'exp-c',
+        refuge_id: 'refuge-123',
+        creator_uid: 'user-abc',
+        modified_at: '2025-06-15T10:30:00Z',
+        comment: 'Estat',
+      };
+
+      expect(mapExperienceFromDTO({ ...base, condition: 0 }).condition).toBe(0);
+      expect(mapExperienceFromDTO({ ...base, condition: 3 }).condition).toBe(3);
+      expect(mapExperienceFromDTO(base).condition).toBeUndefined();
+    });
   });
 });

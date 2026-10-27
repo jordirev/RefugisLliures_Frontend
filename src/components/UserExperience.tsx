@@ -15,6 +15,7 @@ import { User, Experience, ImageMetadata } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 import { MediaThumbnail } from './MediaThumbnail';
+import { ExperienceConditionPicker } from './ExperienceConditionPicker';
 import type { PreparedMediaFile } from '../services/MediaUploadService';
 
 // Icons
@@ -29,7 +30,7 @@ interface UserExperienceProps {
   user: User | null;
   experience: Experience;
   isAnswer?: boolean;
-  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
+  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[], newCondition: number) => void;
   onDelete?: () => void;
   onPhotoPress: (photos: ImageMetadata[], index: number) => void;
   refugeCreatorUid?: string; // UID del creador de l'experiència per PhotoViewerModal
@@ -55,6 +56,7 @@ export function UserExperience({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedComment, setEditedComment] = useState(experience.comment);
+  const [editedCondition, setEditedCondition] = useState<number | undefined>(experience.condition);
   const [newFiles, setNewFiles] = useState<PreparedMediaFile[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const scrollViewRef = useRef<ScrollViewInstance>(null);
@@ -108,18 +110,21 @@ export function UserExperience({
   const handleEditPress = () => {
     setIsEditing(true);
     setEditedComment(experience.comment);
+    setEditedCondition(experience.condition);
     setNewFiles([]);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditedComment(experience.comment);
+    setEditedCondition(experience.condition);
     setNewFiles([]);
   };
 
   const handleConfirmEdit = () => {
-    if (onEdit) {
-      onEdit(experience.id, editedComment, newFiles);
+    // La valoració (condition) s'envia sempre; sense ella no es pot confirmar
+    if (onEdit && editedCondition !== undefined) {
+      onEdit(experience.id, editedComment, newFiles, editedCondition);
     }
     setIsEditing(false);
     setNewFiles([]);
@@ -141,7 +146,11 @@ export function UserExperience({
     setNewFiles(newFiles.filter((_, i) => i !== index));
   };
 
-  const hasChanges = editedComment !== experience.comment || newFiles.length > 0;
+  const hasChanges =
+    editedComment !== experience.comment ||
+    editedCondition !== experience.condition ||
+    newFiles.length > 0;
+  const canConfirm = hasChanges && editedCondition !== undefined;
 
   return (
     <View style={[styles.container, isAnswer && styles.answerContainer]}>
@@ -213,6 +222,13 @@ export function UserExperience({
         </View>
       )}
 
+      {/* Valoració de l'estat del refugi (només en editar) */}
+      {isEditing && (
+        <View style={styles.conditionContainer}>
+          <ExperienceConditionPicker value={editedCondition} onChange={setEditedCondition} />
+        </View>
+      )}
+
       {/* New files preview (when editing) */}
       {isEditing && newFiles.length > 0 && (
         <View style={styles.newFilesContainer}>
@@ -277,7 +293,7 @@ export function UserExperience({
             <TouchableOpacity onPress={handleCancelEdit} style={styles.actionButton}>
               <Text style={styles.actionButtonText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
-            {hasChanges && (
+            {canConfirm && (
               <TouchableOpacity onPress={handleConfirmEdit} style={styles.confirmButton}>
                 <Text style={styles.confirmButtonText}>{t('common.confirm')}</Text>
               </TouchableOpacity>
@@ -394,6 +410,10 @@ const styles = StyleSheet.create({
   playIcon: {
     fontSize: 32,
     color: '#e0e0e0ff',
+  },
+  conditionContainer: {
+    paddingLeft: 44,
+    marginBottom: 8,
   },
   newFilesContainer: {
     paddingLeft: 44,

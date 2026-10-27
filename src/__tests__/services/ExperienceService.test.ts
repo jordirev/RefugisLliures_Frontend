@@ -122,14 +122,14 @@ describe('ExperienceService', () => {
         json: async () => mockCreateResponse,
       } as Response);
 
-      const request = { refuge_id: 'refuge-1', comment: 'Great experience!' };
+      const request = { refuge_id: 'refuge-1', comment: 'Great experience!', condition: 2 };
       const result = await ExperienceService.createExperience(request);
 
       expect(result).toEqual(mockCreateResponse);
       // Flux nou: JSON (els fitxers es pugen després amb upload-intents)
       expect(mockedApiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/',
-        { refuge_id: 'refuge-1', comment: 'Great experience!' }
+        { refuge_id: 'refuge-1', comment: 'Great experience!', condition: 2 }
       );
     });
 
@@ -141,7 +141,7 @@ describe('ExperienceService', () => {
       } as Response);
 
       const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
-      const request = { refuge_id: 'refuge-1', comment: 'Great!', files: [mockFile] };
+      const request = { refuge_id: 'refuge-1', comment: 'Great!', condition: 1, files: [mockFile] };
       
       await ExperienceService.createExperience(request);
 
@@ -155,7 +155,7 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'Dades invàlides' }),
       } as Response);
 
-      await expect(ExperienceService.createExperience({ refuge_id: '', comment: '' }))
+      await expect(ExperienceService.createExperience({ refuge_id: '', comment: '', condition: 0 }))
         .rejects.toThrow('Dades invàlides');
     });
 
@@ -166,7 +166,7 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'No autenticat' }),
       } as Response);
 
-      await expect(ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test' }))
+      await expect(ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test', condition: 3 }))
         .rejects.toThrow('No autenticat');
     });
 
@@ -177,8 +177,42 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'Refugi no trobat' }),
       } as Response);
 
-      await expect(ExperienceService.createExperience({ refuge_id: 'invalid', comment: 'Test' }))
+      await expect(ExperienceService.createExperience({ refuge_id: 'invalid', comment: 'Test', condition: 3 }))
         .rejects.toThrow('Refugi no trobat');
+    });
+
+    it('should reject creation without a valid condition (0-3) before calling the API', async () => {
+      await expect(
+        ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test' } as any)
+      ).rejects.toThrow('condition');
+      await expect(
+        ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test', condition: 4 })
+      ).rejects.toThrow('condition');
+      expect(mockedApiPost).not.toHaveBeenCalled();
+    });
+
+    it('should send condition 0 (falsy but valid) in the body', async () => {
+      mockedApiPost.mockResolvedValue({ ok: true, status: 201, json: async () => mockCreateResponse } as Response);
+
+      await ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test', condition: 0 });
+
+      expect(mockedApiPost).toHaveBeenCalledWith(expect.any(String), {
+        refuge_id: 'refuge-1',
+        comment: 'Test',
+        condition: 0,
+      });
+    });
+
+    it.each(['user_blocked', 'age_not_confirmed'])('should throw ApiError with code %s on 403', async (code) => {
+      mockedApiPost.mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: async () => ({ error: 'Forbidden', code, message: 'Missatge del backend' }),
+      } as Response);
+
+      await expect(
+        ExperienceService.createExperience({ refuge_id: 'refuge-1', comment: 'Test', condition: 2 })
+      ).rejects.toMatchObject({ code, status: 403 });
     });
   });
 
@@ -190,12 +224,12 @@ describe('ExperienceService', () => {
         json: async () => mockUpdateResponse,
       } as Response);
 
-      const result = await ExperienceService.updateExperience('exp-1', { comment: 'Updated comment' });
+      const result = await ExperienceService.updateExperience('exp-1', { comment: 'Updated comment', condition: 2 });
 
       expect(result).toEqual(mockUpdateResponse);
       expect(mockedApiPatch).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/exp-1/',
-        { comment: 'Updated comment' }
+        { comment: 'Updated comment', condition: 2 }
       );
     });
 
@@ -208,7 +242,7 @@ describe('ExperienceService', () => {
 
       const mockFile = { uri: 'file://test.webp', contentType: 'image/webp', size: 4, mediaType: 'image' as const };
       
-      await ExperienceService.updateExperience('exp-1', { files: [mockFile] });
+      await ExperienceService.updateExperience('exp-1', { condition: 0, files: [mockFile] });
 
       expect(mockedApiPatch).toHaveBeenCalled();
     });
@@ -220,7 +254,7 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'Dades invàlides' }),
       } as Response);
 
-      await expect(ExperienceService.updateExperience('exp-1', {}))
+      await expect(ExperienceService.updateExperience('exp-1', { condition: 1 }))
         .rejects.toThrow('Dades invàlides');
     });
 
@@ -231,7 +265,7 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'No autenticat' }),
       } as Response);
 
-      await expect(ExperienceService.updateExperience('exp-1', { comment: 'Test' }))
+      await expect(ExperienceService.updateExperience('exp-1', { comment: 'Test', condition: 1 }))
         .rejects.toThrow('No autenticat');
     });
 
@@ -242,7 +276,7 @@ describe('ExperienceService', () => {
         json: async () => ({}),
       } as Response);
 
-      await expect(ExperienceService.updateExperience('exp-1', { comment: 'Test' }))
+      await expect(ExperienceService.updateExperience('exp-1', { comment: 'Test', condition: 1 }))
         .rejects.toThrow('No tens permisos per editar aquesta experiència');
     });
 
@@ -253,8 +287,33 @@ describe('ExperienceService', () => {
         json: async () => ({ error: 'Experiència no trobada' }),
       } as Response);
 
-      await expect(ExperienceService.updateExperience('invalid', { comment: 'Test' }))
+      await expect(ExperienceService.updateExperience('invalid', { comment: 'Test', condition: 1 }))
         .rejects.toThrow('Experiència no trobada');
+    });
+
+    it.each(['user_blocked', 'age_not_confirmed'])('should throw ApiError with code %s on 403', async (code) => {
+      mockedApiPatch.mockResolvedValue({
+        ok: false,
+        status: 403,
+        json: async () => ({ error: 'Forbidden', code }),
+      } as Response);
+
+      await expect(
+        ExperienceService.updateExperience('exp-1', { comment: 'Test', condition: 1 })
+      ).rejects.toMatchObject({ code, status: 403 });
+    });
+
+    it('should always send condition on edit, even without a comment', async () => {
+      mockedApiPatch.mockResolvedValue({ ok: true, status: 200, json: async () => mockUpdateResponse } as Response);
+
+      await ExperienceService.updateExperience('exp-1', { condition: 0 });
+
+      expect(mockedApiPatch).toHaveBeenCalledWith(expect.any(String), { condition: 0 });
+    });
+
+    it('should reject an edit without a valid condition before calling the API', async () => {
+      await expect(ExperienceService.updateExperience('exp-1', { comment: 'x' } as any)).rejects.toThrow('condition');
+      expect(mockedApiPatch).not.toHaveBeenCalled();
     });
   });
 

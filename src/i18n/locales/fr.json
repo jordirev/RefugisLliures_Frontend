@@ -744,6 +744,10 @@
     "addFirst": "Partagez votre expérience!",
     "noExperiences": "Il n'y a pas encore d'expériences.\nSoyez le premier à partager la vôtre !",
     "placeholder": "Partagez votre expérience...",
+    "condition": {
+      "label": "État du refuge",
+      "required": "Vous devez indiquer l'état du refuge"
+    },
     "newPhotos": "Nouvelles photos",
     "addPhotos": "Ajouter des photos",
     "deletePhotoInfo": "Pour supprimer une photo, appuyez dessus dans le carrousel et supprimez-la depuis le visualiseur",

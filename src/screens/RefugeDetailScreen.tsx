@@ -32,6 +32,7 @@ import { Location, ImageMetadata } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
 import { useExperiences, useDeleteExperience, useUpdateExperience } from '../hooks/useExperiencesQuery';
@@ -73,7 +74,7 @@ import ExperienceIcon from '../assets/icons/message-circle.svg';
 const ExperiencePreviewItem: React.FC<{ 
   experience: any;
   onPhotoPress: (photos: any[], index: number) => void;
-  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
+  onEdit?: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[], newCondition: number) => void;
   onDelete?: () => void;
   onPickMedia?: () => Promise<PreparedMediaFile[] | null>;
 }> = ({ experience, onPhotoPress, onEdit, onDelete, onPickMedia }) => {
@@ -566,12 +567,12 @@ export function RefugeDetailScreen({
     // React Query will handle cache invalidation
   };
 
-  const handleExperienceEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => {
+  const handleExperienceEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[], newCondition: number) => {
     updateExperienceMutation.mutate(
       { 
         experienceId, 
         refugeId: refugeId || '', 
-        request: { comment: newComment, files: newFiles } 
+        request: { comment: newComment, condition: newCondition, files: newFiles } 
       },
       {
         onSuccess: (data) => {
@@ -582,10 +583,9 @@ export function RefugeDetailScreen({
           }
         },
         onError: (error: any) => {
-          showAlert(
-            t('common.error'), 
-            error.message || t('experiences.errors.updateExperienceError') || 'Error al actualitzar l\'experiència'
-          );
+          // user_blocked / age_not_confirmed: missatge específic
+          const { title, message } = getContentErrorMessage(error, t, 'experiences.errors.updateExperienceError');
+          showAlert(title, message);
         },
       }
     );

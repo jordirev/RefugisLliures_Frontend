@@ -28,8 +28,8 @@ interface Experience {
 | Mètode del servei | Endpoint | Cos | Resposta |
 |---|---|---|---|
 | `getExperiencesByRefuge(refugeId)` | `GET /api/experiences/?refuge_id={id}` | — | `{ experiences: ExperienceDTO[] }` |
-| `createExperience({refuge_id, comment})` | `POST /api/experiences/` | JSON `{refuge_id, comment}` (els `files` del request **no** s'envien) | `{ experience, message? }` |
-| `updateExperience(id, {comment?})` | `PATCH /api/experiences/{id}/` | JSON `{comment}` | `{ experience?, message? }` |
+| `createExperience({refuge_id, comment, condition})` | `POST /api/experiences/` | JSON `{refuge_id, comment, condition}` (`condition` 0-3 obligatori; 403 `user_blocked`/`age_not_confirmed` → `ApiError`) (els `files` del request **no** s'envien) | `{ experience, message? }` |
+| `updateExperience(id, {comment?, condition})` | `PATCH /api/experiences/{id}/` | JSON `{comment, condition}` (403 `user_blocked`/`age_not_confirmed` → `ApiError`) | `{ experience?, message? }` |
 | `deleteExperience(id)` | `DELETE /api/experiences/{id}/` | — | `{ success, message }` |
 
 - Els fitxers (`PreparedMediaFile[]`, de `useMediaUpload().pickMedia`) els puja el **hook** després de crear l'experiència: `MediaUploadService.uploadFiles({target:'experience', refugeId, experienceId, files})` (intents → PUT R2 → confirm). El hook retorna `uploaded_files` (claus), `failed_files` (`[{upload_id, reason}]`) i `uploadError` (error global de pujada; l'experiència ja existeix).
@@ -52,8 +52,8 @@ Clau de llista: `queryKeys.refugeExperiences(refugeId)` = `['experiences', 'refu
 | Hook | Ús | Efecte a la cache en `onSuccess` |
 |---|---|---|
 | `useExperiences(refugeId)` | `const { data, isLoading, error } = useExperiences(id)` | — |
-| `useCreateExperience()` | `mutateAsync({ refuge_id, comment, files })` | crea (JSON) i puja els fitxers; afegeix la nova al principi de la llista (amb els `MediaItem` pujats); si hi ha fitxers `invalidateMediaQueries` (refugi, refugeMedia, experiències, llista, usuari); si no, `['users','detail']` |
-| `useUpdateExperience()` | `mutateAsync({ experienceId, refugeId, request: { comment, files } })` | PATCH només si hi ha comentari (o no hi ha fitxers); puja els fitxers amb `target=experience`; substitueix l'experiència si la resposta la porta; si hi ha fitxers `invalidateMediaQueries` |
+| `useCreateExperience()` | `mutateAsync({ refuge_id, comment, condition, files })` | crea (JSON) i puja els fitxers; afegeix la nova al principi de la llista (amb els `MediaItem` pujats); si hi ha fitxers `invalidateMediaQueries` (refugi, refugeMedia, experiències, llista, usuari); si no, `['users','detail']` |
+| `useUpdateExperience()` | `mutateAsync({ experienceId, refugeId, request: { comment, condition, files } })` | PATCH sempre; puja els fitxers amb `target=experience`; substitueix l'experiència si la resposta la porta; si hi ha fitxers `invalidateMediaQueries` |
 | `useDeleteExperience()` | `mutateAsync({ experienceId, refugeId })` | la treu de la llista; invalida refugi, media, llista de refugis i usuari |
 
 No són optimistic updates: escriuen a la cache després de la resposta.

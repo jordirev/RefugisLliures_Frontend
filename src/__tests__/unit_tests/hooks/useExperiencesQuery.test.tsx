@@ -163,6 +163,7 @@ describe('useExperiencesQuery Hooks', () => {
       await act(async () => {
         await result.current.mutateAsync({
           refuge_id: 'refuge-1',
+          condition: 2,
           title: 'Nova experiència',
           description: 'Descripció',
           rating: 4,
@@ -200,6 +201,7 @@ describe('useExperiencesQuery Hooks', () => {
       await act(async () => {
         await createResult.current.mutateAsync({
           refuge_id: 'refuge-1',
+          condition: 2,
           title: 'Nova experiència',
           description: 'Descripció',
           rating: 4,
@@ -225,6 +227,7 @@ describe('useExperiencesQuery Hooks', () => {
         try {
           await result.current.mutateAsync({
             refuge_id: 'refuge-1',
+            condition: 2,
             title: 'Nova experiència',
             description: 'Descripció',
             rating: 4,
@@ -270,6 +273,7 @@ describe('useExperiencesQuery Hooks', () => {
       await act(async () => {
         data = await result.current.mutateAsync({
           refuge_id: 'refuge-1',
+          condition: 2,
           comment: 'Experiència amb fotos',
           files,
         });
@@ -279,6 +283,7 @@ describe('useExperiencesQuery Hooks', () => {
       expect(ExperienceService.createExperience).toHaveBeenCalledWith({
         refuge_id: 'refuge-1',
         comment: 'Experiència amb fotos',
+        condition: 2,
       });
       // 2) pujada amb target=experience i l'id de l'experiència creada
       expect(MediaUploadService.uploadFiles).toHaveBeenCalledWith({
@@ -308,6 +313,7 @@ describe('useExperiencesQuery Hooks', () => {
       await act(async () => {
         data = await result.current.mutateAsync({
           refuge_id: 'refuge-1',
+          condition: 2,
           comment: 'x',
           files: [{ uri: 'file://a.webp', contentType: 'image/webp', size: 1, mediaType: 'image' as const }],
         });
@@ -345,12 +351,13 @@ describe('useExperiencesQuery Hooks', () => {
         await result.current.mutateAsync({
           experienceId: 'experience-1',
           refugeId: 'refuge-1',
-          request: { comment: 'Comentari actualitzat' },
+          request: { comment: 'Comentari actualitzat', condition: 2 },
         });
       });
 
       expect(ExperienceService.updateExperience).toHaveBeenCalledWith('experience-1', {
         comment: 'Comentari actualitzat',
+        condition: 2,
       });
     });
 
@@ -369,7 +376,7 @@ describe('useExperiencesQuery Hooks', () => {
           await result.current.mutateAsync({
             experienceId: 'experience-1',
             refugeId: 'refuge-1',
-            request: { comment: 'Comentari actualitzat' },
+            request: { comment: 'Comentari actualitzat', condition: 2 },
           });
         } catch (error) {
           thrownError = error as Error;

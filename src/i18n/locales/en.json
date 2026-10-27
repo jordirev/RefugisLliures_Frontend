@@ -731,6 +731,10 @@
     "addFirst": "Share your experience!",
     "noExperiences": "No experiences shared yet. \nBe the first to share yours!",
     "placeholder": "Share your experience...",
+    "condition": {
+      "label": "Refuge condition",
+      "required": "You must select the refuge condition"
+    },
     "newPhotos": "New photos",
     "addPhotos": "Add photos",
     "deletePhotoInfo": "To delete a photo, tap it in the carousel and delete it from the viewer",

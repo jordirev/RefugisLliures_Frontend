@@ -221,6 +221,7 @@ export interface Experience {
   creator_uid: string;
   modified_at: string; // ISO date string
   comment: string;
+  condition?: number; // Estat del refugi segons l'usuari (0-3)
   images_metadata?: ImageMetadata[]; // 
 }
 

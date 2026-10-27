@@ -126,12 +126,13 @@ describe('ExperienceService', () => {
       const result = await ExperienceService.createExperience({
         refuge_id: 'refuge-123',
         comment: 'Nova experiència',
+        condition: 2,
       });
 
       // Flux nou: JSON sense fitxers (els fitxers van per upload-intents)
       expect(apiPost).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/',
-        { refuge_id: 'refuge-123', comment: 'Nova experiència' }
+        { refuge_id: 'refuge-123', comment: 'Nova experiència', condition: 2 }
       );
       expect(result).toEqual(mockResponse);
     });
@@ -145,11 +146,12 @@ describe('ExperienceService', () => {
       await ExperienceService.createExperience({
         refuge_id: 'refuge-123',
         comment: 'Amb fotos',
+        condition: 3,
         files: [{ uri: 'file://a.webp', contentType: 'image/webp', size: 10, mediaType: 'image' }],
       });
 
       const body = (apiPost as jest.Mock).mock.calls[0][1];
-      expect(body).toEqual({ refuge_id: 'refuge-123', comment: 'Amb fotos' });
+      expect(body).toEqual({ refuge_id: 'refuge-123', comment: 'Amb fotos', condition: 3 });
     });
 
     it('hauria de llançar error per dades invàlides', async () => {
@@ -160,23 +162,23 @@ describe('ExperienceService', () => {
       });
 
       await expect(
-        ExperienceService.createExperience({ refuge_id: 'refuge-123', comment: '' })
+        ExperienceService.createExperience({ refuge_id: 'refuge-123', comment: '', condition: 1 })
       ).rejects.toThrow('Comentari requerit');
     });
   });
 
   describe('updateExperience', () => {
-    it('hauria de fer PATCH JSON només amb el comentari', async () => {
+    it('hauria de fer PATCH JSON amb el comentari i la condition', async () => {
       (apiPatch as jest.Mock).mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue({ experience: { id: 'exp-1', comment: 'Nou' } }),
       });
 
-      await ExperienceService.updateExperience('exp-1', { comment: 'Nou' });
+      await ExperienceService.updateExperience('exp-1', { comment: 'Nou', condition: 1 });
 
       expect(apiPatch).toHaveBeenCalledWith(
         'https://refugislliures-backend.onrender.com/api/experiences/exp-1/',
-        { comment: 'Nou' }
+        { comment: 'Nou', condition: 1 }
       );
     });
 
@@ -187,7 +189,7 @@ describe('ExperienceService', () => {
         json: jest.fn().mockResolvedValue({ error: 'not_owner' }),
       });
 
-      await expect(ExperienceService.updateExperience('exp-1', { comment: 'x' })).rejects.toThrow(
+      await expect(ExperienceService.updateExperience('exp-1', { comment: 'x', condition: 1 })).rejects.toThrow(
         'No tens permisos per editar aquesta experiència'
       );
     });

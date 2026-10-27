@@ -745,6 +745,10 @@
     "addFirst": "Comparteix la teva experiència!",
     "noExperiences": "Encara no hi ha experiències compartides. \nSigues el primer en compartir la teva!",
     "placeholder": "Comparteix la teva experiència...",
+    "condition": {
+      "label": "Estat del refugi",
+      "required": "Cal indicar l'estat del refugi"
+    },
     "newPhotos": "Noves fotos",
     "addPhotos": "Afegir fotos",
     "deletePhotoInfo": "Per eliminar una foto, toca-la al carrusel i elimina-la des del visor",
