@@ -893,6 +893,7 @@
       "ageNotConfirmed": "Debes confirmar tu edad antes de subir fotos o vídeos",
       "userBlocked": "Tu cuenta está bloqueada por incumplir las normas y no puede publicar contenido",
       "notOwner": "Solo el creador de la experiencia puede añadirle fotos",
+      "tooManyPendingUploads": "Tienes demasiadas subidas en curso. Espera a que terminen e inténtalo de nuevo",
       "notFound": "El refugio o la experiencia ya no existe",
       "uploadFailed": "No se han podido subir los archivos. Vuelve a intentarlo",
       "notAllowedTitle": "Acción no permitida",

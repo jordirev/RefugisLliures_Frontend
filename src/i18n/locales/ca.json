@@ -897,6 +897,7 @@
       "ageNotConfirmed": "Has de confirmar la teva edat abans de pujar fotos o vídeos",
       "userBlocked": "El teu compte està bloquejat per incompliment de les normes i no pot publicar contingut",
       "notOwner": "Només el creador de l'experiència hi pot afegir fotos",
+      "tooManyPendingUploads": "Tens massa pujades en curs. Espera que acabin i torna-ho a provar",
       "notFound": "El refugi o l'experiència ja no existeix",
       "uploadFailed": "No s'han pogut pujar els fitxers. Torna-ho a provar",
       "notAllowedTitle": "Acció no permesa",

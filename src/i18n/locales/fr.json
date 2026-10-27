@@ -896,6 +896,7 @@
       "ageNotConfirmed": "Vous devez confirmer votre âge avant d'envoyer des photos ou des vidéos",
       "userBlocked": "Votre compte est bloqué pour non-respect des règles et ne peut pas publier de contenu",
       "notOwner": "Seul le créateur de l'expérience peut y ajouter des photos",
+      "tooManyPendingUploads": "Vous avez trop d'envois en cours. Attendez qu'ils se terminent et réessayez",
       "notFound": "Le refuge ou l'expérience n'existe plus",
       "uploadFailed": "Les fichiers n'ont pas pu être envoyés. Réessayez",
       "notAllowedTitle": "Action non autorisée",

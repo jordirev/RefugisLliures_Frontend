@@ -883,6 +883,7 @@
       "ageNotConfirmed": "You must confirm your age before uploading photos or videos",
       "userBlocked": "Your account is blocked for breaching the rules and cannot publish content",
       "notOwner": "Only the creator of the experience can add photos to it",
+      "tooManyPendingUploads": "You have too many uploads in progress. Wait for them to finish and try again",
       "notFound": "The refuge or experience no longer exists",
       "uploadFailed": "The files could not be uploaded. Please try again",
       "notAllowedTitle": "Action not allowed",

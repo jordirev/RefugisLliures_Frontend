@@ -193,6 +193,21 @@ describe('useMediaUpload', () => {
     expect(showAlert).toHaveBeenCalledWith('media.errors.notAllowedTitle', key);
   });
 
+  it('429 too_many_pending_uploads: alerta clara i cap reintent automàtic', async () => {
+    MediaUploadService.confirmRightsForSession();
+    uploadSpy.mockRejectedValueOnce(new MediaUploadError('Massa pujades', 'too_many_pending_uploads', 429));
+    const { result } = await renderUpload();
+
+    let value: any;
+    await act(async () => {
+      value = await result.current.pickAndUpload({ target: 'refuge', refugeId: 'r1' });
+    });
+
+    expect(value).toBeNull();
+    expect(showAlert).toHaveBeenCalledWith('common.error', 'media.errors.tooManyPendingUploads');
+    expect(uploadSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('mostra els motius de les fallades parcials del confirm', async () => {
     MediaUploadService.confirmRightsForSession();
     uploadSpy.mockResolvedValueOnce({

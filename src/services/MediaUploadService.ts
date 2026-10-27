@@ -67,6 +67,9 @@ export const IMAGE_WEBP_QUALITY = 0.8;
 /** Codis d'error de l'intent (403) definits al contracte */
 export const UPLOAD_INTENT_ERROR_CODES = ['age_not_confirmed', 'user_blocked', 'not_owner'] as const;
 
+/** Codi del 429 de l'intent: massa pujades pendents (quota de 40 intents per usuari) */
+export const TOO_MANY_PENDING_UPLOADS_CODE = 'too_many_pending_uploads';
+
 /** Motius de fallada del confirm definits al contracte */
 export const CONFIRM_FAILURE_REASONS = [
   'missing_object',
@@ -161,7 +164,8 @@ export interface UploadFilesParams {
 /**
  * Error de pujada amb codi estable per a la UI.
  * Codis: invalid_type | too_large | too_long | compression_failed | age_not_confirmed |
- * user_blocked | not_owner | not_found | validation | too_many_files | put_failed | unknown
+ * user_blocked | not_owner | too_many_pending_uploads | not_found | validation | too_many_files |
+ * put_failed | unknown
  */
 export class MediaUploadError extends ApiError {
   constructor(message: string, code: string, status = 0, details?: unknown) {
@@ -387,7 +391,8 @@ export class MediaUploadService {
 
   /**
    * POST /api/media/upload-intents/
-   * @throws MediaUploadError amb codi age_not_confirmed | user_blocked | not_owner | not_found | validation
+   * @throws MediaUploadError amb codi age_not_confirmed | user_blocked | not_owner | too_many_pending_uploads (429, no es reintenta) |
+   *   not_found | validation
    */
   static async createUploadIntents(body: UploadIntentRequestDTO): Promise<UploadIntentDTO[]> {
     if (!body.files.length) {
@@ -528,6 +533,11 @@ export class MediaUploadService {
     const message = (data && (data.message || data.error || data.detail)) || `Error ${status}`;
     if (status === 403) {
       const code = extractApiErrorCode(data, UPLOAD_INTENT_ERROR_CODES) || 'forbidden';
+      return new MediaUploadError(String(message), code, status, data);
+    }
+    if (status === 429) {
+      // Quota de pujades pendents: codi coherent encara que el cos no en porti
+      const code = extractApiErrorCode(data, [TOO_MANY_PENDING_UPLOADS_CODE]) || TOO_MANY_PENDING_UPLOADS_CODE;
       return new MediaUploadError(String(message), code, status, data);
     }
     if (status === 404) return new MediaUploadError(String(message), 'not_found', status, data);
