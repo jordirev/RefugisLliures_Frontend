@@ -256,6 +256,7 @@
       "occupiedInSummer": "Occupied summer by shepherd",
       "unknown": "Unknown"
     },
+    "commentRequired": "You must write a comment to publish the experience",
     "condition": {
       "label": "State:",
       "excellent": "Excellent",

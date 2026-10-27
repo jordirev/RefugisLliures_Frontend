@@ -269,6 +269,7 @@
       "occupiedInSummer": "Occupé été par berger",
       "unknown": "Inconnu"
     },
+    "commentRequired": "Vous devez écrire un commentaire pour publier l'expérience",
     "condition": {
       "label": "État:",
       "excellent": "Excellent",

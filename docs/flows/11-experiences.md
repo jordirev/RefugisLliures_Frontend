@@ -50,6 +50,7 @@ sequenceDiagram
 - ~~MIME forçat i `MediaTypeOptions.All`~~ **Resolt**: la selecció passa per `useMediaUpload.pickMedia` (MIME real, WebP després de comprimir).
 - Si el PATCH no retorna `experience`, no se substitueix a la cache (però amb fitxers sí que s'invalida); el PATCH es fa sempre (porta `condition`, que l'app envia sempre) **[FET]**.
 - `condition` (0-3, estat del refugi) és **obligatori en crear**: `ExperiencesScreen` mostra `ExperienceConditionPicker` i desactiva l'enviament fins triar-ne un; en editar, `UserExperience` el precarrega i no deixa confirmar si l'experiència antiga no en té. El servei valida l'enter 0-3 abans de la petició **[FET]**.
+- En crear, el `comment` no pot ser buit (el backend respon 400): l'enviament queda desactivat sense comentari, també si hi ha fotos, amb l'avís `experiences.commentRequired` **[FET]**.
 - 403 `user_blocked` / `age_not_confirmed` al POST/PATCH: `ApiError` amb `code` i alerta via `getContentErrorMessage` (igual que visites, reformes i dubtes) **[FET]**.
 - `UserExperience.formatDate` només entén ISO/`yyyy-mm-dd` i si no mostra 'Sense data' (63-90); el DTO diu `DD/MM/YYYY` (`src/services/dto/ExperienceDTO.ts:11`) **[FET]**; format real del backend: **[NO VERIFICAT des del frontend]**.
 - `refuge_id` sense codificar a la query (`ExperienceService.ts:49`) **[FET]**.

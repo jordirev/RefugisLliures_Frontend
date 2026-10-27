@@ -1306,6 +1306,33 @@ describe('ExperiencesScreen', () => {
       expect(mockMutate).not.toHaveBeenCalled();
     });
 
+    it('no hauria de permetre enviar només amb fotos (comentari obligatori)', async () => {
+      const prepared = [{ uri: 'file:///photo1.webp', contentType: 'image/webp', size: 100, mediaType: 'image' }];
+      mockPickMedia.mockResolvedValue(prepared);
+      const mockMutate = setup();
+      const { getByTestId, queryByTestId, getByPlaceholderText } = await render(
+        <ExperiencesScreen refugeId="refuge-1" refugeName="Refugi de Prova" />
+      );
+
+      await fireEvent.press(getByTestId('experience-condition-2'));
+      await act(async () => {
+        await fireEvent.press(getByTestId('add-photo-button'));
+      });
+
+      await waitFor(() => expect(getByTestId('experience-comment-required')).toBeTruthy());
+      await fireEvent.press(getByTestId('send-experience-button'));
+      expect(mockMutate).not.toHaveBeenCalled();
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), '   ');
+      await fireEvent.press(getByTestId('send-experience-button'));
+      expect(mockMutate).not.toHaveBeenCalled();
+
+      await fireEvent.changeText(getByPlaceholderText('experiences.placeholder'), 'Ara sí');
+      expect(queryByTestId('experience-comment-required')).toBeNull();
+      await fireEvent.press(getByTestId('send-experience-button'));
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
+
     it.each([0, 1, 2, 3])('hauria d\'enviar la condition %s escollida', async (value) => {
       const mockMutate = setup();
       const { getByPlaceholderText, getByTestId } = await render(

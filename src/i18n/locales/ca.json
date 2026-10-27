@@ -270,6 +270,7 @@
       "occupiedInSummer": "Ocupat estiu per pastor",
       "unknown": "Desconegut"
     },
+    "commentRequired": "Cal escriure un comentari per publicar l'experiència",
     "condition": {
       "label": "Estat:",
       "excellent": "Excel·lent",

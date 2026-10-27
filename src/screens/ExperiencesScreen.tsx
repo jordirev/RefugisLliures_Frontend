@@ -180,7 +180,8 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   };
 
   const handleSend = () => {
-    if (!comment.trim() && selectedFiles.length === 0) return;
+    // El comentari no pot ser buit en crear (el backend respon 400 si és en blanc)
+    if (!comment.trim()) return;
     // La valoració de l'estat (condition 0-3) és obligatòria en crear
     if (condition === undefined) return;
 
@@ -393,10 +394,17 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
 
         <ExperienceConditionPicker value={condition} onChange={setCondition} disabled={createExperienceMutation.isPending} />
 
+        {!comment.trim() && selectedFiles.length > 0 && (
+          <Text style={styles.commentRequiredHint} testID="experience-comment-required">
+            {t('experiences.commentRequired')}
+          </Text>
+        )}
+
         <View style={styles.inputRow}>
           <View style={styles.inputFieldContainer}>
             <TouchableOpacity
               style={styles.addPhotoButton}
+              testID="add-photo-button"
               onPress={handleAddPhotos}
               disabled={isPreparing}
             >
@@ -428,12 +436,12 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           <TouchableOpacity
             style={[
               styles.sendButton,
-              ((!comment.trim() && selectedFiles.length === 0) || condition === undefined) && styles.sendButtonDisabled
+              (!comment.trim() || condition === undefined) && styles.sendButtonDisabled
             ]}
             testID="send-experience-button"
             onPress={handleSend}
             disabled={
-              (!comment.trim() && selectedFiles.length === 0) || 
+              !comment.trim() || 
               condition === undefined ||
               createExperienceMutation.isPending
             }
@@ -483,6 +491,11 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
 }
 
 const styles = StyleSheet.create({
+  commentRequiredHint: {
+    fontSize: 12,
+    color: '#DC2626',
+    marginBottom: 6,
+  },
   root: {
     flex: 1,
     backgroundColor: '#FFFFFF',

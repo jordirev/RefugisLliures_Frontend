@@ -266,6 +266,7 @@
       "occupiedInSummer": "Ocupado verano por pastor",
       "unknown": "Desconocido"
     },
+    "commentRequired": "Debes escribir un comentario para publicar la experiencia",
     "condition": {
       "label": "Estado:",
       "excellent": "Excelente",
