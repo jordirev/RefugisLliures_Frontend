@@ -30,7 +30,7 @@ Fotos, vídeos i avatar **ja no** es pugen en multipart: es fa amb URL PUT prefi
 ## Correspondència amb el backend (verificada pels fluxos)
 | Domini | Endpoints usats | Notes |
 |---|---|---|
-| Usuaris | `POST /users/` (+ `birth_date`), `GET/PATCH/DELETE /users/{uid}/` (el `DELETE` esborra dades **i** el compte de Firebase; 204 = ok, 500 `{error, error_id}` = res esborrat, reintentable; `deleteUser` retorna `false` i `AuthService.deleteAccount` llança `delete_failed`), `DELETE /users/{uid}/avatar/`, `PATCH /users/{uid}/age-confirmation/`, `GET /users/{uid}/moderation-notices/`, `.../favorite-refuges/`, `.../visited-refuges/` | `POST /users/` envia `email` de més; idioma en majúscules des de Settings |
+| Usuaris | `POST /users/` (+ `birth_date`), `GET/PATCH/DELETE /users/{uid}/` (el `DELETE` esborra dades **i** el compte de Firebase; 204 = ok, 500 `{error, error_id}` = dades ja esborrades però compte Firebase viu o R2 caigut, idempotent: el client reintenta un cop i després mostra `delete_failed`; 401/403 → `delete_unauthorized`), `DELETE /users/{uid}/avatar/`, `PATCH /users/{uid}/age-confirmation/`, `GET /users/{uid}/moderation-notices/`, `.../favorite-refuges/`, `.../visited-refuges/` | `POST /users/` envia `email` de més; idioma en majúscules des de Settings |
 | Visites | `GET /refuges/{id}/visits/`, `GET /users/{uid}/visits/`, `POST/PATCH/DELETE /refuges/{id}/visits/{date}/` | coincideix; `num_visitors` ≤ 100 i data `YYYY-MM-DD` estricta (vegeu més avall) |
 | Renovations | `GET/POST /renovations/`, `GET/PATCH/DELETE /renovations/{id}/`, participants, `GET /refuges/{id}/renovations/` | `?id=` redundant a PATCH/DELETE; DELETE trencat des de la UI |
 | Refugis, fotos, propostes, experiències, dubtes | vegeu fluxos 07-11 | |
