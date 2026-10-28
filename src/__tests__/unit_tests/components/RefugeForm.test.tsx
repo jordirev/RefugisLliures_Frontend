@@ -328,7 +328,7 @@ describe('RefugeForm Component', () => {
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
 
-    it('hauria de acceptar link amb www.', async () => {
+    it('hauria de rebutjar link amb www. (el backend exigeix http/https)', async () => {
       const { getByPlaceholderText, getByText } = await render(<RefugeForm {...defaultProps} />);
 
       await fireEvent.changeText(getByPlaceholderText('createRefuge.namePlaceholder'), 'Test');
@@ -339,7 +339,8 @@ describe('RefugeForm Component', () => {
       const submitButton = getByText('createRefuge.submit');
       await fireEvent.press(submitButton);
 
-      // El link www. és vàlid
+      expect(getByText('createRefuge.errors.linkInvalid')).toBeTruthy();
+      expect(mockOnSubmit).not.toHaveBeenCalled();
     });
   });
 

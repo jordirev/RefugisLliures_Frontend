@@ -361,7 +361,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
         newErrors.places = t('createRefuge.errors.placesInvalid');
       } else {
         const placesNum = parseInt(placesTrim, 10);
-        if (placesNum < 0) {
+        if (placesNum < 0 || placesNum > 2147483647) {
           newErrors.places = t('createRefuge.errors.placesInvalid');
         }
       }
@@ -392,12 +392,20 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
     // Validate links: ensure any provided link looks like a URL
     const currentLinks = links.filter((l) => l.trim() !== '');
     if (currentLinks.length > 0 && !newErrors.links) {
-      const urlRegex = /^(https?:\/\/|www\.)[^\s]+$/i;
+      const urlRegex = /^https?:\/\/[^\s]+$/i;
       for (let i = 0; i < currentLinks.length; i++) {
-        if (!urlRegex.test(currentLinks[i].trim())) {
-          newErrors.links = t('createRefuge.errors.linkInvalid') || 'Invalid link format';
+        const link = currentLinks[i].trim();
+        if (!urlRegex.test(link)) {
+          newErrors.links = t('createRefuge.errors.linkInvalid');
           break;
         }
+        if (link.length > 2048) {
+          newErrors.links = t('createRefuge.errors.linkTooLong');
+          break;
+        }
+      }
+      if (!newErrors.links && new Set(currentLinks.map((l) => l.trim())).size !== currentLinks.length) {
+        newErrors.links = t('createRefuge.errors.linkDuplicated');
       }
     }
 

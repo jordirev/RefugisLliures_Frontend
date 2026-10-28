@@ -35,6 +35,7 @@ export const POSSIBLE_DUPLICATES_CODE = 'possible_duplicates';
 
 /** Codis del 409 en aprovar: enllaç ja usat per un altre refugi / proposta ja revisada */
 export const LINK_ALREADY_USED_CODE = 'link_already_used';
+export const REFUGE_NOT_FOUND_CODE = 'refuge_not_found';
 export const ALREADY_REVIEWED_CODE = 'already_reviewed';
 
 /** Refugi proper amb nom semblant que el backend retorna al 409 `possible_duplicates` */
@@ -270,12 +271,12 @@ export class RefugeProposalsService {
         } else if (response.status === 404) {
           throw new Error('No s\'ha trobat la proposta especificada');
         } else if (response.status === 409) {
-          // Dos 409 diferents: proposta ja revisada («Proposal is already ...») o enllaç ja usat per un altre refugi
-          const text = typeof errorData.error === 'string' ? errorData.error : '';
-          if (/^Proposal is already/i.test(text) || !text) {
-            throw new ApiError('Aquesta proposta ja ha estat revisada anteriorment', ALREADY_REVIEWED_CODE, 409, errorData);
+          // 409 amb codi estable: link_already_used / refuge_not_found; sense codi = proposta ja revisada
+          const code = extractApiErrorCode(errorData, [LINK_ALREADY_USED_CODE, REFUGE_NOT_FOUND_CODE]);
+          if (code) {
+            throw new ApiError((errorData as any).message || errorData.error, code, 409, errorData);
           }
-          throw new ApiError(text, LINK_ALREADY_USED_CODE, 409, errorData);
+          throw new ApiError('Aquesta proposta ja ha estat revisada anteriorment', ALREADY_REVIEWED_CODE, 409, errorData);
         } else if (response.status === 500) {
           throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
         }

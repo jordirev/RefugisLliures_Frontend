@@ -640,7 +640,9 @@
       "placesInvalid": "Places must be a positive integer",
       "descriptionTooLong": "Description cannot exceed 3000 characters",
       "commentTooLong": "Comment cannot exceed 3000 characters",
-      "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
+      "linkInvalid": "Link must be a valid URL starting with http:// or https://",
+      "linkTooLong": "Each link can have at most 2048 characters",
+      "linkDuplicated": "There are duplicate links"
     }
   },
   "doubts": {
@@ -731,6 +733,7 @@
       "loadDetailError": "Could not load proposal details",
       "approveError": "Could not approve the proposal",
       "linkAlreadyUsed": "One of the links in the proposal already belongs to another refuge. The proposal stays pending: reject it or ask for it to be corrected",
+      "refugeNotFound": "The refuge of the proposal no longer exists. Reject the proposal",
       "rejectError": "Could not reject the proposal"
     }
   },

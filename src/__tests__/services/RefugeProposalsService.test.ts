@@ -750,7 +750,7 @@ describe('RefugeProposalsService', () => {
 });
 
 describe('createProposal / approveProposal: errors amb codi', () => {
-  const res = (status: number, body: any) => ({ ok: false, status, statusText: '', json: async () => body }) as any;
+  const res = (status: number, body: any): any => ({ ok: false, status, statusText: '', json: async () => body });
 
   it('409 possible_duplicates llança PossibleDuplicatesError amb la llista', async () => {
     mockedApiClient.apiPost.mockResolvedValueOnce(res(409, {
@@ -768,8 +768,10 @@ describe('createProposal / approveProposal: errors amb codi', () => {
   });
 
   it('approve 409 enllaç ja usat vs proposta ja revisada', async () => {
-    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'A link of the proposal already belongs to another refuge' }));
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'A link of the proposal already belongs to another refuge', code: 'link_already_used' }));
     await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'link_already_used' });
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'The refuge of the proposal no longer exists', code: 'refuge_not_found' }));
+    await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'refuge_not_found' });
     mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'Proposal is already approved' }));
     await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'already_reviewed' });
   });

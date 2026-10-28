@@ -654,7 +654,9 @@
       "placesInvalid": "Les places han de ser un enter positiu",
       "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
       "commentTooLong": "El comentari no pot superar els 3000 caràcters",
-      "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
+      "linkInvalid": "L'enllaç ha de ser una URL vàlida que comenci amb http:// o https://",
+      "linkTooLong": "Cada enllaç pot tenir com a màxim 2048 caràcters",
+      "linkDuplicated": "Hi ha enllaços repetits"
     }
   },
   "doubts": {
@@ -745,6 +747,7 @@
       "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
       "approveError": "No s'ha pogut aprovar la proposta",
       "linkAlreadyUsed": "Un dels enllaços de la proposta ja pertany a un altre refugi. La proposta continua pendent: rebutja-la o demana que es corregeixi",
+      "refugeNotFound": "El refugi de la proposta ja no existeix. Rebutja la proposta",
       "rejectError": "No s'ha pogut rebutjar la proposta"
     }
   },

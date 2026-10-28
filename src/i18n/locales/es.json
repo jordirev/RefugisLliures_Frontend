@@ -650,7 +650,9 @@
       "placesInvalid": "Las plazas deben ser un entero positivo",
       "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
       "commentTooLong": "El comentario no puede superar los 3000 caracteres",
-      "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
+      "linkInvalid": "El enlace debe ser una URL válida que comience con http:// o https://",
+      "linkTooLong": "Cada enlace puede tener como máximo 2048 caracteres",
+      "linkDuplicated": "Hay enlaces repetidos"
     }
   },
   "doubts": {
@@ -741,6 +743,7 @@
       "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
       "approveError": "No se pudo aprobar la propuesta",
       "linkAlreadyUsed": "Uno de los enlaces de la propuesta ya pertenece a otro refugio. La propuesta sigue pendiente: recházala o pide que se corrija",
+      "refugeNotFound": "El refugio de la propuesta ya no existe. Rechaza la propuesta",
       "rejectError": "No se pudo rechazar la propuesta"
     }
   },

@@ -101,6 +101,8 @@ export function ProposalDetailScreen() {
             t('common.error'),
             error?.code === 'link_already_used'
               ? t('proposals.errors.linkAlreadyUsed')
+              : error?.code === 'refuge_not_found'
+              ? t('proposals.errors.refugeNotFound')
               : error.message || t('proposals.errors.approveError')
           );
         },
