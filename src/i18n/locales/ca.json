@@ -1020,7 +1020,9 @@
       "statementPlaceholder": "Explica els motius de la decisió",
       "statementRequired": "Cal una motivació",
       "resolved": "Denúncia resolta",
-      "resolveError": "No s'ha pogut resoldre la denúncia"
+      "resolveError": "No s'ha pogut resoldre la denúncia",
+      "alreadyResolved": "Aquesta denúncia ja ha estat resolta",
+      "reportNotFound": "Aquesta denúncia ja no existeix"
     },
     "notices": {
       "title": "Avisos de moderació",
@@ -1028,6 +1030,8 @@
         "remove": "Contingut retirat",
         "remove_and_strike": "Contingut retirat amb avís",
         "hide": "Contingut ocult en revisió",
+        "auto_hide": "Contingut ocult automàticament",
+        "upload_blocked": "Pujada bloquejada",
         "block": "Compte bloquejat",
         "dismiss": "Denúncia desestimada",
         "other": "Avís"

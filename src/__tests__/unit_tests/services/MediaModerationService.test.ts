@@ -99,6 +99,23 @@ describe('MediaModerationService', () => {
       ).rejects.toMatchObject({ code: 'already_resolved', status: 409 });
     });
 
+    it('404 Report not found es mapeja a not_found', async () => {
+      (apiPatch as jest.Mock).mockResolvedValue(res(404, { error: 'Report not found' }));
+      await expect(
+        MediaModerationService.resolveMediaReport('rep-1', { action: 'dismiss', statement: 'x' })
+      ).rejects.toMatchObject({ code: 'not_found', status: 404 });
+    });
+
+    it('mapeja denúncies automàtiques/anonimitzades (refuge_id i autor nuls)', () => {
+      const report = mapMediaReportFromDTO({
+        id: '3f2b8c1e-0000-4000-8000-000000000001', refuge_id: null, media_key: 'k', reason: 'child_sexual_abuse',
+        status: 'pending', reporter_uid: 'system', media_creator_uid: null,
+      } as any);
+      expect(report.refuge_id).toBeNull();
+      expect(report.media_creator_uid).toBeNull();
+      expect(report.reporter_uid).toBe('system');
+    });
+
     it('rebutja resoldre sense motivació', async () => {
       await expect(
         MediaModerationService.resolveMediaReport('rep-1', { action: 'dismiss', statement: '' })

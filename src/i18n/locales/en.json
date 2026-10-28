@@ -1006,7 +1006,9 @@
       "statementPlaceholder": "Explain the reasons for the decision",
       "statementRequired": "A statement of reasons is required",
       "resolved": "Report resolved",
-      "resolveError": "The report could not be resolved"
+      "resolveError": "The report could not be resolved",
+      "alreadyResolved": "This report has already been resolved",
+      "reportNotFound": "This report no longer exists"
     },
     "notices": {
       "title": "Moderation notices",
@@ -1014,6 +1016,8 @@
         "remove": "Content removed",
         "remove_and_strike": "Content removed with a strike",
         "hide": "Content hidden pending review",
+        "auto_hide": "Content hidden automatically",
+        "upload_blocked": "Upload blocked",
         "block": "Account blocked",
         "dismiss": "Report dismissed",
         "other": "Notice"

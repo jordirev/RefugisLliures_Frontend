@@ -1019,7 +1019,9 @@
       "statementPlaceholder": "Expliquez les motifs de la décision",
       "statementRequired": "Une motivation est requise",
       "resolved": "Signalement résolu",
-      "resolveError": "Le signalement n'a pas pu être résolu"
+      "resolveError": "Le signalement n'a pas pu être résolu",
+      "alreadyResolved": "Ce signalement a déjà été résolu",
+      "reportNotFound": "Ce signalement n'existe plus"
     },
     "notices": {
       "title": "Avis de modération",
@@ -1027,6 +1029,8 @@
         "remove": "Contenu retiré",
         "remove_and_strike": "Contenu retiré avec avertissement",
         "hide": "Contenu masqué en cours de révision",
+        "auto_hide": "Contenu masqué automatiquement",
+        "upload_blocked": "Envoi bloqué",
         "block": "Compte bloqué",
         "dismiss": "Signalement rejeté",
         "other": "Avis"

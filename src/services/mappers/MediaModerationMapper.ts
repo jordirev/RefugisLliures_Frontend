@@ -8,7 +8,7 @@ import { mapImageMetadataFromDTO } from './RefugiMapper';
 export function mapMediaReportFromDTO(dto: MediaReportDTO): MediaReport {
   return {
     id: dto.id,
-    refuge_id: dto.refuge_id,
+    refuge_id: dto.refuge_id ?? null,
     media_key: dto.media_key,
     reason: dto.reason,
     details: dto.details ?? null,

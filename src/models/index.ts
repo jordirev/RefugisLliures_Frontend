@@ -133,7 +133,8 @@ export type MediaReportAction = 'dismiss' | 'remove' | 'remove_and_strike';
  */
 export interface MediaReport {
   id: string;
-  refuge_id: string;
+  /** null si el refugi s'ha esborrat o és una denúncia d'avatar/automàtica */
+  refuge_id: string | null;
   media_key: string;
   reason: MediaReportReason | string;
   details?: string | null;

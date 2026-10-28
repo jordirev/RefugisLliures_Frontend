@@ -1016,7 +1016,9 @@
       "statementPlaceholder": "Explica los motivos de la decisión",
       "statementRequired": "Se necesita una motivación",
       "resolved": "Denuncia resuelta",
-      "resolveError": "No se ha podido resolver la denuncia"
+      "resolveError": "No se ha podido resolver la denuncia",
+      "alreadyResolved": "Esta denuncia ya ha sido resuelta",
+      "reportNotFound": "Esta denuncia ya no existe"
     },
     "notices": {
       "title": "Avisos de moderación",
@@ -1024,6 +1026,8 @@
         "remove": "Contenido retirado",
         "remove_and_strike": "Contenido retirado con aviso",
         "hide": "Contenido oculto en revisión",
+        "auto_hide": "Contenido oculto automáticamente",
+        "upload_blocked": "Subida bloqueada",
         "block": "Cuenta bloqueada",
         "dismiss": "Denuncia desestimada",
         "other": "Aviso"

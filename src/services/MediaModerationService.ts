@@ -96,7 +96,7 @@ export class MediaModerationService {
       throw new ApiError(
         (data && (data.error || data.detail)) || 'No s\'ha pogut resoldre la denúncia',
         extractApiErrorCode(data, ['already_resolved']) ||
-          (response.status === 403 ? 'forbidden' : response.status === 400 ? 'validation' : 'unknown'),
+          (response.status === 404 ? 'not_found' : response.status === 403 ? 'forbidden' : response.status === 400 ? 'validation' : 'unknown'),
         response.status,
         data
       );

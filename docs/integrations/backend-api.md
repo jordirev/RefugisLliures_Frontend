@@ -60,6 +60,7 @@ Contracte compartit amb el backend (`Backend/.../docs/flows/03-refuge-media-uplo
 - `POST /media/reports/` → 201 `{id, refuge_id, media_key, reason, details, status, priority, created_at, media_hidden}`.
 - `GET /admin/media-reports/` (per defecte `pending`) → `{count, reports: [{..., media: MediaItem & {status} | null}]}`.
 - `PATCH /admin/media-reports/{id}/` → `statement` obligatori per a **totes** les accions (incl. `dismiss`, ≤2000) → `{report, resolved_report_ids, media_status, strikes, user_blocked}`; resol totes les denúncies pendents del mateix mitjà.
+- Denúncies: `id` és un UUID opac; a l'admin `reporter_uid` pot ser `'system'`/`'unknown'`, `media_creator_uid` i `refuge_id` poden ser `null`. Denunciar un mitjà retirat/retingut → 404 `Media not found`; `PATCH` d'una denúncia inexistent → 404 (`not_found`), ja resolta → 409 `already_resolved` (la pantalla d'admin refresca la llista). `media_status` de la resolució pot ser `visible|removed|held` (CSAM).
 - `GET /users/{uid}/moderation-notices/` → `{notices: [{id, uid, type, statement, created_at, refuge_id, media_key, reason, action, report_id, automated, strikes, redress}]}`.
 - `PATCH /users/{uid}/age-confirmation/` → 200 amb l'usuari serialitzat (`age_confirmed: true`). `POST /users/` sense `birth_date` → `age_confirmed = false` (AgeGate).
 - Els vídeos conserven el contenidor (clau final `.mp4/.mov/.webm`); `thumb_url` és un pòster WebP.
