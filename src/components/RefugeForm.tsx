@@ -18,6 +18,8 @@ import { BadgeSelector } from './BadgeSelector';
 import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
 import { CustomAlert } from './CustomAlert';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
+import type { PossibleDuplicate } from '../services/RefugeProposalsService';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { ProposalCommentInput } from './ProposalCommentInput';
 
@@ -29,10 +31,12 @@ interface RefugeFormProps {
   mode: 'create' | 'edit';
   initialData?: Location;
   onSubmit: (data: Location | Partial<Location>, comment?: string) => Promise<void>;
+  /** Obre el detall d'un refugi existent (per revisar els possibles duplicats) */
+  onViewRefuge?: (refugeId: string) => void;
   onCancel: () => void;
 }
 
-export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeFormProps) {
+export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge }: RefugeFormProps) {
   const { t } = useTranslation();
   const { alertVisible, alertConfig, showAlert, hideAlert } = useCustomAlert();
 
@@ -513,6 +517,30 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         },
       ]);
     } catch (error: any) {
+      // 409 possible_duplicates: avís amb els refugis propers; el formulari es conserva per corregir-lo o cancel·lar-lo
+      if (error?.code === 'possible_duplicates' && Array.isArray(error.duplicates)) {
+        const list = (error.duplicates as PossibleDuplicate[])
+          .map((d) => `• ${t('createRefuge.duplicates.item', { name: d.name, distance: Math.round(d.distance_m) })}`)
+          .join('\n');
+        const viewButtons = onViewRefuge
+          ? (error.duplicates as PossibleDuplicate[]).slice(0, 3).map((d) => ({
+              text: t('createRefuge.duplicates.view', { name: d.name }),
+              onPress: () => onViewRefuge(d.id),
+            }))
+          : [];
+        showAlert(
+          t('createRefuge.duplicates.title'),
+          `${t('createRefuge.duplicates.message')}\n\n${list}`,
+          [...viewButtons, { text: t('createRefuge.duplicates.fix'), style: 'cancel' as const }]
+        );
+        return;
+      }
+      // user_blocked / age_not_confirmed: missatge específic
+      if (error?.code === 'user_blocked' || error?.code === 'age_not_confirmed') {
+        const { title, message } = getContentErrorMessage(error, t, 'createRefuge.error.generic');
+        showAlert(title, message);
+        return;
+      }
       // Skip showing alert if error is about coordinates
       const errorMessage = error.message || '';
       const isCoordError = /Cannot read property '(long|lat|coord)' of undefined/i.test(errorMessage) ||

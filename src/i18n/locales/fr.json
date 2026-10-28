@@ -624,6 +624,13 @@
       "title": "Photos du refuge",
       "message": "Les photos pourront être téléchargées une fois la proposition de création acceptée par un administrateur"
     },
+    "duplicates": {
+      "title": "Refuge possiblement en double",
+      "message": "Il y a des refuges à moins de 500 m avec un nom similaire. Vérifiez qu'il ne s'agit pas du même avant d'en proposer un nouveau :",
+      "item": "{{name}} — {{distance}} m",
+      "view": "Voir {{name}}",
+      "fix": "Corriger la proposition"
+    },
     "success": {
       "title": "Proposition soumise",
       "message": "Votre proposition a été soumise avec succès et sera examinée par un administrateur"
@@ -736,6 +743,7 @@
       "loadError": "Impossible de charger les propositions",
       "loadDetailError": "Impossible de charger les détails de la proposition",
       "approveError": "Impossible d'approuver la proposition",
+      "linkAlreadyUsed": "Un des liens de la proposition appartient déjà à un autre refuge. La proposition reste en attente : rejetez-la ou demandez de la corriger",
       "rejectError": "Impossible de rejeter la proposition"
     }
   },

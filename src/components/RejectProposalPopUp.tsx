@@ -81,7 +81,7 @@ export function RejectProposalPopUp({
                 value={reason}
                 onChange={setReason}
                 minChars={50}
-                maxChars={3000}
+                maxChars={2000}
                 numberOfLines={6}
               />
             </View>

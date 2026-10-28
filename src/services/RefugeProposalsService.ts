@@ -11,6 +11,7 @@ import {
 import { mapRefugeProposalFromDTO, mapRefugeProposalsFromDTO } from './mappers/RefugeProposalMapper';
 import { mapPartialRefugiToDTO } from './mappers/RefugiMapper';
 import { apiGet, apiPost } from './apiClient';
+import { ApiError, CONTENT_WRITE_ERROR_CODES, extractApiErrorCode } from './apiErrors';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
 
@@ -29,6 +30,38 @@ interface ApiSuccessResponse {
   message: string;
 }
 
+/** Codi del 409 en proposar un refugi nou massa semblant a un d'existent */
+export const POSSIBLE_DUPLICATES_CODE = 'possible_duplicates';
+
+/** Codis del 409 en aprovar: enllaç ja usat per un altre refugi / proposta ja revisada */
+export const LINK_ALREADY_USED_CODE = 'link_already_used';
+export const ALREADY_REVIEWED_CODE = 'already_reviewed';
+
+/** Refugi proper amb nom semblant que el backend retorna al 409 `possible_duplicates` */
+export interface PossibleDuplicate {
+  id: string;
+  name: string;
+  distance_m: number;
+}
+
+/** Error 409 `possible_duplicates`: porta la llista de refugis semblants (per distància) */
+export class PossibleDuplicatesError extends ApiError {
+  duplicates: PossibleDuplicate[];
+
+  constructor(message: string, duplicates: PossibleDuplicate[], details?: unknown) {
+    super(message, POSSIBLE_DUPLICATES_CODE, 409, details);
+    this.name = 'PossibleDuplicatesError';
+    this.duplicates = duplicates;
+  }
+}
+
+function parsePossibleDuplicates(raw: unknown): PossibleDuplicate[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((d) => d && typeof d === 'object' && d.id != null && typeof d.name === 'string')
+    .map((d) => ({ id: String(d.id), name: d.name, distance_m: Number(d.distance_m) || 0 }));
+}
+
 export class RefugeProposalsService {
   /**
    * Crea una nova proposta de refugi
@@ -44,9 +77,22 @@ export class RefugeProposalsService {
       
       if (!response.ok) {
         // Gestionar diferents codis d'error
-        const errorData: ApiErrorResponse = await response.json().catch(() => ({ 
+        const errorData: ApiErrorResponse & Record<string, any> = await response.json().catch(() => ({ 
           error: `Error ${response.status}: ${response.statusText}` 
         }));
+
+        if (response.status === 409 && extractApiErrorCode(errorData, [POSSIBLE_DUPLICATES_CODE])) {
+          throw new PossibleDuplicatesError(
+            errorData.message || errorData.error,
+            parsePossibleDuplicates(errorData.possible_duplicates),
+            errorData
+          );
+        }
+        if (response.status === 403) {
+          // user_blocked / age_not_confirmed (decidit pel codi, no pel text)
+          const code = extractApiErrorCode(errorData, CONTENT_WRITE_ERROR_CODES) || 'forbidden';
+          throw new ApiError(errorData.message || errorData.error || 'Forbidden', code, 403, errorData);
+        }
         
         if (response.status === 400) {
           // Error de validació
@@ -224,7 +270,12 @@ export class RefugeProposalsService {
         } else if (response.status === 404) {
           throw new Error('No s\'ha trobat la proposta especificada');
         } else if (response.status === 409) {
-          throw new Error('Aquesta proposta ja ha estat revisada anteriorment');
+          // Dos 409 diferents: proposta ja revisada («Proposal is already ...») o enllaç ja usat per un altre refugi
+          const text = typeof errorData.error === 'string' ? errorData.error : '';
+          if (/^Proposal is already/i.test(text) || !text) {
+            throw new ApiError('Aquesta proposta ja ha estat revisada anteriorment', ALREADY_REVIEWED_CODE, 409, errorData);
+          }
+          throw new ApiError(text, LINK_ALREADY_USED_CODE, 409, errorData);
         } else if (response.status === 500) {
           throw new Error('Error del servidor. Si us plau, intenta-ho més tard.');
         }

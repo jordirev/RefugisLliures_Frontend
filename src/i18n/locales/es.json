@@ -621,6 +621,13 @@
       "title": "Fotos del refugio",
       "message": "Las fotos se podrán subir una vez aceptada la propuesta de creación por un administrador"
     },
+    "duplicates": {
+      "title": "Posible refugio duplicado",
+      "message": "Hay refugios a menos de 500 m con un nombre parecido. Comprueba que no sea el mismo antes de proponer uno nuevo:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "Ver {{name}}",
+      "fix": "Corregir la propuesta"
+    },
     "success": {
       "title": "Propuesta enviada",
       "message": "Tu propuesta ha sido enviada correctamente y será revisada por un administrador"
@@ -733,6 +740,7 @@
       "loadError": "No se pudieron cargar las propuestas",
       "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
       "approveError": "No se pudo aprobar la propuesta",
+      "linkAlreadyUsed": "Uno de los enlaces de la propuesta ya pertenece a otro refugio. La propuesta sigue pendiente: recházala o pide que se corrija",
       "rejectError": "No se pudo rechazar la propuesta"
     }
   },

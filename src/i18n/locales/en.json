@@ -611,6 +611,13 @@
       "title": "Shelter photos",
       "message": "Photos can be uploaded once the creation proposal is accepted by an administrator"
     },
+    "duplicates": {
+      "title": "Possible duplicate refuge",
+      "message": "There are refuges within 500 m with a similar name. Check it is not the same one before proposing a new refuge:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "View {{name}}",
+      "fix": "Edit the proposal"
+    },
     "success": {
       "title": "Proposal submitted",
       "message": "Your proposal has been submitted successfully and will be reviewed by an administrator"
@@ -723,6 +730,7 @@
       "loadError": "Could not load proposals",
       "loadDetailError": "Could not load proposal details",
       "approveError": "Could not approve the proposal",
+      "linkAlreadyUsed": "One of the links in the proposal already belongs to another refuge. The proposal stays pending: reject it or ask for it to be corrected",
       "rejectError": "Could not reject the proposal"
     }
   },

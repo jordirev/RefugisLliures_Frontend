@@ -625,6 +625,13 @@
       "title": "Fotos del refugi",
       "message": "Les fotos es podran penjar un cop acceptada la proposta de creació per un administrador"
     },
+    "duplicates": {
+      "title": "Possible refugi duplicat",
+      "message": "Hi ha refugis a menys de 500 m amb un nom semblant. Comprova que no sigui el mateix abans de proposar-ne un de nou:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "Veure {{name}}",
+      "fix": "Corregir la proposta"
+    },
     "success": {
       "title": "Proposta enviada",
       "message": "La teva proposta ha estat enviada correctament i serà revisada per un administrador"
@@ -737,6 +744,7 @@
       "loadError": "No s'han pogut carregar les propostes",
       "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
       "approveError": "No s'ha pogut aprovar la proposta",
+      "linkAlreadyUsed": "Un dels enllaços de la proposta ja pertany a un altre refugi. La proposta continua pendent: rebutja-la o demana que es corregeixi",
       "rejectError": "No s'ha pogut rebutjar la proposta"
     }
   },
