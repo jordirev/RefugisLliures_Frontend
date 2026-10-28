@@ -532,7 +532,8 @@
       "generic": "Se ha producido un error. Por favor, inténtalo de nuevo",
       "googleLoginFailed": "Error durante la autenticación con Google",
       "googleSigninNotAvailable": "Google Sign In no está disponible en Expo Go. Utiliza un build nativo para activar esta funcionalidad.",
-      "deleteFailed": "No se ha podido eliminar la cuenta. Inténtalo de nuevo."
+      "deleteFailed": "No se ha podido eliminar la cuenta. Inténtalo de nuevo.",
+      "deleteUnauthorized": "No se ha podido verificar tu sesión. Vuelve a iniciar sesión e inténtalo de nuevo."
     }
   },
   "createRenovation": {

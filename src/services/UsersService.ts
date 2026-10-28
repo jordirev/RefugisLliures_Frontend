@@ -160,35 +160,41 @@ export class UsersService {
   }
 
   /**
+   * Elimina un usuari i retorna l'status HTTP (necessari per decidir si es reintenta).
+   * DELETE /users/{uid}/  ->  204 | 401 | 403 | 500 {error, error_id}
+   * El backend és idempotent: repetir el DELETE amb el mateix token després d'un 500 de Firebase retorna 204.
+   *
+   * @returns `{ ok, status }`; `status` és null si no hi ha resposta (error de xarxa)
+   */
+  static async deleteUserWithStatus(uid: string): Promise<{ ok: boolean; status: number | null }> {
+    try {
+      const url = `${API_BASE_URL}/users/${uid}/`;
+      const response = await apiDelete(url);
+      if (!response.ok) {
+        try {
+          console.error(`Error deleting user ${uid}:`, await response.json());
+        } catch {
+          console.error(`Error deleting user ${uid}: HTTP ${response.status}`);
+        }
+        return { ok: false, status: response.status };
+      }
+      return { ok: true, status: response.status };
+    } catch (err) {
+      console.error(`Error deleting user ${uid}:`, err);
+      return { ok: false, status: null };
+    }
+  }
+
+  /**
    * Elimina un usuari
    * DELETE /users/{uid}/
    * 
    * @param uid - UID de l'usuari
-   * @param authToken - Token d'autenticació de Firebase (opcional)
+   * @param authToken - Token d'autenticació de Firebase (opcional, no usat: apiDelete l'afegeix)
    * @returns true si s'ha eliminat correctament, false altrament
    */
   static async deleteUser(uid: string, authToken?: string): Promise<boolean> {
-    try {
-      const url = `${API_BASE_URL}/users/${uid}/`;
-      
-      // Utilitzar apiDelete que gestiona automàticament el refresc de tokens
-      const response = await apiDelete(url);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.error(`User with uid ${uid} not found`);
-        } else {
-          const errorData = await response.json();
-          console.error(`Error deleting user ${uid}:`, errorData);
-        }
-        return false;
-      }
-      
-      return true;
-    } catch (err) {
-      console.error(`Error deleting user ${uid}:`, err);
-      return false;
-    }
+    return (await UsersService.deleteUserWithStatus(uid)).ok;
   }
 
   /**

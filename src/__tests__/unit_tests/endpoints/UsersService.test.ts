@@ -532,6 +532,24 @@ describe('UsersService', () => {
     });
   });
 
+  describe('deleteUserWithStatus', () => {
+    it('retorna l status HTTP (204 ok, 500/403 ko) i null si hi ha error de xarxa', async () => {
+      mockApiDelete.mockResolvedValueOnce({ ok: true, status: 204 } as Response);
+      expect(await UsersService.deleteUserWithStatus('u')).toEqual({ ok: true, status: 204 });
+
+      mockApiDelete.mockResolvedValueOnce({
+        ok: false, status: 500, json: jest.fn().mockResolvedValue({ error: 'x', error_id: '1' }),
+      } as unknown as Response);
+      expect(await UsersService.deleteUserWithStatus('u')).toEqual({ ok: false, status: 500 });
+
+      mockApiDelete.mockResolvedValueOnce({ ok: false, status: 403 } as Response);
+      expect(await UsersService.deleteUserWithStatus('u')).toEqual({ ok: false, status: 403 });
+
+      mockApiDelete.mockRejectedValueOnce(new Error('network'));
+      expect(await UsersService.deleteUserWithStatus('u')).toEqual({ ok: false, status: null });
+    });
+  });
+
   describe('deleteUser', () => {
     it('hauria d\'eliminar un usuari correctament', async () => {
       const mockResponse = {
