@@ -327,7 +327,7 @@ describe('useExperiencesQuery Hooks', () => {
       (ExperienceService.createExperience as jest.Mock).mockResolvedValue({ experience: mockExperienceDTO });
       const { result } = await renderHook(() => useCreateExperience(), { wrapper: createWrapper() });
       await act(async () => {
-        await result.current.mutateAsync({ refuge_id: 'refuge-1', comment: 'x' });
+        await result.current.mutateAsync({ refuge_id: 'refuge-1', comment: 'x', condition: 2 });
       });
       expect(MediaUploadService.uploadFiles).not.toHaveBeenCalled();
     });
