@@ -43,7 +43,7 @@
 26. **NO filtris errors per text** per decidir si és èxit: `RefugeForm.tsx:515-541` mostra èxit si el missatge conté "coord" **[FET]**.
 
 ## Mapa
-27. Les tiles offline es descarreguen però **no s'usen**; Leaflet ve de CDN. No prometis funcionalitat offline del mapa **[FET]**.
+27. Les tiles offline es descarreguen però **no s'usen**; Leaflet ja és local (`src/vendor/leaflet`). No prometis funcionalitat offline del mapa **[FET]**.
 28. L'efecte que injecta marcadors ignora llistes buides (`LeafletWebMap.tsx:54`) **[FET]**.
 
 ## Mitjans (feature `images`)

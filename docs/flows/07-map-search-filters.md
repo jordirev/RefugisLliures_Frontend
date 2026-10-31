@@ -34,7 +34,7 @@ sequenceDiagram
     S-->>H: DTOs → mapRefugisFromDTO
     MS->>MS: filtre local per nom (≥2 caràcters) + suggeriments
     MS->>W: injectJavaScript(updateMarkers JSON)
-    W->>W: cluster / heatmap (Leaflet + plugins via unpkg)
+    W->>W: cluster / heatmap (Leaflet + plugins empaquetats a `src/vendor/leaflet`)
     U->>W: toca marcador
     W-->>MS: postMessage {type:'locationSelect', id}
     MS->>BS: AppNavigator mostra bottom sheet
@@ -76,7 +76,7 @@ sequenceDiagram
 - Gestor offline a la UI: botó de descàrrega dels controls del mapa (`MapViewComponent.tsx:57-64`, `testID="download-button"`) → modal `OfflineMapManager` amb barra de progrés, estat i mida de la cache, i botons per descarregar o esborrar. Zona `PYRENEES_BOUNDS` = lat 41.5–43.5, long −2.5–3.5, zoom 6–14 (`MapCacheService.ts:46-51`, `OfflineMapManager.tsx:63-66`); tiles PNG d'OpenTopoMap a `documentDirectory`. L'antiga documentació (zoom 8–14, 50–150 MB, "funciona offline") no quadra amb el codi.
 
 ## Gotchas i bugs
-- **Els mapes offline no funcionen**: les tiles es descarreguen però cap codi les llegeix (`MapCacheService.ts:212-234` sense ús) i Leaflet es carrega de la CDN unpkg (`LeafletWebMap.tsx:163-176`) **[FET]** → offline només funciona la llista de refugis **[INFERÈNCIA]**.
+- **Els mapes offline no funcionen**: les tiles es descarreguen però cap codi les llegeix (`MapCacheService.ts:212-234` sense ús) i només les tiles venen de la xarxa (Leaflet ja és local) **[FET]** → offline només funciona la llista de refugis **[INFERÈNCIA]**.
 - Descàrrega de ~45.640 tiles **[INFERÈNCIA, càlcul]**; una sola fallada marca la cache com a incompleta (`MapCacheService.ts:195`); la política d'ús de tiles d'OpenTopoMap/OSM desaconsella descàrregues massives **[INFERÈNCIA]**.
 - Marcadors obsolets quan un filtre retorna 0 resultats: només s'injecta si `locations.length > 0` (`LeafletWebMap.tsx:54`) **[FET]**.
 - Hooks dins el render-prop del `Tab.Screen` i `onLocationSelect(null)` en perdre el focus, que deixa `showBottomSheet=true` amb ubicació nul·la (`TabsNavigator.tsx:70-84`, `AppNavigator.tsx:123-126`) **[FET]**.

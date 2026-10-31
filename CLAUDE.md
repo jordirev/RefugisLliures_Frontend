@@ -7,7 +7,7 @@ Documentació detallada a [`docs/`](docs/README.md). Llegenda: **[FET]** / **[IN
 - Expo SDK ~58 (expo ~58.0.14), React Native 0.88.0, React 19.3, Jest 30, TypeScript 6 (Strict TypeScript API de RN per defecte) (Hermes v1 per defecte; `expo/fetch` és el `fetch` global; New Architecture i edge-to-edge obligatoris). Node ≥ 22.13 (CI usa 22.x). Android via EAS; no hi ha `ios/`.
 - React Navigation 7 (native-stack + bottom-tabs, navigators tipats amb `RootStackParamList`); TanStack React Query 5; Context per a la sessió.
 - Firebase Auth (JS SDK) + Google Sign-In natiu; backend REST a Render (URL fixa a cada servei).
-- Mapa: Leaflet dins `react-native-webview` (tiles OpenTopoMap/OSM, Leaflet via CDN unpkg).
+- Mapa: Leaflet dins `react-native-webview` (tiles OpenTopoMap/OSM; Leaflet empaquetat a `src/vendor/leaflet`, sense CDN: RGPD).
 - i18n: i18next, idiomes `ca` (fallback), `es`, `en`, `fr`.
 - Tests: Jest 30 (`@react-native/jest-preset`), React Native Testing Library 14 sobre `test-renderer` (APIs asíncrones: sempre `await render/fireEvent`), MSW 3 i emulador d'Auth (firebase-tools 15).
 
@@ -48,7 +48,7 @@ Screen → hook use*Query (React Query) → *Service (static, retorna DTO) → a
 6. Cap hook condicional, dins `try/catch` o dins render-props de `Tab.Screen`.
 7. No decideixis èxit/error pel text del missatge (`RefugeForm` mostra èxit si l'error conté "coord").
 8. `CustomAlert` es tanca després d'`onPress`: no encadenis `showAlert` síncrons.
-9. Els mapes offline no funcionen (tiles mai llegides, Leaflet via CDN).
+9. Els mapes offline no funcionen (tiles descarregades però mai llegides; les tiles són l'única petició del mapa a tercers, vegeu `docs/integrations/maps-leaflet-tiles.md`).
 10. React Navigation 7: `navigate` a una ruta existent ja no fa tornar enrere; usa `popTo(...)` o `navigate(..., { pop: true })`.
 11. CI fa `test:coverage -- -u`: els snapshots no fallen mai a CI.
 
