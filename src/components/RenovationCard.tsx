@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { useTranslation } from '../hooks/useTranslation';
+import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 import { Renovation, Location } from '../models';
 import { VideoThumbnail } from './PhotoViewerModal';
 
@@ -69,7 +70,7 @@ export function RenovationCard({
 
   const refugeName = refuge?.name || t('refuge.title');
   const refugeLocation = refuge?.region || refuge?.departement || t('common.unknown');
-  const refugeImageUrl = refuge?.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
+  const refugeImageUrl = refuge?.images_metadata?.[0]?.url;
 
   return (
     <View style={styles.card}>
@@ -93,14 +94,14 @@ export function RenovationCard({
         </View>
         
         <View style={styles.imageContainer}>
-          {isVideo(refugeImageUrl) ? (
+          {refugeImageUrl && isVideo(refugeImageUrl) ? (
             <VideoThumbnail
               uri={refugeImageUrl}
               style={styles.image}
             />
           ) : (
             <Image 
-              source={{ uri: refugeImageUrl }} 
+              source={refugeImageUrl ? { uri: refugeImageUrl } : DefaultRefugeImageService.getDefaultImage(refuge?.type)} 
               style={styles.image}
               resizeMode="cover"
             />

@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location, InfoComp } from '../models';
 import { RefugisService } from '../services/RefugisService';
+import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 import { BadgeSelector } from './BadgeSelector';
 import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
@@ -605,9 +606,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
         {/* Default image */}
         <TouchableOpacity onPress={handleImagePress} activeOpacity={0.7}>
           <Image
-            source={{
-              uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-            }}
+            source={DefaultRefugeImageService.getDefaultImage(type)}
             style={styles.headerImage}
             resizeMode="cover"
           />

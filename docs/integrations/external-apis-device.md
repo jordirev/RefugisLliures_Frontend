@@ -5,10 +5,10 @@
 ## Serveis web externs
 | Servei | Ús | On |
 |---|---|---|
-| Open-Elevation (`https://api.open-elevation.com/api/v1/lookup`) | Autocompletar l'altitud al formulari de refugi a partir de lat/long, amb `fetch` directe | `src/components/RefugeForm.tsx:152-153` |
+| ~~Open-Elevation~~ | Ja **no** es crida des del client (RGPD): l'altitud es demana al backend (`GET /api/refuges/elevation/`, que consulta el proveïdor) | `RefugisService.getElevation`, `src/components/RefugeForm.tsx` |
 | Windy | Enllaç extern de meteo | `src/screens/RefugeDetailScreen.tsx:517-518` |
 | Wikiloc | Enllaç de rutes | `src/screens/RefugeDetailScreen.tsx:527-528` |
-| Unsplash | Imatge de reserva hard-coded | `RefugeDetailScreen.tsx:764`, `RefugeBottomSheet.tsx:67`, `RefugeCard.tsx:48`, `RefugeForm.tsx:583`, `RenovationCard.tsx:72` |
+| ~~Unsplash~~ | Ja **no** s'usa (RGPD): la imatge per defecte surt de `src/services/DefaultRefugeImageService.ts` (recursos locals a `src/assets/images/refuges-default`, triats pel tipus de refugi; per defecte «non gardé») | `RefugeDetailScreen`, `RefugeBottomSheet`, `RefugeCard`, `RefugeForm`, `RenovationCard` |
 | WhatsApp / Telegram | Enllaços de grup de renovations (validats per regex) | `src/components/RenovationForm.tsx:165-169`, `src/screens/RenovationDetailScreen.tsx:101-114` |
 | pyrenees-refuges.com, refuges.info | Fonts de dades citades | `src/screens/AboutTheAppScreen.tsx:77-81` |
 

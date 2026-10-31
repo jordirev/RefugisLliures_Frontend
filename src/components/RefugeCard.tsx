@@ -4,6 +4,7 @@ import { Location } from '../models';
 import { useTranslation } from '../hooks/useTranslation';
 import useFavourite from '../hooks/useFavourite';
 import { VideoThumbnail } from './PhotoViewerModal';
+import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 
 // Helper function to check if a media is a video
 const isVideo = (url: string): boolean => {
@@ -45,7 +46,11 @@ export function RefugeCard({ refuge, onPress, onViewMap, onToggleFavorite }: Ref
         ) : (
           <Image
             testID="refuge-image"
-            source={{ uri: refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800' }}
+            source={
+              refuge.images_metadata?.[0]?.url
+                ? { uri: refuge.images_metadata[0].url }
+                : DefaultRefugeImageService.getDefaultImage(refuge.type)
+            }
             style={styles.image}
             resizeMode="cover"
           />
