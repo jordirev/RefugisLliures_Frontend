@@ -43,7 +43,7 @@ export class DefaultRefugeImageService {
    * retorna la de "non gardé".
    */
   static getDefaultImage(type?: string | null): ImageSourcePropType {
-    if (!type) return DEFAULT_IMAGE;
+    if (typeof type !== 'string' || !type) return DEFAULT_IMAGE;
     return IMAGE_BY_TYPE[normalizeType(type)] ?? DEFAULT_IMAGE;
   }
 }

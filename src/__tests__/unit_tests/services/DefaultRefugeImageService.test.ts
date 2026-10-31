@@ -8,6 +8,7 @@ describe('DefaultRefugeImageService', () => {
     expect(img()).toBe(nonGardee);
     expect(img(null)).toBe(nonGardee);
     expect(img('')).toBe(nonGardee);
+    expect(img(42 as unknown as string)).toBe(nonGardee);
     expect(img('tipus-inventat')).toBe(nonGardee);
   });
 
