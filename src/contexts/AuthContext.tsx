@@ -233,8 +233,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Actualitzar l'estat local
     setBackendUser(updatedUser);
     
-    // Invalidar la cache de React Query per a aquest usuari
-    queryClient.invalidateQueries({ queryKey: queryKeys.user(firebaseUser.uid) });
+    // Invalidar tota la cache d'usuaris (detall, lots de participants, perfils...) perquè
+    // arreu es mostri el nom nou
+    queryClient.invalidateQueries({ queryKey: queryKeys.users });
   };
 
   // Entrar en mode offline (permet accés sense autenticació)

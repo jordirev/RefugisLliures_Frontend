@@ -374,9 +374,9 @@ export function useUpdateUserProfile() {
       return await UsersService.updateUser(uid, data);
     },
     onSuccess: (data) => {
-      // Invalidate the specific user query
+      // Invalidate every cached user (detail, batches of participants...) so the new data shows everywhere
       if (data?.uid) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.user(data.uid) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.users });
       }
     },
   });

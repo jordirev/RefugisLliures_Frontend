@@ -173,13 +173,8 @@ export function RefugeDetailScreen({
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [occupationModalVisible, setOccupationModalVisible] = React.useState(false);
   
-  // Sort images by uploaded_at in descending order (most recent first)
-  const sortedImages = React.useMemo(() => {
-    if (!refuge?.images_metadata) return [];
-    return [...refuge.images_metadata].sort((a, b) => {
-      return new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime();
-    });
-  }, [refuge?.images_metadata]);
+  // El backend ja retorna les imatges de més recent a menys: es mostren tal com arriben
+  const sortedImages = React.useMemo(() => refuge?.images_metadata ?? [], [refuge?.images_metadata]);
   
   // Gallery states
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
