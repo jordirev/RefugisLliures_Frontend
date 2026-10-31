@@ -89,4 +89,20 @@ export class RefugisService {
       throw new Error('No s\'han pogut carregar els refugis');
     }
   }
+
+  /**
+   * Altitud (m) d'unes coordenades. La consulta al proveïdor extern la fa el backend (RGPD: el client
+   * no exposa la seva IP a tercers). Retorna null si no es pot obtenir.
+   */
+  static async getElevation(lat: number, lng: number): Promise<number | null> {
+    try {
+      const response = await apiGet(`${API_BASE_URL}/refuges/elevation/?lat=${lat}&lng=${lng}`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return typeof data.elevation === 'number' ? data.elevation : null;
+    } catch (err) {
+      console.error('Error fetching elevation:', err);
+      return null;
+    }
+  }
 }

@@ -14,6 +14,7 @@ import type { ScrollViewInstance, ViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location, InfoComp } from '../models';
+import { RefugisService } from '../services/RefugisService';
 import { BadgeSelector } from './BadgeSelector';
 import { BadgeType } from './BadgeType';
 import { BadgeCondition } from './BadgeCondition';
@@ -149,22 +150,10 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel }: RefugeForm
         return;
       }
 
-      try {
-        const response = await fetch(
-          `https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.results && data.results.length > 0) {
-            const elevation = data.results[0].elevation;
-            // Arrodonir l'elevació i establir-la
-            setAltitude(Math.round(elevation).toString());
-          }
-        }
-      } catch (error) {
-        // Silenciosament ignorar errors (l'API pot no estar disponible)
-        console.log('Error fetching elevation:', error);
+      const elevation = await RefugisService.getElevation(lat, lng);
+      if (elevation !== null) {
+        // Arrodonir l'elevació i establir-la
+        setAltitude(Math.round(elevation).toString());
       }
     };
 
