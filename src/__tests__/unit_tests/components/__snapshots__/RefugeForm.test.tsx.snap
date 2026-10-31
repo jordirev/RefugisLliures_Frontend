@@ -83,11 +83,7 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
       >
         <Image
           resizeMode="cover"
-          source={
-            {
-              "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-            }
-          }
+          source="UsersIcon"
           style={
             {
               "height": 240,
@@ -133,30 +129,46 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
               }
             }
           >
-            <Text
+            <View
               style={
                 {
-                  "color": "#6B7280",
-                  "fontSize": 12,
-                  "fontWeight": "500",
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
                   "marginBottom": 6,
                 }
               }
             >
-              createRefuge.latitude
-               
               <Text
                 style={
-                  {
-                    "color": "#EF4444",
-                    "fontSize": 14,
-                    "fontWeight": "700",
-                  }
+                  [
+                    {
+                      "color": "#6B7280",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                      "marginBottom": 6,
+                    },
+                    {
+                      "marginBottom": 0,
+                    },
+                  ]
                 }
               >
-                *
+                createRefuge.latitude
+                 
+                <Text
+                  style={
+                    {
+                      "color": "#EF4444",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                    }
+                  }
+                >
+                  *
+                </Text>
               </Text>
-            </Text>
+            </View>
             <TextInput
               keyboardType="decimal-pad"
               onChangeText={[Function]}
@@ -187,30 +199,46 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
               }
             }
           >
-            <Text
+            <View
               style={
                 {
-                  "color": "#6B7280",
-                  "fontSize": 12,
-                  "fontWeight": "500",
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
                   "marginBottom": 6,
                 }
               }
             >
-              createRefuge.longitude
-               
               <Text
                 style={
-                  {
-                    "color": "#EF4444",
-                    "fontSize": 14,
-                    "fontWeight": "700",
-                  }
+                  [
+                    {
+                      "color": "#6B7280",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                      "marginBottom": 6,
+                    },
+                    {
+                      "marginBottom": 0,
+                    },
+                  ]
                 }
               >
-                *
+                createRefuge.longitude
+                 
+                <Text
+                  style={
+                    {
+                      "color": "#EF4444",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                    }
+                  }
+                >
+                  *
+                </Text>
               </Text>
-            </Text>
+            </View>
             <TextInput
               keyboardType="decimal-pad"
               onChangeText={[Function]}
@@ -256,30 +284,46 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
         >
           createRefuge.generalInfo
         </Text>
-        <Text
+        <View
           style={
             {
-              "color": "#6B7280",
-              "fontSize": 12,
-              "fontWeight": "500",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 6,
             }
           }
         >
-          createRefuge.namePlaceholder
-           
           <Text
             style={
-              {
-                "color": "#EF4444",
-                "fontSize": 14,
-                "fontWeight": "700",
-              }
+              [
+                {
+                  "color": "#6B7280",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "marginBottom": 6,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
             }
           >
-            *
+            createRefuge.namePlaceholder
+             
+            <Text
+              style={
+                {
+                  "color": "#EF4444",
+                  "fontSize": 14,
+                  "fontWeight": "700",
+                }
+              }
+            >
+              *
+            </Text>
           </Text>
-        </Text>
+        </View>
         <TextInput
           maxLength={100}
           onChangeText={[Function]}
@@ -455,171 +499,191 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
         >
           <View
             style={
-              [
-                {},
-                undefined,
-              ]
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "gap": 4,
+              }
             }
           >
             <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
               style={
-                {
-                  "opacity": 1,
-                }
+                [
+                  {},
+                  undefined,
+                ]
               }
             >
               <View
-                style={
-                  [
-                    {
-                      "alignItems": "center",
-                      "alignSelf": "flex-start",
-                      "borderRadius": 8,
-                      "justifyContent": "center",
-                      "overflow": "hidden",
-                      "paddingHorizontal": 8,
-                      "paddingVertical": 2,
-                    },
-                    {
-                      "backgroundColor": "#E6F8EE",
-                      "borderColor": "#7EE0B0",
-                      "borderWidth": 1.25,
-                    },
-                    undefined,
-                  ]
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
                 }
-                testID="badge-container"
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "opacity": 1,
+                  }
+                }
               >
-                <Text
+                <View
                   style={
                     [
                       {
-                        "fontFamily": "Arimo",
-                        "fontSize": 12,
-                        "fontWeight": "400",
-                        "lineHeight": 16,
+                        "alignItems": "center",
+                        "alignSelf": "flex-start",
+                        "borderRadius": 8,
+                        "justifyContent": "center",
+                        "overflow": "hidden",
+                        "paddingHorizontal": 8,
+                        "paddingVertical": 2,
                       },
                       {
-                        "color": "#14532D",
+                        "backgroundColor": "#E6F8EE",
+                        "borderColor": "#7EE0B0",
+                        "borderWidth": 1.25,
                       },
                       undefined,
                     ]
                   }
+                  testID="badge-container"
                 >
-                  refuge.type.noGuarded
-                </Text>
+                  <Text
+                    style={
+                      [
+                        {
+                          "fontFamily": "Arimo",
+                          "fontSize": 12,
+                          "fontWeight": "400",
+                          "lineHeight": 16,
+                        },
+                        {
+                          "color": "#14532D",
+                        },
+                        undefined,
+                      ]
+                    }
+                  >
+                    refuge.type.noGuarded
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
           <View
             style={
-              [
-                {},
-                undefined,
-              ]
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "gap": 4,
+              }
             }
           >
             <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
               style={
-                {
-                  "opacity": 1,
-                }
+                [
+                  {},
+                  undefined,
+                ]
               }
             >
               <View
-                style={
-                  [
-                    {
-                      "alignItems": "center",
-                      "alignSelf": "flex-start",
-                      "borderRadius": 8,
-                      "justifyContent": "center",
-                      "overflow": "hidden",
-                      "paddingHorizontal": 8,
-                      "paddingVertical": 2,
-                    },
-                    {
-                      "backgroundColor": "#EAF4FF",
-                      "borderColor": "#A3C4FF",
-                      "borderWidth": 1.25,
-                    },
-                    undefined,
-                  ]
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
                 }
-                testID="badge-container"
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "opacity": 1,
+                  }
+                }
               >
-                <Text
+                <View
                   style={
                     [
                       {
-                        "fontFamily": "Arimo",
-                        "fontSize": 12,
-                        "fontWeight": "400",
-                        "lineHeight": 16,
+                        "alignItems": "center",
+                        "alignSelf": "flex-start",
+                        "borderRadius": 8,
+                        "justifyContent": "center",
+                        "overflow": "hidden",
+                        "paddingHorizontal": 8,
+                        "paddingVertical": 2,
                       },
                       {
-                        "color": "#3A5B99",
+                        "backgroundColor": "#EAF4FF",
+                        "borderColor": "#A3C4FF",
+                        "borderWidth": 1.25,
                       },
                       undefined,
                     ]
                   }
+                  testID="badge-container"
                 >
-                  refuge.condition.fair
-                </Text>
+                  <Text
+                    style={
+                      [
+                        {
+                          "fontFamily": "Arimo",
+                          "fontSize": 12,
+                          "fontWeight": "400",
+                          "lineHeight": 16,
+                        },
+                        {
+                          "color": "#3A5B99",
+                        },
+                        undefined,
+                      ]
+                    }
+                  >
+                    refuge.condition.fair
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -836,18 +900,34 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
           }
         }
       >
-        <Text
+        <View
           style={
             {
-              "color": "#1F2937",
-              "fontSize": 16,
-              "fontWeight": "600",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 12,
             }
           }
         >
-          refuge.details.amenities
-        </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#1F2937",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 12,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
+            }
+          >
+            refuge.details.amenities
+          </Text>
+        </View>
         <View
           style={
             {
@@ -1671,18 +1751,34 @@ exports[`RefugeForm Component Renderització mode create snapshot test - mode cr
           }
         }
       >
-        <Text
+        <View
           style={
             {
-              "color": "#1F2937",
-              "fontSize": 16,
-              "fontWeight": "600",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 12,
             }
           }
         >
-          createRefuge.links
-        </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#1F2937",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 12,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
+            }
+          >
+            createRefuge.links
+          </Text>
+        </View>
         <View
           style={
             {
@@ -1977,11 +2073,7 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
       >
         <Image
           resizeMode="cover"
-          source={
-            {
-              "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-            }
-          }
+          source="UsersIcon"
           style={
             {
               "height": 240,
@@ -2027,30 +2119,46 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
               }
             }
           >
-            <Text
+            <View
               style={
                 {
-                  "color": "#6B7280",
-                  "fontSize": 12,
-                  "fontWeight": "500",
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
                   "marginBottom": 6,
                 }
               }
             >
-              createRefuge.latitude
-               
               <Text
                 style={
-                  {
-                    "color": "#EF4444",
-                    "fontSize": 14,
-                    "fontWeight": "700",
-                  }
+                  [
+                    {
+                      "color": "#6B7280",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                      "marginBottom": 6,
+                    },
+                    {
+                      "marginBottom": 0,
+                    },
+                  ]
                 }
               >
-                *
+                createRefuge.latitude
+                 
+                <Text
+                  style={
+                    {
+                      "color": "#EF4444",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                    }
+                  }
+                >
+                  *
+                </Text>
               </Text>
-            </Text>
+            </View>
             <TextInput
               keyboardType="decimal-pad"
               onChangeText={[Function]}
@@ -2081,30 +2189,46 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
               }
             }
           >
-            <Text
+            <View
               style={
                 {
-                  "color": "#6B7280",
-                  "fontSize": 12,
-                  "fontWeight": "500",
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "space-between",
                   "marginBottom": 6,
                 }
               }
             >
-              createRefuge.longitude
-               
               <Text
                 style={
-                  {
-                    "color": "#EF4444",
-                    "fontSize": 14,
-                    "fontWeight": "700",
-                  }
+                  [
+                    {
+                      "color": "#6B7280",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                      "marginBottom": 6,
+                    },
+                    {
+                      "marginBottom": 0,
+                    },
+                  ]
                 }
               >
-                *
+                createRefuge.longitude
+                 
+                <Text
+                  style={
+                    {
+                      "color": "#EF4444",
+                      "fontSize": 14,
+                      "fontWeight": "700",
+                    }
+                  }
+                >
+                  *
+                </Text>
               </Text>
-            </Text>
+            </View>
             <TextInput
               keyboardType="decimal-pad"
               onChangeText={[Function]}
@@ -2150,30 +2274,46 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
         >
           createRefuge.generalInfo
         </Text>
-        <Text
+        <View
           style={
             {
-              "color": "#6B7280",
-              "fontSize": 12,
-              "fontWeight": "500",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 6,
             }
           }
         >
-          createRefuge.namePlaceholder
-           
           <Text
             style={
-              {
-                "color": "#EF4444",
-                "fontSize": 14,
-                "fontWeight": "700",
-              }
+              [
+                {
+                  "color": "#6B7280",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "marginBottom": 6,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
             }
           >
-            *
+            createRefuge.namePlaceholder
+             
+            <Text
+              style={
+                {
+                  "color": "#EF4444",
+                  "fontSize": 14,
+                  "fontWeight": "700",
+                }
+              }
+            >
+              *
+            </Text>
           </Text>
-        </Text>
+        </View>
         <TextInput
           maxLength={100}
           onChangeText={[Function]}
@@ -2349,171 +2489,191 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
         >
           <View
             style={
-              [
-                {},
-                undefined,
-              ]
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "gap": 4,
+              }
             }
           >
             <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
               style={
-                {
-                  "opacity": 1,
-                }
+                [
+                  {},
+                  undefined,
+                ]
               }
             >
               <View
-                style={
-                  [
-                    {
-                      "alignItems": "center",
-                      "alignSelf": "flex-start",
-                      "borderRadius": 8,
-                      "justifyContent": "center",
-                      "overflow": "hidden",
-                      "paddingHorizontal": 8,
-                      "paddingVertical": 2,
-                    },
-                    {
-                      "backgroundColor": "#E6F8EE",
-                      "borderColor": "#7EE0B0",
-                      "borderWidth": 1.25,
-                    },
-                    undefined,
-                  ]
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
                 }
-                testID="badge-container"
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "opacity": 1,
+                  }
+                }
               >
-                <Text
+                <View
                   style={
                     [
                       {
-                        "fontFamily": "Arimo",
-                        "fontSize": 12,
-                        "fontWeight": "400",
-                        "lineHeight": 16,
+                        "alignItems": "center",
+                        "alignSelf": "flex-start",
+                        "borderRadius": 8,
+                        "justifyContent": "center",
+                        "overflow": "hidden",
+                        "paddingHorizontal": 8,
+                        "paddingVertical": 2,
                       },
                       {
-                        "color": "#14532D",
+                        "backgroundColor": "#E6F8EE",
+                        "borderColor": "#7EE0B0",
+                        "borderWidth": 1.25,
                       },
                       undefined,
                     ]
                   }
+                  testID="badge-container"
                 >
-                  refuge.type.noGuarded
-                </Text>
+                  <Text
+                    style={
+                      [
+                        {
+                          "fontFamily": "Arimo",
+                          "fontSize": 12,
+                          "fontWeight": "400",
+                          "lineHeight": 16,
+                        },
+                        {
+                          "color": "#14532D",
+                        },
+                        undefined,
+                      ]
+                    }
+                  >
+                    refuge.type.noGuarded
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
           <View
             style={
-              [
-                {},
-                undefined,
-              ]
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "gap": 4,
+              }
             }
           >
             <View
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": undefined,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              collapsable={false}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
               style={
-                {
-                  "opacity": 1,
-                }
+                [
+                  {},
+                  undefined,
+                ]
               }
             >
               <View
-                style={
-                  [
-                    {
-                      "alignItems": "center",
-                      "alignSelf": "flex-start",
-                      "borderRadius": 8,
-                      "justifyContent": "center",
-                      "overflow": "hidden",
-                      "paddingHorizontal": 8,
-                      "paddingVertical": 2,
-                    },
-                    {
-                      "backgroundColor": "#E6F8EE",
-                      "borderColor": "#7EE0B0",
-                      "borderWidth": 1.25,
-                    },
-                    undefined,
-                  ]
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
                 }
-                testID="badge-container"
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onClick={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  {
+                    "opacity": 1,
+                  }
+                }
               >
-                <Text
+                <View
                   style={
                     [
                       {
-                        "fontFamily": "Arimo",
-                        "fontSize": 12,
-                        "fontWeight": "400",
-                        "lineHeight": 16,
+                        "alignItems": "center",
+                        "alignSelf": "flex-start",
+                        "borderRadius": 8,
+                        "justifyContent": "center",
+                        "overflow": "hidden",
+                        "paddingHorizontal": 8,
+                        "paddingVertical": 2,
                       },
                       {
-                        "color": "#14532D",
+                        "backgroundColor": "#E6F8EE",
+                        "borderColor": "#7EE0B0",
+                        "borderWidth": 1.25,
                       },
                       undefined,
                     ]
                   }
+                  testID="badge-container"
                 >
-                  refuge.condition.good
-                </Text>
+                  <Text
+                    style={
+                      [
+                        {
+                          "fontFamily": "Arimo",
+                          "fontSize": 12,
+                          "fontWeight": "400",
+                          "lineHeight": 16,
+                        },
+                        {
+                          "color": "#14532D",
+                        },
+                        undefined,
+                      ]
+                    }
+                  >
+                    refuge.condition.good
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -2730,18 +2890,34 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
           }
         }
       >
-        <Text
+        <View
           style={
             {
-              "color": "#1F2937",
-              "fontSize": 16,
-              "fontWeight": "600",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 12,
             }
           }
         >
-          refuge.details.amenities
-        </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#1F2937",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 12,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
+            }
+          >
+            refuge.details.amenities
+          </Text>
+        </View>
         <View
           style={
             {
@@ -3577,18 +3753,34 @@ exports[`RefugeForm Component Renderització mode edit snapshot test - mode edit
           }
         }
       >
-        <Text
+        <View
           style={
             {
-              "color": "#1F2937",
-              "fontSize": 16,
-              "fontWeight": "600",
+              "alignItems": "center",
+              "flexDirection": "row",
+              "justifyContent": "space-between",
               "marginBottom": 12,
             }
           }
         >
-          createRefuge.links
-        </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#1F2937",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 12,
+                },
+                {
+                  "marginBottom": 0,
+                },
+              ]
+            }
+          >
+            createRefuge.links
+          </Text>
+        </View>
         <View
           style={
             {

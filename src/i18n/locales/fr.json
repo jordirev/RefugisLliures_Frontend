@@ -592,6 +592,7 @@
   "editRefuge": {
     "title": "Modifier le Refuge",
     "proposalInfo": "Ceci est une proposition de modification de refuge qui sera examinée et approuvée par un administrateur",
+    "restoreOriginal": "Rétablir la valeur d'origine",
     "adminCommentPlaceholder": "Commentaire obligatoire pour l'administrateur.",
     "minChars": "minimum {{min}}",
     "success": {
