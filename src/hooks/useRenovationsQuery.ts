@@ -109,9 +109,13 @@ export function useDeleteRenovation() {
       await RenovationService.deleteRenovation(id);
       return { id, refugeId };
     },
-    onSuccess: ({ refugeId }) => {
-      // Invalidate renovations queries
-      queryClient.invalidateQueries({ queryKey: ['renovations'] });
+    onSuccess: ({ id, refugeId }) => {
+      // Invalidar les llistes de renovations, però NO el detall de la que s'acaba d'esborrar: la pantalla
+      // encara el té muntat i el refetch donaria 404 (error i reintents abans de tornar enrere)
+      queryClient.invalidateQueries({
+        queryKey: ['renovations'],
+        predicate: (query) => !(query.queryKey[1] === 'detail' && query.queryKey[2] === id),
+      });
 
       // Si la renovació tenia fotos associades al refugi, invalidar el refugi i les llistes
       if (refugeId) {
