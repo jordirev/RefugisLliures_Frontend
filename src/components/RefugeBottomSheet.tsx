@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Location } from '../models';
 import { BadgeType } from './BadgeType';
 import { useTranslation } from '../hooks/useTranslation';
+import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 import useFavourite from '../hooks/useFavourite';
 import { useRefuge } from '../hooks/useRefugesQuery';
 import { VideoThumbnail } from './PhotoViewerModal';
@@ -64,7 +65,7 @@ export function RefugeBottomSheet({
   if (isLoading || !refuge || !refugeId) return null;
 
   // Safe access to images_metadata
-  const imageUrl = refuge.images_metadata?.[0]?.url || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+  const imageUrl = refuge.images_metadata?.[0]?.url;
 
   return (
     <View style={styles.overlay}>
@@ -79,7 +80,7 @@ export function RefugeBottomSheet({
         <View style={styles.handle} />
           {/* Imatge del refugi */}
           <View style={styles.imageContainer}>
-            {isVideo(imageUrl) ? (
+            {imageUrl && isVideo(imageUrl) ? (
               <VideoThumbnail
                 uri={imageUrl}
                 style={styles.image}
@@ -87,7 +88,7 @@ export function RefugeBottomSheet({
             ) : (
               <Image
                 testID="refuge-image"
-                source={{ uri: imageUrl }}
+                source={imageUrl ? { uri: imageUrl } : DefaultRefugeImageService.getDefaultImage(refuge.type)}
                 style={styles.image}
                 resizeMode="cover"
               />

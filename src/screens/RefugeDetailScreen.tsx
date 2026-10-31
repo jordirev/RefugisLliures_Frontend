@@ -49,6 +49,7 @@ import { RightsDeclarationModal } from '../components/RightsDeclarationModal';
 import { MediaThumbnail } from '../components/MediaThumbnail';
 import { MediaImage, isVideoMedia } from '../components/MediaImage';
 import type { PreparedMediaFile } from '../services/MediaUploadService';
+import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 import { RefugeOccupationModal } from '../components/RefugeOccupationModal';
 
 // Icons
@@ -684,9 +685,7 @@ export function RefugeDetailScreen({
                     <MediaImage media={sortedImages[0]} variant="thumb" style={styles.headerImage} />
                   ) : (
                     <Image
-                      source={{ 
-                        uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'
-                      }}
+                      source={DefaultRefugeImageService.getDefaultImage(refuge?.type)}
                       style={styles.headerImage}
                       resizeMode="cover"
                     />

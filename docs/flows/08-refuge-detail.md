@@ -52,5 +52,5 @@ sequenceDiagram
 - `CustomAlert` és dins `{!galleryScreenVisible && ...}` → les alertes de pujada llançades des de la galeria no es veuen (`RefugeDetailScreen.tsx:704-1195`) **[FET segons informe, rang verificat]**.
 - La prop `onNavigate` no s'usa; `AppNavigator.handleNavigate` només mostra una alerta (`AppNavigator.tsx:118-120`) **[FET]**.
 - "Compartir experiència" no comparteix: obre Experiences; `Share` importat sense ús (`QuickActionsMenu.tsx:11`) **[FET]**.
-- Strings fixes ("Motiu: El sistema no pot obrir...", `RefugeDetailScreen.tsx:503`; 'N/A' a 835,841) i imatge de reserva d'Unsplash (764) **[FET]**.
+- Strings fixes ("Motiu: El sistema no pot obrir...", `RefugeDetailScreen.tsx:503`; 'N/A' a 835,841) (la imatge de reserva ja és local i depèn del tipus: `DefaultRefugeImageService`) **[FET]**.
 - Helper de detecció de vídeo i mapa d'icones de serveis copiats en diversos fitxers (`RefugeDetailScreen.tsx:70,250-263`, `GalleryScreen.tsx:35`, `PhotoViewerModal.tsx:44`, `RefugeBottomSheet.tsx:13`, `UserExperience.tsx:39`) **[FET]**.
