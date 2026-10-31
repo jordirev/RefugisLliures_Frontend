@@ -3,8 +3,20 @@ import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Location } from '../models';
 import { MapCacheService } from '../services/MapCacheService';
+import {
+  LEAFLET_CSS,
+  LEAFLET_HEAT_JS,
+  LEAFLET_JS,
+  MARKERCLUSTER_CSS,
+  MARKERCLUSTER_DEFAULT_CSS,
+  MARKERCLUSTER_JS,
+} from '../vendor/leaflet/leafletAssets';
 
 export type RepresentationType = 'heatmap' | 'cluster';
+
+/** Evita que un `</script` dins del codi tanqui l'etiqueta del HTML inline. */
+const inlineScript = (code: string) => code.replace(/<\/script/gi, '<\\/script');
+
 export type MapLayerType = 'opentopomap' | 'openstreetmap';
 
 interface LeafletWebMapProps {
@@ -158,20 +170,13 @@ export const LeafletWebMap = memo(function LeafletWebMap({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Mapa de Refugis</title>
       
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
-      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
-      
-      <!-- Leaflet.heat for heatmap -->
-      <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-      
-      <!-- Leaflet.markercluster for clustering -->
-      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-      <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+      <!-- Leaflet, Leaflet.heat i Leaflet.markercluster empaquetats (cap petició a CDN: RGPD) -->
+      <style>${LEAFLET_CSS}</style>
+      <style>${MARKERCLUSTER_CSS}</style>
+      <style>${MARKERCLUSTER_DEFAULT_CSS}</style>
+      <script>${inlineScript(LEAFLET_JS)}</script>
+      <script>${inlineScript(LEAFLET_HEAT_JS)}</script>
+      <script>${inlineScript(MARKERCLUSTER_JS)}</script>
       
       <style>
         body { 
