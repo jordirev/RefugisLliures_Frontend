@@ -482,4 +482,24 @@ describe('RefugisService', () => {
       await expect(RefugisService.getRefugis()).rejects.toThrow();
     });
   });
+
+  describe('getElevation', () => {
+    it('demana la altitud al backend (no a tercers) i la retorna', async () => {
+      mockApiGet.mockResolvedValue({ ok: true, json: async () => ({ elevation: 2145 }) } as unknown as Response);
+
+      await expect(RefugisService.getElevation(42.5, 1.5)).resolves.toBe(2145);
+      expect(mockApiGet).toHaveBeenCalledWith(expect.stringContaining('/refuges/elevation/?lat=42.5&lng=1.5'));
+    });
+
+    it('retorna null si el backend no en té, falla o la xarxa cau', async () => {
+      mockApiGet.mockResolvedValueOnce({ ok: true, json: async () => ({ elevation: null }) } as unknown as Response);
+      await expect(RefugisService.getElevation(1, 1)).resolves.toBeNull();
+
+      mockApiGet.mockResolvedValueOnce({ ok: false } as unknown as Response);
+      await expect(RefugisService.getElevation(1, 1)).resolves.toBeNull();
+
+      mockApiGet.mockRejectedValueOnce(new Error('network'));
+      await expect(RefugisService.getElevation(1, 1)).resolves.toBeNull();
+    });
+  });
 });
