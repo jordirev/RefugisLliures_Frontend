@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../hooks/useTranslation';
 import { Location, InfoComp } from '../models';
 import { RefugisService } from '../services/RefugisService';
+import { FieldResetButton } from './FieldResetButton';
 import { DefaultRefugeImageService } from '../services/DefaultRefugeImageService';
 import { BadgeSelector } from './BadgeSelector';
 import { BadgeType } from './BadgeType';
@@ -229,6 +230,67 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
     amenities,
     initialData,
   ]);
+
+  // Valors originals del refugi (mode edició) i botons per restaurar cada camp
+  const isEdit = mode === 'edit' && !!initialData;
+  const original = {
+    name: initialData?.name || '',
+    latitude: initialData?.coord.lat.toString() || '',
+    longitude: initialData?.coord.long.toString() || '',
+    region: initialData?.region || '',
+    departement: initialData?.departement || '',
+    type: initialData?.type || 'non gardé',
+    condition: initialData?.condition ?? 1,
+    altitude: initialData?.altitude?.toString() || '',
+    places: initialData?.places?.toString() || '',
+    description: initialData?.description || '',
+    links: initialData?.links || [],
+    amenities: initialData?.info_comp || defaultAmenities,
+  };
+  const filledLinks = links.filter((l) => l.trim() !== '');
+  const changed = {
+    name: isEdit && name !== original.name,
+    latitude: isEdit && latitude !== original.latitude,
+    longitude: isEdit && longitude !== original.longitude,
+    region: isEdit && region !== original.region,
+    departement: isEdit && departement !== original.departement,
+    type: isEdit && type !== original.type,
+    condition: isEdit && condition !== original.condition,
+    altitude: isEdit && altitude !== original.altitude,
+    places: isEdit && places !== original.places,
+    description: isEdit && description !== original.description,
+    links:
+      isEdit &&
+      (original.links.length !== filledLinks.length ||
+        original.links.some((link, idx) => link !== filledLinks[idx])),
+    amenities:
+      isEdit &&
+      Object.keys(defaultAmenities).some(
+        (key) => amenities[key as keyof InfoComp] !== original.amenities[key as keyof InfoComp]
+      ),
+  };
+
+  const clearError = (field: keyof typeof errors) => {
+    if (errors[field]) setErrors({ ...errors, [field]: undefined });
+  };
+  const resetName = () => { setName(original.name); clearError('name'); };
+  const resetLatitude = () => { setLatitude(original.latitude); clearError('latitude'); };
+  const resetLongitude = () => { setLongitude(original.longitude); clearError('longitude'); };
+  const resetRegion = () => { setRegion(original.region); clearError('region'); };
+  const resetDepartement = () => { setDepartement(original.departement); clearError('departement'); };
+  const resetAltitude = () => {
+    setAltitude(original.altitude);
+    // Perquè l'autocompletat per coordenades no torni a sobreescriure el valor restaurat
+    setAltitudeManuallyEdited(true);
+    clearError('altitude');
+  };
+  const resetPlaces = () => { setPlaces(original.places); clearError('places'); };
+  const resetDescription = () => { setDescription(original.description); clearError('description'); };
+  const resetLinks = () => {
+    setLinks(original.links.length > 0 ? [...original.links] : ['']);
+    clearError('links');
+  };
+  const resetAmenities = () => setAmenities({ ...original.amenities });
 
   const isFormValid =
     name.trim() !== '' && latitude.trim() !== '' && longitude.trim() !== '';
@@ -617,9 +679,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
           <Text style={styles.sectionTitle}>{t('createRefuge.coordinates')}</Text>
           <View style={styles.coordsRow}>
             <View style={styles.coordInput} ref={latitudeRef}>
-              <Text style={styles.inputLabel}>
-                {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
-              </Text>
+              <View style={styles.fieldLabelRow}>
+                <Text style={[styles.inputLabel, styles.inputLabelInRow]}>
+                  {t('createRefuge.latitude')} <Text style={styles.required}>*</Text>
+                </Text>
+                <FieldResetButton testID="reset-latitude" visible={changed.latitude} onPress={resetLatitude} />
+              </View>
               <TextInput
                 style={[styles.textInput, errors.latitude && styles.textInputError]}
                 value={latitude}
@@ -634,9 +699,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
               {errors.latitude && <Text style={styles.errorText}>{errors.latitude}</Text>}
             </View>
             <View style={styles.coordInput} ref={longitudeRef}>
-              <Text style={styles.inputLabel}>
-                {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
-              </Text>
+              <View style={styles.fieldLabelRow}>
+                <Text style={[styles.inputLabel, styles.inputLabelInRow]}>
+                  {t('createRefuge.longitude')} <Text style={styles.required}>*</Text>
+                </Text>
+                <FieldResetButton testID="reset-longitude" visible={changed.longitude} onPress={resetLongitude} />
+              </View>
               <TextInput
                 style={[styles.textInput, errors.longitude && styles.textInputError]}
                 value={longitude}
@@ -656,9 +724,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
         {/* Name */}
         <View style={styles.section} ref={nameRef}>
           <Text style={styles.sectionTitle}>{t('createRefuge.generalInfo')}</Text>
-          <Text style={styles.inputLabel}>
-            {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
-          </Text>
+          <View style={styles.fieldLabelRow}>
+            <Text style={[styles.inputLabel, styles.inputLabelInRow]}>
+              {t('createRefuge.namePlaceholder')} <Text style={styles.required}>*</Text>
+            </Text>
+            <FieldResetButton testID="reset-name" visible={changed.name} onPress={resetName} />
+          </View>
           <TextInput
             style={[styles.nameInput, errors.name && styles.textInputError]}
             value={name}
@@ -697,6 +768,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
                 maxLength={100}
               />
               {errors.region && <Text style={styles.errorText}>{errors.region}</Text>}
+              <FieldResetButton
+                testID="reset-region"
+                visible={changed.region}
+                onPress={resetRegion}
+                style={styles.inputResetButton}
+              />
             </View>
             <Text style={styles.regionSeparator}>,</Text>
             <View style={{ flex: 1 }} ref={regionRef}>
@@ -720,6 +797,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
               {errors.departement && (
                 <Text style={styles.errorText}>{errors.departement}</Text>
               )}
+              <FieldResetButton
+                testID="reset-departement"
+                visible={changed.departement}
+                onPress={resetDepartement}
+                style={styles.inputResetButton}
+              />
             </View>
           </View>
         </View>
@@ -731,28 +814,48 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
             {t('createRefuge.pressToEdit')}
           </Text>
           <View style={styles.badgeSelectorsRow}>
-            <BadgeSelector
-              type="type"
-              value={type}
-              onValueChange={(value) => setType(value as string)}
-              expanded={typeExpanded}
-              onToggle={() => {
-                setTypeExpanded(!typeExpanded);
-                if (conditionExpanded) setConditionExpanded(false);
-              }}
-              renderOptionsExternal={true}
-            />
-            <BadgeSelector
-              type="condition"
-              value={condition}
-              onValueChange={(value) => setCondition(value as number)}
-              expanded={conditionExpanded}
-              onToggle={() => {
-                setConditionExpanded(!conditionExpanded);
-                if (typeExpanded) setTypeExpanded(false);
-              }}
-              renderOptionsExternal={true}
-            />
+            <View style={styles.badgeWithReset}>
+              <BadgeSelector
+                type="type"
+                value={type}
+                onValueChange={(value) => setType(value as string)}
+                expanded={typeExpanded}
+                onToggle={() => {
+                  setTypeExpanded(!typeExpanded);
+                  if (conditionExpanded) setConditionExpanded(false);
+                }}
+                renderOptionsExternal={true}
+              />
+              <FieldResetButton
+                testID="reset-type"
+                visible={changed.type}
+                onPress={() => {
+                  setType(original.type);
+                  setTypeExpanded(false);
+                }}
+              />
+            </View>
+            <View style={styles.badgeWithReset}>
+              <BadgeSelector
+                type="condition"
+                value={condition}
+                onValueChange={(value) => setCondition(value as number)}
+                expanded={conditionExpanded}
+                onToggle={() => {
+                  setConditionExpanded(!conditionExpanded);
+                  if (typeExpanded) setTypeExpanded(false);
+                }}
+                renderOptionsExternal={true}
+              />
+              <FieldResetButton
+                testID="reset-condition"
+                visible={changed.condition}
+                onPress={() => {
+                  setCondition(original.condition);
+                  setConditionExpanded(false);
+                }}
+              />
+            </View>
           </View>
 
           {/* Render options below badges */}
@@ -830,6 +933,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
                 placeholderTextColor="#9CA3AF"
               />
               {errors.altitude && <Text style={styles.errorTextStat}>{errors.altitude}</Text>}
+              <FieldResetButton
+                testID="reset-altitude"
+                visible={changed.altitude}
+                onPress={resetAltitude}
+                style={styles.statResetButton}
+              />
             </View>
 
             <View
@@ -850,6 +959,12 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
                 placeholderTextColor="#9CA3AF"
               />
               {errors.places && <Text style={styles.errorTextStat}>{errors.places}</Text>}
+              <FieldResetButton
+                testID="reset-places"
+                visible={changed.places}
+                onPress={resetPlaces}
+                style={styles.statResetButton}
+              />
             </View>
           </View>
         </View>
@@ -858,6 +973,7 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
         <View style={styles.section} ref={descriptionRef}>
           <View style={styles.labelRow}>
             <Text style={styles.sectionTitle}>{t('refuge.details.description')}</Text>
+            <FieldResetButton testID="reset-description" visible={changed.description} onPress={resetDescription} />
           </View>
           <View style={styles.descriptionContainer}>
             <TextInput
@@ -883,7 +999,10 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
 
         {/* Amenities */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('refuge.details.amenities')}</Text>
+          <View style={styles.labelRow}>
+            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>{t('refuge.details.amenities')}</Text>
+            <FieldResetButton testID="reset-amenities" visible={changed.amenities} onPress={resetAmenities} />
+          </View>
           <View style={styles.amenitiesGrid}>
             {amenityList.map((amenity) => (
               <TouchableOpacity
@@ -911,7 +1030,10 @@ export function RefugeForm({ mode, initialData, onSubmit, onCancel, onViewRefuge
 
         {/* Links */}
         <View style={styles.section} ref={linksRef}>
-          <Text style={styles.sectionTitle}>{t('createRefuge.links')}</Text>
+          <View style={styles.labelRow}>
+            <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>{t('createRefuge.links')}</Text>
+            <FieldResetButton testID="reset-links" visible={changed.links} onPress={resetLinks} />
+          </View>
           {links.map((link, index) => (
             <View key={index} style={styles.linkRow}>
               <TextInput
@@ -1273,5 +1395,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  fieldLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  inputLabelInRow: {
+    marginBottom: 0,
+  },
+  inputResetButton: {
+    position: 'absolute',
+    right: 6,
+    top: 9,
+  },
+  statResetButton: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+  },
+  badgeWithReset: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });

@@ -593,6 +593,7 @@
   "editRefuge": {
     "title": "Editar Refugi",
     "proposalInfo": "Aquesta és una proposta d'edició de refugi que serà revisada i aprovada per un administrador",
+    "restoreOriginal": "Restaura el valor original",
     "adminCommentPlaceholder": "Comentari obligatori per a l'administrador",
     "minChars": "mínim {{min}}",
     "success": {

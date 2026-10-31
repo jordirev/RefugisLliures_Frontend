@@ -61,11 +61,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   >
     <Image
       resizeMode="cover"
-      source={
-        {
-          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-        }
-      }
+      source="test-file-stub"
       style={
         {
           "height": "100%",
@@ -345,11 +341,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   >
     <Image
       resizeMode="cover"
-      source={
-        {
-          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-        }
-      }
+      source="test-file-stub"
       style={
         {
           "height": "100%",
@@ -629,11 +621,7 @@ exports[`RefugeCard Component Snapshot testing hauria de coincidir amb el snapsh
   >
     <Image
       resizeMode="cover"
-      source={
-        {
-          "uri": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-        }
-      }
+      source="test-file-stub"
       style={
         {
           "height": "100%",

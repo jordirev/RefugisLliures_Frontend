@@ -589,6 +589,7 @@
   "editRefuge": {
     "title": "Editar Refugio",
     "proposalInfo": "Esta es una propuesta de edición de refugio que será revisada y aprobada por un administrador",
+    "restoreOriginal": "Restaurar el valor original",
     "adminCommentPlaceholder": "Comentario obligatorio para el administrador.",
     "minChars": "mínimo {{min}}",
     "success": {
