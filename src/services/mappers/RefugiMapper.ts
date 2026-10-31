@@ -154,6 +154,7 @@ export function mapperUserRefugiInfoDTO(userRefugiInfoDTO: UserRefugiInfoDTO): L
   return {
     id: userRefugiInfoDTO.id,
     name: userRefugiInfoDTO.name,
+    type: userRefugiInfoDTO.type,
     coord: mapCoordFromDTO(coordData),
     places: userRefugiInfoDTO.places,
     region: userRefugiInfoDTO.region,
