@@ -73,7 +73,7 @@ export function useAddFavouriteRefuge() {
       if (userData) {
         const updatedUser = {
           ...userData,
-          favourite_refuges: [...(userData.favourite_refuges || []), refugeId]
+          favourite_refuges: [refugeId, ...(userData.favourite_refuges || [])]
         };
         queryClient.setQueryData(queryKeys.user(uid), updatedUser);
       }
@@ -97,7 +97,7 @@ export function useAddFavouriteRefuge() {
         // Check if refuge already exists to avoid duplicates
         const refugeExists = currentRefuges.some(r => String(r.id) === String(addedRefuge.id));
         if (!refugeExists) {
-          const updatedRefuges = [...currentRefuges, addedRefuge];
+          const updatedRefuges = [addedRefuge, ...currentRefuges];
           queryClient.setQueryData(queryKeys.favouriteRefuges(uid), updatedRefuges);
         }
       }
@@ -111,7 +111,7 @@ export function useAddFavouriteRefuge() {
         if (!favourites.includes(refugeIdStr)) {
           const updatedUser = {
             ...userData,
-            favourite_refuges: [...favourites, refugeIdStr]
+            favourite_refuges: [refugeIdStr, ...favourites]
           };
           queryClient.setQueryData(queryKeys.user(uid), updatedUser);
         }
@@ -234,7 +234,7 @@ export function useAddVisitedRefuge() {
       if (userData) {
         const updatedUser = {
           ...userData,
-          visited_refuges: [...(userData.visited_refuges || []), refugeId]
+          visited_refuges: [refugeId, ...(userData.visited_refuges || [])]
         };
         queryClient.setQueryData(queryKeys.user(uid), updatedUser);
       }
@@ -258,7 +258,7 @@ export function useAddVisitedRefuge() {
         // Check if refuge already exists to avoid duplicates
         const refugeExists = currentRefuges.some(r => String(r.id) === String(addedRefuge.id));
         if (!refugeExists) {
-          const updatedRefuges = [...currentRefuges, addedRefuge];
+          const updatedRefuges = [addedRefuge, ...currentRefuges];
           queryClient.setQueryData(queryKeys.visitedRefuges(uid), updatedRefuges);
         }
       }
@@ -272,7 +272,7 @@ export function useAddVisitedRefuge() {
         if (!visited.includes(refugeIdStr)) {
           const updatedUser = {
             ...userData,
-            visited_refuges: [...visited, refugeIdStr]
+            visited_refuges: [refugeIdStr, ...visited]
           };
           queryClient.setQueryData(queryKeys.user(uid), updatedUser);
         }

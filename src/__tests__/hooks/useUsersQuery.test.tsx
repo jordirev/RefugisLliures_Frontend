@@ -205,7 +205,7 @@ describe('useAddFavouriteRefuge', () => {
     });
 
     const updatedUser = queryClient.getQueryData<any>(['users', 'detail', 'user-123']);
-    expect(updatedUser.favourite_refuges).toContain('refuge-new');
+    expect(updatedUser.favourite_refuges[0]).toBe('refuge-new');   // més recent primer
   });
 
   it('should add refuge to cache on success', async () => {
