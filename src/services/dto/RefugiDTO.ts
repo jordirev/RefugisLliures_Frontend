@@ -124,6 +124,7 @@ export interface RefugisSimpleResponseDTO {
 export interface UserRefugiInfoDTO {
   id: string;
   name: string;
+  type?: string;
   coord?: CoordDTO;
   places?: number | null;
   region?: string | null;

@@ -302,6 +302,17 @@ describe('RefugiMapper', () => {
       expect(result.region).toBe('Catalunya');
     });
 
+    it('keeps the refuge type (needed to pick the default image)', () => {
+      const result = mapperUserRefugiInfoDTO({
+        id: 'refuge-1',
+        name: 'Test Refuge',
+        type: 'orri',
+        coord: { long: 1.5, lat: 42.5 },
+      });
+
+      expect(result.type).toBe('orri');
+    });
+
     it('should throw error if coord is missing', () => {
       const input = {
         id: 'refuge-1',
