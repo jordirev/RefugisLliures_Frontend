@@ -484,7 +484,7 @@ describe('RefugisService', () => {
   });
 
   describe('getElevation', () => {
-    it('demana l'altitud al backend (no a tercers) i la retorna', async () => {
+    it('demana la altitud al backend (no a tercers) i la retorna', async () => {
       mockApiGet.mockResolvedValue({ ok: true, json: async () => ({ elevation: 2145 }) } as unknown as Response);
 
       await expect(RefugisService.getElevation(42.5, 1.5)).resolves.toBe(2145);
