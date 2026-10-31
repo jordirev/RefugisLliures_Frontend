@@ -30,8 +30,12 @@ jest.mock('expo-image-picker', () => ({
 
 import React from 'react';
 import { renderWithProviders, fireEvent, waitFor } from '../setup/testUtils';
+import { setupMSW } from '../setup/mswServer';
 import { ProfileScreen } from '../../../screens/ProfileScreen';
 import { User } from '../../../models';
+
+// MSW: cap petició surt a la xarxa real (les no gestionades fan fallar el test)
+setupMSW();
 
 // Mock de useNavigation
 const mockNavigate = jest.fn();

@@ -125,6 +125,11 @@ export const handlers = [
     return HttpResponse.json(refugi);
   }),
 
+  // GET /users/:uid/moderation-notices/ - Avisos de moderació de l'usuari (cap per defecte)
+  http.get(`${API_BASE_URL}/users/:uid/moderation-notices/`, () => {
+    return HttpResponse.json({ notices: [] });
+  }),
+
   // GET /users/me/ - Obtenir l'usuari actual
   http.get(`${API_BASE_URL}/users/me/`, ({ request }) => {
     const authHeader = request.headers.get('Authorization');

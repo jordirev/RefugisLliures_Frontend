@@ -469,3 +469,33 @@ jest.mock('expo-image-picker', () => ({
   MediaTypeOptions: { All: 'All', Images: 'Images', Videos: 'Videos' },
   UIImagePickerPresentationStyle: { FULL_SCREEN: 0 },
 }));
+
+// ---------------------------------------------------------------------------------------------
+// Cap test pot fer peticions a la xarxa real (RGPD i tests deterministes).
+// Quan MSW està actiu (`setupMSW()`), un handler comodí final bloqueja i registra les peticions sense handler.
+// Als tests sense MSW (i que no mockin `global.fetch`), qualsevol petició HTTP(S) real es bloqueja aquí i fa
+// fallar el test: usa `setupMSW()` + un handler a `src/__tests__/integration/setup/mswHandlers.ts` o mocka el servei.
+// ---------------------------------------------------------------------------------------------
+const realFetch = global.fetch;
+// Compartit amb `setupMSW()` (src/__tests__/integration/setup/mswServer.ts)
+const blockedRequests = (global.__blockedRequests = []);
+const LOCAL_URL = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?(\/|$)/;
+
+if (typeof realFetch === 'function') {
+  global.fetch = function guardedFetch(input, init) {
+    const url = typeof input === 'string' ? input : (input && input.url) || String(input);
+    if (!global.__mswActive && /^https?:\/\//i.test(url) && !LOCAL_URL.test(url)) {
+      blockedRequests.push(`${(init && init.method) || (input && input.method) || 'GET'} ${url}`);
+      return Promise.reject(new TypeError(`[sense xarxa als tests] petició real bloquejada: ${url}`));
+    }
+    return realFetch.call(this, input, init);
+  };
+}
+
+afterEach(() => {
+  if (blockedRequests.length > 0) {
+    const list = [...new Set(blockedRequests)].join('\n  ');
+    blockedRequests.length = 0;
+    throw new Error(`El test ha intentat fer peticions de xarxa reals (afegeix un handler MSW o mocka-les):\n  ${list}`);
+  }
+});
