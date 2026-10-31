@@ -15,19 +15,21 @@ const IMAGES = {
   gardee: require('../assets/images/refuges-default/gardee.png'),
 } as const;
 
-/** Clau normalitzada (minúscules, sense accents ni espais sobrants) del tipus → imatge. */
-const IMAGE_BY_TYPE: Record<string, ImageSourcePropType> = {
-  'non garde': IMAGES.nonGardee,
-  'cabane ouverte mais ocupee par le berger l ete': IMAGES.cabaneOuverteBerger,
-  'fermee': IMAGES.fermee,
-  'orri': IMAGES.orri,
-  'emergence': IMAGES.emergence,
+export type DefaultImageKey = keyof typeof IMAGES;
+
+/** Clau normalitzada (minúscules, sense accents ni espais sobrants) del tipus → clau d'imatge. */
+const IMAGE_KEY_BY_TYPE: Record<string, DefaultImageKey> = {
+  'non garde': 'nonGardee',
+  'cabane ouverte mais ocupee par le berger l ete': 'cabaneOuverteBerger',
+  'fermee': 'fermee',
+  'orri': 'orri',
+  'emergence': 'emergence',
   // Tipus encara no suportats a l'app: la imatge ja està llesta, però cap pantalla els passa de moment.
-  'cle necessaire': IMAGES.cleNecessaire,
-  'garde': IMAGES.gardee,
+  'cle necessaire': 'cleNecessaire',
+  'garde': 'gardee',
 };
 
-const DEFAULT_IMAGE = IMAGES.nonGardee;
+const DEFAULT_KEY: DefaultImageKey = 'nonGardee';
 
 const normalizeType = (type: string): string =>
   type
@@ -43,7 +45,12 @@ export class DefaultRefugeImageService {
    * retorna la de "non gardé".
    */
   static getDefaultImage(type?: string | null): ImageSourcePropType {
-    if (typeof type !== 'string' || !type) return DEFAULT_IMAGE;
-    return IMAGE_BY_TYPE[normalizeType(type)] ?? DEFAULT_IMAGE;
+    return IMAGES[DefaultRefugeImageService.getImageKey(type)];
+  }
+
+  /** Clau de la imatge triada per al tipus (separada perquè es pugui provar sense dependre dels fitxers). */
+  static getImageKey(type?: string | null): DefaultImageKey {
+    if (typeof type !== 'string' || !type) return DEFAULT_KEY;
+    return IMAGE_KEY_BY_TYPE[normalizeType(type)] ?? DEFAULT_KEY;
   }
 }

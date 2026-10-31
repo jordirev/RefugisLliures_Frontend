@@ -1,38 +1,36 @@
 import { DefaultRefugeImageService } from '../../../services/DefaultRefugeImageService';
 
-const img = (type?: string | null) => DefaultRefugeImageService.getDefaultImage(type);
+// En Jest tots els .png són el mateix stub: es prova la tria (clau) i no el fitxer concret.
+const key = (type?: string | null) => DefaultRefugeImageService.getImageKey(type);
 
 describe('DefaultRefugeImageService', () => {
-  it('retorna "non gardé" per defecte (sense tipus, buit o desconegut)', () => {
-    const nonGardee = img('non gardé');
-    expect(img()).toBe(nonGardee);
-    expect(img(null)).toBe(nonGardee);
-    expect(img('')).toBe(nonGardee);
-    expect(img(42 as unknown as string)).toBe(nonGardee);
-    expect(img('tipus-inventat')).toBe(nonGardee);
+  it('retorna "non gardé" per defecte (sense tipus, buit, no textual o desconegut)', () => {
+    expect(key()).toBe('nonGardee');
+    expect(key(null)).toBe('nonGardee');
+    expect(key('')).toBe('nonGardee');
+    expect(key(42 as unknown as string)).toBe('nonGardee');
+    expect(key('tipus-inventat')).toBe('nonGardee');
   });
 
-  it('retorna una imatge diferent per a cada tipus suportat', () => {
-    const types = [
-      'non gardé',
-      'cabane ouverte mais ocupee par le berger l ete',
-      'fermée',
-      'orri',
-      'emergence',
-    ];
-    const images = types.map(img);
-    expect(new Set(images).size).toBe(types.length);
+  it('tria la imatge corresponent a cada tipus suportat', () => {
+    expect(key('non gardé')).toBe('nonGardee');
+    expect(key('cabane ouverte mais ocupee par le berger l ete')).toBe('cabaneOuverteBerger');
+    expect(key('fermée')).toBe('fermee');
+    expect(key('orri')).toBe('orri');
+    expect(key('emergence')).toBe('emergence');
   });
 
   it('ignora accents, majúscules i espais sobrants', () => {
-    expect(img('  FERMÉE ')).toBe(img('fermée'));
-    expect(img('Non Gardé')).toBe(img('non gardé'));
+    expect(key('  FERMÉE ')).toBe('fermee');
+    expect(key('Non Gardé')).toBe('nonGardee');
   });
 
-  it('el servei ja resol els tipus "clé nécessaire" i "gardé" amb la seva pròpia imatge', () => {
-    const known = ['non gardé', 'cabane ouverte mais ocupee par le berger l ete', 'fermée', 'orri', 'emergence'].map(img);
-    expect(known).not.toContain(img('clé nécessaire'));
-    expect(known).not.toContain(img('gardé'));
-    expect(img('clé nécessaire')).not.toBe(img('gardé'));
+  it('el servei ja resol "clé nécessaire" i "gardé" (cap pantalla els passa encara)', () => {
+    expect(key('clé nécessaire')).toBe('cleNecessaire');
+    expect(key('gardé')).toBe('gardee');
+  });
+
+  it('getDefaultImage retorna un recurs d\'imatge', () => {
+    expect(DefaultRefugeImageService.getDefaultImage('orri')).toBeTruthy();
   });
 });

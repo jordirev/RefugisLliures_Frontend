@@ -265,8 +265,9 @@ describe('RefugeBottomSheet - Tests d\'integració', () => {
 
       const image = getByTestId('refuge-image');
       expect(image).toBeTruthy();
-      // Hauria de tenir una URL per defecte
-      expect(image.props.source.uri).toContain('unsplash.com');
+      // Imatge per defecte local (cap URL externa)
+      expect(image.props.source.uri).toBeUndefined();
+      expect(image.props.source).toBeTruthy();
     });
   });
 
