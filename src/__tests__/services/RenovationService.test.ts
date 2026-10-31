@@ -255,7 +255,7 @@ describe('RenovationService', () => {
 
       await expect(RenovationService.deleteRenovation('renovation-1')).resolves.toBeUndefined();
       expect(mockedApiDelete).toHaveBeenCalledWith(
-        'https://refugislliures-backend.onrender.com/api/renovations/renovation-1/?id=renovation-1'
+        'https://refugislliures-backend.onrender.com/api/renovations/renovation-1/'
       );
     });
 

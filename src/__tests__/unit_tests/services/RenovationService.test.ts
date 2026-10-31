@@ -256,7 +256,7 @@ describe('RenovationService', () => {
       ).resolves.toBeUndefined();
 
       expect(apiDelete).toHaveBeenCalledWith(
-        'https://refugislliures-backend.onrender.com/api/renovations/renovation-123/?id=renovation-123'
+        'https://refugislliures-backend.onrender.com/api/renovations/renovation-123/'
       );
     });
 

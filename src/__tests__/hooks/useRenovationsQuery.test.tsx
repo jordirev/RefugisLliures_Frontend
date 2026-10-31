@@ -333,6 +333,25 @@ describe('useDeleteRenovation', () => {
     expect(mockedService.deleteRenovation).toHaveBeenCalledWith('renovation-1');
   });
 
+  it('no invalida el detall de la renovation esborrada però sí les llistes', async () => {
+    mockedService.deleteRenovation.mockResolvedValue(undefined);
+    const spy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = await renderHook(() => useDeleteRenovation(), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ id: 'renovation-1', refugeId: 'refuge-1' });
+    });
+
+    const call = spy.mock.calls.find(([filters]) => (filters as any)?.predicate);
+    const predicate = (call![0] as any).predicate as (q: any) => boolean;
+    expect(predicate({ queryKey: ['renovations', 'detail', 'renovation-1'] })).toBe(false);
+    expect(predicate({ queryKey: ['renovations', 'detail', 'altra'] })).toBe(true);
+    expect(predicate({ queryKey: ['renovations', 'list'] })).toBe(true);
+  });
+
   it('should handle error when deleting renovation', async () => {
     mockedService.deleteRenovation.mockRejectedValue(new Error('Failed to delete'));
 

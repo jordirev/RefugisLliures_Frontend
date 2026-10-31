@@ -238,7 +238,7 @@ export class RenovationService {
    */
   static async deleteRenovation(id: string): Promise<void> {
     try {
-      const url = `${API_BASE_URL}/renovations/${id}/?id=${id}`;
+      const url = `${API_BASE_URL}/renovations/${id}/`;
       const response = await apiDelete(url);
       
       if (response.status === 403) {
