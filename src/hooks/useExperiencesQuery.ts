@@ -66,6 +66,7 @@ export function useCreateExperience() {
       const response = await ExperienceService.createExperience({
         refuge_id: request.refuge_id,
         comment: request.comment,
+        condition: request.condition,
       });
       const experience = mapExperienceFromDTO(response.experience);
       const { upload, uploadError } = await uploadExperienceFiles(request.refuge_id, experience.id, request.files);
@@ -123,10 +124,11 @@ export function useUpdateExperience() {
       request: UpdateExperienceRequest 
     }) => {
       const hasFiles = !!request.files && request.files.length > 0;
-      let response: Awaited<ReturnType<typeof ExperienceService.updateExperience>> | null = null;
-      if (request.comment || !hasFiles) {
-        response = await ExperienceService.updateExperience(experienceId, { comment: request.comment });
-      }
+      // Sempre es fa el PATCH: porta el comentari i la valoració (condition)
+      const response = await ExperienceService.updateExperience(experienceId, {
+        comment: request.comment,
+        condition: request.condition,
+      });
       const { upload, uploadError } = await uploadExperienceFiles(refugeId, experienceId, request.files);
       return {
         experience: response?.experience ? mapExperienceFromDTO(response.experience) : undefined,

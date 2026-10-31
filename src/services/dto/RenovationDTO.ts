@@ -10,6 +10,8 @@ export interface RenovationDTO {
     fin_date: string; // ISO date string
     description: string;
     materials_needed?: string | null;
-    group_link: string;
+    /** Només per al creador, els participants i els admins; per a la resta, la clau s'omet
+     * (també a les reformes passades d'un creador esborrat, `creator_uid: 'unknown'`) */
+    group_link?: string;
     participants_uids?: string[] | null;
 }

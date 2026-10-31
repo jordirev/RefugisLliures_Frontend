@@ -142,7 +142,8 @@
       "infoMessage": "Aquí es mostren les reformes a fer a refugis lliures que els usuaris pengen. Si vols col·laborar per a mantenir els refugis lliures, pots unir-te a qualsevol reforma i comunicar-te amb els participants mitjançant el grup de Whatsapp o Telegram que el creador hagi establert.",
       "infoCreationTittle": "⚠️Abans de crear una reforma...",
       "infoCreationMessage": "Abans de crear una reforma, assegure't de consultar la normativa vigent i de preguntar al parc natural o ajuntament si és viable."
-    }
+    },
+    "join_group_link": "Uneix-te al grup"
   },
   "profile": {
     "title": "Perfil",
@@ -269,6 +270,7 @@
       "occupiedInSummer": "Ocupat estiu per pastor",
       "unknown": "Desconegut"
     },
+    "commentRequired": "Cal escriure un comentari per publicar l'experiència",
     "condition": {
       "label": "Estat:",
       "excellent": "Excel·lent",
@@ -349,7 +351,8 @@
       "numVisitorsPlaceholder": "Ex: 4",
       "numVisitorsError": "El nombre de visitants ha de ser superior a 0",
       "disclaimer": "No estàs reservant cap plaça al refugi. Només estàs indicant que aniràs a aquest refugi en aquesta data perquè la resta d'usuaris ho sàpiguen.",
-      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi."
+      "placesExceeded": "L'ocupació del refugi ({{total}} visitants) supera la capacitat disponible ({{places}} places). Tingues-ho en compte abans d'anar-hi.",
+      "numVisitorsTooMany": "El nombre de visitants no pot superar {{max}}"
     }
   },
   "filters": {
@@ -533,7 +536,8 @@
       "generic": "S'ha produït un error. Si us plau, torna-ho a intentar",
       "googleLoginFailed": "Error durant l'autenticació amb Google",
       "googleSigninNotAvailable": "Google Sign In no està disponible en Expo Go. Utilitza un build natiu per activar aquesta funcionalitat.",
-      "deleteFailed": "No s'ha pogut eliminar el compte. Torna-ho a provar."
+      "deleteFailed": "No s'ha pogut eliminar el compte. Torna-ho a provar.",
+      "deleteUnauthorized": "No s'ha pogut verificar la teva sessió. Torna a iniciar sessió i prova-ho de nou."
     }
   },
   "createRenovation": {
@@ -551,8 +555,8 @@
     "materialsLabel": "Materials necessaris",
     "materialsPlaceholder": "Llista els materials necessaris (opcional)...",
     "groupLinkLabel": "Enllaç del grup",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
-    "groupLinkInfo": "Enganxa aquí l'enllaç d'invitació del grup de WhatsApp o Telegram on es coordinarà la reforma.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Enganxa aquí l'enllaç d'invitació del grup (WhatsApp, Telegram...) on es coordinarà la reforma. Ha de començar per http:// o https://.",
     "submit": "Crear Reforma",
     "viewOverlappingRenovation": "Veure reforma",
     "errors": {
@@ -560,14 +564,15 @@
       "refugeNotFound": "El refugi seleccionat no existeix",
       "iniDateRequired": "Has de seleccionar la data d'inici",
       "finDateRequired": "Has de seleccionar la data de finalització",
-      "finDateBeforeIniDate": "La data de finalització ha de ser posterior a la d'inici",
+      "finDateBeforeIniDate": "La data de finalització no pot ser anterior a la d'inici",
       "invalidDate": "Format de data no vàlid",
       "descriptionRequired": "Has d'escriure una descripció",
       "descriptionTooLong": "La descripció no pot superar els 1000 caràcters",
       "groupLinkRequired": "Has d'afegir un enllaç del grup",
-      "groupLinkInvalid": "L'enllaç ha de ser de WhatsApp o Telegram",
+      "groupLinkInvalid": "L'enllaç ha de començar per http:// o https://",
       "overlapMessage": "Ja existeix una reforma planificada per aquest refugi en aquestes dates.",
-      "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar."
+      "generic": "No s'ha pogut crear la reforma. Torna-ho a intentar.",
+      "groupLinkTooLong": "L'enllaç no pot superar els {{max}} caràcters"
     }
   },
   "deleteRefuge": {
@@ -621,6 +626,13 @@
       "title": "Fotos del refugi",
       "message": "Les fotos es podran penjar un cop acceptada la proposta de creació per un administrador"
     },
+    "duplicates": {
+      "title": "Possible refugi duplicat",
+      "message": "Hi ha refugis a menys de 500 m amb un nom semblant. Comprova que no sigui el mateix abans de proposar-ne un de nou:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "Veure {{name}}",
+      "fix": "Corregir la proposta"
+    },
     "success": {
       "title": "Proposta enviada",
       "message": "La teva proposta ha estat enviada correctament i serà revisada per un administrador"
@@ -643,7 +655,9 @@
       "placesInvalid": "Les places han de ser un enter positiu",
       "descriptionTooLong": "La descripció no pot superar els 3000 caràcters",
       "commentTooLong": "El comentari no pot superar els 3000 caràcters",
-      "linkInvalid": "L'enllaç ha de tenir format d'URL vàlid (comença amb http://, https:// o www.)"
+      "linkInvalid": "L'enllaç ha de ser una URL vàlida que comenci amb http:// o https://",
+      "linkTooLong": "Cada enllaç pot tenir com a màxim 2048 caràcters",
+      "linkDuplicated": "Hi ha enllaços repetits"
     }
   },
   "doubts": {
@@ -733,6 +747,8 @@
       "loadError": "No s'han pogut carregar les propostes",
       "loadDetailError": "No s'han pogut carregar els detalls de la proposta",
       "approveError": "No s'ha pogut aprovar la proposta",
+      "linkAlreadyUsed": "Un dels enllaços de la proposta ja pertany a un altre refugi. La proposta continua pendent: rebutja-la o demana que es corregeixi",
+      "refugeNotFound": "El refugi de la proposta ja no existeix. Rebutja la proposta",
       "rejectError": "No s'ha pogut rebutjar la proposta"
     }
   },
@@ -742,6 +758,10 @@
     "addFirst": "Comparteix la teva experiència!",
     "noExperiences": "Encara no hi ha experiències compartides. \nSigues el primer en compartir la teva!",
     "placeholder": "Comparteix la teva experiència...",
+    "condition": {
+      "label": "Estat del refugi",
+      "required": "Cal indicar l'estat del refugi"
+    },
     "newPhotos": "Noves fotos",
     "addPhotos": "Afegir fotos",
     "deletePhotoInfo": "Per eliminar una foto, toca-la al carrusel i elimina-la des del visor",
@@ -889,6 +909,7 @@
       "ageNotConfirmed": "Has de confirmar la teva edat abans de pujar fotos o vídeos",
       "userBlocked": "El teu compte està bloquejat per incompliment de les normes i no pot publicar contingut",
       "notOwner": "Només el creador de l'experiència hi pot afegir fotos",
+      "tooManyPendingUploads": "Tens massa pujades en curs. Espera que acabin i torna-ho a provar",
       "notFound": "El refugi o l'experiència ja no existeix",
       "uploadFailed": "No s'han pogut pujar els fitxers. Torna-ho a provar",
       "notAllowedTitle": "Acció no permesa",
@@ -1000,7 +1021,9 @@
       "statementPlaceholder": "Explica els motius de la decisió",
       "statementRequired": "Cal una motivació",
       "resolved": "Denúncia resolta",
-      "resolveError": "No s'ha pogut resoldre la denúncia"
+      "resolveError": "No s'ha pogut resoldre la denúncia",
+      "alreadyResolved": "Aquesta denúncia ja ha estat resolta",
+      "reportNotFound": "Aquesta denúncia ja no existeix"
     },
     "notices": {
       "title": "Avisos de moderació",
@@ -1008,6 +1031,8 @@
         "remove": "Contingut retirat",
         "remove_and_strike": "Contingut retirat amb avís",
         "hide": "Contingut ocult en revisió",
+        "auto_hide": "Contingut ocult automàticament",
+        "upload_blocked": "Pujada bloquejada",
         "block": "Compte bloquejat",
         "dismiss": "Denúncia desestimada",
         "other": "Avís"
@@ -1030,5 +1055,13 @@
     "confirmError": "No s'ha pogut confirmar l'edat. Torna-ho a provar",
     "logout": "Tancar la sessió",
     "privacyNote": "Només desem que has confirmat l'edat mínima, no la data de naixement."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Acció no permesa",
+    "userBlocked": "El teu compte està bloquejat per incompliment de les normes i no pot publicar contingut",
+    "ageNotConfirmed": "Has de confirmar que tens 16 anys o més abans de publicar contingut",
+    "notOwner": "No tens permís per eliminar aquest contingut: només el seu creador o un administrador ho pot fer",
+    "expelled": "El creador t'ha expulsat d'aquesta reforma i no t'hi pots tornar a unir",
+    "refugeNotFound": "El refugi ja no existeix"
   }
 }

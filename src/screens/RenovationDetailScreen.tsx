@@ -22,6 +22,7 @@ import { Renovation, Location, User } from '../models';
 import { useRefuge } from '../hooks/useRefugesQuery';
 import { useUser, useUsers } from '../hooks/useUsersQuery';
 import { useRenovation, useJoinRenovation, useLeaveRenovation, useDeleteRenovation } from '../hooks/useRenovationsQuery';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 
 // Icons
 import CalendarIcon from '../assets/icons/calendar2.svg';
@@ -122,7 +123,8 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
 
     joinMutation.mutate(renovation.id, {
       onError: (error: any) => {
-        showAlert(t('common.error'), error.message || t('renovations.errorJoining'));
+        const { title, message } = getContentErrorMessage(error, t, 'renovations.errorJoining');
+        showAlert(title, message);
       }
     });
   };
@@ -334,8 +336,8 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
             </View>
           )}
 
-          {/* Group Link Section - Only show if user is creator */}
-          {canSeeParticipants && renovation.group_link && (
+          {/* Enllaç del grup: el backend només el retorna al creador, participants i admins */}
+          {renovation.group_link && (
             <View style={styles.section}>
               <TouchableOpacity
                 style={[
@@ -350,9 +352,11 @@ export function RenovationDetailScreen({ onViewMap }: RenovationDetailScreenProp
                   <Image source={WhatsAppIcon} style={[styles.groupIcon, { width: 24, height: 24 }]} />
                 )}
                 <Text style={styles.groupLinkText}>
-                  {groupType === 'telegram' 
-                    ? t('renovations.join_telegram_link') 
-                    : t('renovations.join_whatapp_link')}
+                  {groupType === 'telegram'
+                    ? t('renovations.join_telegram_link')
+                    : groupType === 'whatsapp'
+                      ? t('renovations.join_whatapp_link')
+                      : t('renovations.join_group_link')}
                 </Text>
               </TouchableOpacity>
             </View>

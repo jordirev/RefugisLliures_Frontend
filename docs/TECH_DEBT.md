@@ -25,6 +25,8 @@
 | M7 | Hook condicional | `src/screens/ProposalsScreen.tsx:66-68` | FET |
 | M8 | EditRenovation 409 obre la renovation equivocada | `src/screens/EditRenovationScreen.tsx:112-117` | FET |
 | M9 | `materials_needed` no es pot buidar; >500 caràcters bloqueja sense missatge | `src/components/RenovationForm.tsx:232-234,277-278` | FET |
+| M20 | `age_not_confirmed` en una escriptura (visites, reformes, dubtes) només mostra un missatge; no es força `backendUser.age_confirmed = false` perquè aparegui l'AgeGate (igual que a les pujades) | `src/utils/apiErrorMessage.ts` | FET |
+| M21 | El codi 403 d'«expulsat» en unir-se a una reforma no està verificat; `joinRenovation` assumeix `expelled` per a qualsevol 403 sense `user_blocked`/`age_not_confirmed` | `src/services/RenovationService.ts` (`joinRenovation`) | INFERÈNCIA |
 | M10 | Usuari Google creat amb idioma fix `ca`; fallada de creació al backend només loggejada | `src/services/AuthService.ts:180,185-189` | FET |
 | M11 | Idioma en majúscules/minúscules inconsistent; idioma del wizard de registre no persistit | `LanguageSelector.tsx:35`, `AuthService.ts:82`, `SignUpScreen.tsx:73` | FET |
 | M12 | Canvi d'email no sincronitzat al backend; canvi d'email/contrasenya oferts a usuaris Google | `AuthService.ts:392-463`, `SettingsScreen.tsx:103-115` | FET |

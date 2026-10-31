@@ -13,12 +13,15 @@ export interface MediaReportCreateDTO {
 
 /** Element de GET /api/admin/media-reports/ */
 export interface MediaReportDTO {
+  /** UUID opac */
   id: string;
-  refuge_id: string;
+  /** null si el refugi s'ha esborrat o és una denúncia d'avatar/automàtica */
+  refuge_id: string | null;
   media_key: string;
   reason: string;
   details?: string | null;
   status: string;
+  /** 'system' (automàtica) o 'unknown' (denunciant anonimitzat) */
   reporter_uid?: string | null;
   media_creator_uid?: string | null;
   creator_uid?: string | null;

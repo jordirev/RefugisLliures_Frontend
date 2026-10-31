@@ -61,7 +61,7 @@ export function MediaReportsScreen() {
         reportId: report.id,
         action: selectedAction,
         statement: statement.trim(),
-        refugeId: report.refuge_id,
+        refugeId: report.refuge_id ?? undefined,
         creatorUid: report.media_creator_uid,
       },
       {
@@ -69,7 +69,18 @@ export function MediaReportsScreen() {
           resetPanel();
           showAlert(t('common.success'), t('media.admin.resolved'));
         },
-        onError: () => {
+        onError: (err: any) => {
+          if (err?.code === 'already_resolved') {
+            // Un altre moderador ja l'ha resolta: refresca la llista
+            refetch();
+            showAlert(t('common.error'), t('media.admin.alreadyResolved'));
+            return;
+          }
+          if (err?.code === 'not_found') {
+            refetch();
+            showAlert(t('common.error'), t('media.admin.reportNotFound'));
+            return;
+          }
           showAlert(t('common.error'), t('media.admin.resolveError'));
         },
       }

@@ -52,7 +52,8 @@
 34. Un `<Modal>` sempre queda per sobre de la pila: **tanca'l abans de `navigate`** (p. ex. visor → `ReportMedia`). Les rutes que han de tapar els overlays d'`AppNavigator` s'han d'afegir a `ROUTES_ABOVE_OVERLAYS` **[FET]**.
 35. Renderitza mitjans amb `MediaImage`/`MediaThumbnail` (expo-image, `cacheKey` = clau R2, `blurhash`): una `Image` amb la URL prefirmada no aprofita mai la cache perquè la URL canvia **[FET]**.
 36. `react-native-compressor` és un mòdul natiu: requereix build EAS/dev client; el codi el carrega amb `require` i, si falla, puja el vídeo original **[FET]**. Als tests està mockejat a `jest.setup.js` (també `expo-image`, `expo-image-manipulator`, `expo-image-picker`).
-37. Els codis d'error (`age_not_confirmed`, `user_blocked`, `not_owner`, `underage`) es llegeixen de l'`ApiError.code`, mai del text **[FET]**.
+37. Els codis d'error (`age_not_confirmed`, `user_blocked`, `not_owner`, `underage`, `expelled`) es llegeixen de l'`ApiError.code`, mai del text **[FET]**. Les escriptures de visites, reformes i dubtes (`POST`/`PATCH`) poden respondre 403 amb `user_blocked`/`age_not_confirmed`: el servei ha de llançar `ApiError` (`buildApiError`) i la UI usar `getContentErrorMessage` (`src/utils/apiErrorMessage.ts`) en lloc de `error.message` **[FET]**.
+37b. `RenovationDTO.group_link` és **opcional**: el backend l'omet a qui no és creador/participant/admin i a les reformes d'un creador esborrat. No facis `.trim()`/`.startsWith()` sense comprovar-lo **[FET]**.
 
 ## Tests i CI
 29. CI fa `npm run test:coverage -- -u`: **els snapshots s'actualitzen sols** i mai fallen a CI (`.github/workflows/main.yml:33`) **[FET]**. Revisa snapshots en local.

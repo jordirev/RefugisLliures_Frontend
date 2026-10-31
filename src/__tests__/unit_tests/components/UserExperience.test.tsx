@@ -73,6 +73,7 @@ const mockExperience: Experience = {
   creator_uid: 'user-1',
   modified_at: '2025-06-15T10:30:00Z',
   comment: 'Una experiència fantàstica al refugi. Tot molt net i acollidor.',
+  condition: 2,
   images_metadata: [
     {
       key: 'img-1',
@@ -541,7 +542,54 @@ describe('UserExperience Component', () => {
       
       await fireEvent.press(getByText('common.confirm'));
       
-      expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, 'Comentari actualitzat', []);
+      expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, 'Comentari actualitzat', [], 2);
+    });
+
+    it('hauria d\'enviar la nova condition en canviar-la durant l\'edició', async () => {
+      const experienceByCurrentUser: Experience = { ...mockExperience, creator_uid: 'current-user-uid' };
+      const { getByText, getByTestId } = await render(
+        <UserExperience
+          user={mockUser}
+          experience={experienceByCurrentUser}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      await fireEvent.press(getByText('common.edit'));
+      await fireEvent.press(getByTestId('experience-condition-0'));
+      await fireEvent.press(getByText('common.confirm'));
+
+      expect(mockOnEdit).toHaveBeenCalledWith(mockExperience.id, mockExperience.comment, [], 0);
+    });
+
+    it('no hauria de permetre confirmar si l\'experiència no té condition fins que se\'n tria una', async () => {
+      const legacyExperience: Experience = {
+        ...mockExperience,
+        creator_uid: 'current-user-uid',
+        condition: undefined,
+      };
+      const { getByText, queryByText, getByTestId, getByDisplayValue } = await render(
+        <UserExperience
+          user={mockUser}
+          experience={legacyExperience}
+          onPhotoPress={mockOnPhotoPress}
+          onEdit={mockOnEdit}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      await fireEvent.press(getByText('common.edit'));
+      await fireEvent.changeText(getByDisplayValue(legacyExperience.comment), 'Canvi de text');
+
+      // Hi ha canvis però falta la condition: sense confirmar i amb missatge de validació
+      expect(queryByText('common.confirm')).toBeNull();
+      expect(getByTestId('experience-condition-required')).toBeTruthy();
+
+      await fireEvent.press(getByTestId('experience-condition-3'));
+      await fireEvent.press(getByText('common.confirm'));
+      expect(mockOnEdit).toHaveBeenCalledWith(legacyExperience.id, 'Canvi de text', [], 3);
     });
 
     it('hauria d\'afegir els fitxers preparats per onPickMedia durant l\'edició', async () => {
@@ -578,7 +626,12 @@ describe('UserExperience Component', () => {
 
       // Confirmar envia els fitxers preparats (MIME real, no forçat)
       await fireEvent.press(getByText('common.confirm'));
-      expect(mockOnEdit).toHaveBeenCalledWith(experienceByCurrentUser.id, experienceByCurrentUser.comment, prepared);
+      expect(mockOnEdit).toHaveBeenCalledWith(
+        experienceByCurrentUser.id,
+        experienceByCurrentUser.comment,
+        prepared,
+        2
+      );
     });
 
     it('no hauria d\'afegir res si la selecció es cancel·la', async () => {

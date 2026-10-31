@@ -70,7 +70,8 @@ export function ProposalDetailScreen() {
   };
 
   // Utilitzar React Query per carregar usuaris
-  const { data: creator } = useUser(proposal.creator_uid);
+  // creator_uid 'unknown' = usuari esborrat: no es consulta
+  const { data: creator } = useUser(proposal.creator_uid && proposal.creator_uid !== 'unknown' ? proposal.creator_uid : undefined);
   const { data: reviewer } = useUser(proposal.reviewer_uid);
 
   // Mutations per aprovar/rebutjar
@@ -96,7 +97,14 @@ export function ProposalDetailScreen() {
           );
         },
         onError: (error: any) => {
-          showAlert(t('common.error'), error.message || t('proposals.errors.approveError'));
+          showAlert(
+            t('common.error'),
+            error?.code === 'link_already_used'
+              ? t('proposals.errors.linkAlreadyUsed')
+              : error?.code === 'refuge_not_found'
+              ? t('proposals.errors.refugeNotFound')
+              : error.message || t('proposals.errors.approveError')
+          );
         },
       }
     );
@@ -744,7 +752,7 @@ export function ProposalDetailScreen() {
             </View>
 
             {/* Creator info */}
-            {creator && renderUserInfo(creator, undefined, proposal.comment, formatDate(proposal.created_at))}
+            {renderUserInfo(creator ?? null, undefined, proposal.comment, formatDate(proposal.created_at))}
 
           </View>
 

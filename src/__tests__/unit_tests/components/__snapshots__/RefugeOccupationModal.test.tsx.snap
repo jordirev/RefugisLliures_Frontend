@@ -257,7 +257,7 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
                   {
                     "busy": undefined,
                     "checked": undefined,
-                    "disabled": undefined,
+                    "disabled": false,
                     "expanded": undefined,
                     "selected": undefined,
                   }
@@ -292,11 +292,14 @@ exports[`RefugeOccupationModal Component Renderització bàsica snapshot test - 
               >
                 <Text
                   style={
-                    {
-                      "color": "#FF6900",
-                      "fontSize": 24,
-                      "fontWeight": "600",
-                    }
+                    [
+                      {
+                        "color": "#FF6900",
+                        "fontSize": 24,
+                        "fontWeight": "600",
+                      },
+                      false,
+                    ]
                   }
                 >
                   →

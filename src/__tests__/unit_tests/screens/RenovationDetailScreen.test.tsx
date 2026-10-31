@@ -323,9 +323,13 @@ describe('RenovationDetailScreen', () => {
       expect(mockJoinMutate).toHaveBeenCalledWith('renovation-1', expect.any(Object));
     });
 
-    it('no hauria de mostrar el link del grup', async () => {
+    it("no hauria de mostrar el link del grup quan el backend n'omet la clau", async () => {
+      const { group_link, ...withoutLink } = mockRenovation;
+      mockRenovationData = withoutLink as typeof mockRenovation;
       const { queryByText } = await renderWithProviders(<RenovationDetailScreen />);
       expect(queryByText('renovations.join_whatapp_link')).toBeNull();
+      expect(queryByText('renovations.join_telegram_link')).toBeNull();
+      expect(queryByText('renovations.join_group_link')).toBeNull();
     });
   });
 
@@ -365,6 +369,16 @@ describe('RenovationDetailScreen', () => {
       };
       const { getByText } = await renderWithProviders(<RenovationDetailScreen />);
       expect(getByText('renovations.join_whatapp_link')).toBeTruthy();
+    });
+
+    it('hauria de mostrar un text genèric per a un altre enllaç http(s)', async () => {
+      mockFirebaseUser = { uid: 'user-1' };
+      mockRenovationData = {
+        ...mockRenovation,
+        group_link: 'https://signal.group/#abc',
+      };
+      const { getByText } = await renderWithProviders(<RenovationDetailScreen />);
+      expect(getByText('renovations.join_group_link')).toBeTruthy();
     });
 
     it('hauria de detectar Telegram link', async () => {

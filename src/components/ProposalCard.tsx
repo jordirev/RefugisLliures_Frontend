@@ -30,7 +30,7 @@ export function ProposalCard({ proposal, onPress, showCreatorInfo = false }: Pro
   
   // Utilitzar React Query per carregar usuaris
   const { data: creator, isLoading: loadingCreator } = useUser(
-    showCreatorInfo ? proposal.creator_uid : undefined
+    showCreatorInfo && proposal.creator_uid !== 'unknown' ? proposal.creator_uid : undefined
   );
   const { data: reviewer, isLoading: loadingReviewer } = useUser(
     showCreatorInfo ? proposal.reviewer_uid : undefined

@@ -68,6 +68,8 @@ export function getUploadErrorKey(code?: string | null): string {
       return 'media.errors.userBlocked';
     case 'not_owner':
       return 'media.errors.notOwner';
+    case 'too_many_pending_uploads':
+      return 'media.errors.tooManyPendingUploads';
     case 'not_found':
       return 'media.errors.notFound';
     default:

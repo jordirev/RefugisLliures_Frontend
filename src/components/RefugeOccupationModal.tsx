@@ -15,6 +15,8 @@ import { useRefugeVisits, useCreateRefugeVisit, useUpdateRefugeVisit, useDeleteR
 import { Location } from '../models';
 import { CustomAlert } from './CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
+import { MAX_NUM_VISITORS, getTodayMadridDateString, getMaxVisitDateString } from '../utils/visitLimits';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 import CloseIcon from '../assets/icons/x.svg';
 
 interface RefugeOccupationModalProps {
@@ -64,11 +66,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
     }
   }, [visible]);
 
-  // Get today's date string
-  const getTodayString = () => {
-    const today = new Date();
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  };
+  // Get today's date string (Europe/Madrid, com el backend)
+  const getTodayString = () => getTodayMadridDateString();
 
   // Get visit for a specific date
   const getVisitForDate = (dateString: string) => {
@@ -81,6 +80,12 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
     return new Date(dateString) < new Date(getTodayString());
   };
 
+  // Check if date is beyond the max allowed (12 months ahead)
+  const isDateTooFar = (day: number): boolean => {
+    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return dateString > getMaxVisitDateString();
+  };
+
   // Check if date is selected
   const isDateSelected = (day: number): boolean => {
     if (!selectedDate) return false;
@@ -90,7 +95,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
 
   // Handle day press
   const handleDayPress = (day: number) => {
-    if (isDatePast(day)) return;
+    if (isDatePast(day) || isDateTooFar(day)) return;
     
     const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     setSelectedDate(dateString);
@@ -143,6 +148,10 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setNumVisitorsError(t('refuge.occupation.numVisitorsError'));
       return false;
     }
+    if (num > MAX_NUM_VISITORS) {
+      setNumVisitorsError(t('refuge.occupation.numVisitorsTooMany', { max: MAX_NUM_VISITORS }));
+      return false;
+    }
     setNumVisitorsError(null);
     return true;
   };
@@ -173,7 +182,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setNumVisitors('');
     } catch (error) {
       console.error('Error creating visit:', error);
-      showAlert(t('common.error'), error instanceof Error ? error.message : String(error));
+      const { title, message } = getContentErrorMessage(error, t, 'common.error');
+      showAlert(title, message);
     }
   };
 
@@ -210,7 +220,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
       setOriginalNumVisitors('');
     } catch (error) {
       console.error('Error updating visit:', error);
-      showAlert(t('common.error'), error instanceof Error ? error.message : String(error));
+      const { title, message } = getContentErrorMessage(error, t, 'common.error');
+      showAlert(title, message);
     }
   };
 
@@ -250,7 +261,12 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
     }
   };
 
+  // Mes (any, mes 0-11) de l'última data permesa: no es pot navegar més enllà
+  const [maxYear, maxMonth] = getMaxVisitDateString().split('-').map(Number);
+  const canGoNext = year * 12 + month < maxYear * 12 + (maxMonth - 1);
+
   const handleNextMonth = () => {
+    if (!canGoNext) return;
     if (month === 11) {
       setMonth(0);
       setYear(year + 1);
@@ -317,8 +333,8 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
                       <Text style={styles.navButtonText}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.monthYear}>{`${monthNames[month]} ${year}`}</Text>
-                    <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
-                      <Text style={styles.navButtonText}>→</Text>
+                    <TouchableOpacity onPress={handleNextMonth} style={styles.navButton} disabled={!canGoNext}>
+                      <Text style={[styles.navButtonText, !canGoNext && styles.navButtonTextDisabled]}>→</Text>
                     </TouchableOpacity>
                   </View>
                   
@@ -338,7 +354,7 @@ export function RefugeOccupationModal({ visible, onClose, refuge }: RefugeOccupa
                       const day = i + 1;
                       const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                       const visit = getVisitForDate(dateString);
-                      const isPast = isDatePast(day);
+                      const isPast = isDatePast(day) || isDateTooFar(day);
                       const isSelected = isDateSelected(day);
                       const isOverCapacity = visit && refuge.places && visit.total_visitors > refuge.places;
                       const hasVisit = visit && visit.total_visitors > 0;
@@ -552,6 +568,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FF6900',
     fontWeight: '600',
+  },
+  navButtonTextDisabled: {
+    color: '#D1D5DB',
   },
   monthYear: {
     fontSize: 18,

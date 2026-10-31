@@ -99,6 +99,28 @@ describe('MediaReportsScreen', () => {
     );
   });
 
+  it('denúncia automàtica sense refugi ni autor: resol sense petar', async () => {
+    mockReports = [{ ...report, id: 'rep-2', refuge_id: null, media_creator_uid: null, reporter_uid: 'system', media: null }];
+    const { getByTestId } = await render(<MediaReportsScreen />);
+    await fireEvent.press(getByTestId('media-report-rep-2-action-remove'));
+    await fireEvent.changeText(getByTestId('media-report-statement'), 'Motiu');
+    await fireEvent.press(getByTestId('media-report-confirm'));
+    expect(mockResolve).toHaveBeenCalledWith(
+      expect.objectContaining({ reportId: 'rep-2', refugeId: undefined, creatorUid: null }),
+      expect.any(Object)
+    );
+  });
+
+  it('409 already_resolved mostra un missatge específic', async () => {
+    const { getByTestId } = await render(<MediaReportsScreen />);
+    await fireEvent.press(getByTestId('media-report-rep-1-action-remove'));
+    await fireEvent.changeText(getByTestId('media-report-statement'), 'Motiu');
+    await fireEvent.press(getByTestId('media-report-confirm'));
+    const opts = mockResolve.mock.calls[0][1];
+    opts.onError({ code: 'already_resolved' });
+    expect(mockShowAlert).toHaveBeenCalledWith('common.error', 'media.admin.alreadyResolved');
+  });
+
   it('llista buida', async () => {
     mockReports = [];
     const { getByText } = await render(<MediaReportsScreen />);

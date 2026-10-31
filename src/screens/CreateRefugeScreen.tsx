@@ -50,6 +50,7 @@ export function CreateRefugeScreen() {
           mode="create"
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+          onViewRefuge={(refugeId) => navigation.navigate('RefugeDetail', { refugeId })}
         />
       </View>
 

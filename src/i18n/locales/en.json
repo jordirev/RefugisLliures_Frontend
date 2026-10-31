@@ -132,7 +132,8 @@
       "infoMessage": "Here are displayed the renovations to be carried out in free shelters that users publish. If you want to collaborate to maintain free shelters, you can join any renovation and communicate with the participants through the WhatsApp or Telegram group established by the creator.",
       "infoCreationTittle": "⚠️Before creating a renovation",
       "infoCreationMessage": "Before creating a renovation, make sure to check current regulations and ask the natural park or town hall if it is viable."
-    }
+    },
+    "join_group_link": "Join the group"
   },
   "profile": {
     "title": "Profile",
@@ -255,6 +256,7 @@
       "occupiedInSummer": "Occupied summer by shepherd",
       "unknown": "Unknown"
     },
+    "commentRequired": "You must write a comment to publish the experience",
     "condition": {
       "label": "State:",
       "excellent": "Excellent",
@@ -335,7 +337,8 @@
       "numVisitorsPlaceholder": "Ex: 4",
       "numVisitorsError": "The number of visitors must be greater than 0",
       "disclaimer": "You are not reserving any spot at the refuge. You are only indicating that you will go to this refuge on this date so other users know.",
-      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going."
+      "placesExceeded": "The refuge occupation ({{total}} visitors) exceeds the available capacity ({{places}} places). Keep this in mind before going.",
+      "numVisitorsTooMany": "The number of visitors cannot exceed {{max}}"
     }
   },
   "filters": {
@@ -519,7 +522,8 @@
       "generic": "An error occurred. Please try again",
       "googleLoginFailed": "Error during Google authentication",
       "googleSigninNotAvailable": "Google Sign In is not available in Expo Go. Use a native build to enable this feature.",
-      "deleteFailed": "The account could not be deleted. Please try again."
+      "deleteFailed": "The account could not be deleted. Please try again.",
+      "deleteUnauthorized": "Your session could not be verified. Please sign in again and retry."
     }
   },
   "createRenovation": {
@@ -537,8 +541,8 @@
     "materialsLabel": "Materials needed",
     "materialsPlaceholder": "List the materials needed (optional)...",
     "groupLinkLabel": "Group link",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... or https://t.me/...",
-    "groupLinkInfo": "Paste here the invitation link of the WhatsApp or Telegram group where the renovation will be coordinated.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Paste the invitation link of the group (WhatsApp, Telegram...) where the renovation will be coordinated. It must start with http:// or https://.",
     "submit": "Create Renovation",
     "viewOverlappingRenovation": "View renovation",
     "errors": {
@@ -546,14 +550,15 @@
       "refugeNotFound": "The selected shelter does not exist",
       "iniDateRequired": "You must select the start date",
       "finDateRequired": "You must select the end date",
-      "finDateBeforeIniDate": "The end date must be after the start date",
+      "finDateBeforeIniDate": "The end date cannot be before the start date",
       "invalidDate": "Invalid date format",
       "descriptionRequired": "You must write a description",
       "descriptionTooLong": "Description cannot exceed 1000 characters",
       "groupLinkRequired": "You must add a group link",
-      "groupLinkInvalid": "The link must be from WhatsApp or Telegram",
+      "groupLinkInvalid": "The link must start with http:// or https://",
       "overlapMessage": "A renovation is already scheduled for this shelter on these dates.",
-      "generic": "Could not create renovation. Please try again."
+      "generic": "Could not create renovation. Please try again.",
+      "groupLinkTooLong": "The link cannot exceed {{max}} characters"
     }
   },
   "deleteRefuge": {
@@ -607,6 +612,13 @@
       "title": "Shelter photos",
       "message": "Photos can be uploaded once the creation proposal is accepted by an administrator"
     },
+    "duplicates": {
+      "title": "Possible duplicate refuge",
+      "message": "There are refuges within 500 m with a similar name. Check it is not the same one before proposing a new refuge:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "View {{name}}",
+      "fix": "Edit the proposal"
+    },
     "success": {
       "title": "Proposal submitted",
       "message": "Your proposal has been submitted successfully and will be reviewed by an administrator"
@@ -629,7 +641,9 @@
       "placesInvalid": "Places must be a positive integer",
       "descriptionTooLong": "Description cannot exceed 3000 characters",
       "commentTooLong": "Comment cannot exceed 3000 characters",
-      "linkInvalid": "Link must be a valid URL (start with http://, https:// or www.)"
+      "linkInvalid": "Link must be a valid URL starting with http:// or https://",
+      "linkTooLong": "Each link can have at most 2048 characters",
+      "linkDuplicated": "There are duplicate links"
     }
   },
   "doubts": {
@@ -719,6 +733,8 @@
       "loadError": "Could not load proposals",
       "loadDetailError": "Could not load proposal details",
       "approveError": "Could not approve the proposal",
+      "linkAlreadyUsed": "One of the links in the proposal already belongs to another refuge. The proposal stays pending: reject it or ask for it to be corrected",
+      "refugeNotFound": "The refuge of the proposal no longer exists. Reject the proposal",
       "rejectError": "Could not reject the proposal"
     }
   },
@@ -728,6 +744,10 @@
     "addFirst": "Share your experience!",
     "noExperiences": "No experiences shared yet. \nBe the first to share yours!",
     "placeholder": "Share your experience...",
+    "condition": {
+      "label": "Refuge condition",
+      "required": "You must select the refuge condition"
+    },
     "newPhotos": "New photos",
     "addPhotos": "Add photos",
     "deletePhotoInfo": "To delete a photo, tap it in the carousel and delete it from the viewer",
@@ -875,6 +895,7 @@
       "ageNotConfirmed": "You must confirm your age before uploading photos or videos",
       "userBlocked": "Your account is blocked for breaching the rules and cannot publish content",
       "notOwner": "Only the creator of the experience can add photos to it",
+      "tooManyPendingUploads": "You have too many uploads in progress. Wait for them to finish and try again",
       "notFound": "The refuge or experience no longer exists",
       "uploadFailed": "The files could not be uploaded. Please try again",
       "notAllowedTitle": "Action not allowed",
@@ -986,7 +1007,9 @@
       "statementPlaceholder": "Explain the reasons for the decision",
       "statementRequired": "A statement of reasons is required",
       "resolved": "Report resolved",
-      "resolveError": "The report could not be resolved"
+      "resolveError": "The report could not be resolved",
+      "alreadyResolved": "This report has already been resolved",
+      "reportNotFound": "This report no longer exists"
     },
     "notices": {
       "title": "Moderation notices",
@@ -994,6 +1017,8 @@
         "remove": "Content removed",
         "remove_and_strike": "Content removed with a strike",
         "hide": "Content hidden pending review",
+        "auto_hide": "Content hidden automatically",
+        "upload_blocked": "Upload blocked",
         "block": "Account blocked",
         "dismiss": "Report dismissed",
         "other": "Notice"
@@ -1016,5 +1041,13 @@
     "confirmError": "Your age could not be confirmed. Please try again",
     "logout": "Log out",
     "privacyNote": "We only store that you confirmed the minimum age, not your date of birth."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Action not allowed",
+    "userBlocked": "Your account is blocked for breaching the rules and cannot publish content",
+    "ageNotConfirmed": "You must confirm that you are 16 or older before publishing content",
+    "notOwner": "You are not allowed to delete this content: only its creator or an admin can",
+    "expelled": "The creator has removed you from this renovation and you cannot join again",
+    "refugeNotFound": "The refuge no longer exists"
   }
 }

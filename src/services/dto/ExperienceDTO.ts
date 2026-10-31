@@ -13,6 +13,7 @@ export interface ExperienceDTO {
   creator_uid: string;
   modified_at: string; // Format: DD/MM/YYYY
   comment: string;
+  condition?: number; // Estat del refugi segons l'usuari (0-3)
   images_metadata?: ImageMetadataDTO[];
 }
 

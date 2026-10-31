@@ -27,6 +27,7 @@ import {
   useDeleteAnswer,
 } from '../hooks/useDoubtsQuery';
 import { useUser } from '../hooks/useUsersQuery';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 import { Doubt, Answer } from '../models';
 
 // Icons
@@ -210,7 +211,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
               Keyboard.dismiss();
             },
             onError: (error: any) => {
-              showAlert(t('common.error'), error.message || t('doubts.errors.createAnswerError'));
+              const { title, message } = getContentErrorMessage(error, t, 'doubts.errors.createAnswerError');
+              showAlert(title, message);
             },
           }
         );
@@ -229,7 +231,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
               Keyboard.dismiss();
             },
             onError: (error: any) => {
-              showAlert(t('common.error'), error.message || t('doubts.errors.createAnswerError'));
+              const { title, message } = getContentErrorMessage(error, t, 'doubts.errors.createAnswerError');
+              showAlert(title, message);
             },
           }
         );
@@ -247,7 +250,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
             Keyboard.dismiss();
           },
           onError: (error: any) => {
-            showAlert(t('common.error'), error.message || t('doubts.errors.createDoubtError'));
+            const { title, message } = getContentErrorMessage(error, t, 'doubts.errors.createDoubtError');
+            showAlert(title, message);
           },
         }
       );
@@ -276,7 +280,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
                   showAlert(t('common.success'), t('doubts.deleteDoubt.success'));
                 },
                 onError: (error: any) => {
-                  showAlert(t('common.error'), error.message || t('doubts.errors.deleteDoubtError'));
+                  const { title, message } = getContentErrorMessage(error, t, 'doubts.errors.deleteDoubtError');
+                  showAlert(title, message);
                 },
               }
             );
@@ -308,7 +313,8 @@ export function DoubtsScreen({ refugeId: refugeIdProp, refugeName: refugeNamePro
                   showAlert(t('common.success'), t('doubts.deleteAnswer.success'));
                 },
                 onError: (error: any) => {
-                  showAlert(t('common.error'), error.message || t('doubts.errors.deleteAnswerError'));
+                  const { title, message } = getContentErrorMessage(error, t, 'doubts.errors.deleteAnswerError');
+                  showAlert(title, message);
                 },
               }
             );

@@ -26,6 +26,11 @@ jest.mock('../../../contexts/AuthContext', () => ({
   }),
 }));
 
+const mockUseIsAdmin = jest.fn(() => false);
+jest.mock('../../../hooks/useIsAdmin', () => ({
+  useIsAdmin: () => mockUseIsAdmin(),
+}));
+
 describe('UserMessage Component', () => {
   const mockUser: User = {
     uid: 'user-123',
@@ -41,6 +46,7 @@ describe('UserMessage Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseIsAdmin.mockReturnValue(false);
   });
 
   describe('Renderització bàsica', () => {
@@ -275,6 +281,21 @@ describe('UserMessage Component', () => {
       );
 
       expect(queryByText('common.delete')).toBeNull();
+    });
+
+    it("hauria de mostrar el botó d'eliminar a un admin encara que no sigui el creador", async () => {
+      mockUseIsAdmin.mockReturnValue(true);
+      const { getByText } = await render(
+        <UserMessage
+          user={mockUser}
+          message={shortMessage}
+          createdAt="2025-06-15T10:30:00Z"
+          onReply={mockOnReply}
+          onDelete={mockOnDelete}
+        />
+      );
+
+      expect(getByText('common.delete')).toBeTruthy();
     });
 
     it('hauria de cridar onDelete quan es prem eliminar', async () => {

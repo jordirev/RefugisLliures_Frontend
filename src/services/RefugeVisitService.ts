@@ -14,9 +14,22 @@ import {
   DeleteRefugeVisitResponseDTO,
   RefugeVisitErrorResponseDTO
 } from './dto/RefugeVisitDTO';
+import { MAX_NUM_VISITORS } from '../utils/visitLimits';
+import { buildApiError, CONTENT_WRITE_ERROR_CODES } from './apiErrors';
 import { mapRefugeVisitFromDTO, mapRefugeVisitsFromDTO } from './mappers/RefugeVisitMapper';
 
 const API_BASE_URL = 'https://refugislliures-backend.onrender.com/api';
+
+export { MAX_NUM_VISITORS };
+
+/** El backend exigeix la data de la URL estrictament en format YYYY-MM-DD */
+const VISIT_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+function assertVisitDate(visitDate: string): void {
+  if (!VISIT_DATE_REGEX.test(visitDate)) {
+    throw new Error('La data de la visita ha de tenir el format YYYY-MM-DD');
+  }
+}
 
 /**
  * Interfície per crear una nova visita
@@ -125,7 +138,7 @@ export class RefugeVisitService {
    * @param visitDate - Data de la visita (format: YYYY-MM-DD)
    * @param request - Dades de la visita (num_visitors)
    * @returns Visita creada o actualitzada
-   * @throws Error si el refugi no es troba, l'usuari ja està registrat o hi ha errors de validació
+   * @throws ApiError amb codi `user_blocked` o `age_not_confirmed` (403); Error si el refugi no es troba, l'usuari ja està registrat o hi ha errors de validació (num_visitors > 100, data no YYYY-MM-DD)
    */
   static async createRefugeVisit(
     refugeId: string,
@@ -133,6 +146,7 @@ export class RefugeVisitService {
     request: CreateRefugeVisitRequest
   ): Promise<RefugeVisit> {
     try {
+      assertVisitDate(visitDate);
       const url = `${API_BASE_URL}/refuges/${refugeId}/visits/${visitDate}/`;
       const body: CreateRefugeVisitRequestDTO = {
         num_visitors: request.num_visitors
@@ -140,6 +154,14 @@ export class RefugeVisitService {
       
       const response = await apiPost(url, body);
       
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per fer aquesta acció', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
       if (response.status === 404) {
         throw new Error('Refugi no trobat');
       }
@@ -174,7 +196,7 @@ export class RefugeVisitService {
    * @param visitDate - Data de la visita (format: YYYY-MM-DD)
    * @param request - Dades per actualitzar (num_visitors)
    * @returns Visita actualitzada
-   * @throws Error si el refugi no es troba, l'usuari no està registrat o hi ha errors de validació
+   * @throws ApiError amb codi `user_blocked` o `age_not_confirmed` (403); Error si el refugi no es troba, l'usuari no està registrat o hi ha errors de validació
    */
   static async updateRefugeVisit(
     refugeId: string,
@@ -182,6 +204,7 @@ export class RefugeVisitService {
     request: UpdateRefugeVisitRequest
   ): Promise<RefugeVisit> {
     try {
+      assertVisitDate(visitDate);
       const url = `${API_BASE_URL}/refuges/${refugeId}/visits/${visitDate}/`;
       const body: UpdateRefugeVisitRequestDTO = {
         num_visitors: request.num_visitors
@@ -189,6 +212,14 @@ export class RefugeVisitService {
       
       const response = await apiPatch(url, body);
       
+      if (response.status === 403) {
+        // user_blocked / age_not_confirmed
+        throw await buildApiError(response, 'No tens permís per fer aquesta acció', {
+          knownCodes: CONTENT_WRITE_ERROR_CODES,
+          defaultCode: 'forbidden',
+        });
+      }
+
       if (response.status === 404) {
         throw new Error('Refugi o visita no trobats');
       }

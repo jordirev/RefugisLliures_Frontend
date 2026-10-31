@@ -427,8 +427,12 @@ export class AuthService {
    * Requereix reautenticació (abans d'esborrar res, perquè no quedi un estat a mitges).
    *
    * @param password - Contrasenya actual (només comptes email/contrasenya)
-   * @throws Error amb `code = 'delete_failed'` si el backend no ha pogut esborrar el compte
+   * @throws Error amb `code = 'delete_failed'` si el backend falla (5xx/xarxa, després d'un reintent; es pot tornar a provar)
+   *         o `code = 'delete_unauthorized'` si respon 401/403 (cal tornar a iniciar sessió)
    */
+  /** Espera abans de l'únic reintent automàtic del DELETE (ms). */
+  static deleteRetryDelayMs = 1500;
+
   static async deleteAccount(password?: string): Promise<void> {
     try {
       const user = auth.currentUser;
@@ -443,16 +447,18 @@ export class AuthService {
       const token = await user.getIdToken();
 
       // 2. Demanar al backend que esborri dades i compte de Firebase.
-      //    `UsersService.deleteUser` retorna false (no llança) si el backend respon amb error (p. ex. 500).
-      let backendDeleted = false;
-      try {
-        backendDeleted = await UsersService.deleteUser(user.uid, token);
-      } catch (e) {
-        console.error("Error eliminant l'usuari al backend:", e);
+      //    Si respon 5xx (o no hi ha xarxa) es reintenta un cop amb el mateix token: el DELETE és idempotent
+      //    (després d'un 500 de Firebase les dades ja són esborrades i el reintent retorna 204).
+      //    No es crida mai `user.delete()`/`signOut` abans del 204, o no es podria reintentar.
+      let result = await UsersService.deleteUserWithStatus(user.uid);
+      if (!result.ok && (result.status === null || result.status >= 500)) {
+        await new Promise(resolve => setTimeout(resolve, AuthService.deleteRetryDelayMs));
+        result = await UsersService.deleteUserWithStatus(user.uid);
       }
-      if (!backendDeleted) {
-        const error: any = new Error('DELETE_FAILED');
-        error.code = 'delete_failed';
+      if (!result.ok) {
+        const unauthorized = result.status === 401 || result.status === 403;
+        const error: any = new Error(unauthorized ? 'DELETE_UNAUTHORIZED' : 'DELETE_FAILED');
+        error.code = unauthorized ? 'delete_unauthorized' : 'delete_failed';
         throw error;
       }
 
@@ -502,6 +508,8 @@ export class AuthService {
         return 'auth.errors.googleSigninNotAvailable';
       case 'delete_failed':
         return 'auth.errors.deleteFailed';
+      case 'delete_unauthorized':
+        return 'auth.errors.deleteUnauthorized';
       default:
         return 'auth.errors.generic';
     }

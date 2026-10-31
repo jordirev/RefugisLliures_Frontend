@@ -142,7 +142,8 @@
       "infoMessage": "Aquí se muestran las reformas que los usuarios publican para los refugios libres. Si quieres colaborar para mantener los refugios libres, puedes unirte a cualquier reforma y comunicarte con los participantes a través del grupo de WhatsApp o Telegram que ha establecido el creador.",
       "infoCreationTittle": "⚠️Antes de crear una reforma",
       "infoCreationMessage": "Antes de crear una reforma, asegúrate de consultar la normativa vigente y preguntar al parque natural o ayuntamiento si es viable."
-    }
+    },
+    "join_group_link": "Únete al grupo"
   },
   "profile": {
     "title": "Perfil",
@@ -265,6 +266,7 @@
       "occupiedInSummer": "Ocupado verano por pastor",
       "unknown": "Desconocido"
     },
+    "commentRequired": "Debes escribir un comentario para publicar la experiencia",
     "condition": {
       "label": "Estado:",
       "excellent": "Excelente",
@@ -345,7 +347,8 @@
       "numVisitorsPlaceholder": "Ej: 4",
       "numVisitorsError": "El número de visitantes debe ser superior a 0",
       "disclaimer": "No estás reservando ninguna plaza en el refugio. Solo estás indicando que irás a este refugio en esta fecha para que el resto de usuarios lo sepan.",
-      "placesExceeded": "La ocupación del refugio ({{total}} visitantes) supera la capacidad disponible ({{places}} plazas). Tenlo en cuenta antes de ir."
+      "placesExceeded": "La ocupación del refugio ({{total}} visitantes) supera la capacidad disponible ({{places}} plazas). Tenlo en cuenta antes de ir.",
+      "numVisitorsTooMany": "El número de visitantes no puede superar {{max}}"
     }
   },
   "filters": {
@@ -529,7 +532,8 @@
       "generic": "Se ha producido un error. Por favor, inténtalo de nuevo",
       "googleLoginFailed": "Error durante la autenticación con Google",
       "googleSigninNotAvailable": "Google Sign In no está disponible en Expo Go. Utiliza un build nativo para activar esta funcionalidad.",
-      "deleteFailed": "No se ha podido eliminar la cuenta. Inténtalo de nuevo."
+      "deleteFailed": "No se ha podido eliminar la cuenta. Inténtalo de nuevo.",
+      "deleteUnauthorized": "No se ha podido verificar tu sesión. Vuelve a iniciar sesión e inténtalo de nuevo."
     }
   },
   "createRenovation": {
@@ -547,8 +551,8 @@
     "materialsLabel": "Materiales necesarios",
     "materialsPlaceholder": "Lista de materiales necesarios (opcional)...",
     "groupLinkLabel": "Enlace del grupo",
-    "groupLinkPlaceholder": "https://chat.whatsapp.com/... o https://t.me/...",
-    "groupLinkInfo": "Pega aquí el enlace de invitación del grupo de WhatsApp o Telegram donde se coordinará la reforma.",
+    "groupLinkPlaceholder": "https://...",
+    "groupLinkInfo": "Pega aquí el enlace de invitación del grupo (WhatsApp, Telegram...) donde se coordinará la reforma. Debe empezar por http:// o https://.",
     "submit": "Crear Reforma",
     "viewOverlappingRenovation": "Ver renovación",
     "errors": {
@@ -556,14 +560,15 @@
       "refugeNotFound": "El refugio seleccionado no existe",
       "iniDateRequired": "Debes seleccionar la fecha de inicio",
       "finDateRequired": "Debes seleccionar la fecha de finalización",
-      "finDateBeforeIniDate": "La fecha de finalización debe ser posterior a la de inicio",
+      "finDateBeforeIniDate": "La fecha de finalización no puede ser anterior a la de inicio",
       "invalidDate": "Formato de fecha no válido",
       "descriptionRequired": "Debes escribir una descripción",
       "descriptionTooLong": "La descripción no puede superar los 1000 caracteres",
       "groupLinkRequired": "Debes añadir un enlace del grupo",
-      "groupLinkInvalid": "El enlace debe ser de WhatsApp o Telegram",
+      "groupLinkInvalid": "El enlace debe empezar por http:// o https://",
       "overlapMessage": "Ya existe una reforma planificada para este refugio en estas fechas.",
-      "generic": "No se pudo crear la reforma. Inténtalo de nuevo."
+      "generic": "No se pudo crear la reforma. Inténtalo de nuevo.",
+      "groupLinkTooLong": "El enlace no puede superar los {{max}} caracteres"
     }
   },
   "deleteRefuge": {
@@ -617,6 +622,13 @@
       "title": "Fotos del refugio",
       "message": "Las fotos se podrán subir una vez aceptada la propuesta de creación por un administrador"
     },
+    "duplicates": {
+      "title": "Posible refugio duplicado",
+      "message": "Hay refugios a menos de 500 m con un nombre parecido. Comprueba que no sea el mismo antes de proponer uno nuevo:",
+      "item": "{{name}} — {{distance}} m",
+      "view": "Ver {{name}}",
+      "fix": "Corregir la propuesta"
+    },
     "success": {
       "title": "Propuesta enviada",
       "message": "Tu propuesta ha sido enviada correctamente y será revisada por un administrador"
@@ -639,7 +651,9 @@
       "placesInvalid": "Las plazas deben ser un entero positivo",
       "descriptionTooLong": "La descripción no puede superar los 3000 caracteres",
       "commentTooLong": "El comentario no puede superar los 3000 caracteres",
-      "linkInvalid": "El enlace debe ser una URL válida (comienza con http://, https:// o www.)"
+      "linkInvalid": "El enlace debe ser una URL válida que comience con http:// o https://",
+      "linkTooLong": "Cada enlace puede tener como máximo 2048 caracteres",
+      "linkDuplicated": "Hay enlaces repetidos"
     }
   },
   "doubts": {
@@ -729,6 +743,8 @@
       "loadError": "No se pudieron cargar las propuestas",
       "loadDetailError": "No se pudieron cargar los detalles de la propuesta",
       "approveError": "No se pudo aprobar la propuesta",
+      "linkAlreadyUsed": "Uno de los enlaces de la propuesta ya pertenece a otro refugio. La propuesta sigue pendiente: recházala o pide que se corrija",
+      "refugeNotFound": "El refugio de la propuesta ya no existe. Rechaza la propuesta",
       "rejectError": "No se pudo rechazar la propuesta"
     }
   },
@@ -738,6 +754,10 @@
     "addFirst": "¡Comparte tu experiencia!",
     "noExperiences": "Aún no hay experiencias.\n¡Sé el primero en compartir la tuya!",
     "placeholder": "Comparte tu experiencia...",
+    "condition": {
+      "label": "Estado del refugio",
+      "required": "Debes indicar el estado del refugio"
+    },
     "newPhotos": "Nuevas fotos",
     "addPhotos": "Añadir fotos",
     "deletePhotoInfo": "Para eliminar una foto, tócala en el carrusel y elimínala desde el visor",
@@ -885,6 +905,7 @@
       "ageNotConfirmed": "Debes confirmar tu edad antes de subir fotos o vídeos",
       "userBlocked": "Tu cuenta está bloqueada por incumplir las normas y no puede publicar contenido",
       "notOwner": "Solo el creador de la experiencia puede añadirle fotos",
+      "tooManyPendingUploads": "Tienes demasiadas subidas en curso. Espera a que terminen e inténtalo de nuevo",
       "notFound": "El refugio o la experiencia ya no existe",
       "uploadFailed": "No se han podido subir los archivos. Vuelve a intentarlo",
       "notAllowedTitle": "Acción no permitida",
@@ -996,7 +1017,9 @@
       "statementPlaceholder": "Explica los motivos de la decisión",
       "statementRequired": "Se necesita una motivación",
       "resolved": "Denuncia resuelta",
-      "resolveError": "No se ha podido resolver la denuncia"
+      "resolveError": "No se ha podido resolver la denuncia",
+      "alreadyResolved": "Esta denuncia ya ha sido resuelta",
+      "reportNotFound": "Esta denuncia ya no existe"
     },
     "notices": {
       "title": "Avisos de moderación",
@@ -1004,6 +1027,8 @@
         "remove": "Contenido retirado",
         "remove_and_strike": "Contenido retirado con aviso",
         "hide": "Contenido oculto en revisión",
+        "auto_hide": "Contenido oculto automáticamente",
+        "upload_blocked": "Subida bloqueada",
         "block": "Cuenta bloqueada",
         "dismiss": "Denuncia desestimada",
         "other": "Aviso"
@@ -1026,5 +1051,13 @@
     "confirmError": "No se ha podido confirmar la edad. Vuelve a intentarlo",
     "logout": "Cerrar sesión",
     "privacyNote": "Solo guardamos que has confirmado la edad mínima, no la fecha de nacimiento."
+  },
+  "contentErrors": {
+    "notAllowedTitle": "Acción no permitida",
+    "userBlocked": "Tu cuenta está bloqueada por incumplir las normas y no puede publicar contenido",
+    "ageNotConfirmed": "Debes confirmar que tienes 16 años o más antes de publicar contenido",
+    "notOwner": "No tienes permiso para eliminar este contenido: solo su creador o un administrador puede hacerlo",
+    "expelled": "El creador te ha expulsado de esta reforma y no puedes volver a unirte",
+    "refugeNotFound": "El refugio ya no existe"
   }
 }

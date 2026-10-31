@@ -19,6 +19,8 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CustomAlert } from '../components/CustomAlert';
 import { useCustomAlert } from '../hooks/useCustomAlert';
 import { UserExperience } from '../components/UserExperience';
+import { ExperienceConditionPicker } from '../components/ExperienceConditionPicker';
+import { getContentErrorMessage } from '../utils/apiErrorMessage';
 import { PhotoViewerModal } from '../components/PhotoViewerModal';
 import {
   useExperiences,
@@ -47,7 +49,7 @@ type ExperiencesScreenParams = {
 // Component to render individual experience (avoids hook issues in loops)
 const ExperienceItem: React.FC<{
   experience: Experience;
-  onEdit: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => void;
+  onEdit: (experienceId: string, newComment: string, newFiles: PreparedMediaFile[], newCondition: number) => void;
   onDelete: (experienceId: string) => void;
   onPhotoPress: (photos: ImageMetadata[], index: number) => void;
   onPickMedia?: () => Promise<PreparedMediaFile[] | null>;
@@ -87,6 +89,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   const refugeName = refugeNameProp || routeParams?.refugeName;
 
   const [comment, setComment] = useState('');
+  const [condition, setCondition] = useState<number | undefined>(undefined);
   const [selectedFiles, setSelectedFiles] = useState<PreparedMediaFile[]>([]);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
@@ -177,7 +180,10 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
   };
 
   const handleSend = () => {
-    if (!comment.trim() && selectedFiles.length === 0) return;
+    // El comentari no pot ser buit en crear (el backend respon 400 si és en blanc)
+    if (!comment.trim()) return;
+    // La valoració de l'estat (condition 0-3) és obligatòria en crear
+    if (condition === undefined) return;
 
     // Check character limit
     if (comment.trim().length > 2000) {
@@ -193,11 +199,13 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
       {
         refuge_id: refugeId,
         comment: comment.trim(),
+        condition,
         files: selectedFiles,
       },
       {
         onSuccess: (data) => {
           setComment('');
+          setCondition(undefined);
           setSelectedFiles([]);
           setInputHeight(44);
           Keyboard.dismiss();
@@ -205,16 +213,15 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           showUploadWarnings(data.failed_files, data.uploadError);
         },
         onError: (error: any) => {
-          showAlert(
-            t('common.error'), 
-            error.message || t('experiences.errors.createExperienceError')
-          );
+          // user_blocked / age_not_confirmed: missatge específic
+          const { title, message } = getContentErrorMessage(error, t, 'experiences.errors.createExperienceError');
+          showAlert(title, message);
         },
       }
     );
   };
 
-  const handleEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[]) => {
+  const handleEdit = (experienceId: string, newComment: string, newFiles: PreparedMediaFile[], newCondition: number) => {
     // Check character limit
     if (newComment.trim().length > 2000) {
       showAlert(
@@ -230,6 +237,7 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
         refugeId,
         request: {
           comment: newComment,
+          condition: newCondition,
           files: newFiles.length > 0 ? newFiles : undefined,
         },
       },
@@ -240,10 +248,9 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           }
         },
         onError: (error: any) => {
-          showAlert(
-            t('common.error'), 
-            error.message || t('experiences.errors.updateExperienceError')
-          );
+          // user_blocked / age_not_confirmed: missatge específic
+          const { title, message } = getContentErrorMessage(error, t, 'experiences.errors.updateExperienceError');
+          showAlert(title, message);
         },
       }
     );
@@ -385,10 +392,19 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           </ScrollView>
         )}
 
+        <ExperienceConditionPicker value={condition} onChange={setCondition} disabled={createExperienceMutation.isPending} />
+
+        {!comment.trim() && selectedFiles.length > 0 && (
+          <Text style={styles.commentRequiredHint} testID="experience-comment-required">
+            {t('experiences.commentRequired')}
+          </Text>
+        )}
+
         <View style={styles.inputRow}>
           <View style={styles.inputFieldContainer}>
             <TouchableOpacity
               style={styles.addPhotoButton}
+              testID="add-photo-button"
               onPress={handleAddPhotos}
               disabled={isPreparing}
             >
@@ -420,11 +436,13 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
           <TouchableOpacity
             style={[
               styles.sendButton,
-              (!comment.trim() && selectedFiles.length === 0) && styles.sendButtonDisabled
+              (!comment.trim() || condition === undefined) && styles.sendButtonDisabled
             ]}
+            testID="send-experience-button"
             onPress={handleSend}
             disabled={
-              (!comment.trim() && selectedFiles.length === 0) || 
+              !comment.trim() || 
+              condition === undefined ||
               createExperienceMutation.isPending
             }
           >
@@ -473,6 +491,11 @@ export function ExperiencesScreen({ refugeId: refugeIdProp, refugeName: refugeNa
 }
 
 const styles = StyleSheet.create({
+  commentRequiredHint: {
+    fontSize: 12,
+    color: '#DC2626',
+    marginBottom: 6,
+  },
   root: {
     flex: 1,
     backgroundColor: '#FFFFFF',

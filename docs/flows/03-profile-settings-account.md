@@ -73,10 +73,13 @@ sequenceDiagram
     AS->>US: deleteUser(uid)
     US->>BE: DELETE /api/users/{uid}/
     BE->>BE: 1) esborra dades 2) esborra el compte de Firebase
-    alt backend falla (500 {error, error_id}) o xarxa
-        US-->>AS: false
-        AS-->>SS: Error code='delete_failed' (no es toca res; es pot reintentar)
-        SS->>U: alerta auth.errors.deleteFailed
+    alt backend 5xx/xarxa (500 {error, error_id})
+        US-->>AS: {ok:false, status}
+        AS->>US: reintent automàtic únic (mateix DELETE; idempotent)
+        AS-->>SS: si torna a fallar: Error code='delete_failed' (sense signOut local; es pot tornar a provar)
+    else 401/403
+        AS-->>SS: Error code='delete_unauthorized' (sense reintent; cal tornar a iniciar sessió)
+        SS->>U: alerta auth.errors.deleteFailed / deleteUnauthorized
     else 204
         BE-->>US: 204
         AS->>FB: logout(): GoogleSignin.signOut + signOut(auth) local
@@ -84,8 +87,8 @@ sequenceDiagram
     end
 ```
 
-- `UsersService.deleteUser` retorna `true` (2xx) o `false` (qualsevol error, inclòs 404/500 i excepcions de xarxa); `AuthService.deleteAccount` tradueix `false`/excepció a un error amb `code = 'delete_failed'` **[FET]**.
-- `SettingsScreen.runDeleteAccount` fa `AuthService.getErrorMessageKey(error.code)` → `delete_failed` = `auth.errors.deleteFailed` (4 locales) **[FET]**.
+- `UsersService.deleteUserWithStatus` retorna `{ok, status}` (`status=null` si no hi ha resposta); `deleteUser` n'és un embolcall booleà. `AuthService.deleteAccount` reintenta **un cop** (espera `deleteRetryDelayMs`=1500 ms) si 5xx/xarxa: després d'un 500 de Firebase les dades ja són esborrades i el DELETE repetit retorna 204. Mai crida `user.delete()`/`signOut` abans del 204. 401/403 → `delete_unauthorized` sense reintent **[FET]**.
+- `SettingsScreen.runDeleteAccount` fa `AuthService.getErrorMessageKey(error.code)` → `delete_failed` = `auth.errors.deleteFailed` i `delete_unauthorized` = `auth.errors.deleteUnauthorized` (4 locales); l'usuari pot repetir l'acció des del mateix botó **[FET]**.
 - Si el backend va bé, el compte de Firebase ja no existeix: el `signOut(auth)` local només serveix per esborrar la sessió persistida. Si fallés, no es llança (el compte ja és esborrat) **[FET]**. `AuthContext.deleteAccount` fa a més `resetSessionRights()`, com el logout **[FET]**.
 - La cache de React Query no es buida (igual que al logout, vegeu GOTCHAS) **[FET]**.
 - Aquest comportament **requereix el backend amb U7 desplegat**: amb un backend antic el compte de Firebase quedaria viu **[INFERÈNCIA]**. El rollback del registre (`firebaseUser.delete()` a `signUp`) es manté perquè allà el backend no té dades **[FET]**.

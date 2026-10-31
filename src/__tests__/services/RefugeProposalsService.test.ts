@@ -748,3 +748,31 @@ describe('RefugeProposalsService', () => {
     });
   });
 });
+
+describe('createProposal / approveProposal: errors amb codi', () => {
+  const res = (status: number, body: any): any => ({ ok: false, status, statusText: '', json: async () => body });
+
+  it('409 possible_duplicates llança PossibleDuplicatesError amb la llista', async () => {
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, {
+      error: 'possible_duplicates', code: 'possible_duplicates', message: 'Hi ha refugis',
+      possible_duplicates: [{ id: 'r1', name: 'Refugi X', distance_m: 120 }],
+    }));
+    await expect(RefugeProposalsService.createProposal({ action: 'create', payload: { name: 'X' } as any }))
+      .rejects.toMatchObject({ code: 'possible_duplicates', status: 409, duplicates: [{ id: 'r1', name: 'Refugi X', distance_m: 120 }] });
+  });
+
+  it.each(['user_blocked', 'age_not_confirmed'])('403 %s es conserva com a codi', async (code) => {
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(403, { error: code, code, message: 'no' }));
+    await expect(RefugeProposalsService.createProposal({ action: 'delete', refuge_id: 'r1' }))
+      .rejects.toMatchObject({ code, status: 403 });
+  });
+
+  it('approve 409 enllaç ja usat vs proposta ja revisada', async () => {
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'A link of the proposal already belongs to another refuge', code: 'link_already_used' }));
+    await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'link_already_used' });
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'The refuge of the proposal no longer exists', code: 'refuge_not_found' }));
+    await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'refuge_not_found' });
+    mockedApiClient.apiPost.mockResolvedValueOnce(res(409, { error: 'Proposal is already approved' }));
+    await expect(RefugeProposalsService.approveProposal('p1')).rejects.toMatchObject({ code: 'already_reviewed' });
+  });
+});

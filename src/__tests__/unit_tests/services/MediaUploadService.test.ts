@@ -223,6 +223,26 @@ describe('MediaUploadService', () => {
       await expect(MediaUploadService.createUploadIntents(body)).rejects.toMatchObject({ code, status: 403 });
     });
 
+    it('429 → too_many_pending_uploads, sense reintents automàtics', async () => {
+      mockedApiPost.mockResolvedValue(
+        jsonResponse(429, { error: 'too_many_pending_uploads', code: 'too_many_pending_uploads', message: 'Massa pujades' })
+      );
+      await expect(MediaUploadService.createUploadIntents(body)).rejects.toMatchObject({
+        code: 'too_many_pending_uploads',
+        status: 429,
+        message: 'Massa pujades',
+      });
+      expect(mockedApiPost).toHaveBeenCalledTimes(1);
+    });
+
+    it('429 sense cos reconeixible també dóna too_many_pending_uploads', async () => {
+      mockedApiPost.mockResolvedValue(jsonResponse(429, {}));
+      await expect(MediaUploadService.createUploadIntents(body)).rejects.toMatchObject({
+        code: 'too_many_pending_uploads',
+        status: 429,
+      });
+    });
+
     it('404 → not_found i 400 → validation', async () => {
       mockedApiPost.mockResolvedValueOnce(jsonResponse(404, { error: 'Refugi no trobat' }));
       await expect(MediaUploadService.createUploadIntents(body)).rejects.toMatchObject({ code: 'not_found' });

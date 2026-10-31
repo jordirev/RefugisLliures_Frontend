@@ -152,7 +152,7 @@ exports[`RejectProposalPopUp Component Snapshots hauria de coincidir amb el snap
                 }
               >
                 <TextInput
-                  maxLength={3000}
+                  maxLength={2000}
                   multiline={true}
                   numberOfLines={6}
                   onChangeText={[Function]}
@@ -198,7 +198,7 @@ exports[`RejectProposalPopUp Component Snapshots hauria de coincidir amb el snap
                 >
                   0
                   /
-                  3000
+                  2000
                    (editRefuge.minChars)
                 </Text>
               </View>

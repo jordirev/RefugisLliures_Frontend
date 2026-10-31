@@ -39,8 +39,10 @@ sequenceDiagram
 ```
 
 ## Gotchas i bugs
-- Els botons d'eliminar només es mostren a l'autor (`UserMessage.tsx:38,82-86`), però el backend permet esborrar a qualsevol usuari autenticat → protecció només visual **[FET a ambdós repos]**.
-- Les rèpliques es mostren planes: `parent_answer_id` s'ignora a la UI (`DoubtsScreen.tsx:82-94`) **[FET]**; en esborrar una resposta no es treuen les filles de la cache (`useDoubtsQuery.ts:187`) **[FET]**.
+- Els botons d'eliminar es mostren al creador **i a l'admin** (`UserMessage.tsx`, `useIsAdmin`: claim `role` del token); és només visual (gotcha 17). El backend nou respon `403 {code:'not_owner'}` a qui no és creador ni admin: `DoubtsService.deleteDoubt/deleteAnswer` llancen `ApiError` i `DoubtsScreen` mostra `contentErrors.notOwner` **[FET]**.
+- Escriptures (`createDoubt`, `createAnswer`, `createAnswerReply`): poden respondre 403 `user_blocked`/`age_not_confirmed` → `ApiError` amb `code`, missatge traduït via `getContentErrorMessage` **[FET]**.
+- Esborrar una resposta esborra tot el seu subarbre al backend: `useDeleteAnswer` treu la resposta i els descendents de la cache (`collectAnswerSubtreeIds`) i invalida `['doubts','refuge',id]` perquè es refaci la consulta **[FET]**. `answers` ve sempre (`[]` si no n'hi ha) **[FET]**.
+- Les rèpliques es mostren planes: `parent_answer_id` s'ignora a la UI (`DoubtsScreen.tsx:82-94`) **[FET]**.
 - Els comentaris diuen "optimistic" però les escriptures a cache es fan a `onSuccess` **[FET]**.
-- `refuge_id` sense codificar (`DoubtsService.ts:40`) **[FET]**.
+- `refuge_id` ara es codifica amb `encodeURIComponent` **[FET]**.
 - Hooks dins `try/catch` (`DoubtsScreen.tsx:105-110`) **[FET]**.

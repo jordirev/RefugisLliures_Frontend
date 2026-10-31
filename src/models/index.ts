@@ -133,7 +133,8 @@ export type MediaReportAction = 'dismiss' | 'remove' | 'remove_and_strike';
  */
 export interface MediaReport {
   id: string;
-  refuge_id: string;
+  /** null si el refugi s'ha esborrat o és una denúncia d'avatar/automàtica */
+  refuge_id: string | null;
   media_key: string;
   reason: MediaReportReason | string;
   details?: string | null;
@@ -177,7 +178,8 @@ export interface Renovation {
   fin_date: string // ISO date string
   description: string
   materials_needed?: string | null
-  group_link: string
+  /** Absent si l'usuari no és creador, participant ni admin (o creador esborrat) */
+  group_link?: string
   participants_uids?: string[] | null
 }
 
@@ -220,6 +222,7 @@ export interface Experience {
   creator_uid: string;
   modified_at: string; // ISO date string
   comment: string;
+  condition?: number; // Estat del refugi segons l'usuari (0-3)
   images_metadata?: ImageMetadata[]; // 
 }
 

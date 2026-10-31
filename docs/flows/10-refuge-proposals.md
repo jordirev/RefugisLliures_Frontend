@@ -54,7 +54,13 @@ sequenceDiagram
 ```
 
 ## Validacions (`RefugeForm.validateForm`, 291-404)
-Nom obligatori; lat/long amb ≥3 decimals i sense comes; descripció i comentari ≤3000; enllaços `^(https?://|www\.)`. Editar requereix comentari ≥50 caràcters (372-379) i que hi hagi canvis (240). Eliminar i rebutjar requereixen ≥50 caràcters (`DeleteRefugePopUp.tsx:32-38`, `RejectProposalPopUp.tsx:32-39`).
+Nom obligatori (≤100 al formulari; el backend admet 255); lat/long amb ≥3 decimals i sense comes; altitud 0–8800 (backend 0–8848); places enter 0–2³¹−1; descripció i comentari ≤3000 (backend: comentari ≤4000); enllaços **només `http://`/`https://`**, ≤2048 caràcters i sense repetits (el backend els rebutja amb 400; `www.` ja no s'accepta). Editar requereix comentari ≥50 caràcters i que hi hagi canvis. Eliminar i rebutjar requereixen ≥50 caràcters; el motiu de rebuig té un màxim de **2000** (`RejectProposalPopUp`).
+
+## Errors del contracte (backend PostgreSQL)
+- **POST crear, 409 `possible_duplicates`** (només `action: create`): `{error, code, message, possible_duplicates:[{id,name,distance_m}]}`, ordenats per distància (≤500 m, nom semblant). `RefugeProposalsService.createProposal` llança `PossibleDuplicatesError` (`.duplicates`); `RefugeForm` mostra una alerta amb "Nom — N m" i botons per obrir el detall del refugi (`onViewRefuge`, ≤3) i "Corregir la proposta". El formulari no es toca, així que es pot corregir o cancel·lar. Textos a `createRefuge.duplicates.*`.
+- **POST crear, 403 `user_blocked` / `age_not_confirmed`**: `ApiError` amb `code`; `RefugeForm` usa `getContentErrorMessage` (`contentErrors.*`).
+- **Aprovar, 409**: per `code`: `link_already_used` (enllaç d'un altre refugi; la proposta continua pendent), `refuge_not_found` (el refugi s'ha esborrat entretant) i, sense codi, proposta ja revisada (`already_reviewed`, missatge per defecte). `ProposalDetailScreen` mostra `proposals.errors.linkAlreadyUsed` / `refugeNotFound`.
+- **`creator_uid` `'unknown'`** (usuari esborrat): no es consulta l'usuari; el detall i la targeta mostren "Usuari desconegut" (amb el comentari si n'hi ha). `comment` pot ser `null`.
 
 ## Gotchas i bugs
 - **Errors mostrats com a èxit**: a `RefugeForm.tsx:515-541`, qualsevol error amb "coord" al missatge mostra l'alerta d'**èxit** i torna enrere; un 400 del backend de tipus "Dades invàlides: coord: ..." es reportaria com a èxit **[FET]**. El mateix patró silencia errors a `AppNavigator.tsx:98-108` **[FET segons informe]**.
